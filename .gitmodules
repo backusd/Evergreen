@@ -1,0 +1,3 @@
+[submodule "Evergreen/vendor/spdlog"]
+	path = Evergreen/vendor/spdlog
+	url = https://github.com/gabime/spdlog
