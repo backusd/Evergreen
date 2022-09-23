@@ -1,0 +1,9 @@
+#pragma once
+
+// For use by Evergreen Applications
+
+#include "Evergreen/Application.h"
+
+// ---Entry Point---------------------------
+#include "Evergreen/EntryPoint.h"
+// -----------------------------------------
