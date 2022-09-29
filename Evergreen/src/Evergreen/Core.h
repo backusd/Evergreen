@@ -10,3 +10,5 @@
 #else
 	#error Evergreen only supports Windows
 #endif // EG_PLATFORM_WINDOWS
+
+#define BIT(x) (1 << x)

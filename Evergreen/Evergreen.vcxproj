@@ -15,6 +15,10 @@
     <ClInclude Include="src\Evergreen\Application.h" />
     <ClInclude Include="src\Evergreen\Core.h" />
     <ClInclude Include="src\Evergreen\EntryPoint.h" />
+    <ClInclude Include="src\Evergreen\Events\ApplicationEvent.h" />
+    <ClInclude Include="src\Evergreen\Events\Event.h" />
+    <ClInclude Include="src\Evergreen\Events\KeyEvent.h" />
+    <ClInclude Include="src\Evergreen\Events\MouseEvent.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
   </ItemGroup>
   <ItemGroup>
@@ -73,12 +77,15 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Sandbox\" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -93,7 +100,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -101,6 +108,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Sandbox\" </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
