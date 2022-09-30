@@ -1,7 +1,7 @@
 #pragma once
 #include "Event.h"
 
-#include <sstream>
+#include <format>
 
 namespace Evergreen
 {
@@ -15,12 +15,7 @@ public:
 	inline unsigned int GetWidth() const noexcept { return m_width; }
 	inline unsigned int GetHeight() const noexcept { return m_height; }
 
-	std::string ToString() const noexcept override
-	{
-		std::stringstream ss;
-		ss << "WindowResizeEvent: " << m_width << ", " << m_height;
-		return ss.str();
-	}
+	std::string ToString() const noexcept override { return std::format("WindowResizeEvent: width = {}, height = {}", m_width, m_height); }
 
 	// Event Class Category
 	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
