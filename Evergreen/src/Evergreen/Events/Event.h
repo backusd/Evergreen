@@ -34,7 +34,7 @@ public:
 	virtual int GetCategoryFlags() const noexcept = 0;
 	virtual std::string ToString() const noexcept { return GetName(); }
 
-	inline bool IsInCategory(EventCategory category)
+	inline bool IsInCategory(EventCategory category) const noexcept
 	{
 		return GetCategoryFlags() & category;
 	}
@@ -54,7 +54,7 @@ public:
 		m_event(event) {}
 
 	template<typename T>
-	bool Dispatch(EventFn<T> func)
+	bool Dispatch(EventFn<T> func) noexcept
 	{
 		if (m_event.GetEventType() == T::GetStaticType())
 		{

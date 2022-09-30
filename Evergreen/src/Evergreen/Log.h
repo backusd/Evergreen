@@ -7,19 +7,23 @@
 
 namespace Evergreen
 {
+// Drop this warning because the private static shared_ptr's are private, but the compiler will complain
+// that they don't have a DLL interface
+#pragma warning( push )
+#pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API Log
 {
 public:
-	static void Init();
+	static void Init() noexcept;
 
-	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return m_coreLogger; }
-	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return m_clientLogger; }
+	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() noexcept { return m_coreLogger; }
+	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() noexcept { return m_clientLogger; }
 
 private:
 	static std::shared_ptr<spdlog::logger> m_coreLogger;
 	static std::shared_ptr<spdlog::logger> m_clientLogger;
 };
-
+#pragma warning( pop )
 
 }
 

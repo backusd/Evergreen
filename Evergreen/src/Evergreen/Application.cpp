@@ -5,15 +5,15 @@
 
 namespace Evergreen
 {
-Application::Application()
+Application::Application() noexcept
 {
 }
 
-Application::~Application()
+Application::~Application() noexcept
 {
 }
 
-void Application::Run()
+void Application::Run() noexcept
 {
 	WindowResizeEvent e(1280, 720);
 	EG_TRACE(e);

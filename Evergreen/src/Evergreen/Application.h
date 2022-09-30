@@ -7,10 +7,10 @@ namespace Evergreen
 class EVERGREEN_API Application
 {
 public:
-	Application();
-	virtual ~Application();
+	Application() noexcept;
+	virtual ~Application() noexcept;
 
-	void Run();
+	void Run() noexcept;
 
 private:
 

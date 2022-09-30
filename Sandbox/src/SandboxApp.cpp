@@ -3,11 +3,11 @@
 class Sandbox : public Evergreen::Application
 {
 public:
-	Sandbox()
+	Sandbox() noexcept
 	{
 
 	}
-	~Sandbox()
+	~Sandbox() noexcept
 	{
 
 	}
