@@ -9,24 +9,26 @@ namespace Evergreen
 {
 Application::Application() noexcept
 {
+	m_window = std::unique_ptr<Window>(Window::Create());
 }
 
 Application::~Application() noexcept
 {
 }
 
-void Application::Run() noexcept
+int Application::Run() noexcept
 {
-	WindowResizeEvent e(1280, 720);
-	EG_TRACE(e);
+	while (true)
+	{
+		// process all messages pending, but to not block for new messages
+		if (const auto ecode = m_window->ProcessMessages())
+		{
+			// if return optional has value, means we're quitting so return exit code
+			return *ecode;
+		}
 
-	KeyPressedEvent k(static_cast<int>('c'), 0);
-	EG_TRACE(k);
-
-	KeyReleasedEvent k2(static_cast<int>('d'));
-	EG_TRACE(k2);
-
-	while (true);
+		m_window->OnUpdate();
+	}
 }
 
 }

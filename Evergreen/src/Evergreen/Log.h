@@ -9,6 +9,7 @@ namespace Evergreen
 {
 // Drop this warning because the private static shared_ptr's are private, but the compiler will complain
 // that they don't have a DLL interface
+// See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
 #pragma warning( push )
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API Log

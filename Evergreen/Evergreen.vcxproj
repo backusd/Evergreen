@@ -19,12 +19,25 @@
     <ClInclude Include="src\Evergreen\Events\Event.h" />
     <ClInclude Include="src\Evergreen\Events\KeyEvent.h" />
     <ClInclude Include="src\Evergreen\Events\MouseEvent.h" />
+    <ClInclude Include="src\Evergreen\Exceptions\BaseException.h" />
+    <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsMessageMap.h" />
+    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindow.h" />
+    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowException.h" />
+    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowTemplate.h" />
+    <ClInclude Include="src\Evergreen\Window.h" />
+    <ClInclude Include="src\Evergreen\WindowProperties.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp" />
+    <ClCompile Include="src\Evergreen\Exceptions\BaseException.cpp" />
+    <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
+    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsMessageMap.cpp" />
+    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindow.cpp" />
+    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindowException.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
@@ -44,14 +57,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">

@@ -5,6 +5,8 @@
 #include <functional>
 #include <vector>
 #include <format>
+#include <exception>
+#include <optional>
 
 #ifdef EG_PLATFORM_WINDOWS
 #include <Windows.h>
