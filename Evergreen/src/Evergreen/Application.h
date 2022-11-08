@@ -21,6 +21,8 @@ public:
 
 	int Run() noexcept;
 
+	void OnEvent(Event& e) noexcept;
+
 private:
 	std::unique_ptr<Window> m_window;
 };

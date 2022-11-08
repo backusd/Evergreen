@@ -17,6 +17,7 @@
     <ClInclude Include="src\Evergreen\EntryPoint.h" />
     <ClInclude Include="src\Evergreen\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Evergreen\Events\Event.h" />
+    <ClInclude Include="src\Evergreen\Events\KeyCode.h" />
     <ClInclude Include="src\Evergreen\Events\KeyEvent.h" />
     <ClInclude Include="src\Evergreen\Events\MouseEvent.h" />
     <ClInclude Include="src\Evergreen\Exceptions\BaseException.h" />

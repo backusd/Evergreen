@@ -23,7 +23,7 @@ public:
 	virtual unsigned int GetWidth() const noexcept = 0;
 	virtual unsigned int GetHeight() const noexcept = 0;
 
-	//virtual void SetEventCallback(const EventCallbackFn& callback) noexcept = 0;
+	virtual void SetEventCallback(const EventCallbackFn& callback) noexcept = 0;
 	//virtual void SetVSync(bool enabled) noexcept = 0;
 	//virtual bool IsVSync() const noexcept = 0;
 

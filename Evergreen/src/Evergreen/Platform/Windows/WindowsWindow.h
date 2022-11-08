@@ -1,6 +1,7 @@
 #pragma once
 #include "Evergreen/Window.h"
 #include "WindowsWindowTemplate.h"
+#include "Evergreen/Events/KeyCode.h"
 
 namespace Evergreen
 {
@@ -21,14 +22,18 @@ public:
 	inline unsigned int GetWidth() const noexcept override { return m_width; }
 	inline unsigned int GetHeight() const noexcept override { return m_height; }
 
-	//inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { m_data.EventCallback = callback; }
+	inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { EventCallback = callback; }
 	//void SetVSync(bool enabled) noexcept override;
 	//bool IsVSync() const noexcept override;
 
 
 private:
+	EventCallbackFn EventCallback;
+
 	virtual void Init(const WindowProperties& props) noexcept;
 	virtual void Shutdown() noexcept;
+
+	KEY_CODE WParamToKeyCode(WPARAM wParam) const noexcept;
 
 	LRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnClose(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
@@ -58,6 +63,8 @@ private:
 	LRESULT OnSysKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 
 	LRESULT OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
+
+
 };
 
 

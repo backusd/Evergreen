@@ -7,13 +7,29 @@
 
 namespace Evergreen
 {
+#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
+
 Application::Application() noexcept
 {
 	m_window = std::unique_ptr<Window>(Window::Create());
+	m_window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 }
 
 Application::~Application() noexcept
 {
+}
+
+void Application::OnEvent(Event& e) noexcept
+{
+	switch (e.GetEventType())
+	{
+	case EventType::Character:
+		EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::KeyPressed:
+		EG_CORE_INFO(e.ToString());
+		break;
+	}
 }
 
 int Application::Run() noexcept

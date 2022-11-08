@@ -8,9 +8,9 @@ namespace Evergreen
 enum class EventType
 {
 	None = 0,
-	WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
+	WindowCreate, WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 	AppTick, AppUpdate, AppRender,
-	KeyPressed, KeyReleased,
+	Character, KeyPressed, KeyReleased,
 	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 };
 
@@ -20,8 +20,9 @@ enum EventCategory
 	EventCategoryApplication	= BIT(0),
 	EventCategoryInput			= BIT(1),
 	EventCategoryKeyboard		= BIT(2),
-	EventCategoryMouse			= BIT(3),
-	EventCategoryMouseButton	= BIT(4)
+	EventCategoryCharacter		= BIT(3),
+	EventCategoryMouse			= BIT(4),
+	EventCategoryMouseButton	= BIT(5)
 };
 
 class EVERGREEN_API Event
