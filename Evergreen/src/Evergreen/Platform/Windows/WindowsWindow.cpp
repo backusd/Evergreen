@@ -17,7 +17,8 @@ Window* Window::Create(const WindowProperties& props) noexcept
 
 WindowsWindow::WindowsWindow(const WindowProperties& props) noexcept :
 	WindowsWindowTemplate(props),
-	EventCallback([](Event&) {})
+	EventCallback([](Event&) {}),
+	m_mouseIsInWindow(false)
 {
 	Init(props);
 }
@@ -78,6 +79,8 @@ LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	case WM_LBUTTONDOWN:	return OnLButtonDown(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONUP:		return OnLButtonUp(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONDBLCLK:	return OnLButtonDoubleClick(hWnd, msg, wParam, lParam);
+	case WM_RBUTTONDBLCLK:  return OnRButtonDoubleClick(hWnd, msg, wParam, lParam);
+	case WM_MBUTTONDBLCLK:  return OnMButtonDoubleClick(hWnd, msg, wParam, lParam);
 	case WM_MBUTTONDOWN:	return OnMButtonDown(hWnd, msg, wParam, lParam);
 	case WM_MBUTTONUP:		return OnMButtonUp(hWnd, msg, wParam, lParam);
 	case WM_RBUTTONDOWN:	return OnRButtonDown(hWnd, msg, wParam, lParam);
@@ -102,6 +105,7 @@ LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 			::SetWindowPos(hWnd, NULL, suggested_rect->left, suggested_rect->top, suggested_rect->right - suggested_rect->left, suggested_rect->bottom - suggested_rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
 		}
 		*/
+		EG_CORE_ERROR("Received WM_DPICHANGED. Currently not handling this message");
 		break;
 	}
 
@@ -115,20 +119,6 @@ void WindowsWindow::OnUpdate() noexcept
 	// ... Update + Render + Present ... ??
 }
 
-/*
-void WindowsWindow::SetVSync(bool enabled) noexcept
-{
-	m_data.vSync = enabled;
-
-	// ... Not sure if I need/want this ... ??
-}
-
-bool WindowsWindow::IsVSync() const noexcept
-{
-	return m_data.vSync;
-}
-*/
-
 
 LRESULT WindowsWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
@@ -137,7 +127,9 @@ LRESULT WindowsWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	
 	EventCallback(e);
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	// According to: https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-create
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */) const noexcept
 {
@@ -154,98 +146,114 @@ LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam
 
 LRESULT WindowsWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
-	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnLeftPressed(pt.x, pt.y);
-	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondown
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	if (pt.x < 0 || pt.x >= static_cast<int>(m_width) || pt.y < 0 || pt.y >= static_cast<int>(m_height))
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnLeftReleased(pt.x, pt.y);
-		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height)
-		{
-			ReleaseCapture();
-			Mouse::OnMouseLeave();
-		}
+		ReleaseCapture();
+		MouseLeaveEvent l;
+		EventCallback(l);
 	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttonup
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
-	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnLeftDoubleClick(pt.x, pt.y);
-	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondblclk
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
-	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnMiddlePressed(pt.x, pt.y);
-	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondown
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	if (pt.x < 0 || pt.x >= static_cast<int>(m_width) || pt.y < 0 || pt.y >= static_cast<int>(m_height))
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnMiddleReleased(pt.x, pt.y);
-		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height)
-		{
-			ReleaseCapture();
-			Mouse::OnMouseLeave();
-		}
+		ReleaseCapture();
+		MouseLeaveEvent l;
+		EventCallback(l);
 	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttonup
+	// --> "An application should return zero if it processes this message."
+	return 0;
+}
+LRESULT WindowsWindow::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+{
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondblclk
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
-	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnRightPressed(pt.x, pt.y);
-	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttondown
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	if (pt.x < 0 || pt.x >= static_cast<int>(m_width) || pt.y < 0 || pt.y >= static_cast<int>(m_height))
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		Mouse::OnRightReleased(pt.x, pt.y);
-		// release mouse if outside of window
-		if (pt.x < 0 || pt.x >= m_width || pt.y < 0 || pt.y >= m_height)
-		{
-			ReleaseCapture();
-			Mouse::OnMouseLeave();
-		}
+		ReleaseCapture();
+		MouseLeaveEvent l;
+		EventCallback(l);
 	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttonup
+	// --> "An application should return zero if it processes this message."
+	return 0;
+}
+LRESULT WindowsWindow::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+{
+	const POINTS pt = MAKEPOINTS(lParam);
+	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttondblclk
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 
 
@@ -257,58 +265,70 @@ LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 	EventCallback(e);
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	// According to: https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-size
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 
-LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
+	const POINTS pt = MAKEPOINTS(lParam);
+	// in client region -> trigger move event, and trigger enter event + capture mouse (if not previously in window)
+	if (pt.x >= 0 && pt.x < static_cast<int>(m_width) && pt.y >= 0 && pt.y < static_cast<int>(m_height))
 	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		// in client region -> log move, and log enter + capture mouse (if not previously in window)
-		if (pt.x >= 0 && pt.x < m_width && pt.y >= 0 && pt.y < m_height)
+		MouseMoveEvent e(pt.x, pt.y);
+		EventCallback(e);
+
+		if (!m_mouseIsInWindow) // Will tell you if the mouse was PREVIOUSLY in the window or not
 		{
-			Mouse::OnMouseMove(pt.x, pt.y);
-			if (!Mouse::IsInWindow()) // IsInWindow() will tell you if it was PREVIOUSLY in the window or not
-			{
-				SetCapture(hWnd);
-				Mouse::OnMouseEnter();
-			}
-		}
-		// not in client -> log move / maintain capture if button down
-		else
-		{
-			if (wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON))
-			{
-				Mouse::OnMouseMove(pt.x, pt.y);
-			}
-			// button up -> release capture / log event for leaving
-			else
-			{
-				ReleaseCapture();
-				Mouse::OnMouseLeave();
-			}
+			m_mouseIsInWindow = true;
+
+			SetCapture(hWnd);
+
+			MouseEnterEvent e;
+			EventCallback(e);
 		}
 	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	// not in client -> trigger move event / maintain capture if a button is down
+	else
+	{
+		m_mouseIsInWindow = false;
+
+		if (wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON))
+		{
+			MouseMoveEvent e(pt.x, pt.y);
+			EventCallback(e);
+		}
+		// button up -> release capture / log event for leaving
+		else
+		{
+			ReleaseCapture();
+
+			MouseLeaveEvent e;
+			EventCallback(e);
+		}
+	}
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousemove
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
+	// Not handling here because wm_leave messages don't seem to trigger
+	// Instead, we are triggering MouseLeaveEvent from OnMouseMove
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 LRESULT WindowsWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
-	{
-		const POINTS pt = MAKEPOINTS(lParam);
-		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-		Mouse::OnWheelDelta(pt.x, pt.y, delta);
-	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	const POINTS pt = MAKEPOINTS(lParam);
+	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+	MouseScrolledEvent e(pt.x, pt.y, delta);
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 
 

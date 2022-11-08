@@ -11,7 +11,7 @@ enum class EventType
 	WindowCreate, WindowClose, WindowResize, WindowFocus, WindowLostFocus, WindowMoved,
 	AppTick, AppUpdate, AppRender,
 	Character, KeyPressed, KeyReleased,
-	MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
+	MouseButtonPressed, MouseButtonReleased, MouseMove, MouseScrolled, MouseButtonDoubleClick, MouseEnter, MouseLeave
 };
 
 enum EventCategory

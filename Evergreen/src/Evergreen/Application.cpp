@@ -32,6 +32,27 @@ void Application::OnEvent(Event& e) noexcept
 	case EventType::KeyReleased:
 		EG_CORE_INFO(e.ToString());
 		break;
+	case EventType::MouseButtonPressed:
+		EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::MouseButtonReleased:
+		EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::MouseLeave:
+		EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::MouseButtonDoubleClick:
+		EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::MouseMove:
+		// EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::MouseEnter:
+		EG_CORE_INFO(e.ToString());
+		break;
+	case EventType::MouseScrolled:
+		EG_CORE_INFO(e.ToString());
+		break;
 	}
 }
 

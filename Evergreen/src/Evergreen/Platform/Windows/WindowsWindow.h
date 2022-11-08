@@ -23,12 +23,12 @@ public:
 	inline unsigned int GetHeight() const noexcept override { return m_height; }
 
 	inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { EventCallback = callback; }
-	//void SetVSync(bool enabled) noexcept override;
-	//bool IsVSync() const noexcept override;
+
 
 
 private:
 	EventCallbackFn EventCallback;
+	bool m_mouseIsInWindow;
 
 	virtual void Init(const WindowProperties& props) noexcept;
 	virtual void Shutdown() noexcept;
@@ -41,6 +41,8 @@ private:
 	LRESULT OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
+	LRESULT OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
+	LRESULT OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
@@ -48,7 +50,7 @@ private:
 
 	LRESULT OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-	LRESULT OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
+	LRESULT OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 
