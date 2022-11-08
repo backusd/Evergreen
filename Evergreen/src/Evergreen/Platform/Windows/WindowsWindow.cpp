@@ -17,7 +17,6 @@ Window* Window::Create(const WindowProperties& props) noexcept
 
 WindowsWindow::WindowsWindow(const WindowProperties& props) noexcept :
 	WindowsWindowTemplate(props),
-	EventCallback([](Event&) {}),
 	m_mouseIsInWindow(false)
 {
 	Init(props);
@@ -124,8 +123,7 @@ LRESULT WindowsWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 {
 	CREATESTRUCT* cs = (CREATESTRUCT*)lParam;
 	WindowCreateEvent e(cs->y, cs->x, cs->cx, cs->cy);
-	
-	EventCallback(e);
+	OnWindowCreateFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-create
 	// --> "An application should return zero if it processes this message."
@@ -138,7 +136,7 @@ LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam
 
 	/* Perform any clean up work here */
 	WindowCloseEvent e;
-	EventCallback(e);
+	OnWindowCloseFn(e);
 
 	PostQuitMessage(0);
 	return 0;
@@ -148,7 +146,7 @@ LRESULT WindowsWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonPressedFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondown
 	// --> "An application should return zero if it processes this message."
@@ -158,13 +156,13 @@ LRESULT WindowsWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonReleasedFn(e);
 
 	if (pt.x < 0 || pt.x >= static_cast<int>(m_width) || pt.y < 0 || pt.y >= static_cast<int>(m_height))
 	{
 		ReleaseCapture();
 		MouseLeaveEvent l;
-		EventCallback(l);
+		OnMouseLeaveFn(l);
 	}
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttonup
@@ -175,7 +173,7 @@ LRESULT WindowsWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonDoubleClickFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttondblclk
 	// --> "An application should return zero if it processes this message."
@@ -185,7 +183,7 @@ LRESULT WindowsWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonPressedFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondown
 	// --> "An application should return zero if it processes this message."
@@ -195,13 +193,13 @@ LRESULT WindowsWindow::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonReleasedFn(e);
 
 	if (pt.x < 0 || pt.x >= static_cast<int>(m_width) || pt.y < 0 || pt.y >= static_cast<int>(m_height))
 	{
 		ReleaseCapture();
 		MouseLeaveEvent l;
-		EventCallback(l);
+		OnMouseLeaveFn(l);
 	}
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttonup
@@ -212,7 +210,7 @@ LRESULT WindowsWindow::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonDoubleClickFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttondblclk
 	// --> "An application should return zero if it processes this message."
@@ -222,7 +220,7 @@ LRESULT WindowsWindow::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonPressedFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttondown
 	// --> "An application should return zero if it processes this message."
@@ -232,13 +230,13 @@ LRESULT WindowsWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonReleasedFn(e);
 
 	if (pt.x < 0 || pt.x >= static_cast<int>(m_width) || pt.y < 0 || pt.y >= static_cast<int>(m_height))
 	{
 		ReleaseCapture();
 		MouseLeaveEvent l;
-		EventCallback(l);
+		OnMouseLeaveFn(l);
 	}
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttonup
@@ -249,7 +247,7 @@ LRESULT WindowsWindow::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
-	EventCallback(e);
+	OnMouseButtonDoubleClickFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttondblclk
 	// --> "An application should return zero if it processes this message."
@@ -257,13 +255,12 @@ LRESULT WindowsWindow::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 }
 
 
-LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	m_width = LOWORD(lParam);
 	m_height = HIWORD(lParam);
 	WindowResizeEvent e(m_width, m_height);
-
-	EventCallback(e);
+	OnWindowResizeFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/winmsg/wm-size
 	// --> "An application should return zero if it processes this message."
@@ -277,7 +274,7 @@ LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	if (pt.x >= 0 && pt.x < static_cast<int>(m_width) && pt.y >= 0 && pt.y < static_cast<int>(m_height))
 	{
 		MouseMoveEvent e(pt.x, pt.y);
-		EventCallback(e);
+		OnMouseMoveFn(e);
 
 		if (!m_mouseIsInWindow) // Will tell you if the mouse was PREVIOUSLY in the window or not
 		{
@@ -286,7 +283,7 @@ LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			SetCapture(hWnd);
 
 			MouseEnterEvent e;
-			EventCallback(e);
+			OnMouseEnterFn(e);
 		}
 	}
 	// not in client -> trigger move event / maintain capture if a button is down
@@ -297,7 +294,7 @@ LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 		if (wParam & (MK_LBUTTON | MK_RBUTTON | MK_MBUTTON))
 		{
 			MouseMoveEvent e(pt.x, pt.y);
-			EventCallback(e);
+			OnMouseMoveFn(e);
 		}
 		// button up -> release capture / log event for leaving
 		else
@@ -305,7 +302,7 @@ LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 			ReleaseCapture();
 
 			MouseLeaveEvent e;
-			EventCallback(e);
+			OnMouseLeaveFn(e);
 		}
 	}
 
@@ -324,7 +321,7 @@ LRESULT WindowsWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	const POINTS pt = MAKEPOINTS(lParam);
 	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 	MouseScrolledEvent e(pt.x, pt.y, delta);
-	EventCallback(e);
+	OnMouseScrolledFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel
 	// --> "An application should return zero if it processes this message."
@@ -337,7 +334,7 @@ LRESULT WindowsWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// wParam - Contains the keycode
 	// lParam - Bits 0-15 contain the repeat count
 	CharEvent e(static_cast<char>(wParam), static_cast<int>(LOWORD(lParam)));
-	EventCallback(e);
+	OnCharFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-char
 	// --> "An application should return zero if it processes this message."
@@ -347,7 +344,7 @@ LRESULT WindowsWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 {
 	// wParam - Contains the keycode
 	KeyReleasedEvent e(WParamToKeyCode(wParam));
-	EventCallback(e);
+	OnKeyReleasedFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keyup
 	// --> "An application should return zero if it processes this message."
@@ -360,7 +357,7 @@ LRESULT WindowsWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	// lParam - Bit 30 indicates whether the key was already down before the WM_KEYDOWN message was triggered
 	bool keyWasPreviouslyDown = (lParam & 0x40000000) > 0;
 	KeyPressedEvent e(WParamToKeyCode(wParam), static_cast<int>(LOWORD(lParam)), keyWasPreviouslyDown);
-	EventCallback(e);	
+	OnKeyPressedFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
 	// --> "An application should return zero if it processes this message."

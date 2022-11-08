@@ -22,12 +22,8 @@ public:
 	inline unsigned int GetWidth() const noexcept override { return m_width; }
 	inline unsigned int GetHeight() const noexcept override { return m_height; }
 
-	inline void SetEventCallback(const EventCallbackFn& callback) noexcept override { EventCallback = callback; }
-
-
 
 private:
-	EventCallbackFn EventCallback;
 	bool m_mouseIsInWindow;
 
 	virtual void Init(const WindowProperties& props) noexcept;
@@ -46,7 +42,7 @@ private:
 	LRESULT OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
-	LRESULT OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
+	LRESULT OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept; // cannot be const because it modifies m_mouseIsInWindow
 	LRESULT OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	LRESULT OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;

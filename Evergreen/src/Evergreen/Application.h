@@ -1,7 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "Core.h"
-#include "Events/Event.h"
+#include "Events/MouseEvent.h"
+#include "Events/KeyEvent.h"
+#include "Events/ApplicationEvent.h"
 #include "Window.h"
 
 namespace Evergreen
@@ -21,9 +23,25 @@ public:
 
 	int Run() noexcept;
 
-	void OnEvent(Event& e) noexcept;
-
 private:
+	void OnWindowResize(WindowResizeEvent& e) noexcept;
+	void OnWindowCreate(WindowCreateEvent& e) noexcept;
+	void OnWindowClose(WindowCloseEvent& e) noexcept;
+	void OnAppTick(AppTickEvent& e) noexcept;
+	void OnAppUpdate(AppUpdateEvent& e) noexcept;
+	void OnAppRender(AppRenderEvent& e) noexcept;
+	void OnChar(CharEvent& e) noexcept;
+	void OnKeyPressed(KeyPressedEvent& e) noexcept;
+	void OnKeyReleased(KeyReleasedEvent& e) noexcept;
+	void OnMouseMove(MouseMoveEvent& e) noexcept;
+	void OnMouseEnter(MouseEnterEvent& e) noexcept;
+	void OnMouseLeave(MouseLeaveEvent& e) noexcept;
+	void OnMouseScrolled(MouseScrolledEvent& e) noexcept;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
+
+
 	std::unique_ptr<Window> m_window;
 };
 #pragma warning( pop )

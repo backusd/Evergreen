@@ -43,7 +43,7 @@ protected:
 	bool m_handled = false;
 };
 
-
+/*
 class EVERGREEN_API EventDispatcher
 {
 	template<typename T>
@@ -69,6 +69,7 @@ public:
 private:
 	Event& m_event;
 };
+*/
 
 inline std::ostream& operator<<(std::ostream& os, const Event& e)
 {

@@ -12,48 +12,26 @@ namespace Evergreen
 Application::Application() noexcept
 {
 	m_window = std::unique_ptr<Window>(Window::Create());
-	m_window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+	m_window->SetOnWindowResize(BIND_EVENT_FN(OnWindowResize));
+	m_window->SetOnWindowCreate(BIND_EVENT_FN(OnWindowCreate));
+	m_window->SetOnWindowClose(BIND_EVENT_FN(OnWindowClose));
+	m_window->SetOnAppTick(BIND_EVENT_FN(OnAppTick));
+	m_window->SetOnAppUpdate(BIND_EVENT_FN(OnAppUpdate));
+	m_window->SetOnAppRender(BIND_EVENT_FN(OnAppRender));
+	m_window->SetOnChar(BIND_EVENT_FN(OnChar));
+	m_window->SetOnKeyPressed(BIND_EVENT_FN(OnKeyPressed));
+	m_window->SetOnKeyReleased(BIND_EVENT_FN(OnKeyReleased));
+	m_window->SetOnMouseMove(BIND_EVENT_FN(OnMouseMove));
+	m_window->SetOnMouseEnter(BIND_EVENT_FN(OnMouseEnter));
+	m_window->SetOnMouseLeave(BIND_EVENT_FN(OnMouseLeave));
+	m_window->SetOnMouseScrolled(BIND_EVENT_FN(OnMouseScrolled));
+	m_window->SetOnMouseButtonPressed(BIND_EVENT_FN(OnMouseButtonPressed));
+	m_window->SetOnMouseButtonReleased(BIND_EVENT_FN(OnMouseButtonReleased));
+	m_window->SetOnMouseButtonDoubleClick(BIND_EVENT_FN(OnMouseButtonDoubleClick));
 }
 
 Application::~Application() noexcept
 {
-}
-
-void Application::OnEvent(Event& e) noexcept
-{
-	switch (e.GetEventType())
-	{
-	case EventType::Character:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::KeyPressed:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::KeyReleased:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseButtonPressed:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseButtonReleased:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseLeave:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseButtonDoubleClick:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseMove:
-		// EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseEnter:
-		EG_CORE_INFO(e.ToString());
-		break;
-	case EventType::MouseScrolled:
-		EG_CORE_INFO(e.ToString());
-		break;
-	}
 }
 
 int Application::Run() noexcept
@@ -69,6 +47,72 @@ int Application::Run() noexcept
 
 		m_window->OnUpdate();
 	}
+}
+
+
+void Application::OnWindowResize(WindowResizeEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnWindowCreate(WindowCreateEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnWindowClose(WindowCloseEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnAppTick(AppTickEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnAppUpdate(AppUpdateEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnAppRender(AppRenderEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnChar(CharEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseEnter(MouseEnterEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseLeave(MouseLeaveEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseScrolled(MouseScrolledEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
+}
+void Application::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+	EG_CORE_INFO(e.ToString());
 }
 
 }
