@@ -52,6 +52,8 @@ class EVERGREEN_API EventDispatcher
 public:
 	EventDispatcher(Event& event) noexcept :
 		m_event(event) {}
+	EventDispatcher(const EventDispatcher&) = delete;
+	void operator=(const EventDispatcher&) = delete;
 
 	template<typename T>
 	bool Dispatch(EventFn<T> func) noexcept

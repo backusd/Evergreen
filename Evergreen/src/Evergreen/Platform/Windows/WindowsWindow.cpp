@@ -257,7 +257,7 @@ LRESULT WindowsWindow::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 }
 
 
-LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	m_width = LOWORD(lParam);
 	m_height = HIWORD(lParam);
