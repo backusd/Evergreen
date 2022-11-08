@@ -75,7 +75,6 @@ LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	{
 	case WM_CREATE:			return OnCreate(hWnd, msg, wParam, lParam);
 	case WM_CLOSE:			return OnClose(hWnd, msg, wParam, lParam);
-	case WM_DESTROY:		return OnDestroy(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONDOWN:	return OnLButtonDown(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONUP:		return OnLButtonUp(hWnd, msg, wParam, lParam);
 	case WM_LBUTTONDBLCLK:	return OnLButtonDoubleClick(hWnd, msg, wParam, lParam);
@@ -83,12 +82,10 @@ LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	case WM_MBUTTONUP:		return OnMButtonUp(hWnd, msg, wParam, lParam);
 	case WM_RBUTTONDOWN:	return OnRButtonDown(hWnd, msg, wParam, lParam);
 	case WM_RBUTTONUP:		return OnRButtonUp(hWnd, msg, wParam, lParam);
-	case WM_PAINT:			return OnPaint(hWnd, msg, wParam, lParam);
 	case WM_SIZE:			return OnResize(hWnd, msg, wParam, lParam);
 	case WM_MOUSEMOVE:		return OnMouseMove(hWnd, msg, wParam, lParam);
 	case WM_MOUSELEAVE:		return OnMouseLeave(hWnd, msg, wParam, lParam);
 	case WM_MOUSEWHEEL:		return OnMouseWheel(hWnd, msg, wParam, lParam);
-	case WM_GETMINMAXINFO:	return OnGetMinMaxInfo(hWnd, msg, wParam, lParam);
 	case WM_CHAR:			return OnChar(hWnd, msg, wParam, lParam);
 	case WM_SYSKEYUP:		return OnSysKeyUp(hWnd, msg, wParam, lParam);
 	case WM_KEYUP:			return OnKeyUp(hWnd, msg, wParam, lParam);
@@ -142,7 +139,6 @@ LRESULT WindowsWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-
 LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */) const noexcept
 {
 	// we don't want the DefProc to handle this message because
@@ -154,11 +150,6 @@ LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam
 
 	PostQuitMessage(0);
 	return 0;
-}
-
-LRESULT WindowsWindow::OnDestroy(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
-{
-	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
 LRESULT WindowsWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
@@ -257,10 +248,6 @@ LRESULT WindowsWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-LRESULT WindowsWindow::OnPaint(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
-{
-	return DefWindowProc(hWnd, msg, wParam, lParam);
-}
 
 LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -324,10 +311,6 @@ LRESULT WindowsWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-LRESULT WindowsWindow::OnGetMinMaxInfo(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
-{
-	return DefWindowProc(hWnd, msg, wParam, lParam);
-}
 
 LRESULT WindowsWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
@@ -340,16 +323,15 @@ LRESULT WindowsWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-
 LRESULT WindowsWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	/*
-	if (!m_io.WantCaptureMouse)
-	{
-		Keyboard::OnKeyReleased(static_cast<unsigned char>(wParam));
-	}
-	*/
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	// wParam - Contains the keycode
+	KeyReleasedEvent e(WParamToKeyCode(wParam));
+	EventCallback(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keyup
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
 LRESULT WindowsWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
@@ -358,17 +340,16 @@ LRESULT WindowsWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	// lParam - Bit 30 indicates whether the key was already down before the WM_KEYDOWN message was triggered
 	bool keyWasPreviouslyDown = (lParam & 0x40000000) > 0;
 	KeyPressedEvent e(WParamToKeyCode(wParam), static_cast<int>(LOWORD(lParam)), keyWasPreviouslyDown);
-	EventCallback(e);
-	
+	EventCallback(e);	
 
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-keydown
+	// --> "An application should return zero if it processes this message."
+	return 0;
 }
-
 LRESULT WindowsWindow::OnSysKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	return this->OnKeyUp(hWnd, msg, wParam, lParam);
 }
-
 LRESULT WindowsWindow::OnSysKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	return this->OnKeyDown(hWnd, msg, wParam, lParam);

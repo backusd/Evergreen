@@ -29,6 +29,9 @@ void Application::OnEvent(Event& e) noexcept
 	case EventType::KeyPressed:
 		EG_CORE_INFO(e.ToString());
 		break;
+	case EventType::KeyReleased:
+		EG_CORE_INFO(e.ToString());
+		break;
 	}
 }
 
