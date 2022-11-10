@@ -6,6 +6,16 @@
 #include "Events/ApplicationEvent.h"
 #include "Window.h"
 
+#ifdef EG_DX11
+#include "Evergreen/Rendering/DX11/DeviceResourcesDX11.h"
+#elif EG_DX12
+#include "Evergreen/Rendering/DX12/DeviceResourcesDX12.h"
+#elif EG_OPENGL
+#include "Evergreen/Rendering/OpenGL/DeviceResourcesOpenGL.h"
+#elif EG_VULKAN
+#include "Evergreen/Rendering/Vulkan/DeviceResourcesVulkan.h"
+#endif
+
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 
@@ -41,8 +51,17 @@ private:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
-
 	std::unique_ptr<Window> m_window;
+#ifdef EG_DX11
+	std::unique_ptr<DeviceResourcesDX11> m_deviceResources;
+#elif EG_DX12
+	std::unique_ptr<DeviceResourcesDX12> m_deviceResources;
+#elif EG_OPENGL
+	std::unique_ptr<DeviceResourcesOpenGL> m_deviceResources;
+#elif EG_VULKAN
+	std::unique_ptr<DeviceResourcesVulkan> m_deviceResources;
+#endif
+
 };
 #pragma warning( pop )
 

@@ -1,7 +1,8 @@
 #include "pch.h"
 #include "WindowsWindowException.h"
-#include <sstream>
 
+namespace Evergreen
+{
 WindowsWindowException::WindowsWindowException(unsigned int line, const char* file, HRESULT hr) noexcept :
 	WindowException(line, file),
 	hr(hr)
@@ -36,13 +37,7 @@ std::string WindowsWindowException::TranslateErrorCode(HRESULT hr) noexcept
 
 const char* WindowsWindowException::what() const noexcept
 {
-	std::ostringstream oss;
-	oss << GetType() << std::endl
-		<< "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
-		<< std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
-		<< "[Description] " << GetErrorDescription() << std::endl
-		<< GetOriginString();
-	m_whatBuffer = oss.str();
+	m_whatBuffer = std::format("{}\n[Error Code] {:#x} ({})\n[Description] {}\n{}", GetType(), GetErrorCode(), GetErrorCode(), GetErrorDescription(), GetOriginString());
 	return m_whatBuffer.c_str();
 }
 
@@ -54,4 +49,6 @@ HRESULT WindowsWindowException::GetErrorCode() const noexcept
 std::string WindowsWindowException::GetErrorDescription() const noexcept
 {
 	return TranslateErrorCode(hr);
+}
+
 }

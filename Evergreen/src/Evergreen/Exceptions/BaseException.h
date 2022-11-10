@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "Evergreen/Core.h"
 
+namespace Evergreen
+{
 class BaseException : public std::exception
 {
 public:
@@ -22,3 +24,4 @@ private:
 protected:
 	mutable std::string m_whatBuffer;
 };
+}

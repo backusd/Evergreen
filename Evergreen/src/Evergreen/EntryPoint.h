@@ -12,9 +12,8 @@ int main(int argc, char** argv)
 	EG_CORE_INFO("Log Initialized");
 	EG_CORE_INFO("Launching Application...");
 
-	Evergreen::Application* application = Evergreen::CreateApplication();
-	application->Run();
-	delete application;
+	std::unique_ptr<Evergreen::Application> app = std::unique_ptr<Evergreen::Application>(Evergreen::CreateApplication());
+	app->Run();
 	return 0;
 }
 

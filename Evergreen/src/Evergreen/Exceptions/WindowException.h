@@ -2,6 +2,8 @@
 #include "pch.h"
 #include "BaseException.h"
 
+namespace Evergreen
+{
 class WindowException : public BaseException
 {
 public:
@@ -11,3 +13,4 @@ public:
 
 	const char* GetType() const noexcept override;
 };
+}

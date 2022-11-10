@@ -1,8 +1,9 @@
 #include "pch.h"
 #include "BaseException.h"
-#include <sstream>
 
 
+namespace Evergreen
+{
 BaseException::BaseException(int line, const char* file) noexcept :
 	m_line(line),
 	m_file(file)
@@ -11,10 +12,7 @@ BaseException::BaseException(int line, const char* file) noexcept :
 
 const char* BaseException::what() const noexcept
 {
-	std::ostringstream oss;
-	oss << GetType() << std::endl
-		<< GetOriginString();
-	m_whatBuffer = oss.str();
+	m_whatBuffer = std::format("{}\n{}", GetType(), GetOriginString());
 	return m_whatBuffer.c_str();
 }
 
@@ -35,8 +33,6 @@ const std::string& BaseException::GetFile() const noexcept
 
 std::string BaseException::GetOriginString() const noexcept
 {
-	std::ostringstream oss;
-	oss << "[File] " << m_file << std::endl
-		<< "[Line] " << m_line;
-	return oss.str();
+	return std::format("[File] {}\n[Line] {}", m_file, m_line);
+}
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+
 #ifdef EG_PLATFORM_WINDOWS
 	#ifdef EG_BUILD_DLL
 		#define EVERGREEN_API __declspec(dllexport)
@@ -54,3 +55,40 @@
 		std::terminate();																				\
 	}
 
+#ifdef EG_DX11
+	#define GFX_EXCEPT_NOINFO(hr) DeviceResourcesExceptionDX11( __LINE__,__FILE__,(hr) )
+	#define GFX_THROW_NOINFO(hrcall) { HRESULT hr; if( FAILED( hr = (hrcall) ) ) throw DeviceResourcesExceptionDX11( __LINE__,__FILE__,hr ); }
+
+	#if defined(_DEBUG)
+		#define INFOMAN DxgiInfoManagerDX11& infoManager = DeviceResourcesDX11::GetInfoManager();
+
+		#define GFX_EXCEPT(hr) DeviceResourcesExceptionDX11( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+		#define GFX_THROW_INFO(hrcall) TERMINATE_ON_THROW(HRESULT hr; INFOMAN infoManager.Set(); if( FAILED( hr = (hrcall) ) ) throw GFX_EXCEPT(hr) )
+		#define GFX_DEVICE_REMOVED_EXCEPT(hr) { INFOMAN DeviceRemovedExceptionDX11( __LINE__,__FILE__,(hr),infoManager.GetMessages() ) }
+		#define GFX_THROW_INFO_ONLY(call) TERMINATE_ON_THROW(INFOMAN infoManager.Set(); call; {auto v = infoManager.GetMessages(); if(!v.empty()) {throw InfoException( __LINE__,__FILE__,v);}})
+	#else
+		#define GFX_EXCEPT(hr) DeviceResourcesExceptionDX11( __LINE__,__FILE__,(hr) )
+		#define GFX_THROW_INFO(hrcall) { HRESULT hr; if( FAILED( hr = (hrcall) ) ) std::terminate(); }
+		#define GFX_DEVICE_REMOVED_EXCEPT(hr) DeviceRemovedExceptionDX11( __LINE__,__FILE__,(hr) )
+		#define GFX_THROW_INFO_ONLY(call) call;
+	#endif
+
+#elif EG_DX12
+	#define DeviceResources DeviceResourcesDX12
+
+	#define GFX_EXCEPT_NOINFO(hr)
+	#define GFX_THROW_NOINFO(hrcall)
+
+#elif EG_OPENGL
+#define DeviceResources DeviceResourcesOpenGL
+
+#define GFX_EXCEPT_NOINFO(hr)
+#define GFX_THROW_NOINFO(hrcall)
+
+#elif EG_VULKAN
+#define DeviceResources DeviceResourcesVulkan
+
+#define GFX_EXCEPT_NOINFO(hr)
+#define GFX_THROW_NOINFO(hrcall)
+
+#endif

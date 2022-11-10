@@ -8,6 +8,7 @@ namespace Evergreen
 
 Application::Application() noexcept
 {
+	// Create main window
 	m_window = std::unique_ptr<Window>(Window::Create());
 	m_window->SetOnWindowResize(BIND_EVENT_FN(OnWindowResize, WindowResizeEvent));
 	m_window->SetOnWindowCreate(BIND_EVENT_FN(OnWindowCreate, WindowCreateEvent));
@@ -25,6 +26,18 @@ Application::Application() noexcept
 	m_window->SetOnMouseButtonPressed(BIND_EVENT_FN(OnMouseButtonPressed, MouseButtonPressedEvent));
 	m_window->SetOnMouseButtonReleased(BIND_EVENT_FN(OnMouseButtonReleased, MouseButtonReleasedEvent));
 	m_window->SetOnMouseButtonDoubleClick(BIND_EVENT_FN(OnMouseButtonDoubleClick, MouseButtonDoubleClickEvent));
+
+	// Create DeviceResources
+#ifdef EG_DX11
+	m_deviceResources = std::make_unique<DeviceResourcesDX11>(m_window.get());
+#elif EG_DX12
+	m_deviceResources = std::make_unique<DeviceResourcesDX12>(m_window.get());
+#elif EG_OPENGL
+	m_deviceResources = std::make_unique<DeviceResourcesOpenGL>(m_window.get());
+#elif EG_VULKAN
+	m_deviceResources = std::make_unique<DeviceResourcesVulkan>(m_window.get());
+#endif
+
 }
 
 Application::~Application() noexcept
@@ -85,7 +98,7 @@ void Application::OnKeyReleased(KeyReleasedEvent& e) noexcept
 }
 void Application::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	//EG_CORE_INFO(e.ToString());
 }
 void Application::OnMouseEnter(MouseEnterEvent& e) noexcept
 {
