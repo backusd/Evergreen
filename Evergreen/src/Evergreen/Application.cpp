@@ -38,10 +38,12 @@ Application::Application() noexcept
 	m_deviceResources = std::make_unique<DeviceResourcesVulkan>(m_window.get());
 #endif
 
+	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 }
 
-Application::~Application() noexcept
+void Application::LoadUI(std::string filename) noexcept
 {
+
 }
 
 int Application::Run() noexcept

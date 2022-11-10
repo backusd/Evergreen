@@ -90,6 +90,9 @@
     <ClInclude Include="src\Evergreen\Rendering\DX11\DX11Helper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Layout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -126,6 +129,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Layout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

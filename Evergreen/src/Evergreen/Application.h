@@ -4,6 +4,7 @@
 #include "Events/MouseEvent.h"
 #include "Events/KeyEvent.h"
 #include "Events/ApplicationEvent.h"
+#include "UI/Layout.h"
 #include "Window.h"
 
 #ifdef EG_DX11
@@ -29,9 +30,11 @@ public:
 	Application() noexcept;
 	Application(const Application&) = delete;
 	void operator=(const Application&) = delete;
-	virtual ~Application() noexcept;
+	virtual ~Application() noexcept {};
 
 	int Run() noexcept;
+
+	void LoadUI(std::string filename) noexcept;
 
 private:
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
@@ -62,6 +65,7 @@ private:
 	std::unique_ptr<DeviceResourcesVulkan> m_deviceResources;
 #endif
 
+	std::unique_ptr<Layout> m_rootLayout;
 };
 #pragma warning( pop )
 

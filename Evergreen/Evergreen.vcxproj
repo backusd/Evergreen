@@ -33,6 +33,7 @@
     <ClInclude Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DX11Helper.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.h" />
+    <ClInclude Include="src\Evergreen\UI\Layout.h" />
     <ClInclude Include="src\Evergreen\Window.h" />
     <ClInclude Include="src\Evergreen\WindowProperties.h" />
     <ClInclude Include="src\pch.h" />
@@ -49,6 +50,7 @@
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesDX11.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Layout.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
