@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Evergreen/Core.h"
-
+#include "Evergreen/Log.h"
 
 
 
@@ -11,7 +11,7 @@ namespace Evergreen
 enum class EVERGREEN_API RowColumnType
 {
 	FIXED,
-	PERCENT,
+	PERCENT, // Must be between [0, 1]
 	STAR
 };
 
@@ -27,8 +27,8 @@ class EVERGREEN_API Row
 {
 public:
 	Row(float top = 0.0f, float left = 0.0f, float width = 0.0f, float height = 0.0f, float maxHeight = FLT_MAX, float minHeight = 1.0f, bool topAdjustable = false, bool bottomAdjustable = false) noexcept;
-	Row(const Row&) = delete;
-	void operator=(const Row&) = delete;
+	Row(const Row&) noexcept;
+	void operator=(const Row& rhs) noexcept;
 
 	inline float Top() const noexcept { return m_top; }
 	inline float Left() const noexcept { return m_left; }
@@ -66,8 +66,8 @@ class EVERGREEN_API Column
 {
 public:
 	Column(float top = 0.0f, float left = 0.0f, float width = 0.0f, float height = 0.0f, float maxWidth = FLT_MAX, float minWidth = 1.0f, bool leftAdjustable = false, bool rightAdjustable = false) noexcept;
-	Column(const Column&) = delete;
-	void operator=(const Column&) = delete;
+	Column(const Column&) noexcept;
+	void operator=(const Column& rhs) noexcept;
 
 	inline float Top() const noexcept { return m_top; }
 	inline float Left() const noexcept { return m_left; }
@@ -109,27 +109,37 @@ private:
 class EVERGREEN_API Layout
 {
 public:
-	Layout(float top, float left, float width, float height) noexcept;
+	Layout(float top, float left, float width, float height, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
 
-	void AddRow(RowColumnDefinition definition) noexcept;
-	void AddColumn(RowColumnDefinition definition) noexcept;
+	std::optional<Row*> AddRow(RowColumnDefinition definition) noexcept;
+	std::optional<Column*> AddColumn(RowColumnDefinition definition) noexcept;
 
+	void ClearRows() noexcept;
+	void ClearColumns() noexcept;
+
+	std::string Name() const noexcept { return m_name; }
+	void Name(const std::string& name) noexcept { m_name = name; }
 
 private:
 	void UpdateLayout() noexcept;
+	void UpdateRows() noexcept;
+	void UpdateColumns() noexcept;
+
+	float GetTotalFixedSize(const std::vector<RowColumnDefinition>& defs, const float totalSpace) const noexcept;
+	float GetTotalStars(const std::vector<RowColumnDefinition>& defs) const noexcept;
 
 	float							 m_top;
 	float							 m_left;
-	float							 m_width;
+	float							 m_width; 
 	float							 m_height;
 	std::vector<Row>				 m_rows;
 	std::vector<Column>				 m_columns;
 	std::vector<RowColumnDefinition> m_rowDefinitions;
 	std::vector<RowColumnDefinition> m_columnDefinitions;
 
-
+	std::string m_name;
 };
 #pragma warning( pop )
 

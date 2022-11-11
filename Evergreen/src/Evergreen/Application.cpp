@@ -39,6 +39,26 @@ Application::Application() noexcept
 #endif
 
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	std::optional<Row*> row = m_rootLayout->AddRow({ RowColumnType::FIXED, 60.0f });
+	if (row.has_value())
+	{
+		row.value()->BottomIsAdjustable(true);
+		row.value()->MaxHeight(100.0f);
+		row.value()->MinHeight(30.0f);
+	}
+
+	row = m_rootLayout->AddRow({ RowColumnType::PERCENT, 0.5f });
+	if (row.has_value())
+	{
+		row.value()->TopIsAdjustable(true);
+	}
+
+	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	m_rootLayout->AddRow({ RowColumnType::STAR, 2.0f });
+
+	m_rootLayout->AddColumn({ RowColumnType::PERCENT, 0.5f });
+	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
 }
 
 void Application::LoadUI(std::string filename) noexcept
