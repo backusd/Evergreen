@@ -140,6 +140,14 @@ private:
 	std::vector<RowColumnDefinition> m_columnDefinitions;
 
 	std::string m_name;
+
+
+
+// DEBUG ONLY ======================================================================================================
+
+public:
+	void LayoutCheck() const noexcept; // Don't need ifdef statment - in a Release build, the function is just empty
+
 };
 #pragma warning( pop )
 

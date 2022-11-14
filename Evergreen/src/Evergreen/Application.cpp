@@ -60,6 +60,9 @@ Application::Application() noexcept
 
 	m_rootLayout->AddColumn({ RowColumnType::PERCENT, 0.5f });
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	// LayoutCheck is entirely optional - In a Release build, this does nothing
+	m_rootLayout->LayoutCheck();
 }
 
 void Application::LoadUI(std::string filename) noexcept

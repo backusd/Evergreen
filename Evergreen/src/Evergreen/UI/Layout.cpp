@@ -151,6 +151,10 @@ void Layout::UpdateLayout() noexcept
 {
 	UpdateRows();
 	UpdateColumns();
+
+#ifdef _DEBUG
+	LayoutCheck();
+#endif // _DEBUG
 }
 
 void Layout::UpdateRows() noexcept
@@ -295,5 +299,137 @@ void Layout::ClearColumns() noexcept
 	m_columnDefinitions.clear();
 }
 
+
+
+
+
+
+
+// DEBUG ONLY ======================================================================================================
+
+#ifdef _DEBUG
+void Layout::LayoutCheck() const noexcept
+{
+	float errorMargin = 0.0f;
+
+	// 1. Make sure any individual row width is not greater than the layout width
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+	{
+		if (m_rows[iii].Width() > m_width + errorMargin)
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} has width {} which is greater than layout width {}", __FILE__, __LINE__, m_name, iii, m_rows[iii].Width(), m_width);
+	}
+
+	// 2. Make sure the sum total row height is not greater than the layout height
+	float sum = 0.0f;
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+		sum += m_rows[iii].Height();
+
+	if (sum > m_height + errorMargin)
+		EG_CORE_ERROR("{}:{} - Layout (name: {}): sum total of row height ({}) is greater than the layout height ({})", __FILE__, __LINE__, m_name, sum, m_height);
+
+	// 3. Make sure any individual column height is not greater than the layout height
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+	{
+		if (m_columns[iii].Height() > m_height + errorMargin)
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} has height {} which is greater than layout height {}", __FILE__, __LINE__, m_name, iii, m_columns[iii].Height(), m_height);
+	}
+
+	// 4. Make sure the sum total column width is not greater than the layout width
+	sum = 0.0f;
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+		sum += m_columns[iii].Width();
+
+	if (sum > m_width + errorMargin)
+		EG_CORE_ERROR("{}:{} - Layout (name: {}): sum total of column width ({}) is greater than the layout width ({})", __FILE__, __LINE__, m_name, sum, m_width);
+
+	// 5. Make sure all rows are directly next to each other
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+	{
+		if (iii + 1 < m_rows.size())
+		{
+			if (m_rows[iii + 1].Top() - m_rows[iii].Bottom() > errorMargin)
+				EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} has bottom ({}) which is significantly different from row #{} top ({})", __FILE__, __LINE__, m_name, iii, m_rows[iii].Bottom(), iii + 1, m_rows[iii + 1].Top());
+		}
+	}
+
+	// 6. Make sure all columns are directly next to each other
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+	{
+		if (iii + 1 < m_columns.size())
+		{
+			if (m_columns[iii + 1].Left() - m_columns[iii].Right() > errorMargin)
+				EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} has right ({}) which is significantly different from row #{} left ({})", __FILE__, __LINE__, m_name, iii, m_columns[iii].Right(), iii + 1, m_columns[iii + 1].Left());
+		}
+	}
+
+	// 7. Make sure row max height is greater than or equal to min height
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+	{
+		if (m_rows[iii].MaxHeight() < m_rows[iii].MinHeight())
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} has max height ({}) less than min height ({})", __FILE__, __LINE__, m_name, iii, m_rows[iii].MaxHeight(), m_rows[iii].MinHeight());
+	}
+
+	// 8. Make sure column max width is greater than or equal to min width
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+	{
+		if (m_columns[iii].MaxWidth() < m_columns[iii].MinWidth())
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} has max width ({}) less than min width ({})", __FILE__, __LINE__, m_name, iii, m_columns[iii].MaxWidth(), m_columns[iii].MinWidth());
+	}
+
+	// 9. Make sure each row max/min height is greater/less than the current row height
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+	{
+		if (m_rows[iii].MaxHeight() < m_rows[iii].Height())
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} has height ({}) greater than max height ({})", __FILE__, __LINE__, m_name, iii, m_rows[iii].Height(), m_rows[iii].MaxHeight());
+
+		if (m_rows[iii].MinHeight() > m_rows[iii].Height())
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} has height ({}) less than min height ({})", __FILE__, __LINE__, m_name, iii, m_rows[iii].Height(), m_rows[iii].MinHeight());
+	}
+
+	// 10. Make sure each column max/min width is greater/less than the current column width
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+	{
+		if (m_columns[iii].MaxWidth() < m_columns[iii].Width())
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} has width ({}) greater than max width ({})", __FILE__, __LINE__, m_name, iii, m_columns[iii].Width(), m_columns[iii].MaxWidth());
+
+		if (m_columns[iii].MinWidth() > m_columns[iii].Width())
+			EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} has width ({}) less than min width ({})", __FILE__, __LINE__, m_name, iii, m_columns[iii].Width(), m_columns[iii].MinWidth());
+	}
+
+	// 11. Make sure all adjacent rows have matching adjustability
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+	{
+		if (iii + 1 < m_rows.size())
+		{
+			if (m_rows[iii].BottomIsAdjustable() != m_rows[iii + 1].TopIsAdjustable())
+				EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} bottom adjustability ({}) does not match row #{} top adjustability ({})", __FILE__, __LINE__, m_name, iii, m_rows[iii].BottomIsAdjustable() ? "true" : "false", iii + 1, m_rows[iii + 1].TopIsAdjustable() ? "true" : "false");
+		}
+	}
+	if (m_rows[0].TopIsAdjustable())
+		EG_CORE_ERROR("{}:{} - Layout (name: {}): row #0 is not allowed to be top adjustable", __FILE__, __LINE__, m_name);
+
+	if (m_rows.back().BottomIsAdjustable())
+		EG_CORE_ERROR("{}:{} - Layout (name: {}): last row is not allowed to be bottom adjustable", __FILE__, __LINE__, m_name);
+
+	// 12. Make sure all adjacent columns have matching adjustability
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+	{
+		if (iii + 1 < m_columns.size())
+		{
+			if (m_columns[iii].RightIsAdjustable() != m_columns[iii + 1].LeftIsAdjustable())
+				EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} right adjustability ({}) does not match row #{} left adjustability ({})", __FILE__, __LINE__, m_name, iii, m_columns[iii].RightIsAdjustable() ? "true" : "false", iii + 1, m_columns[iii + 1].LeftIsAdjustable() ? "true" : "false");
+		}
+	}
+	if (m_columns[0].LeftIsAdjustable())
+		EG_CORE_ERROR("{}:{} - Layout (name: {}): column #0 is not allowed to be left adjustable", __FILE__, __LINE__, m_name);
+
+	if (m_columns.back().RightIsAdjustable())
+		EG_CORE_ERROR("{}:{} - Layout (name: {}): last column is not allowed to be right adjustable", __FILE__, __LINE__, m_name);
+}
+#else
+void Layout::LayoutCheck() const noexcept
+{
+}
+#endif // _DEBUG
 
 }
