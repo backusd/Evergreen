@@ -39,6 +39,8 @@ Application::Application() noexcept
 #endif
 
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout->Name("root layout");
+	
 	std::optional<Row*> row = m_rootLayout->AddRow({ RowColumnType::FIXED, 60.0f });
 	if (row.has_value())
 	{
@@ -58,7 +60,6 @@ Application::Application() noexcept
 
 	m_rootLayout->AddColumn({ RowColumnType::PERCENT, 0.5f });
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
-
 }
 
 void Application::LoadUI(std::string filename) noexcept
@@ -77,14 +78,42 @@ int Application::Run() noexcept
 			return *ecode;
 		}
 
-		m_window->OnUpdate();
+		Update();
+		Render();
+		Present();
 	}
+}
+
+void Application::Update() noexcept
+{
+	m_window->OnUpdate();
+}
+
+void Application::Render() noexcept
+{
+	// Must always start the render by clearing the background
+	// NOTE: Do not need to reset the render target - DeviceResources handles that itself
+//	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
+
+	std::optional<const Color> color = Color::GetColor("Chartreuse");
+	if (color.has_value())
+		m_deviceResources->ClearBackground(color.value());
+	else
+		m_deviceResources->ClearBackground(Color::Black);
+
+	// 
+}
+
+void Application::Present() noexcept
+{
+	m_deviceResources->Present();
 }
 
 
 void Application::OnWindowResize(WindowResizeEvent& e) noexcept
 {
 	EG_CORE_INFO(e.ToString());
+	m_deviceResources->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 }
 void Application::OnWindowCreate(WindowCreateEvent& e) noexcept
 {

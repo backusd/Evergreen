@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "DxgiInfoManagerDX11.h"
 #include "Evergreen/Window.h"
+#include "Evergreen/UI/Color.h"
 
 namespace Evergreen
 {
@@ -18,6 +19,12 @@ public:
 	DeviceResourcesDX11(Window* window) noexcept;
 	DeviceResourcesDX11(const DeviceResourcesDX11&) = delete;
 	void operator=(const DeviceResourcesDX11&) = delete;
+
+	void ClearBackground(const Color& color) noexcept;
+
+	void Present() noexcept;
+
+	void OnResize(float width, float height) noexcept;
 
 	/*
 	static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
@@ -40,10 +47,10 @@ private:
 	void CreateDeviceDependentResources() noexcept;
 	void CreateDeviceIndependentResources() noexcept;
 	void CreateWindowSizeDependentResources() noexcept;
+	void CreateWindowSizeDependentResources(float width, float height) noexcept;
+	void SetRenderTarget() noexcept;
 	void HandleDeviceLost() noexcept;
-	void Present() noexcept;
 
-	void OnResize() noexcept;
 
 	// Keep handle to window
 	HWND m_hWnd;
@@ -67,7 +74,7 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext4> m_d3dDeviceContext;
 	Microsoft::WRL::ComPtr<IDXGISwapChain4>		 m_dxgiSwapChain;
 
-	// Direct3D Rendering objects ------ THESE MAY END UP GETTING STORED PER WINDOW
+	// Direct3D Rendering objects
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView1>	m_d3dRenderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
 

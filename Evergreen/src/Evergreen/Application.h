@@ -37,6 +37,10 @@ public:
 	void LoadUI(std::string filename) noexcept;
 
 private:
+	void Update() noexcept;
+	void Render() noexcept;
+	void Present() noexcept;
+
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
 	void OnWindowCreate(WindowCreateEvent& e) noexcept;
 	void OnWindowClose(WindowCloseEvent& e) noexcept;
@@ -67,7 +71,7 @@ private:
 
 	std::unique_ptr<Layout> m_rootLayout;
 };
-#pragma warning( pop )
+ #pragma warning( pop )
 
 // To be defined in CLIENT
 Application* CreateApplication();

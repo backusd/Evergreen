@@ -37,7 +37,11 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept :
 
 	CreateDeviceIndependentResources();
 	CreateDeviceDependentResources();
-	CreateWindowSizeDependentResources();
+	CreateWindowSizeDependentResources(static_cast<float>(window->GetWidth()), static_cast<float>(window->GetHeight()));
+
+	// For now, assume the render target is NOT getting set by the Application class. 
+	// Just set it here once for the lifetime of the application
+	SetRenderTarget();
 }
 
 void DeviceResourcesDX11::CreateDeviceIndependentResources() noexcept
@@ -183,6 +187,10 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources() noexcept
 	float height = static_cast<float>(rect.bottom);
 	float width = static_cast<float>(rect.right);
 
+	CreateWindowSizeDependentResources(width, height);
+}
+void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float height) noexcept
+{
 	float dpi = 0.0f;
 	unsigned int _dpi = GetDpiForWindow(m_hWnd);
 	if (_dpi == 0)
@@ -384,9 +392,12 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources() noexcept
 	m_d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 }
 
-void DeviceResourcesDX11::OnResize() noexcept
+void DeviceResourcesDX11::OnResize(float width, float height) noexcept
 {
-	// CreateWindowSizeDependentResources();
+	CreateWindowSizeDependentResources(width, height);
+
+	// Must reset the render target because it gets deleted/recreated when we call CreateWindowSizeDependentResources
+	SetRenderTarget();
 }
 
 // Recreate all device resources and set them back to the current state
@@ -395,6 +406,27 @@ void DeviceResourcesDX11::HandleDeviceLost() noexcept
 	m_dxgiSwapChain = nullptr;
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources();
+
+	// Must reset the render target because it gets deleted/recreated when we call CreateWindowSizeDependentResources
+	SetRenderTarget();
+}
+
+void DeviceResourcesDX11::SetRenderTarget() noexcept
+{
+	ID3D11RenderTargetView* const targets[1] = { m_d3dRenderTargetView.Get() };
+	GFX_THROW_INFO_ONLY(
+		m_d3dDeviceContext->OMSetRenderTargets(1, targets, m_d3dDepthStencilView.Get())
+	)
+}
+
+void DeviceResourcesDX11::ClearBackground(const Color& color) noexcept
+{
+	GFX_THROW_INFO_ONLY(
+		m_d3dDeviceContext->ClearDepthStencilView(m_d3dDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0)
+	)
+	GFX_THROW_INFO_ONLY(
+		m_d3dDeviceContext->ClearRenderTargetView(m_d3dRenderTargetView.Get(), color.Data())
+	)
 }
 
 void DeviceResourcesDX11::Present() noexcept
