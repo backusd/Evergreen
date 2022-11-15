@@ -29,15 +29,15 @@ private:
 }
 
 // Core Log Macros
-#define EG_CORE_ERROR(...) ::Evergreen::Log::GetCoreLogger()->error(__VA_ARGS__)
-#define EG_CORE_WARN(...)  ::Evergreen::Log::GetCoreLogger()->warn(__VA_ARGS__)
-#define EG_CORE_INFO(...)  ::Evergreen::Log::GetCoreLogger()->info(__VA_ARGS__)
-#define EG_CORE_TRACE(...) ::Evergreen::Log::GetCoreLogger()->trace(__VA_ARGS__)
-#define EG_CORE_FATAL(...) ::Evergreen::Log::GetCoreLogger()->fatal(__VA_ARGS__)
+#define EG_CORE_ERROR(fmt, ...) ::Evergreen::Log::GetCoreLogger()->error(std::format(fmt, __VA_ARGS__))
+#define EG_CORE_WARN(fmt, ...)  ::Evergreen::Log::GetCoreLogger()->warn(std::format(fmt, __VA_ARGS__))
+#define EG_CORE_INFO(fmt, ...)  ::Evergreen::Log::GetCoreLogger()->info(std::format(fmt, __VA_ARGS__))
+#define EG_CORE_TRACE(fmt, ...) ::Evergreen::Log::GetCoreLogger()->trace(std::format(fmt, __VA_ARGS__))
+#define EG_CORE_FATAL(fmt, ...) ::Evergreen::Log::GetCoreLogger()->fatal(std::format(fmt, __VA_ARGS__))
 
 // Client Log Macros
-#define EG_ERROR(...) ::Evergreen::Log::GetClientLogger()->error(__VA_ARGS__)
-#define EG_WARN(...)  ::Evergreen::Log::GetClientLogger()->warn(__VA_ARGS__)
-#define EG_INFO(...)  ::Evergreen::Log::GetClientLogger()->info(__VA_ARGS__)
-#define EG_TRACE(...) ::Evergreen::Log::GetClientLogger()->trace(__VA_ARGS__)
-#define EG_FATAL(...) ::Evergreen::Log::GetClientLogger()->fatal(__VA_ARGS__)
+#define EG_ERROR(fmt, ...) ::Evergreen::Log::GetClientLogger()->error(std::format(fmt, __VA_ARGS__))
+#define EG_WARN(fmt, ...)  ::Evergreen::Log::GetClientLogger()->warn(std::format(fmt, __VA_ARGS__))
+#define EG_INFO(fmt, ...)  ::Evergreen::Log::GetClientLogger()->info(std::format(fmt, __VA_ARGS__))
+#define EG_TRACE(fmt, ...) ::Evergreen::Log::GetClientLogger()->trace(std::format(fmt, __VA_ARGS__))
+#define EG_FATAL(fmt, ...) ::Evergreen::Log::GetClientLogger()->fatal(std::format(fmt, __VA_ARGS__))

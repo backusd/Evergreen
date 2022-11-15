@@ -97,3 +97,7 @@ public:
 
 
 } // end of Evergreen namespace
+
+EVENT_FORMATTER(CharEvent)
+EVENT_FORMATTER(KeyPressedEvent)
+EVENT_FORMATTER(KeyReleasedEvent)

@@ -24,9 +24,9 @@ public:
 	inline bool Contains(const std::string& key) const noexcept { return m_json.contains(key); }
 
 	template <typename T>
-	T Get(const std::string& key) const noexcept;
-//	template <> // template specialization for returning JSON object
-//	JSON Get(const std::string& key) const noexcept;
+	T Get(const std::string& key) const noexcept { return m_json[key].get<T>(); }
+	template <> // template specialization for returning JSON object (MUST be defined in .cpp file)
+	JSON Get(const std::string& key) const noexcept;
 
 	std::string ToString() const noexcept;
 
@@ -37,18 +37,12 @@ private:
 };
 #pragma warning( pop )
 
-
-template <typename T>
-T JSON::Get(const std::string& key) const noexcept 
-{ 
-	return m_json[key].get<T>(); 
 }
 
-//template <>
-//JSON JSON::Get(const std::string& key) const noexcept
-//{
-//	return JSON(m_json[key].get<json>());
-//}
+template <>
+struct std::formatter<Evergreen::JSON> : std::formatter<std::string> {
+	auto format(Evergreen::JSON& _json, std::format_context& ctx) {
+		return formatter<std::string>::format(_json.ToString(), ctx);
+	}
+};
 
-
-}

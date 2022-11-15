@@ -88,10 +88,11 @@ void Application::LoadUI(std::string filename) noexcept
 		file.close();
 	}
 	else
-		EG_CORE_ERROR("Failed to open file {}", filePath);
+		EG_CORE_ERROR("Failed to open file {}", filePath.string());
 
 	JSON json(fileData);
 	EG_CORE_INFO("main.json: {}", json.ToString());
+	EG_CORE_INFO("main.json: {}", json);
 
 
 
@@ -150,68 +151,68 @@ void Application::Present() noexcept
 
 void Application::OnWindowResize(WindowResizeEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 	m_deviceResources->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 }
 void Application::OnWindowCreate(WindowCreateEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnWindowClose(WindowCloseEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnAppTick(AppTickEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnAppUpdate(AppUpdateEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnAppRender(AppRenderEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnChar(CharEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	//EG_CORE_INFO(e.ToString());
+	//EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseEnter(MouseEnterEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseLeave(MouseLeaveEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseScrolled(MouseScrolledEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 {
-	EG_CORE_INFO(e.ToString());
+	EG_CORE_INFO("{}", e);
 }
 
 }

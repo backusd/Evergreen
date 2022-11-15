@@ -2,6 +2,13 @@
 #include "pch.h"
 #include "Evergreen/Core.h"
 
+#define EVENT_FORMATTER(class_type) \
+	template <>																		\
+	struct std::formatter<Evergreen::class_type> : std::formatter<std::string> {	\
+		auto format(Evergreen::class_type& e, std::format_context& ctx) {			\
+			return formatter<std::string>::format(e.ToString(), ctx);				\
+		}																			\
+	};																				\
 
 namespace Evergreen
 {

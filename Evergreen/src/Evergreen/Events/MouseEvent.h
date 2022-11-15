@@ -173,3 +173,12 @@ public:
 };
 
 }
+
+
+EVENT_FORMATTER(MouseMoveEvent)
+EVENT_FORMATTER(MouseEnterEvent)
+EVENT_FORMATTER(MouseLeaveEvent)
+EVENT_FORMATTER(MouseScrolledEvent)
+EVENT_FORMATTER(MouseButtonPressedEvent)
+EVENT_FORMATTER(MouseButtonReleasedEvent)
+EVENT_FORMATTER(MouseButtonDoubleClickEvent)

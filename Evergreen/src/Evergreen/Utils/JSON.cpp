@@ -21,5 +21,13 @@ std::string JSON::ToString() const noexcept
 	return oss.str();
 }
 
+// Template specialization MUST go in the .cpp file
+template <>
+JSON JSON::Get<JSON>(const std::string& key) const noexcept
+{
+	return JSON(m_json[key].get<json>());
+}
+
 
 }
+

@@ -32,6 +32,8 @@ private:
 	const unsigned int m_height;
 };
 
+
+
 // Window Create Event -----------------------------------------------------------
 class EVERGREEN_API WindowCreateEvent : public Event
 {
@@ -136,3 +138,10 @@ public:
 };
 
 }
+
+EVENT_FORMATTER(WindowResizeEvent)
+EVENT_FORMATTER(WindowCreateEvent)
+EVENT_FORMATTER(WindowCloseEvent)
+EVENT_FORMATTER(AppTickEvent)
+EVENT_FORMATTER(AppUpdateEvent)
+EVENT_FORMATTER(AppRenderEvent)
