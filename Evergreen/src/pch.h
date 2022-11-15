@@ -8,6 +8,7 @@
 #include <format>
 #include <exception>
 #include <optional>
+#include <filesystem>
 
 #ifdef EG_PLATFORM_WINDOWS
 

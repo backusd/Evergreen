@@ -2,11 +2,17 @@
 #include "Application.h"
 #include "Evergreen/Log.h"
 
+#include <fstream>
+#include <sstream>
+
+#include "Utils/JSON.h"
+
 namespace Evergreen
 {
 #define BIND_EVENT_FN(fn, type) [this](type& e) { this->fn(e); }
 
-Application::Application() noexcept
+Application::Application() noexcept :
+	m_jsonRootDirectory(std::filesystem::path("src/json/"))
 {
 	// Create main window
 	m_window = std::unique_ptr<Window>(Window::Create());
@@ -66,6 +72,35 @@ Application::Application() noexcept
 }
 
 void Application::LoadUI(std::string filename) noexcept
+{
+	std::string fileData;
+
+	std::filesystem::path filePath = m_jsonRootDirectory;
+	filePath += std::filesystem::path(filename);
+
+	std::ifstream file;
+	file.open(filePath);
+	if (file.is_open())
+	{
+		std::ostringstream oss;
+		oss << file.rdbuf();
+		fileData = oss.str();
+		file.close();
+	}
+	else
+		EG_CORE_ERROR("Failed to open file {}", filePath);
+
+	JSON json(fileData);
+	EG_CORE_INFO("main.json: {}", json.ToString());
+
+
+
+
+
+
+}
+
+void Application::LoadUIErrorLayout() noexcept
 {
 
 }

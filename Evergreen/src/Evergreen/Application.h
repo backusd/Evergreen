@@ -36,10 +36,16 @@ public:
 
 	void LoadUI(std::string filename) noexcept;
 
+	void SetJSONRootDirectory(const std::string& dir) noexcept { m_jsonRootDirectory = std::filesystem::path(dir); }
+	void SetJSONRootDirectory(std::filesystem::path p) noexcept { m_jsonRootDirectory = p; }
+	std::filesystem::path GetJSONRootDirectory() const noexcept { return m_jsonRootDirectory; }
+
 private:
 	void Update() noexcept;
 	void Render() noexcept;
 	void Present() noexcept;
+
+	void LoadUIErrorLayout() noexcept;
 
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
 	void OnWindowCreate(WindowCreateEvent& e) noexcept;
@@ -70,6 +76,7 @@ private:
 #endif
 
 	std::unique_ptr<Layout> m_rootLayout;
+	std::filesystem::path m_jsonRootDirectory;
 };
  #pragma warning( pop )
 
