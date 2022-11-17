@@ -41,6 +41,10 @@ private:
 
 	bool ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept;
 
+	// Function to handle 'import' key
+	bool ImportJSON(json& data) noexcept;
+
+	json						m_jsonRoot;
 	std::shared_ptr<Window>		m_window;
 	std::unique_ptr<Layout>		m_rootLayout;
 	std::vector<std::string>	m_errorMessages;

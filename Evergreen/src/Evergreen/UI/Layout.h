@@ -141,6 +141,9 @@ public:
 	std::string Name() const noexcept { return m_name; }
 	void Name(const std::string& name) noexcept { m_name = name; }
 
+	const std::vector<Row>& Rows() const noexcept { return m_rows; }
+	const std::vector<Column>& Columns() const noexcept { return m_columns; }
+
 private:
 	void UpdateLayout() noexcept;
 	void UpdateRows() noexcept;
@@ -190,10 +193,23 @@ struct std::formatter<Evergreen::RowColumnType> : std::formatter<std::string> {
 template <>
 struct std::formatter<Evergreen::Row> : std::formatter<std::string> {
 	auto format(const Evergreen::Row& row, std::format_context& ctx) {
+		if (row.TopIsAdjustable() || row.BottomIsAdjustable())
+		{
+			return formatter<std::string>::format(
+				std::format(
+					"Row:\n\t(Left, Top): ({}, {})\n\tHeight: {}\n\tWidth: {}\n\tMax Height: {}\n\tMin Height: {}\n\tTop Adjustable: {}\n\tBottom Adjustable: {}",
+					row.Left(), row.Top(), row.Height(), row.Width(), row.MaxHeight(), row.MinHeight(),
+					row.TopIsAdjustable() ? "true" : "false",
+					row.BottomIsAdjustable() ? "true" : "false"
+				),
+				ctx
+			);
+		}
+
 		return formatter<std::string>::format(
 			std::format(
-				"Row:\n\tTop Left: ({}, {})\n\tHeight: {}\n\tWidth: {}\n\tMax Height: {}\n\tMin Height: {}\n\tTop Adjustable: {}\n\tBottom Adjustable: {}\n\t",
-				row.Top(), row.Left(), row.Height(), row.Width(), row.MaxHeight(), row.MinHeight(), 
+				"Row:\n\t(Left, Top): ({}, {})\n\tHeight: {}\n\tWidth: {}\n\tTop Adjustable: {}\n\tBottom Adjustable: {}",
+				row.Left(), row.Top(), row.Height(), row.Width(),
 				row.TopIsAdjustable() ? "true" : "false",
 				row.BottomIsAdjustable() ? "true" : "false"
 			),
@@ -205,10 +221,23 @@ struct std::formatter<Evergreen::Row> : std::formatter<std::string> {
 template <>
 struct std::formatter<Evergreen::Column> : std::formatter<std::string> {
 	auto format(const Evergreen::Column& column, std::format_context& ctx) {
+		if (column.LeftIsAdjustable() || column.RightIsAdjustable())
+		{
+			return formatter<std::string>::format(
+				std::format(
+					"Column:\n\t(Left, Top): ({}, {})\n\tHeight: {}\n\tWidth: {}\n\tMax Width: {}\n\tMin Width: {}\n\tLeft Adjustable: {}\n\tRight Adjustable: {}",
+					column.Left(), column.Top(), column.Height(), column.Width(), column.MaxWidth(), column.MinWidth(),
+					column.LeftIsAdjustable() ? "true" : "false",
+					column.RightIsAdjustable() ? "true" : "false"
+				),
+				ctx
+			);
+		}
+
 		return formatter<std::string>::format(
 			std::format(
-				"Row:\n\tTop Left: ({}, {})\n\tHeight: {}\n\tWidth: {}\n\tMax Width: {}\n\tMin Width: {}\n\tLeft Adjustable: {}\n\tRight Adjustable: {}\n\t",
-				column.Top(), column.Left(), column.Height(), column.Width(), column.MaxWidth(), column.MinWidth(),
+				"Column:\n\t(Left, Top): ({}, {})\n\tHeight: {}\n\tWidth: {}\n\tLeft Adjustable: {}\n\tRight Adjustable: {}",
+				column.Left(), column.Top(), column.Height(), column.Width(),
 				column.LeftIsAdjustable() ? "true" : "false",
 				column.RightIsAdjustable() ? "true" : "false"
 			),

@@ -6,7 +6,7 @@
 
 	"row_max_min": {
 		"MaxHeight": "1000",
-		"MinHeight": "1"
+		"import": "row_min.json"
 	},
 
 	"root": {
@@ -22,8 +22,8 @@
 			{
 				"Height": "20%",
 				"TopAdjustable": true,
-				"import": "row_max_min"
-			},
+				"import":	"row_max_min"
+				},
 			{ "Height": "1*" }
 		],
 

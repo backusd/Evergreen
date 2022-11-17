@@ -10,6 +10,7 @@ namespace Evergreen
 {
 UI::UI(std::shared_ptr<Window> window) noexcept :
 	m_window(window),
+	m_jsonRoot({}),
 	m_rootLayout(nullptr)
 {
 	LoadDefaultUI();
@@ -41,12 +42,16 @@ void UI::LoadUI(const std::string& fileName) noexcept
 			return;
 		}
 
+		// Set m_jsonRoot so we can access non-root keys for import within the Load methods
+		m_jsonRoot = data.value();
+
 		// Get the root layout data and create the root layout
-		json rootLayoutData = data.value()["root"];
+		json rootLayoutData = m_jsonRoot["root"];
 
 		m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 		if (!LoadLayoutDetails(m_rootLayout.get(), rootLayoutData))
 		{
+			m_jsonRoot = {};
 			LoadErrorUI();
 			return;
 		}
@@ -56,6 +61,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 	}
 	else
 	{
+		m_jsonRoot = {};
 		LoadErrorUI();
 	}
 }
@@ -114,6 +120,11 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 	if (!LoadLayoutColumnDefinitions(layout, data))
 		return false;
 
+	for (const auto& row : m_rootLayout->Rows())
+		EG_CORE_INFO("{}", row);
+	for (const auto& column : m_rootLayout->Columns())
+		EG_CORE_INFO("{}", column);
+
 	return true;
 }
 bool UI::LoadLayoutName(Layout* layout, json& data) noexcept
@@ -162,10 +173,17 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 				// Create the row and get a pointer to it so we can edit it further
 				if (std::optional<Row*> row = m_rootLayout->AddRow({ rowColType, rowColSize }))
 				{
+					// Before looping over all the row definition key/value pairs, first check if we need to import other json data
+					if (rowDefinition.contains("import"))
+					{
+						if (!ImportJSON(rowDefinition))
+							return false;
+					}
+
 					// Iterate over the other keys in the row definition
 					for (auto& [key, value] : rowDefinition.items()) 
 					{
-						if (key.compare("Height") == 0 || key.compare("comment") == 0)
+						if (key.compare("Height") == 0 || key.compare("comment") == 0 || key.compare("import") == 0)
 							continue;
 						else if (key.compare("TopAdjustable") == 0)
 						{
@@ -205,30 +223,12 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 
 							row.value()->MinHeight({ rowColType, rowColSize });
 						}
-						else if (key.compare("import") == 0)
-						{
-							// FIX THIS ...
-							EG_CORE_WARN("{}:{} - Saw 'import' key in RowDefinition for layout '{}'. Not yet supported.", __FILE__, __LINE__, layout->Name());
-						}
 						else
 						{
 							// Just a warning because the key will be ignored
 							EG_CORE_WARN("{}:{} - Unrecognized key ({}) in RowDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
 						}
-
 					}
-
-
-
-					EG_CORE_TRACE("Successfully added new row:\n{}", *row.value());
-
-
-
-
-
-
-
-
 				}
 				else
 				{
@@ -256,13 +256,123 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 			UI_ERROR("Failed to add a single default row for layout with name: {}", layout->Name());
 			return false;
 		}
-
 	}
 
 	return true;
 }
 bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 {
+	// The 'ColumnDefinitions' parameter is not required
+	// If not included, a single column will be created that spans the layout
+	if (data.contains("ColumnDefinitions"))
+	{
+		if (data["ColumnDefinitions"].is_array())
+		{
+			// Iterate the list of column definitions
+			for (auto& columnDefinition : data["ColumnDefinitions"])
+			{
+				// Each column must contain a 'Width' key
+				if (!columnDefinition.contains("Width"))
+				{
+					EG_CORE_ERROR("{}:{} - ColumnDefinition for layout '{}' does not contain 'Width' key: {}", __FILE__, __LINE__, layout->Name(), columnDefinition);
+					UI_ERROR("ColumnDefinition for layout '{}' does not contain 'Width' key: {}", layout->Name(), columnDefinition);
+					return false;
+				}
+
+				// Get the Row type and size
+				RowColumnType rowColType = RowColumnType::FIXED;
+				float rowColSize = 1.0f;
+				if (!ParseRowColumnTypeAndSize(columnDefinition["Width"], layout, rowColType, rowColSize))
+					return false;
+
+				// Create the column and get a pointer to it so we can edit it further
+				if (std::optional<Column*> column = m_rootLayout->AddColumn({ rowColType, rowColSize }))
+				{
+					// Before looping over all the row definition key/value pairs, first check if we need to import other json data
+					if (columnDefinition.contains("import"))
+					{
+						if (!ImportJSON(columnDefinition))
+							return false;
+					}
+
+					// Iterate over the other keys in the column definition
+					for (auto& [key, value] : columnDefinition.items())
+					{
+						if (key.compare("Width") == 0 || key.compare("comment") == 0 || key.compare("import") == 0)
+							continue;
+						else if (key.compare("LeftAdjustable") == 0)
+						{
+							if (columnDefinition[key].is_boolean())
+								column.value()->LeftIsAdjustable(columnDefinition[key].get<bool>());
+							else
+							{
+								EG_CORE_ERROR("{}:{} - ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), columnDefinition[key]);
+								UI_ERROR("ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type", layout->Name());
+								UI_ERROR("Invalid value: {}", columnDefinition[key]);
+								return false;
+							}
+						}
+						else if (key.compare("RightAdjustable") == 0)
+						{
+							if (columnDefinition[key].is_boolean())
+								column.value()->RightIsAdjustable(columnDefinition[key].get<bool>());
+							else
+							{
+								EG_CORE_ERROR("{}:{} - ColumnDefinition RightAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), columnDefinition[key]);
+								UI_ERROR("ColumnDefinition RightAdjustable field for layout '{}' must have boolean type", layout->Name());
+								UI_ERROR("Invalid value: {}", columnDefinition[key]);
+								return false;
+							}
+						}
+						else if (key.compare("MaxWidth") == 0)
+						{
+							if (!ParseRowColumnTypeAndSize(columnDefinition[key], layout, rowColType, rowColSize))
+								return false;
+
+							column.value()->MaxWidth({ rowColType, rowColSize });
+						}
+						else if (key.compare("MinWidth") == 0)
+						{
+							if (!ParseRowColumnTypeAndSize(columnDefinition[key], layout, rowColType, rowColSize))
+								return false;
+
+							column.value()->MinWidth({ rowColType, rowColSize });
+						}
+						else
+						{
+							// Just a warning because the key will be ignored
+							EG_CORE_WARN("{}:{} - Unrecognized key ({}) in ColumnDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
+						}
+					}
+				}
+				else
+				{
+					EG_CORE_ERROR("{}:{} - Failed to add a column for layout with name: {}", __FILE__, __LINE__, layout->Name());
+					EG_CORE_ERROR("   Intended type: {} - Intended width: {}", rowColType, rowColSize);
+					UI_ERROR("Failed to add a column for layout with name: {}", layout->Name());
+					UI_ERROR("Intended type: {} - Intended width: {}", rowColType, rowColSize);
+					return false;
+				}
+			}
+		}
+		else
+		{
+			EG_CORE_ERROR("{}:{} - ColumnDefinitions value must be an array type. Invalid value: {}", __FILE__, __LINE__, data["ColumnDefinitions"]);
+			UI_ERROR("ColumnDefinitions value must be an array type. Invalid value: {}", data["ColumnDefinitions"]);
+			return false;
+		}
+	}
+	else
+	{
+		// Add a single column that spans the layout
+		if (!layout->AddColumn({ RowColumnType::STAR, 1.0f }))
+		{
+			EG_CORE_ERROR("{}:{} - Failed to add a single default column for layout with name: {}", __FILE__, __LINE__, layout->Name());
+			UI_ERROR("Failed to add a single default column for layout with name: {}", layout->Name());
+			return false;
+		}
+	}
+
 	return true;
 }
 
@@ -372,6 +482,93 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 	UI_ERROR("Layout: {}", layout->Name());
 	UI_ERROR("Invalid value: {}", data);
 	return false;
+}
+
+bool UI::ImportJSON(json& data) noexcept
+{
+	if (!data.contains("import"))
+	{
+		EG_CORE_WARN("{}:{} - UI::ImportJSON called but could not find 'import' key: {}", __FILE__, __LINE__, data);
+		return true; // Return true because this is not a true error. The program can still continue to parse the json data.
+	}
+
+	if (!data["import"].is_string())
+	{
+		EG_CORE_ERROR("{}:{} - 'import' key must have a string-type value. Invalid value: {}", __FILE__, __LINE__, data["import"]);
+		UI_ERROR("'import' key must have a string-type value. Invalid value: {}", data["import"]);
+		return false;
+	}
+
+	std::string importValue = data["import"].get<std::string>();
+
+	if (importValue.size() == 0)
+	{
+		EG_CORE_WARN("{}:{} - 'import' key has an empty value. json data: {}", __FILE__, __LINE__, data);
+		return true; // Return true because this is not a true error. The program can still continue to parse the json data.
+	}
+
+	json jsonImport;
+
+	if (importValue.substr(importValue.size() - 5, 5).compare(".json") == 0)
+	{
+		std::filesystem::path importPath = std::filesystem::path(m_jsonRootDirectory).append(importValue);
+		std::optional<json> jsonImportOpt = LoadJSONFile(importPath);
+		if (!jsonImportOpt.has_value())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to import json file: {}", __FILE__, __LINE__, importPath.string());
+			UI_ERROR("Failed to import json file: {}", importPath.string());
+			return false;
+		}
+
+		jsonImport = jsonImportOpt.value();
+	}
+	else
+	{
+		// 'import' value is a json key that should exist at the root level of the initial json object
+		if (!m_jsonRoot.contains(importValue))
+		{
+			EG_CORE_ERROR("{}:{} - Unable to import key '{}'. Does not exist at the json root level.", __FILE__, __LINE__, importValue);
+			UI_ERROR("Unable to import key '{}'. Does not exist at the json root level.", importValue);
+			return false;
+		}
+
+		jsonImport = m_jsonRoot[importValue];
+	}
+
+	// The imported json must be a json object
+	if (!jsonImport.is_object())
+	{
+		EG_CORE_ERROR("{}:{} - Unable to import key '{}'. Imported json value must be a json object. Invalid value: {}", __FILE__, __LINE__, importValue, jsonImport);
+		UI_ERROR("Unable to import key '{}'. Imported json value must be a json object.", importValue);
+		UI_ERROR("Invalid value: {}", jsonImport);
+		return false;
+	}
+
+	// Before adding the imported json object to our original json data, determine if it also has an 'import' key, and if so, recursively import the data
+	if (jsonImport.contains("import"))
+	{
+		if (!ImportJSON(jsonImport))
+			return false;
+	}
+
+	// Loop over the imported json object adding each field to the original object
+	for (auto& [key, value] : jsonImport.items())
+	{
+		if (key.compare("import") == 0)
+			continue;
+
+		// Make sure there are no key conflicts
+		if (data.contains(key))
+		{
+			EG_CORE_ERROR("{}:{} - Unable to import key '{}'. Both the original and imported json contain the same key: {}", __FILE__, __LINE__, importValue, key);
+			UI_ERROR("Unable to import key '{}'. Both the original and imported json contain the same key: {}", importValue, key);
+			return false;
+		}
+
+		data[key] = jsonImport[key];
+	}
+
+	return true;
 }
 
 }
