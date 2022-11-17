@@ -5,7 +5,10 @@
 #include "Events/KeyEvent.h"
 #include "Events/ApplicationEvent.h"
 #include "UI/Layout.h"
+#include "UI/UI.h"
 #include "Window.h"
+
+
 
 #ifdef EG_DX11
 #include "Evergreen/Rendering/DX11/DeviceResourcesDX11.h"
@@ -34,18 +37,13 @@ public:
 
 	int Run() noexcept;
 
-	void LoadUI(std::string filename) noexcept;
-
-	void SetJSONRootDirectory(const std::string& dir) noexcept { m_jsonRootDirectory = std::filesystem::path(dir); }
-	void SetJSONRootDirectory(std::filesystem::path p) noexcept { m_jsonRootDirectory = p; }
-	std::filesystem::path GetJSONRootDirectory() const noexcept { return m_jsonRootDirectory; }
+protected:
+	std::unique_ptr<UI> m_ui;
 
 private:
 	void Update() noexcept;
 	void Render() noexcept;
 	void Present() noexcept;
-
-	void LoadUIErrorLayout() noexcept;
 
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
 	void OnWindowCreate(WindowCreateEvent& e) noexcept;
@@ -64,7 +62,7 @@ private:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
-	std::unique_ptr<Window> m_window;
+	std::shared_ptr<Window> m_window;
 #ifdef EG_DX11
 	std::unique_ptr<DeviceResourcesDX11> m_deviceResources;
 #elif EG_DX12
@@ -75,10 +73,9 @@ private:
 	std::unique_ptr<DeviceResourcesVulkan> m_deviceResources;
 #endif
 
-	std::unique_ptr<Layout> m_rootLayout;
-	std::filesystem::path m_jsonRootDirectory;
+
 };
- #pragma warning( pop )
+#pragma warning( pop )
 
 // To be defined in CLIENT
 Application* CreateApplication();

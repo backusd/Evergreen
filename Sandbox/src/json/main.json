@@ -1,5 +1,49 @@
 {
+	"button2_details": {
+		"Margin": [ 5, 5, 5, 5 ],
+		"Padding": [ 10, 5, 10, 5 ]
+	},
+
 	"root": {
-		"Name" : "Root Layout"
+		"Name": "Root Layout",
+
+		"RowDefinitions": [
+			{
+				"Height": "50",
+				"BottomAdjustable": true,
+				"MaxHeight": "100",
+				"MinHeight": "40"
+			},
+			{
+				"Height": "20%",
+				"TopAdjustable": true
+			},
+			{ "Height": "1*" }
+		],
+
+		"ColumnDefinitions": [
+			{ "Width": "50%" },
+			{ "Width": "30" },
+			{ "Width": "2*" },
+			{ "Width": "1*" }
+		],
+
+		"TestButton": {
+			"Type": "Button",
+			"Text": "This is a test",
+			"Row": 0,
+			"Column": 0,
+			"import": "button_details.json",
+			"OnClick": "TestButtonOnClick"
+		},
+
+		"TestButton2": {
+			"Type": "Button",
+			"Text": "This is a second test",
+			"Row": 0,
+			"Column": 1,
+			"import": "button2_details",
+			"OnClick": "TestButton2OnClick"
+		}
 	}
 }

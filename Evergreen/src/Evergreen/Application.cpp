@@ -2,20 +2,14 @@
 #include "Application.h"
 #include "Evergreen/Log.h"
 
-#include <fstream>
-#include <sstream>
-
-#include "Utils/JSON.h"
-
 namespace Evergreen
 {
 #define BIND_EVENT_FN(fn, type) [this](type& e) { this->fn(e); }
 
-Application::Application() noexcept :
-	m_jsonRootDirectory(std::filesystem::path("src/json/"))
+Application::Application() noexcept
 {
 	// Create main window
-	m_window = std::unique_ptr<Window>(Window::Create());
+	m_window = std::shared_ptr<Window>(Window::Create());
 	m_window->SetOnWindowResize(BIND_EVENT_FN(OnWindowResize, WindowResizeEvent));
 	m_window->SetOnWindowCreate(BIND_EVENT_FN(OnWindowCreate, WindowCreateEvent));
 	m_window->SetOnWindowClose(BIND_EVENT_FN(OnWindowClose, WindowCloseEvent));
@@ -44,6 +38,9 @@ Application::Application() noexcept :
 	m_deviceResources = std::make_unique<DeviceResourcesVulkan>(m_window.get());
 #endif
 
+	m_ui = std::make_unique<UI>(m_window);
+
+	/*
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	m_rootLayout->Name("root layout");
 	
@@ -69,41 +66,7 @@ Application::Application() noexcept :
 
 	// LayoutCheck is entirely optional - In a Release build, this does nothing
 	m_rootLayout->LayoutCheck();
-}
-
-void Application::LoadUI(std::string filename) noexcept
-{
-	std::string fileData;
-
-	std::filesystem::path filePath = m_jsonRootDirectory;
-	filePath += std::filesystem::path(filename);
-
-	std::ifstream file;
-	file.open(filePath);
-	if (file.is_open())
-	{
-		std::ostringstream oss;
-		oss << file.rdbuf();
-		fileData = oss.str();
-		file.close();
-	}
-	else
-		EG_CORE_ERROR("Failed to open file {}", filePath.string());
-
-	JSON json(fileData);
-	EG_CORE_INFO("main.json: {}", json.ToString());
-	EG_CORE_INFO("main.json: {}", json);
-
-
-
-
-
-
-}
-
-void Application::LoadUIErrorLayout() noexcept
-{
-
+	*/
 }
 
 int Application::Run() noexcept
@@ -140,7 +103,8 @@ void Application::Render() noexcept
 	else
 		m_deviceResources->ClearBackground(Color::Black);
 
-	// 
+	
+	m_ui->Render();
 }
 
 void Application::Present() noexcept
@@ -153,6 +117,7 @@ void Application::OnWindowResize(WindowResizeEvent& e) noexcept
 {
 	EG_CORE_INFO("{}", e);
 	m_deviceResources->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
+	m_ui->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 }
 void Application::OnWindowCreate(WindowCreateEvent& e) noexcept
 {

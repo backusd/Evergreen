@@ -153,3 +153,17 @@ public:
 
 
 }
+
+template <>
+struct std::formatter<Evergreen::RowColumnType> : std::formatter<std::string> {
+	auto format(Evergreen::RowColumnType type, std::format_context& ctx) {
+		std::string s = "";
+		switch (type)
+		{
+		case Evergreen::RowColumnType::FIXED:	s = "FIXED"; break;
+		case Evergreen::RowColumnType::PERCENT: s = "PERCENT"; break;
+		case Evergreen::RowColumnType::STAR:	s = "STAR"; break;
+		}
+		return formatter<std::string>::format(s, ctx);
+	}
+};

@@ -35,6 +35,7 @@
     <ClInclude Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.h" />
     <ClInclude Include="src\Evergreen\UI\Color.h" />
     <ClInclude Include="src\Evergreen\UI\Layout.h" />
+    <ClInclude Include="src\Evergreen\UI\UI.h" />
     <ClInclude Include="src\Evergreen\Utils\JSON.h" />
     <ClInclude Include="src\Evergreen\Window.h" />
     <ClInclude Include="src\Evergreen\WindowProperties.h" />
@@ -54,6 +55,7 @@
     <ClCompile Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.cpp" />
     <ClCompile Include="src\Evergreen\UI\Color.cpp" />
     <ClCompile Include="src\Evergreen\UI\Layout.cpp" />
+    <ClCompile Include="src\Evergreen\UI\UI.cpp" />
     <ClCompile Include="src\Evergreen\Utils\JSON.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
