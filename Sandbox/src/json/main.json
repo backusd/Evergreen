@@ -4,6 +4,11 @@
 		"Padding": [ 10, 5, 10, 5 ]
 	},
 
+	"row_max_min": {
+		"MaxHeight": "1000",
+		"MinHeight": "1"
+	},
+
 	"root": {
 		"Name": "Root Layout",
 
@@ -16,7 +21,8 @@
 			},
 			{
 				"Height": "20%",
-				"TopAdjustable": true
+				"TopAdjustable": true,
+				"import": "row_max_min"
 			},
 			{ "Height": "1*" }
 		],

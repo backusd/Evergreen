@@ -4,15 +4,18 @@
 namespace Evergreen
 {
 // Row ------------------------------------------------------------------------------
-Row::Row(float top, float left, float width, float height, float maxHeight, float minHeight, bool topAdjustable, bool bottomAdjustable) noexcept :
+Row::Row(float top, float left, float width, float height, RowColumnDefinition maxHeightDef, RowColumnDefinition minHeightDef, bool topAdjustable, bool bottomAdjustable) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), 
-	m_maxHeight(maxHeight), m_minHeight(minHeight), 
-	m_topAdjustable(topAdjustable), m_bottomAdjustable(bottomAdjustable)
+	m_starHeight(height), m_parentLayoutHeight(height),
+	m_topAdjustable(topAdjustable), m_bottomAdjustable(bottomAdjustable),
+	m_maxHeightDefinition(maxHeightDef),
+	m_minHeightDefinition(minHeightDef)
 {
 }
 Row::Row(const Row& rhs) noexcept :
-	m_top(rhs.m_top), m_left(rhs.m_left), m_width(rhs.m_width), m_height(rhs.m_height),
-	m_maxHeight(rhs.m_maxHeight), m_minHeight(rhs.m_minHeight),
+	m_top(rhs.m_top), m_left(rhs.m_left), m_width(rhs.m_width), m_height(rhs.m_height), 
+	m_starHeight(rhs.m_starHeight), m_parentLayoutHeight(rhs.m_parentLayoutHeight),
+	m_maxHeightDefinition(rhs.m_maxHeightDefinition), m_minHeightDefinition(rhs.m_minHeightDefinition),
 	m_topAdjustable(rhs.m_topAdjustable), m_bottomAdjustable(rhs.m_bottomAdjustable)
 {
 }
@@ -22,22 +25,49 @@ void Row::operator=(const Row& rhs) noexcept
 	this->m_left = rhs.m_left;
 	this->m_width = rhs.m_width;
 	this->m_height = rhs.m_height;
-	this->m_maxHeight = rhs.m_maxHeight;
-	this->m_minHeight = rhs.m_minHeight;
+	this->m_starHeight = rhs.m_starHeight;
+	this->m_parentLayoutHeight = rhs.m_parentLayoutHeight;
+	this->m_maxHeightDefinition = rhs.m_maxHeightDefinition;
+	this->m_minHeightDefinition = rhs.m_minHeightDefinition;
 	this->m_topAdjustable = rhs.m_topAdjustable;
 	this->m_bottomAdjustable = rhs.m_bottomAdjustable;
 }
+float Row::MaxHeight() const noexcept
+{
+	switch (m_maxHeightDefinition.Type)
+	{
+	case RowColumnType::FIXED:	 return m_maxHeightDefinition.Value;
+	case RowColumnType::PERCENT: return m_parentLayoutHeight * m_maxHeightDefinition.Value;
+	case RowColumnType::STAR:	 return m_starHeight * m_maxHeightDefinition.Value;
+	}
+
+	return FLT_MAX;
+}
+float Row::MinHeight() const noexcept
+{
+	switch (m_minHeightDefinition.Type)
+	{
+	case RowColumnType::FIXED:	 return m_minHeightDefinition.Value;
+	case RowColumnType::PERCENT: return m_parentLayoutHeight * m_minHeightDefinition.Value;
+	case RowColumnType::STAR:	 return m_starHeight * m_minHeightDefinition.Value;
+	}
+
+	return 1.0f;
+}
 
 // Column ------------------------------------------------------------------------------
-Column::Column(float top, float left, float width, float height, float maxWidth, float minWidth, bool leftAdjustable, bool rightAdjustable) noexcept :
-	m_top(top), m_left(left), m_width(width), m_height(height),
-	m_maxWidth(maxWidth), m_minWidth(minWidth),
-	m_leftAdjustable(leftAdjustable), m_rightAdjustable(rightAdjustable)
+Column::Column(float top, float left, float width, float height, RowColumnDefinition maxWidthDef, RowColumnDefinition minWidthDef, bool leftAdjustable, bool rightAdjustable) noexcept :
+	m_top(top), m_left(left), m_width(width), m_height(height), 
+	m_starWidth(width), m_parentLayoutWidth(width),
+	m_leftAdjustable(leftAdjustable), m_rightAdjustable(rightAdjustable),
+	m_maxWidthDefinition(maxWidthDef),
+	m_minWidthDefinition(minWidthDef)
 {
 }
 Column::Column(const Column& rhs) noexcept :
 	m_top(rhs.m_top), m_left(rhs.m_left), m_width(rhs.m_width), m_height(rhs.m_height),
-	m_maxWidth(rhs.m_maxWidth), m_minWidth(rhs.m_minWidth),
+	m_starWidth(rhs.m_starWidth), m_parentLayoutWidth(rhs.m_parentLayoutWidth),
+	m_maxWidthDefinition(rhs.m_maxWidthDefinition), m_minWidthDefinition(rhs.m_minWidthDefinition),
 	m_leftAdjustable(rhs.m_leftAdjustable), m_rightAdjustable(rhs.m_rightAdjustable)
 {
 }
@@ -47,10 +77,34 @@ void Column::operator=(const Column& rhs) noexcept
 	this->m_left = rhs.m_left;
 	this->m_width = rhs.m_width;
 	this->m_height = rhs.m_height;
-	this->m_maxWidth = rhs.m_maxWidth;
-	this->m_minWidth = rhs.m_minWidth;
+	this->m_starWidth = rhs.m_starWidth;
+	this->m_parentLayoutWidth = rhs.m_parentLayoutWidth;
+	this->m_maxWidthDefinition = rhs.m_maxWidthDefinition;
+	this->m_minWidthDefinition = rhs.m_minWidthDefinition;
 	this->m_leftAdjustable = rhs.m_leftAdjustable;
 	this->m_rightAdjustable = rhs.m_rightAdjustable;
+}
+float Column::MaxWidth() const noexcept
+{
+	switch (m_maxWidthDefinition.Type)
+	{
+	case RowColumnType::FIXED:	 return m_maxWidthDefinition.Value;
+	case RowColumnType::PERCENT: return m_parentLayoutWidth * m_maxWidthDefinition.Value;
+	case RowColumnType::STAR:	 return m_starWidth * m_maxWidthDefinition.Value;
+	}
+
+	return FLT_MAX;
+}
+float Column::MinWidth() const noexcept
+{
+	switch (m_minWidthDefinition.Type)
+	{
+	case RowColumnType::FIXED:	 return m_minWidthDefinition.Value;
+	case RowColumnType::PERCENT: return m_parentLayoutWidth * m_minWidthDefinition.Value;
+	case RowColumnType::STAR:	 return m_starWidth * m_minWidthDefinition.Value;
+	}
+
+	return 1.0f;
 }
 
 // Layout ------------------------------------------------------------------------------
@@ -207,6 +261,13 @@ void Layout::UpdateRows() noexcept
 
 		top += height;
 	}
+
+	// For each row, now update the parent layout height and star height
+	for (Row& row : m_rows)
+	{
+		row.ParentLayoutHeight(m_height);
+		row.StarHeight(singleStarHeight);
+	}
 }
 void Layout::UpdateColumns() noexcept
 {
@@ -257,6 +318,13 @@ void Layout::UpdateColumns() noexcept
 		}
 
 		left += width;
+	}
+
+	// For each column, now update the parent layout width and star width
+	for (Column& column : m_columns)
+	{
+		column.ParentLayoutWidth(m_width);
+		column.StarWidth(singleStarWidth);
 	}
 }
 

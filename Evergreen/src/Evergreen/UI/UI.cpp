@@ -154,24 +154,73 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 				}
 
 				// Get the Row type and size
-				RowColumnType type = RowColumnType::FIXED;
-				float heightValue = 1.0f;
-				if (!ParseRowColumnTypeAndSize(rowDefinition["Height"], layout, type, heightValue))
+				RowColumnType rowColType = RowColumnType::FIXED;
+				float rowColSize = 1.0f;
+				if (!ParseRowColumnTypeAndSize(rowDefinition["Height"], layout, rowColType, rowColSize))
 					return false;
 
 				// Create the row and get a pointer to it so we can edit it further
-				if (std::optional<Row*> row = m_rootLayout->AddRow({ type, heightValue }))
+				if (std::optional<Row*> row = m_rootLayout->AddRow({ rowColType, rowColSize }))
 				{
-					EG_CORE_TRACE("{}", "Successfully added new row");
-
 					// Iterate over the other keys in the row definition
-					//for (auto& [key, value] : o.items()) {
-					//	std::cout << key << " : " << value << "\n";
-					//}
+					for (auto& [key, value] : rowDefinition.items()) 
+					{
+						if (key.compare("Height") == 0 || key.compare("comment") == 0)
+							continue;
+						else if (key.compare("TopAdjustable") == 0)
+						{
+							if (rowDefinition[key].is_boolean())
+								row.value()->TopIsAdjustable(rowDefinition[key].get<bool>());
+							else
+							{
+								EG_CORE_ERROR("{}:{} - RowDefinition TopAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), rowDefinition[key]);
+								UI_ERROR("RowDefinition TopAdjustable field for layout '{}' must have boolean type", layout->Name());
+								UI_ERROR("Invalid value: {}", rowDefinition[key]);
+								return false;
+							}
+						}
+						else if (key.compare("BottomAdjustable") == 0)
+						{
+							if (rowDefinition[key].is_boolean())
+								row.value()->BottomIsAdjustable(rowDefinition[key].get<bool>());
+							else
+							{
+								EG_CORE_ERROR("{}:{} - RowDefinition BottomAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), rowDefinition[key]);
+								UI_ERROR("RowDefinition BottomAdjustable field for layout '{}' must have boolean type", layout->Name());
+								UI_ERROR("Invalid value: {}", rowDefinition[key]);
+								return false;
+							}
+						}
+						else if (key.compare("MaxHeight") == 0)
+						{
+							if (!ParseRowColumnTypeAndSize(rowDefinition[key], layout, rowColType, rowColSize))
+								return false;
+
+							row.value()->MaxHeight({ rowColType, rowColSize });
+						}
+						else if (key.compare("MinHeight") == 0)
+						{
+							if (!ParseRowColumnTypeAndSize(rowDefinition[key], layout, rowColType, rowColSize))
+								return false;
+
+							row.value()->MinHeight({ rowColType, rowColSize });
+						}
+						else if (key.compare("import") == 0)
+						{
+							// FIX THIS ...
+							EG_CORE_WARN("{}:{} - Saw 'import' key in RowDefinition for layout '{}'. Not yet supported.", __FILE__, __LINE__, layout->Name());
+						}
+						else
+						{
+							// Just a warning because the key will be ignored
+							EG_CORE_WARN("{}:{} - Unrecognized key ({}) in RowDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
+						}
+
+					}
 
 
 
-
+					EG_CORE_TRACE("Successfully added new row:\n{}", *row.value());
 
 
 
@@ -184,9 +233,9 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 				else
 				{
 					EG_CORE_ERROR("{}:{} - Failed to add a row for layout with name: {}", __FILE__, __LINE__, layout->Name());
-					EG_CORE_ERROR("   Intended type: {} - Intended height: {}", type, heightValue);
+					EG_CORE_ERROR("   Intended type: {} - Intended height: {}", rowColType, rowColSize);
 					UI_ERROR("Failed to add a row for layout with name: {}", layout->Name());
-					UI_ERROR("Intended type: {} - Intended height: {}", type, heightValue);
+					UI_ERROR("Intended type: {} - Intended height: {}", rowColType, rowColSize);
 					return false;
 				}
 			}
@@ -231,13 +280,11 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 		size = data.get<float>();
 		if (size <= 0.0f)
 		{
-			EG_CORE_ERROR("{}:{} - Fixed 'Height' value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-			UI_ERROR("Fixed 'Height' value for layout '{}' must be greater than 0.", layout->Name());
+			EG_CORE_ERROR("{}:{} - Fixed Height/Width values for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
+			UI_ERROR("Fixed Height/Width value for layout '{}' must be greater than 0.", layout->Name());
 			UI_ERROR("Invalid value: {}", size);
 			return false;
 		}
-
-		EG_CORE_TRACE("Type: {} - Value {}", type, size);
 		return true;
 	}
 	else if (data.is_string())
@@ -245,8 +292,8 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 		std::string dataString = data.get<std::string>();
 		if (dataString.size() == 0)
 		{
-			EG_CORE_ERROR("{}:{} - RowDefinition 'Height' value for layout '{}' must not be empty.", __FILE__, __LINE__, layout->Name());
-			UI_ERROR("{}", "RowDefinition 'Height' value for layout '{}' must not be empty.", layout->Name());
+			EG_CORE_ERROR("{}:{} - RowDefinition Height/Width value for layout '{}' must not be empty.", __FILE__, __LINE__, layout->Name());
+			UI_ERROR("{}", "RowDefinition Height/Width value for layout '{}' must not be empty.", layout->Name());
 			return false;
 		}
 
@@ -257,18 +304,18 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 		}
 		catch (const std::invalid_argument& e)
 		{
-			EG_CORE_ERROR("{}:{} - 'Height' value ({}) for layout '{}' could not be parsed to a float.", __FILE__, __LINE__, dataString, layout->Name());
+			EG_CORE_ERROR("{}:{} - Height/Width value ({}) for layout '{}' could not be parsed to a float.", __FILE__, __LINE__, dataString, layout->Name());
 			EG_CORE_ERROR("    Exception message: {}", e.what());
 			UI_ERROR("Layout: {}", layout->Name());
-			UI_ERROR("Invalid 'Height' value could not be parsed to a float: {}", dataString);
+			UI_ERROR("Invalid Height/Width value could not be parsed to a float: {}", dataString);
 			return false;
 		}
 		catch (const std::out_of_range& e)
 		{
-			EG_CORE_ERROR("{}:{} - 'Height' value ({}) for layout '{}' was out of range and could not be parsed to a float.", __FILE__, __LINE__, dataString, layout->Name());
+			EG_CORE_ERROR("{}:{} - Height/Width value ({}) for layout '{}' was out of range and could not be parsed to a float.", __FILE__, __LINE__, dataString, layout->Name());
 			EG_CORE_ERROR("    Exception message: {}", e.what());
 			UI_ERROR("Layout: {}", layout->Name());
-			UI_ERROR("Invalid 'Height' value was out of range and could not be parsed to a float: {}", dataString);
+			UI_ERROR("Invalid Height/Width value was out of range and could not be parsed to a float: {}", dataString);
 			return false;
 		}
 
@@ -279,15 +326,15 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 			type = RowColumnType::PERCENT; 
 			if (size < 0.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Percent 'Height' value for layout '{}' cannot be less than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Percent 'Height' value for layout '{}' cannot be less than 0.", layout->Name());
+				EG_CORE_ERROR("{}:{} - Percent Height/Width value for layout '{}' cannot be less than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
+				UI_ERROR("Percent Height/Width value for layout '{}' cannot be less than 0.", layout->Name());
 				UI_ERROR("Invalid value: {}", size);
 				return false;
 			}
 			else if (size > 100.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Percent 'Height' value for layout '{}' cannot be greater than 100. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Percent 'Height' value for layout '{}' cannot be greater than 100.", layout->Name());
+				EG_CORE_ERROR("{}:{} - Percent Height/Width value for layout '{}' cannot be greater than 100. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
+				UI_ERROR("Percent Height/Width value for layout '{}' cannot be greater than 100.", layout->Name());
 				UI_ERROR("Invalid value: {}", size);
 				return false;
 			}
@@ -299,8 +346,8 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 			type = RowColumnType::STAR; 
 			if (size <= 0.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Star 'Height' value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Star 'Height' value for layout '{}' must be greater than 0.", layout->Name());
+				EG_CORE_ERROR("{}:{} - Star Height/Width value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
+				UI_ERROR("Star Height/Width value for layout '{}' must be greater than 0.", layout->Name());
 				UI_ERROR("Invalid value: {}", size);
 				return false;
 			}
@@ -309,22 +356,21 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 			type = RowColumnType::FIXED; 
 			if (size <= 0.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Fixed 'Height' value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Fixed 'Height' value for layout '{}' must be greater than 0.", layout->Name());
+				EG_CORE_ERROR("{}:{} - Fixed Height/Width value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
+				UI_ERROR("Fixed Height/Width value for layout '{}' must be greater than 0.", layout->Name());
 				UI_ERROR("Invalid value: {}", size);
 				return false;
 			}
 			break;
 		}
 
-		EG_CORE_TRACE("Type: {} - Value {}", type, dataString);
 		return true;
 	}
 
-	EG_CORE_ERROR("{}:{} - RowDefinition 'Height' value must be either a number or a string. Layout: {}. Invalid 'Height' value: {}", __FILE__, __LINE__, layout->Name(), data);
-	UI_ERROR("{}", "RowDefinition 'Height' value must be either a number or a string.");
+	EG_CORE_ERROR("{}:{} - Height/Width value must be either a number or a string. Layout: {}. Invalid value: {}", __FILE__, __LINE__, layout->Name(), data);
+	UI_ERROR("{}", "Height/Width value must be either a number or a string.");
 	UI_ERROR("Layout: {}", layout->Name());
-	UI_ERROR("Invalid 'Height' value: {}", data);
+	UI_ERROR("Invalid value: {}", data);
 	return false;
 }
 
