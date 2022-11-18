@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Layout.h"
+#include "Evergreen/Utils/SetCursor.h"
 
 namespace Evergreen
 {
@@ -109,7 +110,8 @@ float Column::MinWidth() const noexcept
 
 // Layout ------------------------------------------------------------------------------
 Layout::Layout(float top, float left, float width, float height, const std::string& name) noexcept :
-	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name)
+	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
+	m_activelyAdjustingLayout(false)
 {
 	// Leave rows and columns empty for now
 }
@@ -210,7 +212,6 @@ void Layout::UpdateLayout() noexcept
 	LayoutCheck();
 #endif // _DEBUG
 }
-
 void Layout::UpdateRows() noexcept
 {
 	// If there are no rows, log a warning but then create a single row that takes up all the space
@@ -257,6 +258,8 @@ void Layout::UpdateRows() noexcept
 		{
 			m_rows[iii].Top(top);
 			m_rows[iii].Height(height);
+			m_rows[iii].Left(m_left);
+			m_rows[iii].Width(m_width);
 		}
 
 		top += height;
@@ -315,6 +318,8 @@ void Layout::UpdateColumns() noexcept
 		{
 			m_columns[iii].Left(left);
 			m_columns[iii].Width(width);
+			m_columns[iii].Top(m_top);
+			m_columns[iii].Height(m_height);
 		}
 
 		left += width;
@@ -392,6 +397,76 @@ void Layout::DrawBorders(DeviceResources* deviceResources) const noexcept
 
 
 
+
+}
+
+std::optional<unsigned int> Layout::MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept
+{
+	for (unsigned int iii = 0; iii < m_columns.size(); ++iii)
+	{
+		if (m_columns[iii].RightIsAdjustable())
+		{
+			if (mouseY > m_columns[iii].Top() && mouseY < m_columns[iii].Bottom() &&
+				mouseX > m_columns[iii].Right() - 4.0f && mouseX < m_columns[iii].Right() + 4.0f)
+			{
+				return iii;
+			}
+		}
+	}
+
+	return std::nullopt;
+}
+std::optional<unsigned int> Layout::MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept
+{
+	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)
+	{
+		if (m_rows[iii].BottomIsAdjustable())
+		{
+			if (mouseX > m_rows[iii].Left() && mouseX < m_rows[iii].Right() &&
+				mouseY > m_rows[iii].Bottom() - 4.0f && mouseY < m_rows[iii].Bottom() + 4.0f)
+			{
+				return iii;
+			}
+		}
+	}
+
+	return std::nullopt;
+}
+
+void Layout::OnResize(float width, float height) noexcept
+{
+	m_width = width;
+	m_height = height;
+	UpdateLayout();
+}
+
+void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+	if (m_activelyAdjustingLayout)
+	{
+		EG_CORE_INFO("{}", "Adjusting Layout...");
+	}
+	else if (MouseOverAdjustableColumn(e.GetX(), e.GetY()))
+	{
+		EG_CORE_INFO("{}", "MouseOverAdjustableColumn -> true");
+		Evergreen::SetCursor(Cursor::DOUBLE_ARROW_EW);
+	}
+	else if (MouseOverAdjustableRow(e.GetX(), e.GetY()))
+	{
+		EG_CORE_INFO("{}", "MouseOverAdjustableRow -> true");
+		Evergreen::SetCursor(Cursor::DOUBLE_ARROW_NS);
+	}
+	else
+	{
+		Evergreen::SetCursor(Cursor::ARROW);
+	}
+}
+void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+
+}
+void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
 
 }
 

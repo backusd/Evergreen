@@ -109,10 +109,6 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 	deviceResources->EndDraw();
 }
 
-void UI::OnResize(float width, float height) noexcept
-{
-}
-
 bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 {
 	if (!LoadLayoutName(layout, data))
@@ -577,5 +573,24 @@ bool UI::ImportJSON(json& data) noexcept
 
 	return true;
 }
+
+void UI::OnWindowResize(WindowResizeEvent& e) noexcept
+{
+	m_rootLayout->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
+}
+
+void UI::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+	m_rootLayout->OnMouseMove(e);
+}
+void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+	m_rootLayout->OnMouseButtonPressed(e);
+}
+void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+	m_rootLayout->OnMouseButtonReleased(e);
+}
+
 
 }

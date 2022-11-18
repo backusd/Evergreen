@@ -11,8 +11,6 @@ namespace Evergreen
 		WindowsWindowException(const WindowsWindowException&) = delete;
 		void operator=(const WindowsWindowException&) = delete;
 
-		static std::string TranslateErrorCode(HRESULT hr) noexcept;
-
 		const char* what() const noexcept override;
 		HRESULT GetErrorCode() const noexcept;
 		std::string GetErrorDescription() const noexcept;

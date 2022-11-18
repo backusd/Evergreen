@@ -96,13 +96,16 @@
     <ClInclude Include="src\Evergreen\UI\Color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Utils\JSON.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Evergreen\UI\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\Rendering\DeviceResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\Utils\SetCursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\Platform\Windows\TranslateErrorCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -149,10 +152,13 @@
     <ClCompile Include="src\Evergreen\UI\Color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\Utils\JSON.cpp">
+    <ClCompile Include="src\Evergreen\UI\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\UI.cpp">
+    <ClCompile Include="src\Evergreen\Platform\Windows\TranslateErrorCode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\Utils\SetCursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

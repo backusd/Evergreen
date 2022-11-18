@@ -109,7 +109,7 @@ void Application::OnWindowResize(WindowResizeEvent& e) noexcept
 {
 	EG_CORE_INFO("{}", e);
 	m_deviceResources->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
-	m_ui->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
+	m_ui->OnWindowResize(e);
 }
 void Application::OnWindowCreate(WindowCreateEvent& e) noexcept
 {
@@ -145,6 +145,7 @@ void Application::OnKeyReleased(KeyReleasedEvent& e) noexcept
 }
 void Application::OnMouseMove(MouseMoveEvent& e) noexcept
 {
+	m_ui->OnMouseMove(e);
 	//EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseEnter(MouseEnterEvent& e) noexcept
@@ -161,10 +162,12 @@ void Application::OnMouseScrolled(MouseScrolledEvent& e) noexcept
 }
 void Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
+	m_ui->OnMouseButtonPressed(e);
 	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
+	m_ui->OnMouseButtonReleased(e);
 	EG_CORE_INFO("{}", e);
 }
 void Application::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept

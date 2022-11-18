@@ -28,8 +28,14 @@
 		],
 
 		"ColumnDefinitions": [
-			{ "Width": "50%" },
-			{ "Width": "30" },
+			{
+				"Width": "50%",
+				"RightAdjustable": true
+			},
+			{
+				"Width": "30",
+				"LeftAdjustable": true
+			},
 			{ "Width": "2*" },
 			{ "Width": "1*" }
 		],

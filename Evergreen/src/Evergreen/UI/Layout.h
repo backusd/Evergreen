@@ -145,6 +145,11 @@ public:
 	const std::vector<Row>& Rows() const noexcept { return m_rows; }
 	const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
+	void OnResize(float width, float height) noexcept;
+	void OnMouseMove(MouseMoveEvent& e) noexcept;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
+
 	void DrawBorders(DeviceResources* deviceResources) const noexcept;
 
 private:
@@ -154,6 +159,9 @@ private:
 
 	float GetTotalFixedSize(const std::vector<RowColumnDefinition>& defs, const float totalSpace) const noexcept;
 	float GetTotalStars(const std::vector<RowColumnDefinition>& defs) const noexcept;
+
+	std::optional<unsigned int> MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept;
+	std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
 
 	float							 m_top;
 	float							 m_left;
@@ -166,7 +174,7 @@ private:
 
 	std::string m_name;
 
-
+	bool m_activelyAdjustingLayout;				// true when adjusting row/column height/width
 
 // DEBUG ONLY ======================================================================================================
 

@@ -1,6 +1,9 @@
 #pragma once
 #include "pch.h"
 #include "Evergreen/Core.h"
+#include "Evergreen/Events/ApplicationEvent.h"
+#include "Evergreen/Events/KeyEvent.h"
+#include "Evergreen/Events/MouseEvent.h"
 #include "Evergreen/Window.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Layout.h"
@@ -27,7 +30,11 @@ public:
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
 	void Render(DeviceResources* deviceResources) const noexcept;
-	void OnResize(float width, float height) noexcept;
+
+	void OnWindowResize(WindowResizeEvent& e) noexcept;
+	void OnMouseMove(MouseMoveEvent& e) noexcept;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 
 private:
 	void LoadDefaultUI() noexcept;
