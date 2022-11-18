@@ -100,9 +100,13 @@ void UI::LoadErrorUI() noexcept
 
 }
 
-void UI::Render() const noexcept
+void UI::Render(DeviceResources* deviceResources) const noexcept
 {
+	deviceResources->BeginDraw();
 
+	m_rootLayout->DrawBorders(deviceResources);
+
+	deviceResources->EndDraw();
 }
 
 void UI::OnResize(float width, float height) noexcept
@@ -124,6 +128,9 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 		EG_CORE_INFO("{}", row);
 	for (const auto& column : m_rootLayout->Columns())
 		EG_CORE_INFO("{}", column);
+
+	// LayoutCheck is entirely optional - In a Release build, this does nothing
+	m_rootLayout->LayoutCheck();
 
 	return true;
 }

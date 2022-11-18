@@ -23,7 +23,7 @@
 				"Height": "20%",
 				"TopAdjustable": true,
 				"import":	"row_max_min"
-				},
+			},
 			{ "Height": "1*" }
 		],
 
@@ -36,7 +36,7 @@
 
 		"TestButton": {
 			"Type": "Button",
-			"Text": "This is a test",
+			"Content": "This is a test",
 			"Row": 0,
 			"Column": 0,
 			"import": "button_details.json",
@@ -45,9 +45,10 @@
 
 		"TestButton2": {
 			"Type": "Button",
-			"Text": "This is a second test",
+			"Content": "This is a second test",
 			"Row": 0,
 			"Column": 1,
+			"ColumnSpan" : 2,
 			"import": "button2_details",
 			"OnClick": "TestButton2OnClick"
 		}

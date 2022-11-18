@@ -8,8 +8,9 @@
 #include "UI/UI.h"
 #include "Window.h"
 
+#include "Rendering/DeviceResources.h"
 
-
+/*
 #ifdef EG_DX11
 #include "Evergreen/Rendering/DX11/DeviceResourcesDX11.h"
 #elif EG_DX12
@@ -19,6 +20,7 @@
 #elif EG_VULKAN
 #include "Evergreen/Rendering/Vulkan/DeviceResourcesVulkan.h"
 #endif
+*/
 
 namespace Evergreen
 {
@@ -63,15 +65,7 @@ private:
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
 	std::shared_ptr<Window> m_window;
-#ifdef EG_DX11
-	std::unique_ptr<DeviceResourcesDX11> m_deviceResources;
-#elif EG_DX12
-	std::unique_ptr<DeviceResourcesDX12> m_deviceResources;
-#elif EG_OPENGL
-	std::unique_ptr<DeviceResourcesOpenGL> m_deviceResources;
-#elif EG_VULKAN
-	std::unique_ptr<DeviceResourcesVulkan> m_deviceResources;
-#endif
+	std::unique_ptr<DeviceResources> m_deviceResources;
 
 
 };

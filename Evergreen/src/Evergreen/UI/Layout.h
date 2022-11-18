@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Evergreen/Core.h"
 #include "Evergreen/Log.h"
+#include "Evergreen/Rendering/DeviceResources.h"
 
 
 
@@ -144,6 +145,8 @@ public:
 	const std::vector<Row>& Rows() const noexcept { return m_rows; }
 	const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
+	void DrawBorders(DeviceResources* deviceResources) const noexcept;
+
 private:
 	void UpdateLayout() noexcept;
 	void UpdateRows() noexcept;
@@ -182,9 +185,9 @@ struct std::formatter<Evergreen::RowColumnType> : std::formatter<std::string> {
 		std::string s = "";
 		switch (type)
 		{
-		case Evergreen::RowColumnType::FIXED:	s = "FIXED"; break;
-		case Evergreen::RowColumnType::PERCENT: s = "PERCENT"; break;
-		case Evergreen::RowColumnType::STAR:	s = "STAR"; break;
+		case Evergreen::RowColumnType::FIXED:	s = "RowColumnType::FIXED"; break;
+		case Evergreen::RowColumnType::PERCENT: s = "RowColumnType::PERCENT"; break;
+		case Evergreen::RowColumnType::STAR:	s = "RowColumnType::STAR"; break;
 		}
 		return formatter<std::string>::format(s, ctx);
 	}

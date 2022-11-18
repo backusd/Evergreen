@@ -55,7 +55,9 @@
 		std::terminate();																				\
 	}
 
+
 #ifdef EG_DX11
+
 	#define GFX_EXCEPT_NOINFO(hr) DeviceResourcesExceptionDX11( __LINE__,__FILE__,(hr) )
 	#define GFX_THROW_NOINFO(hrcall) { HRESULT hr; if( FAILED( hr = (hrcall) ) ) throw DeviceResourcesExceptionDX11( __LINE__,__FILE__,hr ); }
 
@@ -74,19 +76,16 @@
 	#endif
 
 #elif EG_DX12
-	#define DeviceResources DeviceResourcesDX12
 
 	#define GFX_EXCEPT_NOINFO(hr)
 	#define GFX_THROW_NOINFO(hrcall)
 
 #elif EG_OPENGL
-#define DeviceResources DeviceResourcesOpenGL
 
 #define GFX_EXCEPT_NOINFO(hr)
 #define GFX_THROW_NOINFO(hrcall)
 
 #elif EG_VULKAN
-#define DeviceResources DeviceResourcesVulkan
 
 #define GFX_EXCEPT_NOINFO(hr)
 #define GFX_THROW_NOINFO(hrcall)

@@ -26,6 +26,11 @@ public:
 
 	void OnResize(float width, float height) noexcept;
 
+	void DrawLine(float x0, float y0, float x1, float y1, const Color& color, float strokeWidth = 1.0f) noexcept;
+
+	void BeginDraw() noexcept;
+	void EndDraw() noexcept;
+
 	/*
 	static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
 
@@ -64,6 +69,8 @@ private:
 	Microsoft::WRL::ComPtr<ID2D1Device6>		m_d2dDevice;
 	Microsoft::WRL::ComPtr<ID2D1DeviceContext6>	m_d2dDeviceContext;
 	Microsoft::WRL::ComPtr<ID2D1Bitmap1>		m_d2dBitmap;
+
+	Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock1> m_drawingStateBlock;
 
 	// Direct Write drawing components
 	Microsoft::WRL::ComPtr<IDWriteFactory7>		m_dwriteFactory;

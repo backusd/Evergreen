@@ -19,6 +19,7 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept :
 	m_d2dDevice(nullptr),
 	m_d2dDeviceContext(nullptr),
 	m_d2dBitmap(nullptr),
+	m_drawingStateBlock(nullptr),
 	m_dwriteFactory(nullptr),
 	m_wicImagingFactory(nullptr),
 	m_d3dDevice(nullptr),
@@ -38,6 +39,8 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept :
 	CreateDeviceIndependentResources();
 	CreateDeviceDependentResources();
 	CreateWindowSizeDependentResources(static_cast<float>(window->GetWidth()), static_cast<float>(window->GetHeight()));
+
+	m_d2dFactory->CreateDrawingStateBlock(m_drawingStateBlock.ReleaseAndGetAddressOf());
 
 	// For now, assume the render target is NOT getting set by the Application class. 
 	// Just set it here once for the lifetime of the application
@@ -446,6 +449,42 @@ void DeviceResourcesDX11::Present() noexcept
 	else // Throw if hr is a failed result and try to get debug info
 		GFX_THROW_INFO(hRESULT)
 }
+
+void DeviceResourcesDX11::BeginDraw() noexcept
+{
+	m_d2dDeviceContext->SaveDrawingState(m_drawingStateBlock.Get());
+	m_d2dDeviceContext->BeginDraw();
+}
+void DeviceResourcesDX11::EndDraw() noexcept
+{
+	HRESULT hr = m_d2dDeviceContext->EndDraw();
+	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
+	{
+		HandleDeviceLost();
+	}
+
+	m_d2dDeviceContext->RestoreDrawingState(m_drawingStateBlock.Get());
+}
+
+void DeviceResourcesDX11::DrawLine(float x0, float y0, float x1, float y1, const Color& color, float strokeWidth) noexcept
+{
+	ComPtr<ID2D1SolidColorBrush> brush;
+	GFX_THROW_INFO(
+		m_d2dDeviceContext->CreateSolidColorBrush(
+			D2D1::ColorF(color.R(), color.G(), color.B(), color.A()),
+			brush.ReleaseAndGetAddressOf()
+		)
+	)
+
+	GFX_THROW_INFO_ONLY(
+		m_d2dDeviceContext->DrawLine(
+			{ x0, y0 },
+			{ x1, y1 },
+			brush.Get(), 
+			strokeWidth)
+	)
+}
+
 
 }
 

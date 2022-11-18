@@ -29,6 +29,7 @@
     <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowException.h" />
     <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowTemplate.h" />
+    <ClInclude Include="src\Evergreen\Rendering\DeviceResources.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DeviceResourcesDX11.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DX11Helper.h" />

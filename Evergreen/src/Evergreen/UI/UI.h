@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Evergreen/Core.h"
 #include "Evergreen/Window.h"
+#include "Evergreen/Rendering/DeviceResources.h"
 #include "Layout.h"
 
 #include <nlohmann/json.hpp>
@@ -25,7 +26,7 @@ public:
 
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
-	void Render() const noexcept;
+	void Render(DeviceResources* deviceResources) const noexcept;
 	void OnResize(float width, float height) noexcept;
 
 private:

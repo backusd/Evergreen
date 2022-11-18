@@ -28,15 +28,7 @@ Application::Application() noexcept
 	m_window->SetOnMouseButtonDoubleClick(BIND_EVENT_FN(OnMouseButtonDoubleClick, MouseButtonDoubleClickEvent));
 
 	// Create DeviceResources
-#ifdef EG_DX11
-	m_deviceResources = std::make_unique<DeviceResourcesDX11>(m_window.get());
-#elif EG_DX12
-	m_deviceResources = std::make_unique<DeviceResourcesDX12>(m_window.get());
-#elif EG_OPENGL
-	m_deviceResources = std::make_unique<DeviceResourcesOpenGL>(m_window.get());
-#elif EG_VULKAN
-	m_deviceResources = std::make_unique<DeviceResourcesVulkan>(m_window.get());
-#endif
+	m_deviceResources = std::make_unique<DeviceResources>(m_window.get());
 
 	m_ui = std::make_unique<UI>(m_window);
 
@@ -104,7 +96,7 @@ void Application::Render() noexcept
 		m_deviceResources->ClearBackground(Color::Black);
 
 	
-	m_ui->Render();
+	m_ui->Render(m_deviceResources.get());
 }
 
 void Application::Present() noexcept
