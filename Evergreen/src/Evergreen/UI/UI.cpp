@@ -22,6 +22,17 @@ void UI::LoadDefaultUI() noexcept
 
 
 
+	// TEST CODE
+
+	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+
+	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout");
 
 }
 

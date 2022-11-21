@@ -80,8 +80,8 @@ public:
 	MouseScrolledEvent(const MouseScrolledEvent&) = delete;
 	void operator=(const MouseScrolledEvent&) = delete;
 
-	inline float GetXOffset() const noexcept { return m_xOffset; }
-	inline float GetYOffset() const noexcept { return m_yOffset; }
+	inline float GetX() const noexcept { return m_xOffset; }
+	inline float GetY() const noexcept { return m_yOffset; }
 	inline int GetScrollDelta() const noexcept { return m_scrollDelta; }
 
 	std::string ToString() const noexcept override { return std::format("MouseScrolledEvent - scroll: {} ({}, {})", m_scrollDelta, m_xOffset, m_yOffset); }
@@ -105,6 +105,9 @@ class EVERGREEN_API MouseButtonEvent : public Event
 {
 public:
 	inline MOUSE_BUTTON GetMouseButton() const noexcept { return m_button; }
+
+	inline float GetX() const noexcept { return m_xOffset; }
+	inline float GetY() const noexcept { return m_yOffset; }
 
 	// Event Class Category
 	virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput; }

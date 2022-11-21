@@ -111,7 +111,8 @@ float Column::MinWidth() const noexcept
 // Layout ------------------------------------------------------------------------------
 Layout::Layout(float top, float left, float width, float height, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
-	m_activelyAdjustingLayout(false)
+	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
+	m_mouseLButtonIsDown(false)
 {
 	// Leave rows and columns empty for now
 }
@@ -442,37 +443,184 @@ void Layout::OnResize(float width, float height) noexcept
 
 void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	if (m_activelyAdjustingLayout)
+	// If m_columnIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable column border
+	if (m_columnIndexBeingAdjusted.has_value())
 	{
-		EG_CORE_INFO("{}", "Adjusting Layout...");
+		// If the mouse L Button is down, we are dragging the column border
+		if (m_mouseLButtonIsDown)
+		{
+			// Column is being adjusted
+			float newColumnRight = 0.0f;
+			unsigned int leftColumnIndex = m_columnIndexBeingAdjusted.value();
+			unsigned int rightColumnIndex = leftColumnIndex + 1;
+
+			// It should be impossible for this assert to ever trigger because the json parser does not allow the rightmost row to even be right adjustable, but its still a good check nonetheless
+			EG_ASSERT(rightColumnIndex < m_columns.size(), std::format("{}:{} rightColumnIndex ({}) was greater than max m_columns index ({})", __FILE__, __LINE__, rightColumnIndex, m_columns.size() - 1));
+
+			if (e.GetX() >= m_columns[leftColumnIndex].Right())
+			{
+				// Column is being dragged to the right
+				// First, get the min of mouse x position and the maximum allowed column right position
+				newColumnRight = std::min(e.GetX(), m_columns[leftColumnIndex].Left() + m_columns[leftColumnIndex].MaxWidth());
+
+				// Second, get the min between the previous value and where the left side of the right column would be if the right column had its width equal to min width
+				newColumnRight = std::min(newColumnRight, m_columns[rightColumnIndex].Right() - m_columns[rightColumnIndex].MinWidth());
+			}
+			else
+			{
+				// Column is being dragged to the left
+				// First, get the max of mouse x position and the minimum allowed column right position
+				newColumnRight = std::max(e.GetX(), m_columns[leftColumnIndex].Left() + m_columns[leftColumnIndex].MinWidth());
+
+				// Second, get the max between the previous value and where the left side of the right column would be if the right column had its width equal to max width
+				newColumnRight = std::max(newColumnRight, m_columns[rightColumnIndex].Right() - m_columns[rightColumnIndex].MaxWidth());
+			}
+
+			// Update the left column width value (left side of column will not change)
+			m_columns[leftColumnIndex].Width(newColumnRight - m_columns[leftColumnIndex].Left());
+
+			// Update both the left and width of the right column (not allowed to set the right side directly, must specify left and width)
+			float secondColumnOriginalRight = m_columns[rightColumnIndex].Right();
+			m_columns[rightColumnIndex].Left(m_columns[leftColumnIndex].Right());
+			m_columns[rightColumnIndex].Width(secondColumnOriginalRight - m_columns[rightColumnIndex].Left());
+		}
+		else 
+		{
+			// Mouse L Button is not down so just check again if we are still hovering the column border
+			m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
+			if (!m_columnIndexBeingAdjusted.has_value())
+				Evergreen::SetCursor(Cursor::ARROW);
+		}
 	}
-	else if (MouseOverAdjustableColumn(e.GetX(), e.GetY()))
+	else if (m_rowIndexBeingAdjusted.has_value()) 	// If m_rowIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable row border
 	{
-		EG_CORE_INFO("{}", "MouseOverAdjustableColumn -> true");
+		// If the mouse L Button is down, we are dragging the row border
+		if (m_mouseLButtonIsDown)
+		{
+			// Row is being adjusted
+			float newRowBottom = 0.0f;
+			unsigned int topRowIndex = m_rowIndexBeingAdjusted.value();
+			unsigned int bottomRowIndex = topRowIndex + 1;
+
+			// Its pretty much impossible for this assert to ever trigger because the json parser does not allow the bottom row to even be bottom adjustable, but its still a good check nonetheless
+			EG_ASSERT(bottomRowIndex < m_rows.size(), std::format("{}:{} bottomRowIndex ({}) was greater than max m_rows index ({})", __FILE__, __LINE__, bottomRowIndex, m_rows.size() - 1));
+
+			if (e.GetY() >= m_rows[topRowIndex].Bottom())
+			{
+				// Row is being dragged down
+				// First, get the min of mouse y position and the maximum allowed row height
+				newRowBottom = std::min(e.GetY(), m_rows[topRowIndex].Top() + m_rows[topRowIndex].MaxHeight());
+
+				// Second, get the min between the previous value and where the top of the bottom row would be if the bottom row had its height equal to min height
+				newRowBottom = std::min(newRowBottom, m_rows[bottomRowIndex].Bottom() - m_rows[bottomRowIndex].MinHeight());
+			}
+			else
+			{
+				// Row is being dragged up
+				// First, get the max of mouse y position and the minimum allowed row top
+				newRowBottom = std::max(e.GetY(), m_rows[topRowIndex].Top() + m_rows[topRowIndex].MinHeight());
+
+				// Second, get the max between the previous value and where the top of the bottom row would be if the bottom row had its height equal to max height
+				newRowBottom = std::max(newRowBottom, m_rows[bottomRowIndex].Bottom() - m_rows[bottomRowIndex].MaxHeight());
+			}
+
+			// Update the top row height value (top of the row will not change)
+			m_rows[topRowIndex].Height(newRowBottom - m_rows[topRowIndex].Top());
+
+			// Update both the top and height of the bottom row (not allowed to set the bottom directly, must specify top and height)
+			float secondRowOriginalBottom = m_rows[bottomRowIndex].Bottom();
+			m_rows[bottomRowIndex].Top(m_rows[topRowIndex].Bottom());
+			m_rows[bottomRowIndex].Height(secondRowOriginalBottom - m_rows[bottomRowIndex].Top());
+		}
+		else
+		{
+			// Mouse L Button is not down so just check again if we are still hovering the row border
+			m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
+			if (!m_rowIndexBeingAdjusted.has_value())
+				Evergreen::SetCursor(Cursor::ARROW);
+		}
+	}
+	else if (m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY()))
+	{
+		// Mouse is newly over an adjustable column border -> update the cursor
 		Evergreen::SetCursor(Cursor::DOUBLE_ARROW_EW);
 	}
-	else if (MouseOverAdjustableRow(e.GetX(), e.GetY()))
+	else if (m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY()))
 	{
-		EG_CORE_INFO("{}", "MouseOverAdjustableRow -> true");
+		// Mouse is newly over an adjustable row border -> update the cursor
 		Evergreen::SetCursor(Cursor::DOUBLE_ARROW_NS);
-	}
-	else
-	{
-		Evergreen::SetCursor(Cursor::ARROW);
 	}
 }
 void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
-
+	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+		m_mouseLButtonIsDown = true;
 }
 void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
+	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	{
+		m_mouseLButtonIsDown = false;
 
+		// When the button is released, it is possible that the row/column hit a max/min value
+		// so that the mouse is no longer over the row/column border
+		m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
+		m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
+
+		if (!m_columnIndexBeingAdjusted.has_value() && !m_rowIndexBeingAdjusted.has_value())
+			Evergreen::SetCursor(Cursor::ARROW); 
+	}
 }
 
 
+std::optional<Layout*> Layout::AddSubLayout(RowColumnPosition position, const std::string& name) noexcept
+{
+	if (position.Row >= m_rows.size())
+	{
+		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Row ({}) was greater than maximum row index ({})", __FILE__, __LINE__, name, m_name, position.Row, m_rows.size() - 1);
+		return std::nullopt;
+	}
+	if (position.Column >= m_columns.size())
+	{
+		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Column ({}) was greater than maximum column index ({})", __FILE__, __LINE__, name, m_name, position.Column, m_columns.size() - 1);
+		return std::nullopt;
+	}
+	if (position.RowSpan == 0)
+	{
+		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.RowSpan must be greater than 0", __FILE__, __LINE__, name, m_name);
+		return std::nullopt;
+	}
+	if (position.ColumnSpan == 0)
+	{
+		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.ColumnSpan must be greater than 0", __FILE__, __LINE__, name, m_name);
+		return std::nullopt;
+	}
+	if (position.RowSpan > m_rows.size() - position.Row)
+	{
+		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.RowSpan ({}) was greater than maximum spannable rows ({})", __FILE__, __LINE__, name, m_name, position.RowSpan, m_rows.size() - position.Row);
+		return std::nullopt;
+	}
+	if (position.ColumnSpan > m_columns.size() - position.Column)
+	{
+		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.ColumnSpan ({}) was greater than maximum spannable columns ({})", __FILE__, __LINE__, name, m_name, position.ColumnSpan, m_columns.size() - position.Column);
+		return std::nullopt;
+	}
 
+	m_subLayouts.push_back(
+		std::make_unique<Layout>(
+			m_rows[position.Row].Top(),
+			m_columns[position.Column].Left(),
+			m_columns[position.Column + position.ColumnSpan - 1].Right() - m_columns[position.Column].Left(),
+			m_rows[position.Row + position.RowSpan - 1].Bottom() - m_rows[position.Row].Top(),
+			name
+		)
+	);
 
+	m_subLayoutPositions.push_back(position);
+
+	return m_subLayouts.back().get();
+}
+ 
 
 // DEBUG ONLY ======================================================================================================
 
@@ -597,8 +745,7 @@ void Layout::LayoutCheck() const noexcept
 }
 #else
 void Layout::LayoutCheck() const noexcept
-{
-}
+{}
 #endif // _DEBUG
 
 }

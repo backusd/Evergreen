@@ -23,6 +23,15 @@ struct EVERGREEN_API RowColumnDefinition
 	float			Value;
 };
 
+// SubLayoutDefinition ------------------------------------------------------------------------------
+struct EVERGREEN_API RowColumnPosition
+{
+	unsigned int Row;
+	unsigned int Column;
+	unsigned int RowSpan;
+	unsigned int ColumnSpan;
+};
+
 // Row ------------------------------------------------------------------------------
 class EVERGREEN_API Row
 {
@@ -133,6 +142,8 @@ public:
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
 
+	std::optional<Layout*> AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") noexcept;
+
 	std::optional<Row*> AddRow(RowColumnDefinition definition) noexcept;
 	std::optional<Column*> AddColumn(RowColumnDefinition definition) noexcept;
 
@@ -171,10 +182,14 @@ private:
 	std::vector<Column>				 m_columns;
 	std::vector<RowColumnDefinition> m_rowDefinitions;
 	std::vector<RowColumnDefinition> m_columnDefinitions;
+	std::string						 m_name;
 
-	std::string m_name;
+	bool							m_mouseLButtonIsDown;
+	std::optional<unsigned int>		m_columnIndexBeingAdjusted;
+	std::optional<unsigned int>		m_rowIndexBeingAdjusted;
 
-	bool m_activelyAdjustingLayout;				// true when adjusting row/column height/width
+	std::vector<std::unique_ptr<Layout>>	m_subLayouts;
+	std::vector<RowColumnPosition>			m_subLayoutPositions;
 
 // DEBUG ONLY ======================================================================================================
 
