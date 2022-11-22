@@ -112,7 +112,7 @@ float Column::MinWidth() const noexcept
 Layout::Layout(float top, float left, float width, float height, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
 	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
-	m_mouseLButtonIsDown(false)
+	m_adjustingLayout(false)
 {
 	// Leave rows and columns empty for now
 }
@@ -208,6 +208,7 @@ void Layout::UpdateLayout() noexcept
 {
 	UpdateRows();
 	UpdateColumns();
+	UpdateSubLayouts();
 
 #ifdef _DEBUG
 	LayoutCheck();
@@ -272,6 +273,9 @@ void Layout::UpdateRows() noexcept
 		row.ParentLayoutHeight(m_height);
 		row.StarHeight(singleStarHeight);
 	}
+
+	// 
+	UpdateSubLayouts();
 }
 void Layout::UpdateColumns() noexcept
 {
@@ -332,6 +336,23 @@ void Layout::UpdateColumns() noexcept
 		column.ParentLayoutWidth(m_width);
 		column.StarWidth(singleStarWidth);
 	}
+
+	// 
+	UpdateSubLayouts();
+}
+void Layout::UpdateSubLayouts() noexcept
+{
+	EG_CORE_ASSERT(m_subLayouts.size() == m_subLayoutPositions.size(), std::format("{}:{} Number of sublayouts ({}) does not match number of sublayoutPositions ({}) for layout '{}'", __FILE__, __LINE__, m_subLayouts.size(), m_subLayoutPositions.size(), m_name));
+	
+	for (unsigned int iii = 0; iii < m_subLayouts.size(); ++iii)
+	{
+		m_subLayouts[iii]->m_left   = m_columns[m_subLayoutPositions[iii].Column].Left();
+		m_subLayouts[iii]->m_top    = m_rows[m_subLayoutPositions[iii].Row].Top();
+		m_subLayouts[iii]->m_width  = m_columns[m_subLayoutPositions[iii].Column + m_subLayoutPositions[iii].ColumnSpan - 1].Right() - m_columns[m_subLayoutPositions[iii].Column].Left();
+		m_subLayouts[iii]->m_height = m_rows[m_subLayoutPositions[iii].Row + m_subLayoutPositions[iii].RowSpan - 1].Bottom() - m_rows[m_subLayoutPositions[iii].Row].Top();
+
+		m_subLayouts[iii]->UpdateLayout();
+	}
 }
 
 float Layout::GetTotalFixedSize(const std::vector<RowColumnDefinition>& defs, const float totalSpace) const noexcept
@@ -373,6 +394,13 @@ void Layout::ClearColumns() noexcept
 	m_columnDefinitions.clear();
 }
 
+void Layout::Render(DeviceResources* deviceResources) const noexcept
+{
+	DrawBorders(deviceResources);
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+		sublayout->Render(deviceResources);
+}
 void Layout::DrawBorders(DeviceResources* deviceResources) const noexcept
 {
 	for (const Row& row : m_rows)
@@ -390,15 +418,6 @@ void Layout::DrawBorders(DeviceResources* deviceResources) const noexcept
 		deviceResources->DrawLine(col.Left(), col.Bottom(), col.Right(), col.Bottom(), Color::Blue);
 		deviceResources->DrawLine(col.Right(), col.Top(), col.Right(), col.Bottom(), Color::Blue);
 	}
-	
-
-
-
-
-
-
-
-
 }
 
 std::optional<unsigned int> Layout::MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept
@@ -443,11 +462,13 @@ void Layout::OnResize(float width, float height) noexcept
 
 void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	// If m_columnIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable column border
-	if (m_columnIndexBeingAdjusted.has_value())
+	// If adjustingLayout is true, then mouse L button is down over either a row or column
+	if (m_adjustingLayout)
 	{
-		// If the mouse L Button is down, we are dragging the column border
-		if (m_mouseLButtonIsDown)
+		e.Handled(true);
+
+		// If m_columnIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable column border
+		if (m_columnIndexBeingAdjusted.has_value())
 		{
 			// Column is being adjusted
 			float newColumnRight = 0.0f;
@@ -484,18 +505,7 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			m_columns[rightColumnIndex].Left(m_columns[leftColumnIndex].Right());
 			m_columns[rightColumnIndex].Width(secondColumnOriginalRight - m_columns[rightColumnIndex].Left());
 		}
-		else 
-		{
-			// Mouse L Button is not down so just check again if we are still hovering the column border
-			m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
-			if (!m_columnIndexBeingAdjusted.has_value())
-				Evergreen::SetCursor(Cursor::ARROW);
-		}
-	}
-	else if (m_rowIndexBeingAdjusted.has_value()) 	// If m_rowIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable row border
-	{
-		// If the mouse L Button is down, we are dragging the row border
-		if (m_mouseLButtonIsDown)
+		else if (m_rowIndexBeingAdjusted.has_value()) 	// If m_rowIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable row border
 		{
 			// Row is being adjusted
 			float newRowBottom = 0.0f;
@@ -533,34 +543,83 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			m_rows[bottomRowIndex].Height(secondRowOriginalBottom - m_rows[bottomRowIndex].Top());
 		}
 		else
+			EG_CORE_ERROR("{}:{} m_adjustingLayout = true, but no row or column index is selected which is not allowed", __FILE__, __LINE__);
+	
+		// 
+		UpdateSubLayouts();
+	}
+	else
+	{
+		// Not adjusting layout so pass to sublayouts and see if it gets handled
+		for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
 		{
-			// Mouse L Button is not down so just check again if we are still hovering the row border
+			sublayout->OnMouseMove(e);
+			if (e.Handled())
+				return;
+		}
+
+		if (m_columnIndexBeingAdjusted.has_value())
+		{
+			// Mouse was previously over an adjustable column border, but check to make sure that is still the case
+			m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
+			if (!m_columnIndexBeingAdjusted.has_value())
+				Evergreen::SetCursor(Cursor::ARROW);
+		}
+		else if (m_rowIndexBeingAdjusted.has_value())
+		{
+			// Mouse was previously over an adjustable row border, but check to make sure that is still the case
 			m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
 			if (!m_rowIndexBeingAdjusted.has_value())
 				Evergreen::SetCursor(Cursor::ARROW);
 		}
-	}
-	else if (m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY()))
-	{
-		// Mouse is newly over an adjustable column border -> update the cursor
-		Evergreen::SetCursor(Cursor::DOUBLE_ARROW_EW);
-	}
-	else if (m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY()))
-	{
-		// Mouse is newly over an adjustable row border -> update the cursor
-		Evergreen::SetCursor(Cursor::DOUBLE_ARROW_NS);
+		else if (m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY()))
+		{
+			// Mouse is newly over an adjustable column border -> update the cursor
+			Evergreen::SetCursor(Cursor::DOUBLE_ARROW_EW);
+		}
+		else if (m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY()))
+		{
+			// Mouse is newly over an adjustable row border -> update the cursor
+			Evergreen::SetCursor(Cursor::DOUBLE_ARROW_NS);
+		}
 	}
 }
 void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
+	// First pass to sublayouts and see if it gets handled
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnMouseButtonPressed(e);
+		if (e.Handled())
+			return;
+	}	
+
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
-		m_mouseLButtonIsDown = true;
+	{
+		if (m_columnIndexBeingAdjusted.has_value())
+		{
+			m_adjustingLayout = true;
+			e.Handled(true);
+		}
+		else if (m_rowIndexBeingAdjusted.has_value())
+		{
+			m_adjustingLayout = true;
+			e.Handled(true);
+		}
+		else
+		{
+			m_adjustingLayout = false;
+		}
+	}
 }
 void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
-	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	// If we are adjusting the layout, no need to pass to sublayouts
+	if (m_adjustingLayout && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
-		m_mouseLButtonIsDown = false;
+		e.Handled(true);
+
+		m_adjustingLayout = false;
 
 		// When the button is released, it is possible that the row/column hit a max/min value
 		// so that the mouse is no longer over the row/column border
@@ -568,7 +627,17 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
 
 		if (!m_columnIndexBeingAdjusted.has_value() && !m_rowIndexBeingAdjusted.has_value())
-			Evergreen::SetCursor(Cursor::ARROW); 
+			Evergreen::SetCursor(Cursor::ARROW);
+	}
+	else
+	{
+		// Not adjusting the layout so pass to sublayouts
+		for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+		{
+			sublayout->OnMouseButtonReleased(e);
+			if (e.Handled())
+				return;
+		}
 	}
 }
 
@@ -627,7 +696,7 @@ std::optional<Layout*> Layout::AddSubLayout(RowColumnPosition position, const st
 #ifdef _DEBUG
 void Layout::LayoutCheck() const noexcept
 {
-	float errorMargin = 0.0f;
+	float errorMargin = 0.01f;
 
 	// 1. Make sure any individual row width is not greater than the layout width
 	for (unsigned int iii = 0; iii < m_rows.size(); ++iii)

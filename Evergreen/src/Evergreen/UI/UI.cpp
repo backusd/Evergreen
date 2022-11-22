@@ -25,14 +25,38 @@ void UI::LoadDefaultUI() noexcept
 	// TEST CODE
 
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
-	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
-	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	if (std::optional<Row*> row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
+	{
+		row0.value()->BottomIsAdjustable(true);
+	}
+	if (std::optional<Row*> row1 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
+	{
+		row1.value()->TopIsAdjustable(true);
+	}
 	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
-	m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout");
+	if (std::optional<Layout*> sublayoutOpt = m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout"))
+	{
+		Layout* sublayout = sublayoutOpt.value();
+
+		sublayout->AddRow({RowColumnType::STAR, 1.0f});
+		sublayout->AddRow({ RowColumnType::STAR, 1.0f });
+		sublayout->AddRow({ RowColumnType::STAR, 1.0f });
+
+		if (std::optional<Column*> col1 = sublayout->AddColumn({ RowColumnType::STAR, 1.0f }))
+		{
+			col1.value()->RightIsAdjustable(true);
+			col1.value()->MinWidth(10.0f);
+		}
+		if (std::optional<Column*> col2 = sublayout->AddColumn({ RowColumnType::STAR, 1.0f }))
+		{
+			col2.value()->LeftIsAdjustable(true);
+			col2.value()->MinWidth(10.0f);
+		}
+	}
 
 }
 
@@ -115,7 +139,7 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 {
 	deviceResources->BeginDraw();
 
-	m_rootLayout->DrawBorders(deviceResources);
+	m_rootLayout->Render(deviceResources);
 
 	deviceResources->EndDraw();
 }

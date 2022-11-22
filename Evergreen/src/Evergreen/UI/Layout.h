@@ -161,12 +161,16 @@ public:
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 
+	void Render(DeviceResources* deviceResources) const noexcept;
 	void DrawBorders(DeviceResources* deviceResources) const noexcept;
+
+	inline bool ContainsPoint(float x, float y) const noexcept { return m_left <= x && m_left + m_width >= x && m_top <= y && m_top + m_height >= y; }
 
 private:
 	void UpdateLayout() noexcept;
 	void UpdateRows() noexcept;
 	void UpdateColumns() noexcept;
+	void UpdateSubLayouts() noexcept;
 
 	float GetTotalFixedSize(const std::vector<RowColumnDefinition>& defs, const float totalSpace) const noexcept;
 	float GetTotalStars(const std::vector<RowColumnDefinition>& defs) const noexcept;
@@ -184,7 +188,7 @@ private:
 	std::vector<RowColumnDefinition> m_columnDefinitions;
 	std::string						 m_name;
 
-	bool							m_mouseLButtonIsDown;
+	bool							m_adjustingLayout;
 	std::optional<unsigned int>		m_columnIndexBeingAdjusted;
 	std::optional<unsigned int>		m_rowIndexBeingAdjusted;
 

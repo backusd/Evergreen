@@ -46,6 +46,9 @@ public:
 		return GetCategoryFlags() & category;
 	}
 
+	inline void Handled(bool handled) noexcept { m_handled = handled; }
+	inline bool Handled() const noexcept { return m_handled; }
+
 protected:
 	bool m_handled = false;
 };
