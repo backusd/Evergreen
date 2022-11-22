@@ -10,7 +10,6 @@
 	},
 
 	"root": {
-		"Name": "Root Layout",
 
 		"RowDefinitions": [
 			{
@@ -52,7 +51,21 @@
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": "1*" }
-			]
+			],
+
+			"MenuBarSubLayout": {
+				"Type": "Layout",
+
+				"RowDefinitions": [
+					{ "Height": "1*" },
+					{ "Height": "1*" }
+				],
+				"ColumnDefinitions": [
+					{ "Width": "1*" },
+					{ "Width": "1*" }
+				]
+			}
+
 		},
 
 		"TestButton": {

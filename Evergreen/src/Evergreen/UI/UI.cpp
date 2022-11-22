@@ -23,7 +23,7 @@ void UI::LoadDefaultUI() noexcept
 
 
 	// TEST CODE
-
+	/*
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	if (std::optional<Row*> row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
 	{
@@ -57,7 +57,7 @@ void UI::LoadDefaultUI() noexcept
 			col2.value()->MinWidth(10.0f);
 		}
 	}
-
+	*/
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
@@ -83,7 +83,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		// Get the root layout data and create the root layout
 		json rootLayoutData = m_jsonRoot["root"];
 
-		m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+		m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()), "Root Layout");
 		if (!LoadLayoutDetails(m_rootLayout.get(), rootLayoutData))
 		{
 			m_jsonRoot = {};
@@ -91,8 +91,8 @@ void UI::LoadUI(const std::string& fileName) noexcept
 			return;
 		}
 
-
-
+		// LayoutCheck is entirely optional - In a Release build, this does nothing
+		m_rootLayout->LayoutCheck();
 	}
 	else
 	{
@@ -146,40 +146,56 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 {
-	if (!LoadLayoutName(layout, data))
-		return false;
-
 	if (!LoadLayoutRowDefinitions(layout, data))
 		return false;
 
 	if (!LoadLayoutColumnDefinitions(layout, data))
 		return false;
 
-	for (const auto& row : m_rootLayout->Rows())
+	for (const auto& row : layout->Rows())
 		EG_CORE_INFO("{}", row);
-	for (const auto& column : m_rootLayout->Columns())
+	for (const auto& column : layout->Columns())
 		EG_CORE_INFO("{}", column);
 
-	// LayoutCheck is entirely optional - In a Release build, this does nothing
-	m_rootLayout->LayoutCheck();
-
-	return true;
-}
-bool UI::LoadLayoutName(Layout* layout, json& data) noexcept
-{
-	// The 'Name' parameter is not required, but recommended
-	if (data.contains("Name"))
+	// Now iterate over the controls and sublayouts within the layout
+	for (auto& [key, value] : data.items())
 	{
-		if (data["Name"].is_string())
-			layout->Name(data["Name"].get<std::string>());
-		else
+		if (key.compare("Type") == 0 || 
+			key.compare("Row") == 0 ||
+			key.compare("Column") == 0 ||
+			key.compare("RowSpan") == 0 ||
+			key.compare("ColumnSpan") == 0 ||
+			key.compare("RowDefinitions") == 0 || 
+			key.compare("ColumnDefinitions") == 0)
+			continue;
+
+		if (!data[key].contains("Type"))
 		{
-			EG_CORE_ERROR("{}:{} - Layout name must be a string. Invalid value: {}", __FILE__, __LINE__, data["Name"]);
+			EG_CORE_ERROR("{}:{} - Control or sub-layout has no 'Type' definition: {}", __FILE__, __LINE__, data[key]);
+			UI_ERROR("Control or sub-layout has no 'Type' definition: {}", data[key]);
 			return false;
 		}
+
+		if (!data[key]["Type"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Control or sub-layout 'Type' definition must be a string. Invalid value: {}", __FILE__, __LINE__, data[key]["Type"]);
+			UI_ERROR("{}", "Control or sub-layout 'Type' definition must be a string.");
+			UI_ERROR("Invalid value : {}", data[key]["Type"]);
+			return false;
+		}
+
+		std::string type = data[key]["Type"].get<std::string>();
+
+		if (type.compare("Layout") == 0)
+		{
+			if (!LoadSubLayout(layout, data[key], key))
+				return false;
+		}
+		else
+		{
+			EG_CORE_WARN("Attempting to load control: {} (... not yet supported ...)", type);
+		}
 	}
-	else
-		EG_CORE_WARN("{}:{} - UI::LoadLayoutName found layout with no name", __FILE__, __LINE__);
 
 	return true;
 }
@@ -209,7 +225,7 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 					return false;
 
 				// Create the row and get a pointer to it so we can edit it further
-				if (std::optional<Row*> row = m_rootLayout->AddRow({ rowColType, rowColSize }))
+				if (std::optional<Row*> row = layout->AddRow({ rowColType, rowColSize }))
 				{
 					// Before looping over all the row definition key/value pairs, first check if we need to import other json data
 					if (rowDefinition.contains("import"))
@@ -324,7 +340,7 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 					return false;
 
 				// Create the column and get a pointer to it so we can edit it further
-				if (std::optional<Column*> column = m_rootLayout->AddColumn({ rowColType, rowColSize }))
+				if (std::optional<Column*> column = layout->AddColumn({ rowColType, rowColSize }))
 				{
 					// Before looping over all the row definition key/value pairs, first check if we need to import other json data
 					if (columnDefinition.contains("import"))
@@ -412,6 +428,85 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 	}
 
 	return true;
+}
+bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noexcept
+{
+	unsigned int row = 0;
+	unsigned int column = 0;
+	unsigned int rowSpan = 1;
+	unsigned int columnSpan = 1;
+
+	if (data.contains("Row"))
+	{
+		if (!data["Row"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - Sub-layout 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Row"]);
+			UI_ERROR("{}", "Sub-layout 'Row' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["Row"]);
+			return false;
+		}
+
+		row = data["Row"].get<unsigned int>();
+	}
+
+	if (data.contains("Column"))
+	{
+		if (!data["Column"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - Sub-layout 'Column' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Column"]);
+			UI_ERROR("{}", "Sub-layout 'Column' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["Column"]);
+			return false;
+		}
+
+		column = data["Column"].get<unsigned int>();
+	}
+
+	if (data.contains("RowSpan"))
+	{
+		if (!data["RowSpan"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - Sub-layout 'RowSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["RowSpan"]);
+			UI_ERROR("{}", "Sub-layout 'RowSpan' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["RowSpan"]);
+			return false;
+		}
+
+		rowSpan = data["RowSpan"].get<unsigned int>();
+
+		if (rowSpan == 0)
+		{
+			EG_CORE_WARN("{}:{} - Sub-layout with name '{}' has 'RowSpan' value of 0. Setting rowSpan = 1", __FILE__, __LINE__, name);
+			rowSpan = 1;
+		}
+	}
+
+	if (data.contains("ColumnSpan"))
+	{
+		if (!data["ColumnSpan"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - Sub-layout 'ColumnSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["ColumnSpan"]);
+			UI_ERROR("{}", "Sub-layout 'ColumnSpan' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["ColumnSpan"]);
+			return false;
+		}
+
+		columnSpan = data["ColumnSpan"].get<unsigned int>();
+
+		if (columnSpan == 0)
+		{
+			EG_CORE_WARN("{}:{} - Sub-layout with name '{}' has 'ColumnSpan' value of 0. Setting columnSpan = 1", __FILE__, __LINE__, name);
+			columnSpan = 1;
+		}
+	}
+
+	if (std::optional<Layout*> sublayout = parent->AddSubLayout({ row, column, rowSpan, columnSpan }, name))
+	{
+		return LoadLayoutDetails(sublayout.value(), data);
+	}
+
+
+	return false;
 }
 
 bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept

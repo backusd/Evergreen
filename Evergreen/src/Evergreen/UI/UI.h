@@ -43,9 +43,9 @@ private:
 
 	// Load Layout methods
 	bool LoadLayoutDetails(Layout* layout, json& data) noexcept;
-	bool LoadLayoutName(Layout* layout, json& data) noexcept;
 	bool LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept;
 	bool LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept;
+	bool LoadSubLayout(Layout* parent, json& data, const std::string& name) noexcept;
 
 	bool ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept;
 

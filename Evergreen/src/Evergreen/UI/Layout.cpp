@@ -504,6 +504,12 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			float secondColumnOriginalRight = m_columns[rightColumnIndex].Right();
 			m_columns[rightColumnIndex].Left(m_columns[leftColumnIndex].Right());
 			m_columns[rightColumnIndex].Width(secondColumnOriginalRight - m_columns[rightColumnIndex].Left());
+
+			// Finally, update the column definition so that resizing doesn't snap the columns back to their original size
+			m_columnDefinitions[leftColumnIndex].Type = RowColumnType::PERCENT;
+			m_columnDefinitions[leftColumnIndex].Value = m_columns[leftColumnIndex].Width() / m_width;
+			m_columnDefinitions[rightColumnIndex].Type = RowColumnType::PERCENT;
+			m_columnDefinitions[rightColumnIndex].Value = m_columns[rightColumnIndex].Width() / m_width;
 		}
 		else if (m_rowIndexBeingAdjusted.has_value()) 	// If m_rowIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable row border
 		{
@@ -541,6 +547,12 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			float secondRowOriginalBottom = m_rows[bottomRowIndex].Bottom();
 			m_rows[bottomRowIndex].Top(m_rows[topRowIndex].Bottom());
 			m_rows[bottomRowIndex].Height(secondRowOriginalBottom - m_rows[bottomRowIndex].Top());
+
+			// Finally, update the row definitions so that resizing doesn't snap the rows back to their original size
+			m_rowDefinitions[topRowIndex].Type = RowColumnType::PERCENT;
+			m_rowDefinitions[topRowIndex].Value = m_rows[topRowIndex].Height() / m_height;
+			m_rowDefinitions[bottomRowIndex].Type = RowColumnType::PERCENT;
+			m_rowDefinitions[bottomRowIndex].Value = m_rows[bottomRowIndex].Height() / m_height;
 		}
 		else
 			EG_CORE_ERROR("{}:{} m_adjustingLayout = true, but no row or column index is selected which is not allowed", __FILE__, __LINE__);
