@@ -146,6 +146,13 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 {
+	// First, import any necessary data
+	if (data.contains("import"))
+	{
+		if (!ImportJSON(data))
+			return false;
+	}
+
 	if (!LoadLayoutRowDefinitions(layout, data))
 		return false;
 
@@ -160,7 +167,8 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 	// Now iterate over the controls and sublayouts within the layout
 	for (auto& [key, value] : data.items())
 	{
-		if (key.compare("Type") == 0 || 
+		if (key.compare("import") == 0 ||
+			key.compare("Type") == 0 ||
 			key.compare("Row") == 0 ||
 			key.compare("Column") == 0 ||
 			key.compare("RowSpan") == 0 ||
@@ -436,6 +444,13 @@ bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noex
 	unsigned int rowSpan = 1;
 	unsigned int columnSpan = 1;
 
+	// First, import any necessary data
+	if (data.contains("import"))
+	{
+		if (!ImportJSON(data))
+			return false;
+	}
+
 	if (data.contains("Row"))
 	{
 		if (!data["Row"].is_number_unsigned())
@@ -700,6 +715,9 @@ bool UI::ImportJSON(json& data) noexcept
 
 		data[key] = jsonImport[key];
 	}
+
+	// Finally, remove the 'import' key because so the parsing code can't accidentally attempt to import it a second time
+	data.erase("import");
 
 	return true;
 }

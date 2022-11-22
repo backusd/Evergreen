@@ -9,6 +9,12 @@
 		"import": "row_min.json"
 	},
 
+	"MenuBarLayoutPosition": {
+		"Row": 0,
+		"Column": 0,
+		"ColumnSpan": 3
+	},
+
 	"root": {
 
 		"RowDefinitions": [
@@ -20,7 +26,7 @@
 			{
 				"Height": "20%",
 				"TopAdjustable": true,
-				"import":	"row_max_min"
+				"import": "row_max_min"
 			},
 			{
 				"Height": "1*"
@@ -42,31 +48,16 @@
 
 		"MenuBarLayout": {
 			"Type": "Layout",
-			"Row": 0,
-			"Column": 0,
-			"ColumnSpan": 3,
+			"import": "MenuBarLayoutPosition",
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": "1*" }
-			],
-
-			"MenuBarSubLayout": {
-				"Type": "Layout",
-
-				"RowDefinitions": [
-					{ "Height": "1*" },
-					{ "Height": "1*" }
-				],
-				"ColumnDefinitions": [
-					{ "Width": "1*" },
-					{ "Width": "1*" }
-				]
-			}
-
+			]
 		},
+
 
 		"TestButton": {
 			"Type": "Button",
@@ -82,7 +73,7 @@
 			"Content": "This is a second test",
 			"Row": 0,
 			"Column": 1,
-			"ColumnSpan" : 2,
+			"ColumnSpan": 2,
 			"import": "button2_details",
 			"OnClick": "TestButton2OnClick"
 		}
