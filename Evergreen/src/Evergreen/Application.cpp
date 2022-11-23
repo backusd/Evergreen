@@ -9,7 +9,9 @@ namespace Evergreen
 Application::Application() noexcept
 {
 	// Create main window
-	m_window = std::shared_ptr<Window>(Window::Create());
+	m_window = std::make_shared<Window>();
+	m_window->InitializeCursors();
+
 	m_window->SetOnWindowResize(BIND_EVENT_FN(OnWindowResize, WindowResizeEvent));
 	m_window->SetOnWindowCreate(BIND_EVENT_FN(OnWindowCreate, WindowCreateEvent));
 	m_window->SetOnWindowClose(BIND_EVENT_FN(OnWindowClose, WindowCloseEvent));
@@ -31,34 +33,6 @@ Application::Application() noexcept
 	m_deviceResources = std::make_unique<DeviceResources>(m_window.get());
 
 	m_ui = std::make_unique<UI>(m_window);
-
-	/*
-	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
-	m_rootLayout->Name("root layout");
-	
-	std::optional<Row*> row = m_rootLayout->AddRow({ RowColumnType::FIXED, 60.0f });
-	if (row.has_value())
-	{
-		row.value()->BottomIsAdjustable(true);
-		row.value()->MaxHeight(100.0f);
-		row.value()->MinHeight(30.0f);
-	}
-
-	row = m_rootLayout->AddRow({ RowColumnType::PERCENT, 0.5f });
-	if (row.has_value())
-	{
-		row.value()->TopIsAdjustable(true);
-	}
-
-	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
-	m_rootLayout->AddRow({ RowColumnType::STAR, 2.0f });
-
-	m_rootLayout->AddColumn({ RowColumnType::PERCENT, 0.5f });
-	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
-
-	// LayoutCheck is entirely optional - In a Release build, this does nothing
-	m_rootLayout->LayoutCheck();
-	*/
 }
 
 int Application::Run() noexcept

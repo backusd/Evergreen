@@ -1,21 +1,15 @@
 #pragma once
 
-
-#ifdef EG_PLATFORM_WINDOWS
-	#ifdef EG_BUILD_DLL
-		#define EVERGREEN_API __declspec(dllexport)
-	#else
-		#define EVERGREEN_API __declspec(dllimport)
-	#endif // EG_BUILD_DLL
-
-	#define WINDOW_EXCEPT( hr ) WindowsWindowException( __LINE__,__FILE__,hr )
-	#define WINDOW_LAST_EXCEPT() WindowsWindowException( __LINE__,__FILE__,GetLastError() )
-
-	#define ERROR_POPUP(text, caption) MessageBox(nullptr, text, caption, MB_OK | MB_ICONEXCLAMATION)
-
+#ifdef EG_BUILD_DLL
+	#define EVERGREEN_API __declspec(dllexport)
 #else
-	#error Evergreen only supports Windows
-#endif // EG_PLATFORM_WINDOWS
+	#define EVERGREEN_API __declspec(dllimport)
+#endif // EG_BUILD_DLL
+
+#define WINDOW_EXCEPT( hr ) WindowException( __LINE__,__FILE__,hr )
+#define WINDOW_LAST_EXCEPT() WindowException( __LINE__,__FILE__,GetLastError() )
+
+#define ERROR_POPUP(text, caption) MessageBox(nullptr, text, caption, MB_OK | MB_ICONEXCLAMATION)
 
 
 

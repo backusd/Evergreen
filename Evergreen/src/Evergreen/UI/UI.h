@@ -4,9 +4,9 @@
 #include "Evergreen/Events/ApplicationEvent.h"
 #include "Evergreen/Events/KeyEvent.h"
 #include "Evergreen/Events/MouseEvent.h"
-#include "Evergreen/Window.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Layout.h"
+#include "Evergreen/Window/Window.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -57,6 +57,7 @@ private:
 	std::unique_ptr<Layout>		m_rootLayout;
 	std::vector<std::string>	m_errorMessages;
 	std::filesystem::path		m_jsonRootDirectory;
+
 
 };
 #pragma warning( pop )

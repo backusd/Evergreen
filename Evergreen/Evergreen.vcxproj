@@ -25,12 +25,10 @@
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
-    <ClInclude Include="src\Evergreen\Platform\Windows\TranslateErrorCode.h" />
-    <ClInclude Include="src\Evergreen\Platform\Windows\UI\WindowsText.h" />
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsMessageMap.h" />
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindow.h" />
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowException.h" />
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowTemplate.h" />
+    <ClInclude Include="src\Evergreen\Window\TranslateErrorCode.h" />
+    <ClInclude Include="src\Evergreen\Window\WindowsMessageMap.h" />
+    <ClInclude Include="src\Evergreen\Window\Window.h" />
+    <ClInclude Include="src\Evergreen\Window\WindowTemplate.h" />
     <ClInclude Include="src\Evergreen\Rendering\DeviceResources.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DeviceResourcesDX11.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.h" />
@@ -42,9 +40,7 @@
     <ClInclude Include="src\Evergreen\UI\Controls\Text.h" />
     <ClInclude Include="src\Evergreen\UI\Layout.h" />
     <ClInclude Include="src\Evergreen\UI\UI.h" />
-    <ClInclude Include="src\Evergreen\Utils\SetCursor.h" />
-    <ClInclude Include="src\Evergreen\Window.h" />
-    <ClInclude Include="src\Evergreen\WindowProperties.h" />
+    <ClInclude Include="src\Evergreen\Window\WindowProperties.h" />
     <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
@@ -53,11 +49,9 @@
     <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
-    <ClCompile Include="src\Evergreen\Platform\Windows\TranslateErrorCode.cpp" />
-    <ClCompile Include="src\Evergreen\Platform\Windows\UI\WindowsText.cpp" />
-    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsMessageMap.cpp" />
-    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindow.cpp" />
-    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindowException.cpp" />
+    <ClCompile Include="src\Evergreen\Window\TranslateErrorCode.cpp" />
+    <ClCompile Include="src\Evergreen\Window\WindowsMessageMap.cpp" />
+    <ClCompile Include="src\Evergreen\Window\Window.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesDX11.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.cpp" />
@@ -67,7 +61,6 @@
     <ClCompile Include="src\Evergreen\UI\Controls\Text.cpp" />
     <ClCompile Include="src\Evergreen\UI\Layout.cpp" />
     <ClCompile Include="src\Evergreen\UI\UI.cpp" />
-    <ClCompile Include="src\Evergreen\Utils\SetCursor.cpp" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
@@ -120,7 +113,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EG_PLATFORM_WINDOWS;EG_BUILD_DLL;EG_DX11;EG_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EG_BUILD_DLL;EG_DX11;EG_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
@@ -145,7 +138,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EG_PLATFORM_WINDOWS;EG_BUILD_DLL;EG_DX11;EG_ENABLE_ASSERTS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EG_BUILD_DLL;EG_DX11;EG_ENABLE_ASSERTS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

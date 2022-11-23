@@ -5,8 +5,8 @@
 #include "DeviceResourcesExceptionDX11.h"
 #include "DX11Helper.h"
 #include "Evergreen/Core.h"
-#include "Evergreen/Platform/Windows/WindowsWindowException.h"
-#include "Evergreen/Platform/Windows/WindowsWindow.h"
+#include "Evergreen/Window/Window.h"
+#include "Evergreen/Exceptions/WindowException.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -31,7 +31,7 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept :
 	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
 	m_dpiScale(96.0f)
 {
-	m_hWnd = ((WindowsWindow*)window)->GetHWND();
+	m_hWnd = window->GetHWND();
 
 	// Must initialize COM library
 	GFX_THROW_INFO(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));

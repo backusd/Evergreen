@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "WindowsWindow.h"
+#include "Window.h"
 #include "WindowsMessageMap.h"
 
 #include "Evergreen/Log.h"
@@ -7,31 +7,42 @@
 #include "Evergreen/Events/KeyEvent.h"
 #include "Evergreen/Events/MouseEvent.h"
 
+const std::array<HCURSOR, 14> Evergreen::Window::m_cursors = {
+	LoadCursor(nullptr, IDC_ARROW),
+	LoadCursor(nullptr, IDC_APPSTARTING),
+	LoadCursor(nullptr, IDC_HELP),
+	LoadCursor(nullptr, IDC_CROSS),
+	LoadCursor(nullptr, IDC_SIZEWE),
+	LoadCursor(nullptr, IDC_SIZENS),
+	LoadCursor(nullptr, IDC_SIZENESW),
+	LoadCursor(nullptr, IDC_SIZENWSE),
+	LoadCursor(nullptr, IDC_HAND),
+	LoadCursor(nullptr, IDC_WAIT),
+	LoadCursor(nullptr, IDC_IBEAM),
+	LoadCursor(nullptr, IDC_SIZEALL),
+	LoadCursor(nullptr, IDC_NO),
+	LoadCursor(nullptr, IDC_UPARROW)
+};
+
 namespace Evergreen
 {
-
-Window* Window::Create(const WindowProperties& props) noexcept
-{
-	return new WindowsWindow(props);
-}
-
-WindowsWindow::WindowsWindow(const WindowProperties& props) noexcept :
-	WindowsWindowTemplate(props),
+Window::Window(const WindowProperties& props) noexcept :
+	WindowTemplate(props),
 	m_mouseIsInWindow(false)
 {
 	Init(props);
 }
 
-WindowsWindow::~WindowsWindow()
+Window::~Window()
 {
 	Shutdown();
 }
 
-void WindowsWindow::Shutdown() noexcept
+void Window::Shutdown() noexcept
 {
 }
 
-void WindowsWindow::Init(const WindowProperties& props) noexcept
+void Window::Init(const WindowProperties& props) noexcept
 {
 	EG_CORE_INFO("Creating window {0} ({1}, {2})", m_title, m_width, m_height);
 
@@ -39,7 +50,7 @@ void WindowsWindow::Init(const WindowProperties& props) noexcept
 	// ... Create window ...
 }
 
-std::optional<int> WindowsWindow::ProcessMessages() const noexcept
+std::optional<int> Window::ProcessMessages() const noexcept
 {
 	MSG msg;
 	// while queue has messages, remove and dispatch them (but do not block on empty queue)
@@ -66,7 +77,7 @@ std::optional<int> WindowsWindow::ProcessMessages() const noexcept
 	return {};
 }
 
-LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	//static WindowsMessageMap mm;
 	//EG_CORE_TRACE(mm(msg, wParam, lParam));
@@ -113,13 +124,13 @@ LRESULT WindowsWindow::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 
 
-void WindowsWindow::OnUpdate() noexcept
+void Window::OnUpdate() noexcept
 {
 	// ... Update + Render + Present ... ??
 }
 
 
-LRESULT WindowsWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	CREATESTRUCT* cs = (CREATESTRUCT*)lParam;
 	WindowCreateEvent e(cs->y, cs->x, cs->cx, cs->cy);
@@ -129,7 +140,7 @@ LRESULT WindowsWindow::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */) const noexcept
+LRESULT Window::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */) const noexcept
 {
 	// we don't want the DefProc to handle this message because
 	// we want our destructor to destroy the window, so return 0 instead of break
@@ -142,7 +153,7 @@ LRESULT WindowsWindow::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam
 	return 0;
 }
 
-LRESULT WindowsWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
@@ -152,7 +163,7 @@ LRESULT WindowsWindow::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
@@ -169,7 +180,7 @@ LRESULT WindowsWindow::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
@@ -179,7 +190,7 @@ LRESULT WindowsWindow::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
@@ -189,7 +200,7 @@ LRESULT WindowsWindow::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
@@ -206,7 +217,7 @@ LRESULT WindowsWindow::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
@@ -216,7 +227,7 @@ LRESULT WindowsWindow::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
@@ -226,7 +237,7 @@ LRESULT WindowsWindow::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
@@ -243,7 +254,7 @@ LRESULT WindowsWindow::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
@@ -254,8 +265,7 @@ LRESULT WindowsWindow::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, 
 	return 0;
 }
 
-
-LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT Window::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	m_width = LOWORD(lParam);
 	m_height = HIWORD(lParam);
@@ -267,7 +277,7 @@ LRESULT WindowsWindow::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	return 0;
 }
 
-LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT Window::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	// in client region -> trigger move event, and trigger enter event + capture mouse (if not previously in window)
@@ -310,13 +320,13 @@ LRESULT WindowsWindow::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	// Not handling here because wm_leave messages don't seem to trigger
 	// Instead, we are triggering MouseLeaveEvent from OnMouseMove
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-LRESULT WindowsWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
@@ -328,8 +338,7 @@ LRESULT WindowsWindow::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 	return 0;
 }
 
-
-LRESULT WindowsWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	// wParam - Contains the keycode
 	// lParam - Bits 0-15 contain the repeat count
@@ -340,7 +349,7 @@ LRESULT WindowsWindow::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	// wParam - Contains the keycode
 	KeyReleasedEvent e(WParamToKeyCode(wParam));
@@ -350,7 +359,7 @@ LRESULT WindowsWindow::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	// wParam - Contains the keycode
 	// lParam - Bits 0-15 contain the repeat count
@@ -363,16 +372,16 @@ LRESULT WindowsWindow::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT WindowsWindow::OnSysKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnSysKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	return this->OnKeyUp(hWnd, msg, wParam, lParam);
 }
-LRESULT WindowsWindow::OnSysKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnSysKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	return this->OnKeyDown(hWnd, msg, wParam, lParam);
 }
 
-LRESULT WindowsWindow::OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
 	/*
 	// clear keystate when window loses focus to prevent input getting "stuck"
@@ -381,9 +390,7 @@ LRESULT WindowsWindow::OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lP
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-
-
-KEY_CODE WindowsWindow::WParamToKeyCode(WPARAM wParam) const noexcept
+KEY_CODE Window::WParamToKeyCode(WPARAM wParam) const noexcept
 {
 	unsigned int w = static_cast<unsigned int>(wParam);
 	switch (w)
@@ -497,6 +504,18 @@ KEY_CODE WindowsWindow::WParamToKeyCode(WPARAM wParam) const noexcept
 	return KEY_CODE::EG_INVALID;
 }
 
+void Window::InitializeCursors() noexcept
+{
+	for (unsigned int iii = 0; iii < m_cursors.size(); ++iii)
+	{
+		if (m_cursors[iii] == NULL)
+			EG_CORE_ERROR("{}:{} cursor at index {} is NULL", __FILE__, __LINE__, iii);
+	}
+}
+void Window::SetCursor(Cursor cursor) noexcept
+{
+	::SetCursor(m_cursors[static_cast<int>(cursor)]);
+}
 
 
 }

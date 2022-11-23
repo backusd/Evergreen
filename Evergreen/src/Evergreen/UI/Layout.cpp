@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Layout.h"
-#include "Evergreen/Utils/SetCursor.h"
+//#include "Evergreen/Utils/SetCursor.h"
+
+#include "Evergreen/Window/Window.h"
 
 namespace Evergreen
 {
@@ -575,24 +577,24 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			// Mouse was previously over an adjustable column border, but check to make sure that is still the case
 			m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
 			if (!m_columnIndexBeingAdjusted.has_value())
-				Evergreen::SetCursor(Cursor::ARROW);
+				Window::SetCursor(Cursor::ARROW);
 		}
 		else if (m_rowIndexBeingAdjusted.has_value())
 		{
 			// Mouse was previously over an adjustable row border, but check to make sure that is still the case
 			m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
 			if (!m_rowIndexBeingAdjusted.has_value())
-				Evergreen::SetCursor(Cursor::ARROW);
+				Window::SetCursor(Cursor::ARROW);
 		}
 		else if (m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY()))
 		{
 			// Mouse is newly over an adjustable column border -> update the cursor
-			Evergreen::SetCursor(Cursor::DOUBLE_ARROW_EW);
+			Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
 		}
 		else if (m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY()))
 		{
 			// Mouse is newly over an adjustable row border -> update the cursor
-			Evergreen::SetCursor(Cursor::DOUBLE_ARROW_NS);
+			Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
 		}
 	}
 }
@@ -639,7 +641,7 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
 
 		if (!m_columnIndexBeingAdjusted.has_value() && !m_rowIndexBeingAdjusted.has_value())
-			Evergreen::SetCursor(Cursor::ARROW);
+			Window::SetCursor(Cursor::ARROW);
 	}
 	else
 	{

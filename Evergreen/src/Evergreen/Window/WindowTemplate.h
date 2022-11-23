@@ -1,20 +1,20 @@
 #pragma once
 #include "pch.h"
 #include "Evergreen/Core.h"
-#include "WindowsWindowException.h"
-#include "Evergreen/WindowProperties.h"
+#include "Evergreen/Exceptions/WindowException.h"
+#include "WindowProperties.h"
 
 namespace Evergreen
 {
 
 template<typename T>
-class WindowsWindowTemplate
+class WindowTemplate
 {
 public:
-	WindowsWindowTemplate(const WindowProperties& props) noexcept;
-	WindowsWindowTemplate(const WindowsWindowTemplate&) = delete;
-	void operator=(const WindowsWindowTemplate&) = delete;
-	~WindowsWindowTemplate() noexcept;
+	WindowTemplate(const WindowProperties& props) noexcept;
+	WindowTemplate(const WindowTemplate&) = delete;
+	void operator=(const WindowTemplate&) = delete;
+	~WindowTemplate() noexcept;
 
 	virtual LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 	{
@@ -40,7 +40,7 @@ protected:
 };
 
 template<typename T>
-WindowsWindowTemplate<T>::WindowsWindowTemplate(const WindowProperties& props) noexcept :
+WindowTemplate<T>::WindowTemplate(const WindowProperties& props) noexcept :
 	m_height(props.height),
 	m_width(props.width),
 	m_title(props.title),
@@ -102,14 +102,14 @@ WindowsWindowTemplate<T>::WindowsWindowTemplate(const WindowProperties& props) n
 };
 
 template<typename T>
-WindowsWindowTemplate<T>::~WindowsWindowTemplate() noexcept
+WindowTemplate<T>::~WindowTemplate() noexcept
 {
 	UnregisterClass(wndBaseClassName, m_hInst);
 	DestroyWindow(m_hWnd);
 };
 
 template<typename T>
-LRESULT CALLBACK WindowsWindowTemplate<T>::HandleMsgSetupBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT CALLBACK WindowTemplate<T>::HandleMsgSetupBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	// use create parameter passed in from CreateWindow() to store window class pointer at WinAPI side
 	if (msg == WM_NCCREATE)
@@ -117,12 +117,12 @@ LRESULT CALLBACK WindowsWindowTemplate<T>::HandleMsgSetupBase(HWND hWnd, UINT ms
 		// extract ptr to window class from creation data
 		const CREATESTRUCTW* const pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
 
-		WindowsWindowTemplate<T>* const pWnd = static_cast<WindowsWindowTemplate<T>*>(pCreate->lpCreateParams);
+		WindowTemplate<T>* const pWnd = static_cast<WindowTemplate<T>*>(pCreate->lpCreateParams);
 
 		// set WinAPI-managed user data to store ptr to window class
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pWnd));
 		// set message proc to normal (non-setup) handler now that setup is finished
-		SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&WindowsWindowTemplate<T>::HandleMsgBase));
+		SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(&WindowTemplate<T>::HandleMsgBase));
 		// forward message to window class handler
 		return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 	}
@@ -132,10 +132,10 @@ LRESULT CALLBACK WindowsWindowTemplate<T>::HandleMsgSetupBase(HWND hWnd, UINT ms
 }
 
 template<typename T>
-LRESULT CALLBACK WindowsWindowTemplate<T>::HandleMsgBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT CALLBACK WindowTemplate<T>::HandleMsgBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	// retrieve ptr to window class
-	WindowsWindowTemplate<T>* const pWnd = reinterpret_cast<WindowsWindowTemplate<T>*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	WindowTemplate<T>* const pWnd = reinterpret_cast<WindowTemplate<T>*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 	// forward message to window class handler
 	return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 }

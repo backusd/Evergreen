@@ -45,13 +45,10 @@
     <ClInclude Include="src\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Window.h">
+    <ClInclude Include="src\Evergreen\Window\Window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindow.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowTemplate.h">
+    <ClInclude Include="src\Evergreen\Window\WindowTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\Exceptions\BaseException.h">
@@ -60,13 +57,10 @@
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowException.h">
+    <ClInclude Include="src\Evergreen\Window\WindowsMessageMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Platform\Windows\WindowsMessageMap.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\WindowProperties.h">
+    <ClInclude Include="src\Evergreen\Window\WindowProperties.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\Events\KeyCode.h">
@@ -102,10 +96,7 @@
     <ClInclude Include="src\Evergreen\Rendering\DeviceResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Utils\SetCursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\Platform\Windows\TranslateErrorCode.h">
+    <ClInclude Include="src\Evergreen\Window\TranslateErrorCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\Controls\Control.h">
@@ -115,9 +106,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\Styles\TextStyle.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\Platform\Windows\UI\WindowsText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,7 +119,7 @@
     <ClCompile Include="src\pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindow.cpp">
+    <ClCompile Include="src\Evergreen\Window\Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\Exceptions\BaseException.cpp">
@@ -140,10 +128,7 @@
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindowException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\Platform\Windows\WindowsMessageMap.cpp">
+    <ClCompile Include="src\Evergreen\Window\WindowsMessageMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesDX11.cpp">
@@ -167,10 +152,7 @@
     <ClCompile Include="src\Evergreen\UI\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\Platform\Windows\TranslateErrorCode.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\Utils\SetCursor.cpp">
+    <ClCompile Include="src\Evergreen\Window\TranslateErrorCode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\Controls\Control.cpp">
@@ -180,9 +162,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\Styles\TextStyle.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\Platform\Windows\UI\WindowsText.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -4,7 +4,7 @@
 
 #include "DxgiInfoManagerDX11.h"
 #include "Evergreen/Core.h"
-#include "Evergreen/Platform/Windows/WindowsWindowException.h"
+#include "Evergreen/Exceptions/WindowException.h"
 #include "DeviceResourcesExceptionDX11.h"
 
 

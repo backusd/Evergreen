@@ -3,6 +3,7 @@
 #include "Control.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
 
+/*
 namespace Evergreen
 {
 class EVERGREEN_API Text : public Control
@@ -38,3 +39,4 @@ protected:
 	// Rect						m_visibleRegion;
 };
 }
+*/

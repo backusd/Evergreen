@@ -3,8 +3,8 @@
 
 #include "pch.h"
 #include "DxgiInfoManagerDX11.h"
-#include "Evergreen/Window.h"
 #include "Evergreen/UI/Color.h"
+#include "Evergreen/Window/Window.h"
 
 namespace Evergreen
 {

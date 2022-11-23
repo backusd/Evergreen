@@ -3,6 +3,7 @@
 #include "Evergreen/Core.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 
+/*
 namespace Evergreen
 {
 	class EVERGREEN_API Control
@@ -21,3 +22,4 @@ namespace Evergreen
 		
 	};
 }
+*/

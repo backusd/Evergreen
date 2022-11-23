@@ -6,21 +6,8 @@
 #include "Events/ApplicationEvent.h"
 #include "UI/Layout.h"
 #include "UI/UI.h"
-#include "Window.h"
-
+#include "Evergreen/Window/Window.h"
 #include "Rendering/DeviceResources.h"
-
-/*
-#ifdef EG_DX11
-#include "Evergreen/Rendering/DX11/DeviceResourcesDX11.h"
-#elif EG_DX12
-#include "Evergreen/Rendering/DX12/DeviceResourcesDX12.h"
-#elif EG_OPENGL
-#include "Evergreen/Rendering/OpenGL/DeviceResourcesOpenGL.h"
-#elif EG_VULKAN
-#include "Evergreen/Rendering/Vulkan/DeviceResourcesVulkan.h"
-#endif
-*/
 
 namespace Evergreen
 {

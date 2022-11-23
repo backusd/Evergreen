@@ -3,7 +3,7 @@
 
 
 
-
+/*
 namespace Evergreen
 {
 Text::Text(const std::string& text = "") noexcept
@@ -38,3 +38,4 @@ void Text::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 }
 
 } // namespace Evergreen
+*/
