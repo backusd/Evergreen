@@ -108,6 +108,18 @@
     <ClInclude Include="src\Evergreen\Platform\Windows\TranslateErrorCode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Controls\Control.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Controls\Text.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Styles\TextStyle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\Platform\Windows\UI\WindowsText.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -159,6 +171,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\Utils\SetCursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\Control.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\Text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Styles\TextStyle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\Platform\Windows\UI\WindowsText.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -26,6 +26,7 @@
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
     <ClInclude Include="src\Evergreen\Platform\Windows\TranslateErrorCode.h" />
+    <ClInclude Include="src\Evergreen\Platform\Windows\UI\WindowsText.h" />
     <ClInclude Include="src\Evergreen\Platform\Windows\WindowsMessageMap.h" />
     <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindow.h" />
     <ClInclude Include="src\Evergreen\Platform\Windows\WindowsWindowException.h" />
@@ -36,6 +37,9 @@
     <ClInclude Include="src\Evergreen\Rendering\DX11\DX11Helper.h" />
     <ClInclude Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.h" />
     <ClInclude Include="src\Evergreen\UI\Color.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\Control.h" />
+    <ClInclude Include="src\Evergreen\UI\Styles\TextStyle.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\Text.h" />
     <ClInclude Include="src\Evergreen\UI\Layout.h" />
     <ClInclude Include="src\Evergreen\UI\UI.h" />
     <ClInclude Include="src\Evergreen\Utils\SetCursor.h" />
@@ -50,6 +54,7 @@
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\Platform\Windows\TranslateErrorCode.cpp" />
+    <ClCompile Include="src\Evergreen\Platform\Windows\UI\WindowsText.cpp" />
     <ClCompile Include="src\Evergreen\Platform\Windows\WindowsMessageMap.cpp" />
     <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindow.cpp" />
     <ClCompile Include="src\Evergreen\Platform\Windows\WindowsWindowException.cpp" />
@@ -57,6 +62,9 @@
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.cpp" />
     <ClCompile Include="src\Evergreen\UI\Color.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Controls\Control.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Styles\TextStyle.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Controls\Text.cpp" />
     <ClCompile Include="src\Evergreen\UI\Layout.cpp" />
     <ClCompile Include="src\Evergreen\UI\UI.cpp" />
     <ClCompile Include="src\Evergreen\Utils\SetCursor.cpp" />
