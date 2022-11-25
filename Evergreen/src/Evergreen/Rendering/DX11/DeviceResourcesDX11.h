@@ -31,6 +31,13 @@ public:
 	void BeginDraw() noexcept;
 	void EndDraw() noexcept;
 
+	IDWriteFactory7*	 DWriteFactory() const { return m_dwriteFactory.Get(); }
+	IWICImagingFactory2* WICImagingFactory() const { return m_wicImagingFactory.Get(); }
+	ID2D1Factory7*		 D2DFactory() const { return m_d2dFactory.Get(); }
+	ID2D1Device6*		 D2DDevice() const { return m_d2dDevice.Get(); }
+	ID2D1DeviceContext6* D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
+	ID2D1Bitmap1*		 D2DBitmap() const { return m_d2dBitmap.Get(); }
+
 	/*
 	static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
 
@@ -42,8 +49,9 @@ public:
 	*/
 
 #if defined(_DEBUG)
-private:
+public:
 	static DxgiInfoManagerDX11& GetInfoManager() noexcept { return m_infoManager; }
+private:
 	static DxgiInfoManagerDX11 m_infoManager;
 #endif
 

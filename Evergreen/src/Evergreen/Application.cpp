@@ -30,9 +30,9 @@ Application::Application() noexcept
 	m_window->SetOnMouseButtonDoubleClick(BIND_EVENT_FN(OnMouseButtonDoubleClick, MouseButtonDoubleClickEvent));
 
 	// Create DeviceResources
-	m_deviceResources = std::make_unique<DeviceResources>(m_window.get());
+	m_deviceResources = std::make_shared<DeviceResources>(m_window.get());
 
-	m_ui = std::make_unique<UI>(m_window);
+	m_ui = std::make_unique<UI>(m_deviceResources, m_window);
 }
 
 int Application::Run() noexcept

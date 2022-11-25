@@ -52,7 +52,7 @@ private:
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
 	std::shared_ptr<Window> m_window;
-	std::unique_ptr<DeviceResources> m_deviceResources;
+	std::shared_ptr<DeviceResources> m_deviceResources;
 
 
 };

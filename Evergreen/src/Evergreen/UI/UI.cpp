@@ -2,13 +2,15 @@
 #include "UI.h"
 
 #include <fstream>
-#include <sstream>
+//#include <sstream>
+
 
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__))
 
 namespace Evergreen
 {
-UI::UI(std::shared_ptr<Window> window) noexcept :
+UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
+	m_deviceResources(deviceResources),
 	m_window(window),
 	m_jsonRoot({}),
 	m_rootLayout(nullptr)
@@ -23,7 +25,6 @@ void UI::LoadDefaultUI() noexcept
 
 
 	// TEST CODE
-	/*
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	if (std::optional<Row*> row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
 	{
@@ -33,11 +34,23 @@ void UI::LoadDefaultUI() noexcept
 	{
 		row1.value()->TopIsAdjustable(true);
 	}
-	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
+
+	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(m_deviceResources);
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(m_deviceResources, L"some test text", style))
+	{
+		EG_CORE_TRACE("{}", "Successfully created text");
+	}
+	else
+	{
+		EG_CORE_ERROR("{}", "Failed to create text");
+	}
+
+
+	/*
 	if (std::optional<Layout*> sublayoutOpt = m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout"))
 	{
 		Layout* sublayout = sublayoutOpt.value();

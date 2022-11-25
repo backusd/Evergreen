@@ -3,25 +3,59 @@
 
 
 
-/*
 namespace Evergreen
 {
-Text::Text(const std::string& text = "") noexcept
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, std::shared_ptr<TextStyle> style, D2D1::Matrix3x2F position) noexcept : 
+	Control(deviceResources),
+	m_text(text),
+	m_style(style),
+	m_screenTranslation(D2D1::Matrix3x2F::Translation(0.0f, 0.0f)),
+	m_textLayout(nullptr)
 {
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
+	// Call text changed to initialize the text layout
+	TextChanged();
 }
-Text::Text(const Text& text) noexcept
+Text::Text(const Text& text) noexcept :
+	Control(text.m_deviceResources),
+	m_text(text.m_text),
+	m_screenTranslation(text.m_screenTranslation),
+	m_textLayout(nullptr)
 {
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
+	// Call text changed to initialize the text layout
+	TextChanged();
 }
-void Text::operator=(const Text&) noexcept
+void Text::operator=(const Text& rhs) noexcept
 {
+	m_deviceResources = rhs.m_deviceResources;
+	m_text = rhs.m_text;
+	m_screenTranslation = rhs.m_screenTranslation;
+	m_textLayout = nullptr;
 
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+
+	// Call text changed to initialize the text layout
+	TextChanged();
 }
 
-void Text::Render(DeviceResources* deviceResources) const noexcept
+void Text::Render() const noexcept
 {
+	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+	//context->PushAxisAlignedClip(m_visibleRegion, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 
+	context->SetTransform(m_screenTranslation);
+
+	context->DrawTextLayout(
+		D2D1::Point2F(0.0f, 0.0f),
+		m_textLayout.Get(),
+		m_style->ColorBrush(),
+		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- investigate these options, clipping is interesting
+	);
+
+	//context->PopAxisAlignedClip();
 }
 
 void Text::OnMouseMove(MouseMoveEvent& e) noexcept 
@@ -37,5 +71,28 @@ void Text::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 }
 
+void Text::TextChanged()
+{
+	/*
+	D2D1_RECT_F rect = GetParentRect();
+
+	// Adjust the rect with the margins
+	rect = D2D1::RectF(rect.left + m_marginLeft, rect.top + m_marginTop, rect.right - m_marginRight, rect.bottom - m_marginBottom);
+
+	float maxWidth = rect.right - rect.left; // std::max(0, width of parent rect)
+	float maxHeight = rect.bottom - rect.top; // std::max(0, height of parent rect)
+
+	m_textLayout = m_textTheme->CreateTextLayout(m_text, maxWidth, maxHeight);
+
+	ThrowIfFailed(m_textLayout->GetMetrics(&m_textMetrics));
+
+
+	// Update Screen Translation ---
+	m_screenTranslation = D2D1::Matrix3x2F::Translation(rect.left, rect.top);
+	*/
+
+	m_textLayout = m_style->CreateTextLayout(m_text);
+	m_textLayout->GetMetrics(&m_textMetrics);
+}
+
 } // namespace Evergreen
-*/

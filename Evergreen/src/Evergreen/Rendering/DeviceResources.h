@@ -3,6 +3,7 @@
 
 #ifdef EG_DX11
 #include "Evergreen/Rendering/DX11/DeviceResourcesDX11.h"
+#include "Evergreen/Rendering/DX11/DeviceResourcesExceptionDX11.h"
 #define DeviceResources DeviceResourcesDX11
 #elif EG_DX12
 #include "Evergreen/Rendering/DX12/DeviceResourcesDX12.h"

@@ -7,6 +7,7 @@
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Layout.h"
 #include "Evergreen/Window/Window.h"
+#include "Evergreen/UI/Controls/Text.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -23,7 +24,7 @@ namespace Evergreen
 class EVERGREEN_API UI
 {
 public:
-	UI(std::shared_ptr<Window> window) noexcept;
+	UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept;
 	UI(const UI&) = delete;
 	void operator=(const UI&) = delete;
 
@@ -57,6 +58,8 @@ private:
 	std::unique_ptr<Layout>		m_rootLayout;
 	std::vector<std::string>	m_errorMessages;
 	std::filesystem::path		m_jsonRootDirectory;
+
+	std::shared_ptr<DeviceResources> m_deviceResources;
 
 
 };

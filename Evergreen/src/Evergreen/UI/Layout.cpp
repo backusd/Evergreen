@@ -400,6 +400,9 @@ void Layout::Render(DeviceResources* deviceResources) const noexcept
 {
 	DrawBorders(deviceResources);
 
+	for (const std::unique_ptr<Control>& control : m_controls)
+		control->Render();
+
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
 		sublayout->Render(deviceResources);
 }

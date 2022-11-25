@@ -3,6 +3,7 @@
 #include "Evergreen/Core.h"
 #include "Evergreen/Log.h"
 #include "Evergreen/Rendering/DeviceResources.h"
+#include "Evergreen/UI/Controls/Control.h"
 
 
 
@@ -144,6 +145,9 @@ public:
 
 	std::optional<Layout*> AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") noexcept;
 
+	template<class T, class ... U>
+	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources, const U& ... args ) noexcept;
+
 	std::optional<Row*> AddRow(RowColumnDefinition definition) noexcept;
 	std::optional<Column*> AddColumn(RowColumnDefinition definition) noexcept;
 
@@ -195,6 +199,10 @@ private:
 	std::vector<std::unique_ptr<Layout>>	m_subLayouts;
 	std::vector<RowColumnPosition>			m_subLayoutPositions;
 
+	std::vector<std::unique_ptr<Control>>	m_controls;
+	std::vector<RowColumnPosition>			m_controlPositions;
+
+
 // DEBUG ONLY ======================================================================================================
 
 public:
@@ -202,6 +210,14 @@ public:
 
 };
 #pragma warning( pop )
+
+template<class T, class ... U>
+std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources, const U& ... args) noexcept
+{
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, args...);
+	m_controls.push_back(std::move(control));
+	return (T*)m_controls.back().get();
+}
 
 
 }
