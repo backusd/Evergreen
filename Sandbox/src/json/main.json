@@ -82,9 +82,9 @@
 				"Text": "View",
 				"Column": 2,
 				"Color": "Blue",
-				"FontFamily": "Arial",
+				"FontFamily": "Georgia",
 				"FontSize": 16,
-				"Badkey":  1
+				"FontWeight": "Normal"
 			}
 
 

@@ -31,7 +31,7 @@ public:
 	const float* Data() const noexcept { return &m_color[0]; }
 
 	static bool IsValidColor(std::string colorName) noexcept { return m_colorNameMap.find(colorName) != m_colorNameMap.end(); }
-	static std::optional<const Color> GetColor(std::string colorName) noexcept;
+	static std::optional<const Color> GetColor(const std::string& colorName) noexcept;
 
 	static const Color AliceBlue;
 	static const Color AntiqueWhite;

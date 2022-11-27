@@ -317,7 +317,7 @@ float Color::ClampToOne(float value) const noexcept
 	return value > 1.0f ? value / 255.0f : value;
 }
 
-std::optional<const Color> Color::GetColor(std::string colorName) noexcept
+std::optional<const Color> Color::GetColor(const std::string& colorName) noexcept
 {
 	if (!IsValidColor(colorName))
 		return std::nullopt;

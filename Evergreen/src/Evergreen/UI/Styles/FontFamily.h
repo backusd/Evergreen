@@ -193,6 +193,8 @@ public:
 
 	std::string Get() { return m_value; }
 
+	static bool IsValidFontFamily(std::string fontFamily) noexcept { return m_fontFamilyNameMap.find(fontFamily) != m_fontFamilyNameMap.end(); }
+	static std::optional<const FontFamily> GetFontFamily(const std::string& name) noexcept;
 	
 
 private:
@@ -201,6 +203,7 @@ private:
 	FontFamily(const std::string& name) noexcept;
 
 	std::string m_value;
+	static const std::unordered_map<std::string, const FontFamily> m_fontFamilyNameMap;
 
 	
 };

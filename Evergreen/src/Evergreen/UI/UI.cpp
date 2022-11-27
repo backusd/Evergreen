@@ -559,11 +559,17 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 		EG_CORE_TRACE("Loading Text with 'Style' key");
 
 		style = std::make_shared<TextStyle>(m_deviceResources);
+
+
+
+
+
+
+
 	}
 	else
 	{
 		EG_CORE_TRACE("Loading Text with NO 'Style' key");
-
 
 		// No reference to global TextStyle, so just parse the json and create a new one
 		if (!ParseTextStyle(data, style))
@@ -576,14 +582,13 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 
 #ifdef _DEBUG
 	// If we are in DEBUG, check all the keys against valid set of keys. WARN if any keys are not recognized
-	constexpr std::array validKeys = { "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Style", "Color", 
+	constexpr std::array validKeys = { "import", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Style", "Color", 
 		"FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment", "ParagraphAlignment",
 		"WordWrapping", "Trimming", "Locale" };
 	for (auto& [key, value] : data.items())
 		if (std::find(validKeys.begin(), validKeys.end(), key) == validKeys.end())
 			EG_CORE_WARN("{}:{} - Text control with name '{}': Ignoring unrecognized key: '{}'", __FILE__, __LINE__, name, key);
 #endif // _DEBUG
-
 
 	parent->AddControl<Text>(position, m_deviceResources, text, style);
 
@@ -602,6 +607,114 @@ bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
 	DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP;
 	DWRITE_TRIMMING trimming = DWRITE_TRIMMING();
 	std::wstring locale = L"en-US";
+
+	// COLOR
+	if (data.contains("Color"))
+	{
+		if (!data["Color"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'Color' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["Color"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'Color' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["Color"]);
+			return false;
+		}
+
+		if (std::optional<const Color> c = Color::GetColor(data["Color"].get<std::string>()))
+		{
+			color = c.value();
+		}
+		else
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. Unrecognized Color: {}", __FILE__, __LINE__, data["Color"]);
+			UI_ERROR("Failed to parse TextStyle. Unrecognized Color: {}", data["Color"]);
+			return false;
+		}
+	}
+
+	// FONT FAMILY
+	if (data.contains("FontFamily"))
+	{
+		if (!data["FontFamily"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontFamily' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["FontFamily"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontFamily' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["FontFamily"]);
+			return false;
+		}
+
+		if (std::optional<const Evergreen::FontFamily> f = FontFamily::GetFontFamily(data["FontFamily"].get<std::string>()))
+		{
+			fontFamily = f.value();
+		}
+		else
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. Unrecognized Font Family: {}", __FILE__, __LINE__, data["FontFamily"]);
+			UI_ERROR("Failed to parse TextStyle. Unrecognized Font Family: {}", data["FontFamily"]);
+			return false;
+		}
+	}
+
+	// FONT SIZE
+	if (data.contains("FontSize"))
+	{
+		if (!data["FontSize"].is_number())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontSize' field must be a number. Invalid value: {}", __FILE__, __LINE__, data["FontSize"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontSize' field must be a number.");
+			UI_ERROR("Invalid value : {}", data["FontSize"]);
+			return false;
+		}
+
+		fontSize = data["FontSize"].get<float>();
+
+		if (fontSize <= 0)
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontSize' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, fontSize);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontSize' must be greater than 0.");
+			UI_ERROR("Invalid value : {}", fontSize);
+			return false;
+		}
+	}
+
+	// FONT WEIGHT
+	if (data.contains("FontWeight"))
+	{
+		if (!data["FontWeight"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontWeight' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["FontWeight"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontWeight' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["FontWeight"]);
+			return false;
+		}
+
+		std::string fontWeightString = data["FontWeight"].get<std::string>();
+		if (fontWeightString.compare("Black") == 0)				fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BLACK;
+		else if (fontWeightString.compare("Bold") == 0)			fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD;
+		else if (fontWeightString.compare("DemiBold") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_DEMI_BOLD;
+		else if (fontWeightString.compare("ExtraBlack") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_BLACK;
+		else if (fontWeightString.compare("ExtraBold") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_BOLD;
+		else if (fontWeightString.compare("ExtraLight") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_LIGHT;
+		else if (fontWeightString.compare("Heavy") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_HEAVY;
+		else if (fontWeightString.compare("Light") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT;
+		else if (fontWeightString.compare("Medium") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_MEDIUM;
+		else if (fontWeightString.compare("Normal") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_NORMAL;
+		else if (fontWeightString.compare("Regular") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR;
+		else if (fontWeightString.compare("SemiBold") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_SEMI_BOLD;
+		else if (fontWeightString.compare("SemiLight") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_SEMI_LIGHT;
+		else if (fontWeightString.compare("Thin") == 0)			fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_THIN;
+		else if (fontWeightString.compare("UltraBlack") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_BLACK;
+		else if (fontWeightString.compare("UltraBold") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_BOLD;
+		else if (fontWeightString.compare("UltraLight") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_LIGHT;
+		else
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontWeight' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["FontWeight"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontWeight' field was unrecognized.");
+			UI_ERROR("Invalid value : {}", data["FontWeight"]);
+			return false;
+		}
+	}
+
+
 
 
 
