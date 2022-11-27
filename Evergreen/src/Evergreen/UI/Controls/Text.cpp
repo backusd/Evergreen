@@ -5,7 +5,7 @@
 
 namespace Evergreen
 {
-Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, std::shared_ptr<TextStyle> style, D2D1::Matrix3x2F position) noexcept : 
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, std::shared_ptr<TextStyle> style) noexcept : 
 	Control(deviceResources),
 	m_text(text),
 	m_style(style),

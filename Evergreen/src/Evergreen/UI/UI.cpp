@@ -25,6 +25,7 @@ void UI::LoadDefaultUI() noexcept
 
 
 	// TEST CODE
+	/*
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	if (std::optional<Row*> row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
 	{
@@ -43,7 +44,6 @@ void UI::LoadDefaultUI() noexcept
 	{
 		column.value()->LeftIsAdjustable(true);
 	}
-
 
 	std::wstring textString = L"Some very long test text";
 	std::shared_ptr<TextStyle> defaultStyle = std::make_shared<TextStyle>(m_deviceResources);
@@ -82,7 +82,7 @@ void UI::LoadDefaultUI() noexcept
 	{
 		EG_CORE_ERROR("{}", "Failed to create custom text");
 	}
-
+	*/
 
 	/*
 	if (std::optional<Layout*> sublayoutOpt = m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout"))
@@ -244,6 +244,11 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 		if (type.compare("Layout") == 0)
 		{
 			if (!LoadSubLayout(layout, data[key], key))
+				return false;
+		}
+		else if (type.compare("Text") == 0)
+		{
+			if (!LoadTextControl(layout, data[key], key))
 				return false;
 		}
 		else
@@ -486,11 +491,6 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 }
 bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noexcept
 {
-	unsigned int row = 0;
-	unsigned int column = 0;
-	unsigned int rowSpan = 1;
-	unsigned int columnSpan = 1;
-
 	// First, import any necessary data
 	if (data.contains("import"))
 	{
@@ -498,71 +498,17 @@ bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noex
 			return false;
 	}
 
-	if (data.contains("Row"))
+	// Parse the row/column/rowspan/columnspan values
+	RowColumnPosition position;
+	if (!ParseRowColumnPosition(data, position))
 	{
-		if (!data["Row"].is_number_unsigned())
-		{
-			EG_CORE_ERROR("{}:{} - Sub-layout 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Row"]);
-			UI_ERROR("{}", "Sub-layout 'Row' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["Row"]);
-			return false;
-		}
-
-		row = data["Row"].get<unsigned int>();
+		EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, name, data["Row"]);
+		UI_ERROR("Text control with name '{}': 'Row' value must be an unsigned int.", name);
+		UI_ERROR("Invalid value : {}", data["Row"]);
+		return false;
 	}
 
-	if (data.contains("Column"))
-	{
-		if (!data["Column"].is_number_unsigned())
-		{
-			EG_CORE_ERROR("{}:{} - Sub-layout 'Column' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Column"]);
-			UI_ERROR("{}", "Sub-layout 'Column' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["Column"]);
-			return false;
-		}
-
-		column = data["Column"].get<unsigned int>();
-	}
-
-	if (data.contains("RowSpan"))
-	{
-		if (!data["RowSpan"].is_number_unsigned())
-		{
-			EG_CORE_ERROR("{}:{} - Sub-layout 'RowSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["RowSpan"]);
-			UI_ERROR("{}", "Sub-layout 'RowSpan' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["RowSpan"]);
-			return false;
-		}
-
-		rowSpan = data["RowSpan"].get<unsigned int>();
-
-		if (rowSpan == 0)
-		{
-			EG_CORE_WARN("{}:{} - Sub-layout with name '{}' has 'RowSpan' value of 0. Setting rowSpan = 1", __FILE__, __LINE__, name);
-			rowSpan = 1;
-		}
-	}
-
-	if (data.contains("ColumnSpan"))
-	{
-		if (!data["ColumnSpan"].is_number_unsigned())
-		{
-			EG_CORE_ERROR("{}:{} - Sub-layout 'ColumnSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["ColumnSpan"]);
-			UI_ERROR("{}", "Sub-layout 'ColumnSpan' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["ColumnSpan"]);
-			return false;
-		}
-
-		columnSpan = data["ColumnSpan"].get<unsigned int>();
-
-		if (columnSpan == 0)
-		{
-			EG_CORE_WARN("{}:{} - Sub-layout with name '{}' has 'ColumnSpan' value of 0. Setting columnSpan = 1", __FILE__, __LINE__, name);
-			columnSpan = 1;
-		}
-	}
-
-	if (std::optional<Layout*> sublayout = parent->AddSubLayout({ row, column, rowSpan, columnSpan }, name))
+	if (std::optional<Layout*> sublayout = parent->AddSubLayout(position, name))
 	{
 		return LoadLayoutDetails(sublayout.value(), data);
 	}
@@ -570,7 +516,178 @@ bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noex
 
 	return false;
 }
+bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) noexcept
+{
+	// First, import any necessary data
+	if (data.contains("import"))
+	{
+		if (!ImportJSON(data))
+			return false;
+	}
 
+	std::wstring text = L"";
+	std::shared_ptr<TextStyle> style = nullptr;
+	RowColumnPosition position;
+
+	// Parse the row/column/rowspan/columnspan values
+	if (!ParseRowColumnPosition(data, position))
+	{
+		EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Row' field must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, name, data["Row"]);
+		UI_ERROR("Text control with name '{}': 'Row' value must be an unsigned int.", name);
+		UI_ERROR("Invalid value : {}", data["Row"]);
+		return false;
+	}
+
+	// Parse the Text field (not required, however)
+	if (data.contains("Text"))
+	{
+		if (!data["Text"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Text' field must be a string. Invalid value: {}", __FILE__, __LINE__, name, data["Text"]);
+			UI_ERROR("Text control with name '{}': 'Text' field must be a string.", name);
+			UI_ERROR("Invalid value : {}", data["Text"]);
+			return false;
+		}
+
+		std::string parsedText = data["Text"].get<std::string>();
+		text = std::wstring(parsedText.begin(), parsedText.end());
+	}
+
+	// If the json data contains "Style", then load a shared_ptr to a TextStyle from the root level json data
+	if (data.contains("Style"))
+	{
+		EG_CORE_TRACE("Loading Text with 'Style' key");
+
+		style = std::make_shared<TextStyle>(m_deviceResources);
+	}
+	else
+	{
+		EG_CORE_TRACE("Loading Text with NO 'Style' key");
+
+
+		// No reference to global TextStyle, so just parse the json and create a new one
+		if (!ParseTextStyle(data, style))
+		{
+			EG_CORE_ERROR("{}:{} - Text control with name '{}': Failed to parse text style fields.", __FILE__, __LINE__, name);
+			UI_ERROR("Text control with name '{}': Failed to parse text style fields.", name);
+			return false;
+		}
+	}
+
+#ifdef _DEBUG
+	// If we are in DEBUG, check all the keys against valid set of keys. WARN if any keys are not recognized
+	constexpr std::array validKeys = { "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Style", "Color", 
+		"FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment", "ParagraphAlignment",
+		"WordWrapping", "Trimming", "Locale" };
+	for (auto& [key, value] : data.items())
+		if (std::find(validKeys.begin(), validKeys.end(), key) == validKeys.end())
+			EG_CORE_WARN("{}:{} - Text control with name '{}': Ignoring unrecognized key: '{}'", __FILE__, __LINE__, name, key);
+#endif // _DEBUG
+
+
+	parent->AddControl<Text>(position, m_deviceResources, text, style);
+
+	return true;
+}
+bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
+{
+	Evergreen::Color color = Evergreen::Color::Black;
+	Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri;
+	float fontSize = 12.0f;
+	DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR;
+	DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL;
+	DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL;
+	DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING;
+	DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+	DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP;
+	DWRITE_TRIMMING trimming = DWRITE_TRIMMING();
+	std::wstring locale = L"en-US";
+
+
+
+
+	style = std::make_shared<TextStyle>(m_deviceResources, color, fontFamily, fontSize,
+		fontWeight, fontStyle, fontStretch, textAlignment, paragraphAlignment,
+		wordWrapping, trimming, locale);
+
+	return true;
+}
+bool UI::ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept
+{
+	if (data.contains("Row"))
+	{
+		if (!data["Row"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Row"]);
+			UI_ERROR("{}", "'Row' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["Row"]);
+			return false;
+		}
+
+		position.Row = data["Row"].get<unsigned int>();
+	}
+	else
+		position.Row = 0;
+
+	if (data.contains("Column"))
+	{
+		if (!data["Column"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - 'Column' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Column"]);
+			UI_ERROR("{}", "'Column' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["Column"]);
+			return false;
+		}
+
+		position.Column = data["Column"].get<unsigned int>();
+	}
+	else
+		position.Column = 0;
+
+	if (data.contains("RowSpan"))
+	{
+		if (!data["RowSpan"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - 'RowSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["RowSpan"]);
+			UI_ERROR("{}", "'RowSpan' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["RowSpan"]);
+			return false;
+		}
+
+		position.RowSpan = data["RowSpan"].get<unsigned int>();
+
+		if (position.RowSpan == 0)
+		{
+			EG_CORE_WARN("{}:{} - Found 'RowSpan' with value of 0. Setting rowSpan = 1", __FILE__, __LINE__);
+			position.RowSpan = 1;
+		}
+	}
+	else
+		position.RowSpan = 1;
+
+	if (data.contains("ColumnSpan"))
+	{
+		if (!data["ColumnSpan"].is_number_unsigned())
+		{
+			EG_CORE_ERROR("{}:{} - 'ColumnSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["ColumnSpan"]);
+			UI_ERROR("{}", "'ColumnSpan' value must be an unsigned int.");
+			UI_ERROR("Invalid value : {}", data["ColumnSpan"]);
+			return false;
+		}
+
+		position.ColumnSpan = data["ColumnSpan"].get<unsigned int>();
+
+		if (position.ColumnSpan == 0)
+		{
+			EG_CORE_WARN("{}:{} - Found 'ColumnSpan' with value of 0. Setting columnSpan = 1", __FILE__, __LINE__);
+			position.ColumnSpan = 1;
+		}
+	}
+	else
+		position.ColumnSpan = 1;
+
+	return true;
+}
 bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept
 {
 	// The data must be an int, float, or string

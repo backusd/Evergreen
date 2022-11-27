@@ -16,8 +16,7 @@ class EVERGREEN_API Text : public Control
 public:
 	Text(std::shared_ptr<DeviceResources> deviceResources, 
 		const std::wstring& text = L"",
-		std::shared_ptr<TextStyle> style = nullptr,
-		D2D1::Matrix3x2F position = D2D1::Matrix3x2F::Translation(0.0f, 0.0f)) noexcept;
+		std::shared_ptr<TextStyle> style = nullptr) noexcept;
 	Text(const Text& text) noexcept;
 	void operator=(const Text&) noexcept;
 	virtual ~Text() noexcept {}

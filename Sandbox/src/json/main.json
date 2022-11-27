@@ -15,6 +15,13 @@
 		"ColumnSpan": 3
 	},
 
+	"CustomTextStyle": {
+		"Type": "TextStyle",
+		"Color": "Green",
+		"FontFamily": "Arial",
+		"FontSize": 24
+	},
+
 	"root": {
 
 		"RowDefinitions": [
@@ -55,7 +62,33 @@
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": "1*" }
-			]
+			],
+
+			"FileText": {
+				"Type": "Text",
+				"Text": "File",
+				"Style": "CustomTextStyle"
+			},
+
+			"EditText": {
+				"Type": "Text",
+				"Text": "Edit",
+				"Column": 1,
+				"Style": "CustomTextStyle"
+			},
+
+			"ViewText": {
+				"Type": "Text",
+				"Text": "View",
+				"Column": 2,
+				"Color": "Blue",
+				"FontFamily": "Arial",
+				"FontSize": 16,
+				"Badkey":  1
+			}
+
+
+
 		},
 
 
