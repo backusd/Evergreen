@@ -211,6 +211,7 @@ void Layout::UpdateLayout() noexcept
 	UpdateRows();
 	UpdateColumns();
 	UpdateSubLayouts();
+	UpdateControls();
 
 #ifdef _DEBUG
 	LayoutCheck();
@@ -278,6 +279,7 @@ void Layout::UpdateRows() noexcept
 
 	// 
 	UpdateSubLayouts();
+	UpdateControls();
 }
 void Layout::UpdateColumns() noexcept
 {
@@ -341,6 +343,7 @@ void Layout::UpdateColumns() noexcept
 
 	// 
 	UpdateSubLayouts();
+	UpdateControls();
 }
 void Layout::UpdateSubLayouts() noexcept
 {
@@ -354,6 +357,24 @@ void Layout::UpdateSubLayouts() noexcept
 		m_subLayouts[iii]->m_height = m_rows[m_subLayoutPositions[iii].Row + m_subLayoutPositions[iii].RowSpan - 1].Bottom() - m_rows[m_subLayoutPositions[iii].Row].Top();
 
 		m_subLayouts[iii]->UpdateLayout();
+	}
+}
+void Layout::UpdateControls() noexcept
+{
+	EG_CORE_ASSERT(m_controls.size() == m_controlPositions.size(), std::format("{}:{} Number of controls ({}) does not match number of controlPositions ({}) for layout '{}'", __FILE__, __LINE__, m_controls.size(), m_controlPositions.size(), m_name));
+
+	for (unsigned int iii = 0; iii < m_controls.size(); ++iii)
+	{
+		m_controls[iii]->TopLeftPosition(
+			m_columns[m_controlPositions[iii].Column].Left(),
+			m_rows[m_controlPositions[iii].Row].Top()
+		);
+		m_controls[iii]->AllowedRegion(
+			m_columns[m_controlPositions[iii].Column].Left(),
+			m_rows[m_controlPositions[iii].Row].Top(),
+			m_columns[m_controlPositions[iii].Column + m_controlPositions[iii].ColumnSpan - 1].Right(),
+			m_rows[m_controlPositions[iii].Row + m_controlPositions[iii].RowSpan - 1].Bottom()
+		);
 	}
 }
 
@@ -564,6 +585,7 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 	
 		// 
 		UpdateSubLayouts();
+		UpdateControls();
 	}
 	else
 	{

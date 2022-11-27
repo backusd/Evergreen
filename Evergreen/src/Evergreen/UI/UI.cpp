@@ -35,18 +35,52 @@ void UI::LoadDefaultUI() noexcept
 		row1.value()->TopIsAdjustable(true);
 	}
 
-	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
-	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
-
-
-	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(m_deviceResources);
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(m_deviceResources, L"some test text", style))
+	if (std::optional<Column*> column = m_rootLayout->AddColumn({ RowColumnType::FIXED, 100.0f }))
 	{
-		EG_CORE_TRACE("{}", "Successfully created text");
+		column.value()->RightIsAdjustable(true);
+	}
+	if (std::optional<Column*> column = m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f }))
+	{
+		column.value()->LeftIsAdjustable(true);
+	}
+
+
+	std::wstring textString = L"Some very long test text";
+	std::shared_ptr<TextStyle> defaultStyle = std::make_shared<TextStyle>(m_deviceResources);
+	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
+		m_deviceResources,
+		Evergreen::Color::Black,
+		Evergreen::FontFamily::Calibri,
+		22.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD
+	);
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(m_deviceResources, textString, defaultStyle))
+	{
+		EG_CORE_TRACE("{}", "Successfully created default text");
 	}
 	else
 	{
-		EG_CORE_ERROR("{}", "Failed to create text");
+		EG_CORE_ERROR("{}", "Failed to create default text");
+	}
+
+	RowColumnPosition position;
+	position.Row = 1;
+	position.Column = 0;
+	position.RowSpan = 1;
+	position.ColumnSpan = 1;
+
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, textString, style))
+	{
+		EG_CORE_TRACE("{}", "Successfully created custom text");
+	}
+	else
+	{
+		EG_CORE_ERROR("{}", "Failed to create custom text");
 	}
 
 

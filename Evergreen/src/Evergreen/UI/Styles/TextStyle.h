@@ -21,15 +21,15 @@ public:
 		std::shared_ptr<DeviceResources> deviceResources,
 		Evergreen::Color color = Evergreen::Color::Black,
 		Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri,
+		float fontSize = 12.0f,
 		DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
 		DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
 		DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-		float fontSize = 12.0f,
-		const std::wstring& locale = L"en-US",
 		DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
 		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
 		DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP,
-		DWRITE_TRIMMING trimming = DWRITE_TRIMMING()
+		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
+		const std::wstring& locale = L"en-US"
 	) noexcept;
 	TextStyle(const TextStyle&) noexcept;
 	void operator=(const TextStyle&) noexcept;

@@ -7,9 +7,9 @@ namespace Evergreen
 {
 	TextStyle::TextStyle(
 		std::shared_ptr<DeviceResources> deviceResources, Evergreen::Color color, Evergreen::FontFamily fontFamily,
-		DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle, DWRITE_FONT_STRETCH fontStretch, float fontSize,
-		const std::wstring& locale, DWRITE_TEXT_ALIGNMENT textAlignment, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment,
-		DWRITE_WORD_WRAPPING wordWrapping, DWRITE_TRIMMING trimming) noexcept :
+		float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle, DWRITE_FONT_STRETCH fontStretch,
+		DWRITE_TEXT_ALIGNMENT textAlignment, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_WORD_WRAPPING wordWrapping, 
+		DWRITE_TRIMMING trimming, const std::wstring& locale) noexcept :
 			m_deviceResources(deviceResources), m_color(color), m_fontFamily(fontFamily),
 			m_fontWeight(fontWeight), m_fontStyle(fontStyle), m_fontStretch(fontStretch), m_fontSize(fontSize),
 			m_locale(locale), m_textAlignment(textAlignment), m_paragraphAlignment(paragraphAlignment),
@@ -154,8 +154,7 @@ namespace Evergreen
 	}
 
 	ComPtr<IDWriteTextLayout4> TextStyle::CreateTextLayout(std::wstring text, float maxWidth, float maxHeight) noexcept
-	{
-		
+	{		
 		ComPtr<IDWriteTextLayout> textLayout;
 		ComPtr<IDWriteTextLayout4> textLayout4;
 

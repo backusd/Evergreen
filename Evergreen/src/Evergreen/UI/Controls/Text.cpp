@@ -9,7 +9,6 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 	Control(deviceResources),
 	m_text(text),
 	m_style(style),
-	m_screenTranslation(D2D1::Matrix3x2F::Translation(0.0f, 0.0f)),
 	m_textLayout(nullptr)
 {
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
@@ -20,7 +19,7 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 Text::Text(const Text& text) noexcept :
 	Control(text.m_deviceResources),
 	m_text(text.m_text),
-	m_screenTranslation(text.m_screenTranslation),
+	m_style(text.m_style),
 	m_textLayout(nullptr)
 {
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
@@ -32,7 +31,7 @@ void Text::operator=(const Text& rhs) noexcept
 {
 	m_deviceResources = rhs.m_deviceResources;
 	m_text = rhs.m_text;
-	m_screenTranslation = rhs.m_screenTranslation;
+	m_style = rhs.m_style;
 	m_textLayout = nullptr;
 
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
@@ -44,18 +43,19 @@ void Text::operator=(const Text& rhs) noexcept
 void Text::Render() const noexcept
 {
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
-	//context->PushAxisAlignedClip(m_visibleRegion, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+	context->PushAxisAlignedClip(m_allowedRegion, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 
-	context->SetTransform(m_screenTranslation);
+	// Don't set a transform - it will also affect the location of the AxisAlignedClip
+	//context->SetTransform(D2D1::Matrix3x2F::Translation(m_topLeftPosition.x, m_topLeftPosition.y - 15.0f));
 
 	context->DrawTextLayout(
-		D2D1::Point2F(0.0f, 0.0f),
+		m_topLeftPosition,
 		m_textLayout.Get(),
 		m_style->ColorBrush(),
-		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- investigate these options, clipping is interesting
+		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- TODO: investigate these options, clipping is interesting
 	);
 
-	//context->PopAxisAlignedClip();
+	context->PopAxisAlignedClip();
 }
 
 void Text::OnMouseMove(MouseMoveEvent& e) noexcept 
@@ -91,8 +91,22 @@ void Text::TextChanged()
 	m_screenTranslation = D2D1::Matrix3x2F::Translation(rect.left, rect.top);
 	*/
 
-	m_textLayout = m_style->CreateTextLayout(m_text);
+	m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
 	m_textLayout->GetMetrics(&m_textMetrics);
+}
+
+void Text::AllowedRegion(D2D1_RECT_F region) noexcept
+{
+	m_allowedRegion = region;
+	TextChanged();
+}
+void Text::AllowedRegion(float left, float top, float right, float bottom) noexcept
+{
+	m_allowedRegion.left = left;
+	m_allowedRegion.top = top;
+	m_allowedRegion.right = right;
+	m_allowedRegion.bottom = bottom;
+	TextChanged();
 }
 
 } // namespace Evergreen

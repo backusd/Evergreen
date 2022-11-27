@@ -27,6 +27,8 @@ public:
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
+	void AllowedRegion(D2D1_RECT_F region) noexcept override;
+	void AllowedRegion(float left, float top, float right, float bottom) noexcept override;
 
 	// Text specific
 	const std::wstring& GetText() const noexcept { return m_text; }
@@ -41,9 +43,6 @@ private:
 	std::wstring				m_text;
 	std::shared_ptr<TextStyle>	m_style;
 	DWRITE_TEXT_METRICS			m_textMetrics;
-	D2D1::Matrix3x2F			m_screenTranslation;
-
-	D2D1_RECT_F					m_visibleRegion;
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4>	m_textLayout;
 };
