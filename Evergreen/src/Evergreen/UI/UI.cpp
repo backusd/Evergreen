@@ -687,37 +687,211 @@ bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
 			return false;
 		}
 
+		static const std::unordered_map<std::string, DWRITE_FONT_WEIGHT> fontWeightMap = {
+			{ "Black", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BLACK },
+			{ "Bold", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD },
+			{ "DemiBold", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_DEMI_BOLD },
+			{ "ExtraBlack", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_BLACK },
+			{ "ExtraBold", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_BOLD },
+			{ "ExtraLight", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_LIGHT },
+			{ "Heavy", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_HEAVY },
+			{ "Light", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT },
+			{ "Medium", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_MEDIUM },
+			{ "Normal", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_NORMAL },
+			{ "Regular", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR },
+			{ "SemiBold", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_SEMI_BOLD },
+			{ "SemiLight", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_SEMI_LIGHT },
+			{ "Thin", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_THIN },
+			{ "UltraBlack", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_BLACK },
+			{ "UltraBold", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_BOLD },
+			{ "UltraLight", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_LIGHT },
+		};
+
 		std::string fontWeightString = data["FontWeight"].get<std::string>();
-		if (fontWeightString.compare("Black") == 0)				fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BLACK;
-		else if (fontWeightString.compare("Bold") == 0)			fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD;
-		else if (fontWeightString.compare("DemiBold") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_DEMI_BOLD;
-		else if (fontWeightString.compare("ExtraBlack") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_BLACK;
-		else if (fontWeightString.compare("ExtraBold") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_BOLD;
-		else if (fontWeightString.compare("ExtraLight") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_EXTRA_LIGHT;
-		else if (fontWeightString.compare("Heavy") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_HEAVY;
-		else if (fontWeightString.compare("Light") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_LIGHT;
-		else if (fontWeightString.compare("Medium") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_MEDIUM;
-		else if (fontWeightString.compare("Normal") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_NORMAL;
-		else if (fontWeightString.compare("Regular") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR;
-		else if (fontWeightString.compare("SemiBold") == 0)		fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_SEMI_BOLD;
-		else if (fontWeightString.compare("SemiLight") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_SEMI_LIGHT;
-		else if (fontWeightString.compare("Thin") == 0)			fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_THIN;
-		else if (fontWeightString.compare("UltraBlack") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_BLACK;
-		else if (fontWeightString.compare("UltraBold") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_BOLD;
-		else if (fontWeightString.compare("UltraLight") == 0)	fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_LIGHT;
-		else
+
+		if (fontWeightMap.find(fontWeightString) == fontWeightMap.end())
 		{
 			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontWeight' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["FontWeight"]);
 			UI_ERROR("{}", "Failed to parse TextStyle. 'FontWeight' field was unrecognized.");
-			UI_ERROR("Invalid value : {}", data["FontWeight"]);
+			UI_ERROR("Invalid value : {}", data["FontStyle"]);
 			return false;
 		}
+
+		fontWeight = fontWeightMap.at(fontWeightString);
 	}
 
+	// FONT STYLE
+	if (data.contains("FontStyle"))
+	{
+		if (!data["FontStyle"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontStyle' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["FontStyle"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontStyle' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["FontStyle"]);
+			return false;
+		}
 
+		static const std::unordered_map<std::string, DWRITE_FONT_STYLE> fontStyleMap = { 
+			{ "Italic", DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_ITALIC },
+			{ "Normal", DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL },
+			{ "Oblique", DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_OBLIQUE }
+		};
 
+		std::string fontStyleString = data["FontStyle"].get<std::string>();
 
+		if (fontStyleMap.find(fontStyleString) == fontStyleMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontStyle' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["FontStyle"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontStyle' field was unrecognized.");
+			UI_ERROR("Invalid value : {}", data["FontStyle"]);
+			return false;
+		}
 
+		fontStyle = fontStyleMap.at(fontStyleString);
+	}
+
+	// FONT STRETCH
+	if (data.contains("FontStretch"))
+	{
+		if (!data["FontStretch"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontStretch' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["FontStretch"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontStretch' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["FontStretch"]);
+			return false;
+		}
+
+		static const std::unordered_map<std::string, DWRITE_FONT_STRETCH> fontStretchMap = {
+			{ "Condensed", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_CONDENSED },
+			{ "Expanded", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_EXPANDED },
+			{ "ExtraCondensed", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_EXTRA_CONDENSED },
+			{ "ExtraExpanded", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_EXTRA_EXPANDED },
+			{ "Medium", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_MEDIUM },
+			{ "Normal", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL },
+			{ "SemiCondensed", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_SEMI_CONDENSED },
+			{ "SemiExpanded", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_SEMI_EXPANDED },
+			{ "UltraCondensed", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_ULTRA_CONDENSED },
+			{ "UltraExpanded", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_ULTRA_EXPANDED },
+			{ "Undefined", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_UNDEFINED }
+		};
+
+		std::string fontStretchString = data["FontStretch"].get<std::string>();
+
+		if (fontStretchMap.find(fontStretchString) == fontStretchMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'FontStretch' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["FontStretch"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'FontStretch' field was unrecognized.");
+			UI_ERROR("Invalid value : {}", data["FontStretch"]);
+			return false;
+		}
+
+		fontStretch = fontStretchMap.at(fontStretchString);
+	}
+
+	// TEXT ALIGNMENT (Horizontal Alignment)
+	if (data.contains("TextAlignment"))
+	{
+		if (!data["TextAlignment"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'TextAlignment' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["TextAlignment"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'TextAlignment' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["TextAlignment"]);
+			return false;
+		}
+
+		static const std::unordered_map<std::string, DWRITE_TEXT_ALIGNMENT> textAlignmentMap = {
+			{ "Center", DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER },
+			{ "Justified", DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_JUSTIFIED },
+			{ "Leading", DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING },
+			{ "Trailing", DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_TRAILING }
+		};
+
+		std::string textAlignmentString = data["TextAlignment"].get<std::string>();
+
+		if (textAlignmentMap.find(textAlignmentString) == textAlignmentMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'TextAlignment' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["TextAlignment"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'TextAlignment' field was unrecognized.");
+			UI_ERROR("Invalid value : {}", data["TextAlignment"]);
+			return false;
+		}
+
+		textAlignment = textAlignmentMap.at(textAlignmentString);
+	}
+
+	// PARAGRAPH ALIGNMENT (Vertical Alignment)
+	if (data.contains("ParagraphAlignment"))
+	{
+		if (!data["ParagraphAlignment"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'ParagraphAlignment' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["ParagraphAlignment"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'ParagraphAlignment' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["ParagraphAlignment"]);
+			return false;
+		}
+
+		static const std::unordered_map<std::string, DWRITE_PARAGRAPH_ALIGNMENT> paragraphAlignmentMap = {
+			{ "Center", DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER },
+			{ "Far", DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_FAR },
+			{ "Near", DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR }
+		};
+
+		std::string paragraphAlignmentString = data["ParagraphAlignment"].get<std::string>();
+
+		if (paragraphAlignmentMap.find(paragraphAlignmentString) == paragraphAlignmentMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'ParagraphAlignment' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["ParagraphAlignment"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'ParagraphAlignment' field was unrecognized.");
+			UI_ERROR("Invalid value : {}", data["ParagraphAlignment"]);
+			return false;
+		}
+
+		paragraphAlignment = paragraphAlignmentMap.at(paragraphAlignmentString);
+	}
+
+	// WORD WRAPPING
+	if (data.contains("WordWrapping"))
+	{
+		if (!data["WordWrapping"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'WordWrapping' field must be a string. Invalid value: {}", __FILE__, __LINE__, data["WordWrapping"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'WordWrapping' field must be a string.");
+			UI_ERROR("Invalid value : {}", data["WordWrapping"]);
+			return false;
+		}
+
+		static const std::unordered_map<std::string, DWRITE_WORD_WRAPPING> wordWrappingMap = {
+			{ "Character", DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_CHARACTER },
+			{ "EmergencyBreak", DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_EMERGENCY_BREAK },
+			{ "None", DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP },
+			{ "Word", DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD },
+			{ "Wrap", DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WRAP }
+		};
+
+		std::string wordWrappingString = data["WordWrapping"].get<std::string>();
+
+		if (wordWrappingMap.find(wordWrappingString) == wordWrappingMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'WordWrapping' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, data["WordWrapping"]);
+			UI_ERROR("{}", "Failed to parse TextStyle. 'WordWrapping' field was unrecognized.");
+			UI_ERROR("Invalid value : {}", data["WordWrapping"]);
+			return false;
+		}
+
+		wordWrapping = wordWrappingMap.at(wordWrappingString);
+	}
+
+	// TRIMMING
+	if (data.contains("Trimming"))
+	{
+		EG_CORE_WARN("{}:{} - TextStyle: 'Trimming' field not yet supported", __FILE__, __LINE__);
+	}
+
+	// LOCALE
+	if (data.contains("FontFamily"))
+	{
+		EG_CORE_WARN("{}:{} - TextStyle: 'Locale' field not yet supported", __FILE__, __LINE__);
+	}
 
 	style = std::make_shared<TextStyle>(m_deviceResources, color, fontFamily, fontSize,
 		fontWeight, fontStyle, fontStretch, textAlignment, paragraphAlignment,

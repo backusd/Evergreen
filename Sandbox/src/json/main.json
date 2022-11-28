@@ -79,12 +79,17 @@
 
 			"ViewText": {
 				"Type": "Text",
-				"Text": "View",
+				"Text": "View sucks the big one",
 				"Column": 2,
 				"Color": "Blue",
 				"FontFamily": "Georgia",
-				"FontSize": 16,
-				"FontWeight": "Normal"
+				"FontSize": 8,
+				"FontWeight": "Normal",
+				"FontStyle": "Normal",
+				"FontStretch": "Expanded",
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
 			}
 
 
