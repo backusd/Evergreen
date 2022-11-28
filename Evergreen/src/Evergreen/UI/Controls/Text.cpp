@@ -90,9 +90,11 @@ void Text::TextChanged()
 	// Update Screen Translation ---
 	m_screenTranslation = D2D1::Matrix3x2F::Translation(rect.left, rect.top);
 	*/
-
-	m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
-	m_textLayout->GetMetrics(&m_textMetrics);
+	if (m_style != nullptr)
+	{
+		m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
+		m_textLayout->GetMetrics(&m_textMetrics);
+	}
 }
 
 void Text::AllowedRegion(D2D1_RECT_F region) noexcept

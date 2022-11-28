@@ -145,6 +145,10 @@ public:
 
 	std::optional<Layout*> AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") noexcept;
 
+	template<class T>
+	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources) noexcept;
+	template<class T>
+	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept;
 	template<class T, class ... U>
 	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources, const U& ... args ) noexcept;
 	template<class T, class ... U>
@@ -216,6 +220,37 @@ public:
 };
 #pragma warning( pop )
 
+template<class T>
+std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources) noexcept
+{
+	RowColumnPosition position;
+	position.Row = 0;
+	position.Column = 0;
+	position.RowSpan = 1;
+	position.ColumnSpan = 1;
+
+	return AddControl<T>(position, deviceResources);
+}
+template<class T>
+std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept
+{
+	m_controlPositions.push_back(position);
+
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources);
+	control->TopLeftPosition(
+		m_columns[position.Column].Left(),
+		m_rows[position.Row].Top()
+	);
+	control->AllowedRegion(
+		m_columns[position.Column].Left(),
+		m_rows[position.Row].Top(),
+		m_columns[position.Column + position.ColumnSpan - 1].Right(),
+		m_rows[position.Row + position.RowSpan - 1].Bottom()
+	);
+
+	m_controls.push_back(std::move(control));
+	return (T*)m_controls.back().get();
+}
 template<class T, class ... U>
 std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources, const U& ... args) noexcept
 {
@@ -243,7 +278,6 @@ std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr
 		m_columns[position.Column + position.ColumnSpan - 1].Right(),
 		m_rows[position.Row + position.RowSpan - 1].Bottom()
 	);
-
 
 	m_controls.push_back(std::move(control));
 	return (T*)m_controls.back().get();

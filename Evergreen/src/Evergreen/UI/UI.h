@@ -8,6 +8,7 @@
 #include "Layout.h"
 #include "Evergreen/Window/Window.h"
 #include "Evergreen/UI/Controls/Text.h"
+#include "Evergreen/UI/ControlLoaders/ControlLoader.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -36,6 +37,12 @@ public:
 	void OnMouseMove(MouseMoveEvent& e) noexcept;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
+
+
+
+	static void SetLoaderFunction(const std::string& controlName, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)> func) noexcept { m_loadControlFunctions[controlName] = func; }
+
+
 
 private:
 	void LoadDefaultUI() noexcept;
@@ -68,6 +75,7 @@ private:
 
 	std::unordered_map<std::string, std::shared_ptr<TextStyle>> m_textStylesMap;
 
+	static std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)>> m_loadControlFunctions;
 
 };
 #pragma warning( pop )
@@ -75,11 +83,3 @@ private:
 
 }
 
-template <>
-struct std::formatter<json> : std::formatter<std::string> {
-	auto format(json& _json, std::format_context& ctx) {
-		std::ostringstream oss;
-		oss << _json;
-		return formatter<std::string>::format(oss.str(), ctx);
-	}
-};

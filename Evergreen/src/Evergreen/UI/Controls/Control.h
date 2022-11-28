@@ -32,6 +32,7 @@ public:
 	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
 	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept {}
 
+	void Name(const std::string& name) noexcept { m_name = name; }
 	void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; }
 	void Margin(float left, float top, float right, float bottom) noexcept;
 	void MarginLeft(float left) noexcept { m_margin.Left = left; }
@@ -43,6 +44,7 @@ public:
 	void TopLeftPosition(D2D1_POINT_2F point) noexcept { m_topLeftPosition = point; }
 	void TopLeftPosition(float left, float top) noexcept { m_topLeftPosition = { left, top }; }
 
+	const std::string& Name() const noexcept { return m_name; }
 	Evergreen::Margin Margin() const noexcept { return m_margin; }
 	float MarginLeft() const noexcept { return m_margin.Left; }
 	float MarginTop() const noexcept { return m_margin.Top; }
@@ -52,6 +54,7 @@ public:
 	D2D1_POINT_2F TopLeftPosition() const noexcept { return m_topLeftPosition; }
 
 protected:
+	std::string							m_name;
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;
 

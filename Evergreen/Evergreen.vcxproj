@@ -25,6 +25,7 @@
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\UI\ControlLoaders\ControlLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\FontFamily.h" />
     <ClInclude Include="src\Evergreen\Window\TranslateErrorCode.h" />
     <ClInclude Include="src\Evergreen\Window\WindowsMessageMap.h" />
@@ -50,6 +51,7 @@
     <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
+    <ClCompile Include="src\Evergreen\UI\ControlLoaders\ControlLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Styles\FontFamily.cpp" />
     <ClCompile Include="src\Evergreen\Window\TranslateErrorCode.cpp" />
     <ClCompile Include="src\Evergreen\Window\WindowsMessageMap.cpp" />

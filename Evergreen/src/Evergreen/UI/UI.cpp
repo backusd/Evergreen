@@ -2,19 +2,25 @@
 #include "UI.h"
 
 #include <fstream>
-//#include <sstream>
 
 
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__))
 
 namespace Evergreen
 {
+std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)>> UI::m_loadControlFunctions;
+
+
+
 UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
 	m_deviceResources(deviceResources),
 	m_window(window),
 	m_jsonRoot({}),
 	m_rootLayout(nullptr)
 {
+	// Add control loaders
+	UI::SetLoaderFunction("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> bool { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
+
 	LoadDefaultUI();
 }
 
@@ -283,6 +289,9 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 		{
 			if (!LoadTextControl(layout, data[key], key))
 				return false;
+
+
+			m_loadControlFunctions["Text"](m_deviceResources, layout, data[key], key);
 		}
 		else
 		{

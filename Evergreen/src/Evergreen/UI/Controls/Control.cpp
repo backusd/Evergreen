@@ -7,6 +7,7 @@
 namespace Evergreen
 {
 Control::Control(std::shared_ptr<DeviceResources> deviceResources) noexcept :
+	m_name(""),
 	m_deviceResources(deviceResources),
 	m_margin({ 0.0f, 0.0f, 0.0f, 0.0f }),
 	m_allowedRegion({ 0.0f, 0.0f, FLT_MAX, FLT_MAX }),
@@ -14,6 +15,7 @@ Control::Control(std::shared_ptr<DeviceResources> deviceResources) noexcept :
 {
 }
 Control::Control(const Control& control) noexcept :
+	m_name(control.m_name + "_copy"),
 	m_deviceResources(control.m_deviceResources),
 	m_margin({ 0.0f, 0.0f, 0.0f, 0.0f }),
 	m_allowedRegion({ 0.0f, 0.0f, FLT_MAX, FLT_MAX }),
@@ -22,6 +24,7 @@ Control::Control(const Control& control) noexcept :
 }
 void Control::operator=(const Control& control) noexcept 
 { 
+	m_name = control.m_name + "_copy";
 	m_deviceResources = control.m_deviceResources; 
 	m_margin = control.m_margin;
 	m_allowedRegion = control.m_allowedRegion;
