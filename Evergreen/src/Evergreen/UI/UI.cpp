@@ -127,6 +127,9 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		// Set m_jsonRoot so we can access non-root keys for import within the Load methods
 		m_jsonRoot = data.value();
 
+		// Before constructing the layout, load global data that may be needed by Load* functions
+		ParseGlobalTextStyles(m_jsonRoot);
+
 		// Get the root layout data and create the root layout
 		json rootLayoutData = m_jsonRoot["root"];
 
@@ -513,7 +516,6 @@ bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noex
 		return LoadLayoutDetails(sublayout.value(), data);
 	}
 
-
 	return false;
 }
 bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) noexcept
@@ -556,21 +558,27 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 	// If the json data contains "Style", then load a shared_ptr to a TextStyle from the root level json data
 	if (data.contains("Style"))
 	{
-		EG_CORE_TRACE("Loading Text with 'Style' key");
+		if (!data["Style"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Style' field must be a string. Invalid value: {}", __FILE__, __LINE__, name, data["Style"]);
+			UI_ERROR("Text control with name '{}': 'Style' field must be a string.", name);
+			UI_ERROR("Invalid value : {}", data["Style"]);
+			return false;
+		}
 
-		style = std::make_shared<TextStyle>(m_deviceResources);
+		std::string textStyleString = data["Style"].get<std::string>();
 
+		if (m_textStylesMap.find(textStyleString) == m_textStylesMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - Failed to parse TextStyle. 'Style' value ({}) was not a globally defined TextStyle.", __FILE__, __LINE__, textStyleString);
+			UI_ERROR("Failed to parse TextStyle. 'Style' value ({}) was not a globally defined TextStyle.", __FILE__, __LINE__, textStyleString);
+			return false;
+		}
 
-
-
-
-
-
+		style = m_textStylesMap.at(textStyleString);
 	}
 	else
 	{
-		EG_CORE_TRACE("Loading Text with NO 'Style' key");
-
 		// No reference to global TextStyle, so just parse the json and create a new one
 		if (!ParseTextStyle(data, style))
 		{
@@ -594,6 +602,7 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 
 	return true;
 }
+
 bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
 {
 	Evergreen::Color color = Evergreen::Color::Black;
@@ -888,14 +897,45 @@ bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
 	}
 
 	// LOCALE
-	if (data.contains("FontFamily"))
+	if (data.contains("Locale"))
 	{
 		EG_CORE_WARN("{}:{} - TextStyle: 'Locale' field not yet supported", __FILE__, __LINE__);
 	}
 
 	style = std::make_shared<TextStyle>(m_deviceResources, color, fontFamily, fontSize,
-		fontWeight, fontStyle, fontStretch, textAlignment, paragraphAlignment,
-		wordWrapping, trimming, locale);
+		fontWeight, fontStyle, fontStretch, textAlignment, paragraphAlignment, wordWrapping, 
+		trimming, locale);
+
+	return true;
+}
+bool UI::ParseGlobalTextStyles(json& data) noexcept
+{
+	for (auto& [key, value] : data.items())
+	{
+		if (data[key].contains("Type"))
+		{
+			if (!data[key]["Type"].is_string())
+			{
+				EG_CORE_ERROR("{}:{} - Failed to parse global data for key '{}'. 'Type' field must be a string. Invalid value: {}", __FILE__, __LINE__, key, data[key]["Type"]);
+				UI_ERROR("Failed to parse global data for key '{}'. 'Type' field must be a string.", key);
+				UI_ERROR("Invalid value : {}", data[key]["Type"]);
+				return false;
+			}
+
+			if (data[key]["Type"].get<std::string>().compare("TextStyle") == 0)
+			{
+				std::shared_ptr<TextStyle> style = nullptr;
+				if (!ParseTextStyle(data[key], style))
+				{
+					EG_CORE_ERROR("{}:{} - Failed to parse global data for key '{}'. ParseTextStyle failed.", __FILE__, __LINE__, key);
+					UI_ERROR("Failed to parse global data for key '{}'. ParseTextStyle failed", key);
+					return false;
+				}
+
+				m_textStylesMap[key] = style;
+			}
+		}
+	}
 
 	return true;
 }

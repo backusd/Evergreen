@@ -42,7 +42,7 @@ private:
 	void LoadErrorUI() noexcept;
 	std::optional<json> LoadJSONFile(std::filesystem::path filePath) noexcept;
 
-	// Load Layout methods
+	// Load Layout/Control methods
 	bool LoadLayoutDetails(Layout* layout, json& data) noexcept;
 	bool LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept;
 	bool LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept;
@@ -50,8 +50,10 @@ private:
 	bool LoadTextControl(Layout* parent, json& data, const std::string& name) noexcept;
 	
 	bool ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept;
+	bool ParseGlobalTextStyles(json& data) noexcept;
 	bool ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept;
 	bool ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept;
+
 
 	// Function to handle 'import' key
 	bool ImportJSON(json& data) noexcept;
@@ -63,6 +65,8 @@ private:
 	std::filesystem::path		m_jsonRootDirectory;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
+
+	std::unordered_map<std::string, std::shared_ptr<TextStyle>> m_textStylesMap;
 
 
 };
