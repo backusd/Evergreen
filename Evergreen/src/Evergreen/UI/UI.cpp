@@ -50,7 +50,7 @@ void UI::LoadDefaultUI() noexcept
 	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
 		m_deviceResources,
 		Evergreen::Color::Black,
-		Evergreen::FontFamily::Calibri,
+		Evergreen::FontFamily::Segoe_MDL2_Assets,
 		22.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
 		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
@@ -74,7 +74,33 @@ void UI::LoadDefaultUI() noexcept
 	position.RowSpan = 1;
 	position.ColumnSpan = 1;
 
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, textString, style))
+	//std::wstring s = std::format(L"{}{}", L"\\", L"xE10F");
+	std::wstring s1 = L"0xE1";
+	std::wstring s2 = L"0x0F";
+	std::wstring s3 = L"0xE10F";
+
+	std::wstring o = L"\xE10F";
+	std::wstring s;
+
+	try
+	{
+		int v1 = std::stoi(s1, nullptr, 16);
+		int v2 = std::stoi(s2, nullptr, 16);
+		int v3 = std::stoi(s3, nullptr, 16);
+
+		s.push_back(static_cast<wchar_t>(v3));
+		//s.push_back(static_cast<wchar_t>(v2));
+	}
+	catch (const std::invalid_argument& e)
+	{
+		int iii = 0;
+	}
+	catch (const std::out_of_range& e)
+	{
+		int iii = 0;
+	}
+
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, s, style))
 	{
 		EG_CORE_TRACE("{}", "Successfully created custom text");
 	}
@@ -83,7 +109,7 @@ void UI::LoadDefaultUI() noexcept
 		EG_CORE_ERROR("{}", "Failed to create custom text");
 	}
 	*/
-
+	
 	/*
 	if (std::optional<Layout*> sublayoutOpt = m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout"))
 	{
@@ -137,9 +163,12 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		if (!LoadLayoutDetails(m_rootLayout.get(), rootLayoutData))
 		{
 			m_jsonRoot = {};
+			m_textStylesMap.clear();
 			LoadErrorUI();
 			return;
 		}
+
+		m_textStylesMap.clear();
 
 		// LayoutCheck is entirely optional - In a Release build, this does nothing
 		m_rootLayout->LayoutCheck();
@@ -147,6 +176,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 	else
 	{
 		m_jsonRoot = {};
+		m_textStylesMap.clear();
 		LoadErrorUI();
 	}
 }
@@ -552,7 +582,36 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 		}
 
 		std::string parsedText = data["Text"].get<std::string>();
-		text = std::wstring(parsedText.begin(), parsedText.end());
+		std::wstring s = std::wstring(parsedText.begin(), parsedText.end());
+
+		// If the text starts with '0x' parse it as a hex value
+		if (s.size() > 1 && s[0] == L'0' && s[1] == L'x')
+		{
+			try
+			{
+				text.push_back(static_cast<wchar_t>(std::stoi(s, nullptr, 16)));
+			}
+			catch (const std::invalid_argument& e)
+			{
+				EG_CORE_ERROR("{}:{} - Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw invalid_argument exception.", __FILE__, __LINE__, name, parsedText);
+				EG_CORE_ERROR("Exception Description: {}", e.what());
+				UI_ERROR("Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw invalid_argument exception.", name, parsedText);
+				UI_ERROR("Exception Description: {}", e.what());
+				return false;
+			}
+			catch (const std::out_of_range& e)
+			{
+				EG_CORE_ERROR("{}:{} - Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw out_of_range exception.", __FILE__, __LINE__, name, parsedText);
+				EG_CORE_ERROR("Exception Description: {}", e.what());
+				UI_ERROR("Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw invalid_argument exception.", name, parsedText);
+				UI_ERROR("Exception Description: {}", e.what());
+				return false;
+			}
+		}
+		else
+		{
+			text = std::move(s);
+		}
 	}
 
 	// If the json data contains "Style", then load a shared_ptr to a TextStyle from the root level json data

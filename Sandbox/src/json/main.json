@@ -79,11 +79,11 @@
 
 			"ViewText": {
 				"Type": "Text",
-				"Text": "View sucks the big one",
+				"Text": "0xE10F",
 				"Column": 2,
 				"Color": "Blue",
-				"FontFamily": "Georgia",
-				"FontSize": 8,
+				"FontFamily": "Segoe MDL2 Assets",
+				"FontSize": 20,
 				"FontWeight": "Normal",
 				"FontStyle": "Normal",
 				"FontStretch": "Expanded",
