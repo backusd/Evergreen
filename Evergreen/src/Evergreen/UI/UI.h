@@ -57,9 +57,7 @@ private:
 	bool LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept;
 	bool LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept;
 	bool LoadSubLayout(Layout* parent, json& data, const std::string& name) noexcept;
-	bool LoadTextControl(Layout* parent, json& data, const std::string& name) noexcept;
 	
-	bool ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept;
 	bool ParseGlobalStyles(json& data) noexcept;
 	bool ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept;
 	bool ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept;

@@ -27,6 +27,10 @@
 		"Color": "Green"
 	},
 
+	"CustomColor": {
+		"Color": "Blue"
+	},
+
 	"root": {
 
 		"RowDefinitions": [
@@ -79,22 +83,14 @@
 				"Type": "Text",
 				"Text": "Edit",
 				"Column": 1,
-				"Color": "Red",
-				"FontFamily": "Arial",
-				"FontSize": 16,
-				"FontWeight": "Normal",
-				"FontStyle": "Italic",
-				"FontStretch": "Normal",
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center",
-				"WordWrapping": "None"
+				"Style": "CustomTextStyle"
 			},
 
 			"ViewText": {
 				"Type": "Text",
 				"Text": "0xE10F",
 				"Column": 2,
-				"Color": "Blue",
+				"import": "CustomColor",
 				"FontFamily": "Segoe MDL2 Assets",
 				"FontSize": 20,
 				"FontWeight": "Normal",
