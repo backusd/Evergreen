@@ -22,6 +22,11 @@
 		"FontSize": 24
 	},
 
+	"CustomButtonStyle": {
+		"Type": "ButtonStyle",
+		"Color": "Green"
+	},
+
 	"root": {
 
 		"RowDefinitions": [

@@ -27,6 +27,7 @@
     <ClInclude Include="src\Evergreen\Log.h" />
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\ControlLoader.h" />
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\TextLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\GlobalJsonData.h" />
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\StyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\FontFamily.h" />

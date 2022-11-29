@@ -4,6 +4,7 @@
 #include "Evergreen/Log.h"
 #include "Evergreen/UI/Layout.h"
 #include "Evergreen/UI/Controls/Text.h"
+#include "Evergreen/UI/GlobalJsonData.h"
 
 #include "Evergreen/Utils/std_format_specializations.h"
 
@@ -27,24 +28,33 @@ public:
 
 protected:
 	ControlLoader() noexcept;
+	virtual bool PreLoadValidation(Layout* parent, json& data, const std::string& name) noexcept { return true; }
+
 
 	template<typename T>
-	bool LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) noexcept;
+	bool LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, GlobalJsonData* globalData) noexcept;
 
 	bool ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept;
 
-	std::unordered_map<std::string, std::function<bool(Control*, json&, Layout*)>> m_keyLoaders;
+	std::unordered_map<std::string, std::function<bool(Control*, json&, Layout*, GlobalJsonData*)>> m_keyLoaders;
 
 };
 #pragma warning( pop )
 
 
 template<typename T>
-bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& name) noexcept
+bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& name, GlobalJsonData* globalData) noexcept
 {
 	// Load implementation is part of the base class (ControlLoader).
 	// It will iterate over the keys the json data and attempt to call the correct
 	// parse function that should be stored in the m_keyLoaders map
+
+	// First preform validation which can be customized by an override in the derived class
+	if (!PreLoadValidation(parentLayout, data, name))
+	{
+		EG_CORE_ERROR("{}:{} - Control with name '{}': Call to PreLoadValidation failed.", __FILE__, __LINE__, name);
+		return false;
+	}
 
 	// Determine Row/Column positioning, create the control, then iterate over the other json keys
 	RowColumnPosition position;
@@ -78,7 +88,7 @@ bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, L
 				return false;
 			}
 
-			if (!m_keyLoaders[key](static_cast<Control*>(control.value()), data, parentLayout))
+			if (!m_keyLoaders[key](static_cast<Control*>(control.value()), data, parentLayout, globalData))
 			{
 				EG_CORE_ERROR("{}:{} - Control with name '{}': Key Loader function failed for key: {}", __FILE__, __LINE__, name, key);
 				return false;

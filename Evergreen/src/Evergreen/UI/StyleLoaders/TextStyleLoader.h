@@ -17,7 +17,7 @@ public:
 	void operator=(const TextStyleLoader&) = delete;
 	virtual ~TextStyleLoader() noexcept {}
 
-	static std::optional<std::shared_ptr<TextStyle>> Load(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name = "") noexcept;
+	static std::optional<std::shared_ptr<Style>> Load(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name = "") noexcept;
 
 private:
 	TextStyleLoader() noexcept;

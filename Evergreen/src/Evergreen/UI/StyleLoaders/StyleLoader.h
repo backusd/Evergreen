@@ -4,6 +4,7 @@
 #include "Evergreen/Log.h"
 #include "Evergreen/UI/Layout.h"
 #include "Evergreen/UI/Styles/Style.h"
+#include "Evergreen/UI/GlobalJsonData.h"
 
 #include "Evergreen/Utils/std_format_specializations.h"
 
@@ -30,18 +31,25 @@ protected:
 	virtual bool PreLoadValidation(json& data, const std::string& name) noexcept { return true; }
 
 	template<typename T>
-	std::optional<std::shared_ptr<T>> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept;
+	std::optional<std::shared_ptr<Style>> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept;
 
 	std::unordered_map<std::string, std::function<bool(Style*, json&)>> m_keyLoaders;
 };
 #pragma warning( pop )
 
 template<typename T>
-std::optional<std::shared_ptr<T>> StyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
+std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
 {
 	// Load implementation needs to be part of the base class (StyleLoader).
 	// It will iterate over the keys the json data and attempt to call the correct
 	// parse function that should be stored in the m_keyLoaders map
+
+	// First preform validation which can be customized by an override in the derived class
+	if (!PreLoadValidation(data, name))
+	{
+		EG_CORE_ERROR("{}:{} - Style with name '{}': Call to PreLoadValidation failed.", __FILE__, __LINE__, name);
+		return std::nullopt;
+	}
 
 	// Create shared_ptr to the style, then call keyLoader functions to set the style attributes
 	std::shared_ptr<T> style = std::make_shared<T>(deviceResources, name);
@@ -72,7 +80,7 @@ std::optional<std::shared_ptr<T>> StyleLoader::LoadImpl(std::shared_ptr<DeviceRe
 		}
 	}
 
-	return style;
+	return std::static_pointer_cast<Style>(style);
 }
 
 }

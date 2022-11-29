@@ -9,6 +9,8 @@
 #include "Evergreen/Window/Window.h"
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/ControlLoaders/ControlLoader.h"
+#include "Evergreen/UI/StyleLoaders/TextStyleLoader.h"
+#include "Evergreen/UI/GlobalJsonData.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -40,7 +42,8 @@ public:
 
 
 
-	static void SetLoaderFunction(const std::string& controlName, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)> func) noexcept { m_loadControlFunctions[controlName] = func; }
+	static void SetControlLoaderFunction(const std::string& controlName, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)> func) noexcept { m_loadControlFunctions[controlName] = func; }
+	static void SetStyleLoaderFunction(const std::string& styleName, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)> func) noexcept { m_loadStyleFunctions[styleName] = func; }
 
 
 
@@ -57,7 +60,7 @@ private:
 	bool LoadTextControl(Layout* parent, json& data, const std::string& name) noexcept;
 	
 	bool ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept;
-	bool ParseGlobalTextStyles(json& data) noexcept;
+	bool ParseGlobalStyles(json& data) noexcept;
 	bool ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept;
 	bool ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept;
 
@@ -73,9 +76,11 @@ private:
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 
-	std::unordered_map<std::string, std::shared_ptr<TextStyle>> m_textStylesMap;
+	// std::unordered_map<std::string, std::shared_ptr<TextStyle>> m_textStylesMap;
+	std::shared_ptr<GlobalJsonData> m_globalJsonData;
 
-	static std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)>> m_loadControlFunctions;
+	static std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>> m_loadControlFunctions;
+	static std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>> m_loadStyleFunctions;
 
 };
 #pragma warning( pop )

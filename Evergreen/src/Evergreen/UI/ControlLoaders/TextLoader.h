@@ -17,7 +17,7 @@ namespace Evergreen
 		void operator=(const TextLoader&) = delete;
 		virtual ~TextLoader() noexcept {}
 
-		static bool Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) noexcept;
+		static bool Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, GlobalJsonData* globalData) noexcept;
 
 	private:
 		TextLoader() noexcept;
@@ -28,27 +28,12 @@ namespace Evergreen
 			return loader;
 		}
 
-		static bool PreLoadValidation(Layout* parent, json& data, const std::string& name) noexcept;
+		bool PreLoadValidation(Layout* parent, json& data, const std::string& name) noexcept override;
 
 		
 		bool ParseText(Text* textControl, json& data) noexcept;
-		bool ParseStyle(Text* textControl, json& data) noexcept;
-		/*
-		bool ParseColor(Text* textControl, json& data) noexcept;
-		bool ParseFontFamily(Text* textControl, json& data) noexcept;
-		bool ParseFontSize(Text* textControl, json& data) noexcept;
-		bool ParseFontWeight(Text* textControl, json& data) noexcept;
-		bool ParseFontStyle(Text* textControl, json& data) noexcept;
-		bool ParseFontStretch(Text* textControl, json& data) noexcept;
-		bool ParseTextAlignment(Text* textControl, json& data) noexcept;
-		bool ParseParagraphAlignment(Text* textControl, json& data) noexcept;
-		bool ParseWordWrapping(Text* textControl, json& data) noexcept;
-		bool ParseTrimming(Text* textControl, json& data) noexcept;
-		bool ParseLocale(Text* textControl, json& data) noexcept;
-		*/
-
-
-		bool ParseTextStyle(Text* textControl, json& data) noexcept;
+		bool ParseStyle(Text* textControl, json& data, GlobalJsonData* globalData) noexcept;
+		bool ParseTextStyleAttributes(Text* textControl, json& data) noexcept;
 
 
 

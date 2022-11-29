@@ -9,7 +9,8 @@
 
 namespace Evergreen
 {
-std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)>> UI::m_loadControlFunctions;
+std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>>			UI::m_loadControlFunctions;
+std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>>	UI::m_loadStyleFunctions;
 
 
 
@@ -17,17 +18,25 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_deviceResources(deviceResources),
 	m_window(window),
 	m_jsonRoot({}),
-	m_rootLayout(nullptr)
+	m_rootLayout(nullptr),
+	m_globalJsonData(std::make_shared<GlobalJsonData>())
 {
-	// Add control loaders
-	UI::SetLoaderFunction("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> bool { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
+	// Add built-in control loaders
+	UI::SetControlLoaderFunction("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, GlobalJsonData* globalData) -> bool { return TextLoader::Load(deviceResources, parentLayout, data, controlName, globalData); });
+
+	// Add built-in style loaders
+	UI::SetStyleLoaderFunction("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::optional<std::shared_ptr<Style>> { return TextStyleLoader::Load(deviceResources, data, styleName); });
+
+
 
 	LoadDefaultUI();
 }
 
 void UI::LoadDefaultUI() noexcept
 {
-	// Load a default UI that displays a "No defined layout"
+	// TODO: Load a default UI that displays a "No defined layout"
+	// Could make this quite elaborate, similar to how ImGui has the example of all controls
+	// This could also contain links our website/documentation
 
 
 
@@ -161,7 +170,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		m_jsonRoot = data.value();
 
 		// Before constructing the layout, load global data that may be needed by Load* functions
-		ParseGlobalTextStyles(m_jsonRoot);
+		ParseGlobalStyles(m_jsonRoot);
 
 		// Get the root layout data and create the root layout
 		json rootLayoutData = m_jsonRoot["root"];
@@ -170,12 +179,12 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		if (!LoadLayoutDetails(m_rootLayout.get(), rootLayoutData))
 		{
 			m_jsonRoot = {};
-			m_textStylesMap.clear();
+			m_globalJsonData = nullptr;
 			LoadErrorUI();
 			return;
 		}
 
-		m_textStylesMap.clear();
+		m_globalJsonData = nullptr;
 
 		// LayoutCheck is entirely optional - In a Release build, this does nothing
 		m_rootLayout->LayoutCheck();
@@ -183,7 +192,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 	else
 	{
 		m_jsonRoot = {};
-		m_textStylesMap.clear();
+		m_globalJsonData = nullptr;
 		LoadErrorUI();
 	}
 }
@@ -286,12 +295,9 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 			if (!LoadSubLayout(layout, data[key], key))
 				return false;
 		}
-		else if (type.compare("Text") == 0)
+		else if (m_loadControlFunctions.find(type) != m_loadControlFunctions.end())
 		{
-			//if (!LoadTextControl(layout, data[key], key))
-			//	return false;
-
-			m_loadControlFunctions["Text"](m_deviceResources, layout, data[key], key);
+			m_loadControlFunctions[type](m_deviceResources, layout, data[key], key, m_globalJsonData.get());
 		}
 		else
 		{
@@ -624,6 +630,7 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 	}
 
 	// If the json data contains "Style", then load a shared_ptr to a TextStyle from the root level json data
+	/*
 	if (data.contains("Style"))
 	{
 		if (!data["Style"].is_string())
@@ -655,6 +662,7 @@ bool UI::LoadTextControl(Layout* parent, json& data, const std::string& name) no
 			return false;
 		}
 	}
+	*/
 
 #ifdef _DEBUG
 	// If we are in DEBUG, check all the keys against valid set of keys. WARN if any keys are not recognized
@@ -976,7 +984,7 @@ bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
 
 	return true;
 }
-bool UI::ParseGlobalTextStyles(json& data) noexcept
+bool UI::ParseGlobalStyles(json& data) noexcept
 {
 	for (auto& [key, value] : data.items())
 	{
@@ -990,6 +998,26 @@ bool UI::ParseGlobalTextStyles(json& data) noexcept
 				return false;
 			}
 
+			std::string styleType = data[key]["Type"].get<std::string>();
+
+			// Check if key is a key for a style loader
+			if (m_loadStyleFunctions.find(styleType) != m_loadStyleFunctions.end())
+			{
+				if (std::optional<std::shared_ptr<Style>> styleOpt = m_loadStyleFunctions.at(styleType)(m_deviceResources, data[key], key))
+				{
+					m_globalJsonData->m_stylesMap[key] = styleOpt.value();
+				}
+				else
+				{
+					EG_CORE_ERROR("{}:{} - Failed to parse global data for key '{}'. The call to the LoadStyle function for style '{}' failed.", __FILE__, __LINE__, key, styleType);
+				}
+			}
+			else if (styleType.size() > 5 && styleType.substr(styleType.size() - 5, 5).compare("Style") == 0) // If the typeString ends in "Style", warn the user they probably did not set up the StyleLoader correctly
+			{
+				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but no associated LoadStyle function. You may have forgotten to call UI::SetStyleLoaderFunction()", __FILE__, __LINE__, styleType, key);
+			}
+
+			/*
 			if (data[key]["Type"].get<std::string>().compare("TextStyle") == 0)
 			{
 				std::shared_ptr<TextStyle> style = nullptr;
@@ -1002,6 +1030,7 @@ bool UI::ParseGlobalTextStyles(json& data) noexcept
 
 				m_textStylesMap[key] = style;
 			}
+			*/
 		}
 	}
 

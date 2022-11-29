@@ -18,11 +18,8 @@ TextStyleLoader::TextStyleLoader() noexcept
 	m_keyLoaders["Locale"] = [this](Style* textStyle, json& data) -> bool { return this->ParseLocale(static_cast<TextStyle*>(textStyle), data); };
 }
 
-std::optional<std::shared_ptr<TextStyle>> TextStyleLoader::Load(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
+std::optional<std::shared_ptr<Style>> TextStyleLoader::Load(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
 {
-	if (!Get().PreLoadValidation(data, name))
-		return std::nullopt;
-
 	return Get().LoadImpl<TextStyle>(deviceResources, data, name);
 }
 
