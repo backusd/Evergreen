@@ -63,7 +63,7 @@ void Application::Render() noexcept
 	// NOTE: Do not need to reset the render target - DeviceResources handles that itself
 //	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
 
-	std::optional<const Color> color = Color::GetColor("Chartreuse");
+	std::optional<const Color> color = Color::GetColor("Lavender");
 	if (color.has_value())
 		m_deviceResources->ClearBackground(color.value());
 	else

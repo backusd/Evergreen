@@ -28,6 +28,8 @@ public:
 
 	virtual void Render() const noexcept = 0;
 
+	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+
 	virtual void OnMouseMove(MouseMoveEvent& e) noexcept {}
 	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
 	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept {}

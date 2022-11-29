@@ -83,13 +83,6 @@ bool ControlLoader::ParseRowColumnPosition(json& data, RowColumnPosition& positi
 }
 
 // ----------------------------------------------------------------------------
-TextLoader::TextLoader() noexcept
-{
-	m_keyLoaders["Text"] = [this](Control* textControl, json& data, Layout* parentLayout) -> bool { return this->ParseText(static_cast<Text*>(textControl), data, parentLayout); };
-}
 
-bool TextLoader::ParseText(Text* textControl, json& data, Layout* parentLayout) noexcept
-{
-	return true;
-}
+
 }

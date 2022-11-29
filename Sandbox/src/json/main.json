@@ -74,7 +74,15 @@
 				"Type": "Text",
 				"Text": "Edit",
 				"Column": 1,
-				"Style": "CustomTextStyle"
+				"Color": "Red",
+				"FontFamily": "Arial",
+				"FontSize": 16,
+				"FontWeight": "Normal",
+				"FontStyle": "Italic",
+				"FontStretch": "Normal",
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
 			},
 
 			"ViewText": {

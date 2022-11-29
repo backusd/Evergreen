@@ -6,19 +6,21 @@ using Microsoft::WRL::ComPtr;
 namespace Evergreen 
 {
 	TextStyle::TextStyle(
-		std::shared_ptr<DeviceResources> deviceResources, Evergreen::Color color, Evergreen::FontFamily fontFamily,
+		std::shared_ptr<DeviceResources> deviceResources, const std::string& name, Evergreen::Color color, Evergreen::FontFamily fontFamily,
 		float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle, DWRITE_FONT_STRETCH fontStretch,
 		DWRITE_TEXT_ALIGNMENT textAlignment, DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment, DWRITE_WORD_WRAPPING wordWrapping, 
 		DWRITE_TRIMMING trimming, const std::wstring& locale) noexcept :
-			m_deviceResources(deviceResources), m_color(color), m_fontFamily(fontFamily),
+			Style(deviceResources, name),
+			m_color(color), m_fontFamily(fontFamily),
 			m_fontWeight(fontWeight), m_fontStyle(fontStyle), m_fontStretch(fontStretch), m_fontSize(fontSize),
 			m_locale(locale), m_textAlignment(textAlignment), m_paragraphAlignment(paragraphAlignment),
 			m_wordWrapping(wordWrapping), m_trimming(trimming)
 	{
 		Initialize();
 	}
-	TextStyle::TextStyle(const TextStyle& rhs) noexcept :
-		m_deviceResources(rhs.m_deviceResources), m_color(rhs.m_color), m_fontFamily(rhs.m_fontFamily),
+	TextStyle::TextStyle(const TextStyle& rhs) noexcept : 
+		Style(rhs.m_deviceResources, rhs.m_name),
+		m_color(rhs.m_color), m_fontFamily(rhs.m_fontFamily),
 		m_fontWeight(rhs.m_fontWeight), m_fontStyle(rhs.m_fontStyle), m_fontStretch(rhs.m_fontStretch), 
 		m_fontSize(rhs.m_fontSize),	m_locale(rhs.m_locale), m_textAlignment(rhs.m_textAlignment), 
 		m_paragraphAlignment(rhs.m_paragraphAlignment), m_wordWrapping(rhs.m_wordWrapping), m_trimming(rhs.m_trimming)
@@ -27,6 +29,7 @@ namespace Evergreen
 	}
 	void TextStyle::operator=(const TextStyle& rhs) noexcept
 	{
+		m_name = rhs.m_name + "_copy";
 		m_deviceResources = rhs.m_deviceResources;
 		m_color = rhs.m_color;
 		m_fontFamily = rhs.m_fontFamily;

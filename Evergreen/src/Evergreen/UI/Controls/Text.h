@@ -31,13 +31,16 @@ public:
 
 	// Text specific
 	const std::wstring& GetText() const noexcept { return m_text; }
+	std::shared_ptr<TextStyle> Style() const noexcept { return m_style; }
 
 
-	void SetText(const std::wstring& text) noexcept { m_text = text; }
+	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
+	void Style(std::shared_ptr<TextStyle> style) noexcept { m_style = style; TextChanged(); }
 
 
-private:
+public:
 	void TextChanged();
+private:
 
 	std::wstring				m_text;
 	std::shared_ptr<TextStyle>	m_style;

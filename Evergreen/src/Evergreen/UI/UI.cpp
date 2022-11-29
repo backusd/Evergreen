@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "UI.h"
+#include "ControlLoaders/TextLoader.h"
 
 #include <fstream>
 
@@ -287,9 +288,8 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 		}
 		else if (type.compare("Text") == 0)
 		{
-			if (!LoadTextControl(layout, data[key], key))
-				return false;
-
+			//if (!LoadTextControl(layout, data[key], key))
+			//	return false;
 
 			m_loadControlFunctions["Text"](m_deviceResources, layout, data[key], key);
 		}
@@ -970,7 +970,7 @@ bool UI::ParseTextStyle(json& data, std::shared_ptr<TextStyle>& style) noexcept
 		EG_CORE_WARN("{}:{} - TextStyle: 'Locale' field not yet supported", __FILE__, __LINE__);
 	}
 
-	style = std::make_shared<TextStyle>(m_deviceResources, color, fontFamily, fontSize,
+	style = std::make_shared<TextStyle>(m_deviceResources, "No name", color, fontFamily, fontSize,
 		fontWeight, fontStyle, fontStretch, textAlignment, paragraphAlignment, wordWrapping, 
 		trimming, locale);
 

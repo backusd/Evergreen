@@ -26,7 +26,12 @@
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\ControlLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\ControlLoaders\TextLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\StyleLoaders\StyleLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\FontFamily.h" />
+    <ClInclude Include="src\Evergreen\UI\Styles\Style.h" />
+    <ClInclude Include="src\Evergreen\Utils\std_format_specializations.h" />
     <ClInclude Include="src\Evergreen\Window\TranslateErrorCode.h" />
     <ClInclude Include="src\Evergreen\Window\WindowsMessageMap.h" />
     <ClInclude Include="src\Evergreen\Window\Window.h" />
@@ -52,7 +57,11 @@
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\ControlLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\ControlLoaders\TextLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\StyleLoaders\StyleLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Styles\FontFamily.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Styles\Style.cpp" />
     <ClCompile Include="src\Evergreen\Window\TranslateErrorCode.cpp" />
     <ClCompile Include="src\Evergreen\Window\WindowsMessageMap.cpp" />
     <ClCompile Include="src\Evergreen\Window\Window.cpp" />
