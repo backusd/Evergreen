@@ -29,13 +29,10 @@ namespace Evergreen
 		}
 
 		bool PreLoadValidation(Layout* parent, json& data, const std::string& name) noexcept override;
-
 		
 		bool ParseText(Text* textControl, json& data) noexcept;
 		bool ParseStyle(Text* textControl, json& data, GlobalJsonData* globalData) noexcept;
 		bool ParseTextStyleAttributes(Text* textControl, json& data) noexcept;
-
-
 
 	};
 #pragma warning( pop )

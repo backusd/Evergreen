@@ -40,6 +40,8 @@ protected:
 template<typename T>
 std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
 {
+	EG_CORE_ASSERT(deviceResources != nullptr, std::format("{}:{} - Style with name '{}': deviceResources cannot be nullptr", __FILE__, __LINE__, name));
+
 	// Load implementation needs to be part of the base class (StyleLoader).
 	// It will iterate over the keys the json data and attempt to call the correct
 	// parse function that should be stored in the m_keyLoaders map

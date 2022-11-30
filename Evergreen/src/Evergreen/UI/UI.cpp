@@ -5,7 +5,7 @@
 #include <fstream>
 
 
-#define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__))
+#define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__)); ::Evergreen::Log::GetCoreLogger()->error(std::format(CAT2("{}:{} - ", fmt), __FILE__, __LINE__, __VA_ARGS__))
 
 namespace Evergreen
 {
@@ -160,7 +160,6 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		// Make sure data has 'root' key
 		if (!data.value().contains("root"))
 		{
-			EG_CORE_ERROR("{}:{} - File {} has no 'root' key", __FILE__, __LINE__, filePath.string());
 			UI_ERROR("File {} has no 'root' key", filePath.string());
 			LoadErrorUI();
 			return;
@@ -170,7 +169,12 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		m_jsonRoot = data.value();
 
 		// Before constructing the layout, load global data that may be needed by Load* functions
-		ParseGlobalStyles(m_jsonRoot);
+		if (!ParseGlobalStyles(m_jsonRoot))
+		{
+			UI_ERROR("{}", "Call to ParseGlobalStyles failed");
+			LoadErrorUI();
+			return;
+		}
 
 		// Get the root layout data and create the root layout
 		json rootLayoutData = m_jsonRoot["root"];
@@ -215,20 +219,42 @@ std::optional<json> UI::LoadJSONFile(std::filesystem::path filePath) noexcept
 		}
 		catch (const json::parse_error& e)
 		{
-			EG_CORE_ERROR("{}:{} - UI::LoadJSONFile caught json::parse_error: {}", __FILE__, __LINE__, e.what());
 			UI_ERROR("File: {}\njson::parse_error: {}", filePath.string(), e.what());
 			return std::nullopt;
 		}
 	}
 
-	EG_CORE_ERROR("{}:{} - UI::LoadJSONFile failed to open file {}", __FILE__, __LINE__, filePath.string());
 	UI_ERROR("Failed to open file: {}", filePath.string());
 	return std::nullopt;
 }
 
 void UI::LoadErrorUI() noexcept
 {
+	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+	
+	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
+		m_deviceResources,
+		"Error Style",
+		Evergreen::Color::Black,
+		Evergreen::FontFamily::Arial,
+		22.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD
+	);
 
+	std::wstring text = L"";
+	std::wstring message;
+
+	for (const std::string& s : m_errorMessages)
+		text = std::format(L"{}\n{}\n", text, std::wstring(s.begin(), s.end()));
+
+	m_rootLayout->AddControl<Text>(m_deviceResources, text, style);
 }
 
 void UI::Render(DeviceResources* deviceResources) const noexcept
@@ -270,16 +296,13 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 
 		if (!data[key].contains("Type"))
 		{
-			EG_CORE_ERROR("{}:{} - Control or sub-layout has no 'Type' definition: {}", __FILE__, __LINE__, data[key]);
 			UI_ERROR("Control or sub-layout has no 'Type' definition: {}", data[key]);
 			return false;
 		}
 
 		if (!data[key]["Type"].is_string())
 		{
-			EG_CORE_ERROR("{}:{} - Control or sub-layout 'Type' definition must be a string. Invalid value: {}", __FILE__, __LINE__, data[key]["Type"]);
-			UI_ERROR("{}", "Control or sub-layout 'Type' definition must be a string.");
-			UI_ERROR("Invalid value : {}", data[key]["Type"]);
+			UI_ERROR("Control or sub-layout 'Type' definition must be a string.\nInvalid value : {}", data[key]["Type"]);
 			return false;
 		}
 
@@ -323,16 +346,17 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 				// Each row must contain a 'Height' key
 				if (!rowDefinition.contains("Height"))
 				{
-					EG_CORE_ERROR("{}:{} - RowDefinition for layout '{}' does not contain 'Height' key: {}", __FILE__, __LINE__, layout->Name(), rowDefinition);
 					UI_ERROR("RowDefinition for layout '{}' does not contain 'Height' key: {}", layout->Name(), rowDefinition);
 					return false;
 				}
 
 				// Get the Row type and size
-				RowColumnType rowColType = RowColumnType::FIXED;
-				float rowColSize = 1.0f;
-				if (!ParseRowColumnTypeAndSize(rowDefinition["Height"], layout, rowColType, rowColSize))
+				std::optional<std::tuple<RowColumnType, float>> typeAndSizeOpt = ParseRowColumnTypeAndSize(rowDefinition["Height"], layout);
+				if (!typeAndSizeOpt.has_value())
 					return false;
+
+				RowColumnType rowColType = std::get<0>(typeAndSizeOpt.value());
+				float rowColSize = std::get<1>(typeAndSizeOpt.value());
 
 				// Create the row and get a pointer to it so we can edit it further
 				if (std::optional<Row*> row = layout->AddRow({ rowColType, rowColSize }))
@@ -355,9 +379,7 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 								row.value()->TopIsAdjustable(rowDefinition[key].get<bool>());
 							else
 							{
-								EG_CORE_ERROR("{}:{} - RowDefinition TopAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), rowDefinition[key]);
-								UI_ERROR("RowDefinition TopAdjustable field for layout '{}' must have boolean type", layout->Name());
-								UI_ERROR("Invalid value: {}", rowDefinition[key]);
+								UI_ERROR("RowDefinition TopAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key]);
 								return false;
 							}
 						}
@@ -367,25 +389,23 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 								row.value()->BottomIsAdjustable(rowDefinition[key].get<bool>());
 							else
 							{
-								EG_CORE_ERROR("{}:{} - RowDefinition BottomAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), rowDefinition[key]);
-								UI_ERROR("RowDefinition BottomAdjustable field for layout '{}' must have boolean type", layout->Name());
-								UI_ERROR("Invalid value: {}", rowDefinition[key]);
+								UI_ERROR("RowDefinition BottomAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key]);
 								return false;
 							}
 						}
 						else if (key.compare("MaxHeight") == 0)
 						{
-							if (!ParseRowColumnTypeAndSize(rowDefinition[key], layout, rowColType, rowColSize))
+							if (std::optional<std::tuple<RowColumnType, float>> typeSizeTupleOpt = ParseRowColumnTypeAndSize(rowDefinition[key], layout))
+								row.value()->MaxHeight({ std::get<0>(typeSizeTupleOpt.value()), std::get<1>(typeSizeTupleOpt.value()) });
+							else
 								return false;
-
-							row.value()->MaxHeight({ rowColType, rowColSize });
 						}
 						else if (key.compare("MinHeight") == 0)
 						{
-							if (!ParseRowColumnTypeAndSize(rowDefinition[key], layout, rowColType, rowColSize))
+							if (std::optional<std::tuple<RowColumnType, float>> typeSizeTupleOpt = ParseRowColumnTypeAndSize(rowDefinition[key], layout))
+								row.value()->MinHeight({ std::get<0>(typeSizeTupleOpt.value()), std::get<1>(typeSizeTupleOpt.value()) });
+							else
 								return false;
-
-							row.value()->MinHeight({ rowColType, rowColSize });
 						}
 						else
 						{
@@ -396,8 +416,6 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 				}
 				else
 				{
-					EG_CORE_ERROR("{}:{} - Failed to add a row for layout with name: {}", __FILE__, __LINE__, layout->Name());
-					EG_CORE_ERROR("   Intended type: {} - Intended height: {}", rowColType, rowColSize);
 					UI_ERROR("Failed to add a row for layout with name: {}", layout->Name());
 					UI_ERROR("Intended type: {} - Intended height: {}", rowColType, rowColSize);
 					return false;
@@ -406,7 +424,6 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 		}
 		else
 		{
-			EG_CORE_ERROR("{}:{} - RowDefinitions value must be an array type. Invalid value: {}", __FILE__, __LINE__, data["RowDefinitions"]);
 			UI_ERROR("RowDefinitions value must be an array type. Invalid value: {}", data["RowDefinitions"]);
 			return false;
 		}
@@ -416,7 +433,6 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 		// Add a single row that spans the layout
 		if (!layout->AddRow({ RowColumnType::STAR, 1.0f }))
 		{
-			EG_CORE_ERROR("{}:{} - Failed to add a single default row for layout with name: {}", __FILE__, __LINE__, layout->Name());
 			UI_ERROR("Failed to add a single default row for layout with name: {}", layout->Name());
 			return false;
 		}
@@ -438,16 +454,17 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 				// Each column must contain a 'Width' key
 				if (!columnDefinition.contains("Width"))
 				{
-					EG_CORE_ERROR("{}:{} - ColumnDefinition for layout '{}' does not contain 'Width' key: {}", __FILE__, __LINE__, layout->Name(), columnDefinition);
 					UI_ERROR("ColumnDefinition for layout '{}' does not contain 'Width' key: {}", layout->Name(), columnDefinition);
 					return false;
 				}
 
 				// Get the Row type and size
-				RowColumnType rowColType = RowColumnType::FIXED;
-				float rowColSize = 1.0f;
-				if (!ParseRowColumnTypeAndSize(columnDefinition["Width"], layout, rowColType, rowColSize))
+				std::optional<std::tuple<RowColumnType, float>> typeAndSizeOpt = ParseRowColumnTypeAndSize(columnDefinition["Width"], layout);
+				if (!typeAndSizeOpt.has_value())
 					return false;
+
+				RowColumnType rowColType = std::get<0>(typeAndSizeOpt.value());
+				float rowColSize = std::get<1>(typeAndSizeOpt.value());
 
 				// Create the column and get a pointer to it so we can edit it further
 				if (std::optional<Column*> column = layout->AddColumn({ rowColType, rowColSize }))
@@ -470,9 +487,7 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 								column.value()->LeftIsAdjustable(columnDefinition[key].get<bool>());
 							else
 							{
-								EG_CORE_ERROR("{}:{} - ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), columnDefinition[key]);
-								UI_ERROR("ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type", layout->Name());
-								UI_ERROR("Invalid value: {}", columnDefinition[key]);
+								UI_ERROR("ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key]);
 								return false;
 							}
 						}
@@ -482,25 +497,23 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 								column.value()->RightIsAdjustable(columnDefinition[key].get<bool>());
 							else
 							{
-								EG_CORE_ERROR("{}:{} - ColumnDefinition RightAdjustable field for layout '{}' must have boolean type. Invalid value: {}", __FILE__, __LINE__, layout->Name(), columnDefinition[key]);
-								UI_ERROR("ColumnDefinition RightAdjustable field for layout '{}' must have boolean type", layout->Name());
-								UI_ERROR("Invalid value: {}", columnDefinition[key]);
+								UI_ERROR("ColumnDefinition RightAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key]);
 								return false;
 							}
 						}
 						else if (key.compare("MaxWidth") == 0)
 						{
-							if (!ParseRowColumnTypeAndSize(columnDefinition[key], layout, rowColType, rowColSize))
+							if (std::optional<std::tuple<RowColumnType, float>> typeSizeTupleOpt = ParseRowColumnTypeAndSize(columnDefinition[key], layout))
+								column.value()->MaxWidth({ std::get<0>(typeSizeTupleOpt.value()), std::get<1>(typeSizeTupleOpt.value()) });
+							else
 								return false;
-
-							column.value()->MaxWidth({ rowColType, rowColSize });
 						}
 						else if (key.compare("MinWidth") == 0)
 						{
-							if (!ParseRowColumnTypeAndSize(columnDefinition[key], layout, rowColType, rowColSize))
+							if (std::optional<std::tuple<RowColumnType, float>> typeSizeTupleOpt = ParseRowColumnTypeAndSize(columnDefinition[key], layout))
+								column.value()->MinWidth({ std::get<0>(typeSizeTupleOpt.value()), std::get<1>(typeSizeTupleOpt.value()) });
+							else
 								return false;
-
-							column.value()->MinWidth({ rowColType, rowColSize });
 						}
 						else
 						{
@@ -511,8 +524,6 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 				}
 				else
 				{
-					EG_CORE_ERROR("{}:{} - Failed to add a column for layout with name: {}", __FILE__, __LINE__, layout->Name());
-					EG_CORE_ERROR("   Intended type: {} - Intended width: {}", rowColType, rowColSize);
 					UI_ERROR("Failed to add a column for layout with name: {}", layout->Name());
 					UI_ERROR("Intended type: {} - Intended width: {}", rowColType, rowColSize);
 					return false;
@@ -521,7 +532,6 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 		}
 		else
 		{
-			EG_CORE_ERROR("{}:{} - ColumnDefinitions value must be an array type. Invalid value: {}", __FILE__, __LINE__, data["ColumnDefinitions"]);
 			UI_ERROR("ColumnDefinitions value must be an array type. Invalid value: {}", data["ColumnDefinitions"]);
 			return false;
 		}
@@ -531,7 +541,6 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 		// Add a single column that spans the layout
 		if (!layout->AddColumn({ RowColumnType::STAR, 1.0f }))
 		{
-			EG_CORE_ERROR("{}:{} - Failed to add a single default column for layout with name: {}", __FILE__, __LINE__, layout->Name());
 			UI_ERROR("Failed to add a single default column for layout with name: {}", layout->Name());
 			return false;
 		}
@@ -549,18 +558,13 @@ bool UI::LoadSubLayout(Layout* parent, json& data, const std::string& name) noex
 	}
 
 	// Parse the row/column/rowspan/columnspan values
-	RowColumnPosition position;
-	if (!ParseRowColumnPosition(data, position))
+	if (std::optional<RowColumnPosition> positionOpt = ParseRowColumnPosition(data))
 	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, name, data["Row"]);
-		UI_ERROR("Text control with name '{}': 'Row' value must be an unsigned int.", name);
-		UI_ERROR("Invalid value : {}", data["Row"]);
-		return false;
+		if (std::optional<Layout*> sublayoutOpt = parent->AddSubLayout(positionOpt.value(), name))
+			return LoadLayoutDetails(sublayoutOpt.value(), data);
 	}
 
-	if (std::optional<Layout*> sublayout = parent->AddSubLayout(position, name))
-		return LoadLayoutDetails(sublayout.value(), data);
-
+	UI_ERROR("Sublayout with name '{}': Failed to add as sublayout.", name);
 	return false;
 }
 
@@ -572,9 +576,7 @@ bool UI::ParseGlobalStyles(json& data) noexcept
 		{
 			if (!data[key]["Type"].is_string())
 			{
-				EG_CORE_ERROR("{}:{} - Failed to parse global data for key '{}'. 'Type' field must be a string. Invalid value: {}", __FILE__, __LINE__, key, data[key]["Type"]);
-				UI_ERROR("Failed to parse global data for key '{}'. 'Type' field must be a string.", key);
-				UI_ERROR("Invalid value : {}", data[key]["Type"]);
+				UI_ERROR("Failed to parse global data for key '{}'. 'Type' field must be a string.\nInvalid value : {}", key, data[key]["Type"]);
 				return false;
 			}
 
@@ -584,12 +586,11 @@ bool UI::ParseGlobalStyles(json& data) noexcept
 			if (m_loadStyleFunctions.find(styleType) != m_loadStyleFunctions.end())
 			{
 				if (std::optional<std::shared_ptr<Style>> styleOpt = m_loadStyleFunctions.at(styleType)(m_deviceResources, data[key], key))
-				{
 					m_globalJsonData->m_stylesMap[key] = styleOpt.value();
-				}
 				else
 				{
-					EG_CORE_ERROR("{}:{} - Failed to parse global data for key '{}'. The call to the LoadStyle function for style '{}' failed.", __FILE__, __LINE__, key, styleType);
+					UI_ERROR("Failed to parse global data for key '{}'. The call to the LoadStyle function for style '{}' failed.", key, styleType);
+					return false;
 				}
 			}
 			else if (styleType.size() > 5 && styleType.substr(styleType.size() - 5, 5).compare("Style") == 0) // If the typeString ends in "Style", warn the user they probably did not set up the StyleLoader correctly
@@ -601,46 +602,42 @@ bool UI::ParseGlobalStyles(json& data) noexcept
 
 	return true;
 }
-bool UI::ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept
+std::optional<RowColumnPosition> UI::ParseRowColumnPosition(json& data) noexcept
 {
+	RowColumnPosition position;
+	position.Row = 0;
+	position.Column = 0;
+	position.RowSpan = 1;
+	position.ColumnSpan = 1;
+
 	if (data.contains("Row"))
 	{
 		if (!data["Row"].is_number_unsigned())
 		{
-			EG_CORE_ERROR("{}:{} - 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Row"]);
-			UI_ERROR("{}", "'Row' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["Row"]);
-			return false;
+			UI_ERROR("'Row' value must be an unsigned int.\nInvalid value: {}", data["Row"]);
+			return std::nullopt;
 		}
 
 		position.Row = data["Row"].get<unsigned int>();
 	}
-	else
-		position.Row = 0;
 
 	if (data.contains("Column"))
 	{
 		if (!data["Column"].is_number_unsigned())
 		{
-			EG_CORE_ERROR("{}:{} - 'Column' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Column"]);
-			UI_ERROR("{}", "'Column' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["Column"]);
-			return false;
+			UI_ERROR("'Column' value must be an unsigned int.\nInvalid value: {}", data["Column"]);
+			return std::nullopt;
 		}
 
 		position.Column = data["Column"].get<unsigned int>();
 	}
-	else
-		position.Column = 0;
 
 	if (data.contains("RowSpan"))
 	{
 		if (!data["RowSpan"].is_number_unsigned())
 		{
-			EG_CORE_ERROR("{}:{} - 'RowSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["RowSpan"]);
-			UI_ERROR("{}", "'RowSpan' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["RowSpan"]);
-			return false;
+			UI_ERROR("'RowSpan' value must be an unsigned int.\nInvalid value : {}", data["RowSpan"]);
+			return std::nullopt;
 		}
 
 		position.RowSpan = data["RowSpan"].get<unsigned int>();
@@ -651,17 +648,13 @@ bool UI::ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcep
 			position.RowSpan = 1;
 		}
 	}
-	else
-		position.RowSpan = 1;
 
 	if (data.contains("ColumnSpan"))
 	{
 		if (!data["ColumnSpan"].is_number_unsigned())
 		{
-			EG_CORE_ERROR("{}:{} - 'ColumnSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["ColumnSpan"]);
-			UI_ERROR("{}", "'ColumnSpan' value must be an unsigned int.");
-			UI_ERROR("Invalid value : {}", data["ColumnSpan"]);
-			return false;
+			UI_ERROR("{}", "'ColumnSpan' value must be an unsigned int.\nInvalid value : {}", data["ColumnSpan"]);
+			return std::nullopt;
 		}
 
 		position.ColumnSpan = data["ColumnSpan"].get<unsigned int>();
@@ -672,12 +665,10 @@ bool UI::ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcep
 			position.ColumnSpan = 1;
 		}
 	}
-	else
-		position.ColumnSpan = 1;
 
-	return true;
+	return position;
 }
-bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept
+std::optional<std::tuple<RowColumnType, float>> UI::ParseRowColumnTypeAndSize(json& data, Layout* layout) noexcept
 {
 	// The data must be an int, float, or string
 	// If int or float, the type is automatically FIXED
@@ -685,27 +676,27 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 	// If string & last character is * -> type is STAR
 	// Else -> type is FIXED
 
+	RowColumnType type = RowColumnType::FIXED;
+	float size = 1.0f;
+
 	if (data.is_number())
 	{
 		type = RowColumnType::FIXED;
 		size = data.get<float>();
 		if (size <= 0.0f)
 		{
-			EG_CORE_ERROR("{}:{} - Fixed Height/Width values for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-			UI_ERROR("Fixed Height/Width value for layout '{}' must be greater than 0.", layout->Name());
-			UI_ERROR("Invalid value: {}", size);
-			return false;
+			UI_ERROR("Fixed Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layout->Name(), size);
+			return std::nullopt;
 		}
-		return true;
+		return std::make_tuple(type, size);
 	}
 	else if (data.is_string())
 	{
 		std::string dataString = data.get<std::string>();
 		if (dataString.size() == 0)
 		{
-			EG_CORE_ERROR("{}:{} - RowDefinition Height/Width value for layout '{}' must not be empty.", __FILE__, __LINE__, layout->Name());
 			UI_ERROR("{}", "RowDefinition Height/Width value for layout '{}' must not be empty.", layout->Name());
-			return false;
+			return std::nullopt;
 		}
 
 		try {
@@ -715,19 +706,13 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 		}
 		catch (const std::invalid_argument& e)
 		{
-			EG_CORE_ERROR("{}:{} - Height/Width value ({}) for layout '{}' could not be parsed to a float.", __FILE__, __LINE__, dataString, layout->Name());
-			EG_CORE_ERROR("    Exception message: {}", e.what());
-			UI_ERROR("Layout: {}", layout->Name());
-			UI_ERROR("Invalid Height/Width value could not be parsed to a float: {}", dataString);
-			return false;
+			UI_ERROR("Invalid Height/Width value for layout ({}) could not be parsed to a float: {}.\nException Message: {}", layout->Name(), dataString, e.what());
+			return std::nullopt;
 		}
 		catch (const std::out_of_range& e)
 		{
-			EG_CORE_ERROR("{}:{} - Height/Width value ({}) for layout '{}' was out of range and could not be parsed to a float.", __FILE__, __LINE__, dataString, layout->Name());
-			EG_CORE_ERROR("    Exception message: {}", e.what());
-			UI_ERROR("Layout: {}", layout->Name());
-			UI_ERROR("Invalid Height/Width value was out of range and could not be parsed to a float: {}", dataString);
-			return false;
+			UI_ERROR("Invalid Height/Width value for layout ({}). Caught out of range exception for value '{}'.\nException Message: {}", layout->Name(), dataString, e.what());
+			return std::nullopt;
 		}
 
 		// Get the type and perform some bounds checking
@@ -737,17 +722,13 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 			type = RowColumnType::PERCENT; 
 			if (size < 0.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Percent Height/Width value for layout '{}' cannot be less than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Percent Height/Width value for layout '{}' cannot be less than 0.", layout->Name());
-				UI_ERROR("Invalid value: {}", size);
-				return false;
+				UI_ERROR("Percent Height/Width value for layout '{}' cannot be less than 0.\nInvalid value: {}", layout->Name(), size);
+				return std::nullopt;
 			}
 			else if (size > 100.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Percent Height/Width value for layout '{}' cannot be greater than 100. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Percent Height/Width value for layout '{}' cannot be greater than 100.", layout->Name());
-				UI_ERROR("Invalid value: {}", size);
-				return false;
+				UI_ERROR("Percent Height/Width value for layout '{}' cannot be greater than 100.\nInvalid value: {}", layout->Name(), size);
+				return std::nullopt;
 			}
 
 			size /= 100.0f; // Must divide by 100 to stay within the range [0, 1]
@@ -757,32 +738,25 @@ bool UI::ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& ty
 			type = RowColumnType::STAR; 
 			if (size <= 0.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Star Height/Width value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Star Height/Width value for layout '{}' must be greater than 0.", layout->Name());
-				UI_ERROR("Invalid value: {}", size);
-				return false;
+				UI_ERROR("Star Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layout->Name(), size);
+				return std::nullopt;
 			}
 			break;
 		default:
 			type = RowColumnType::FIXED; 
 			if (size <= 0.0f)
 			{
-				EG_CORE_ERROR("{}:{} - Fixed Height/Width value for layout '{}' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, layout->Name(), size);
-				UI_ERROR("Fixed Height/Width value for layout '{}' must be greater than 0.", layout->Name());
-				UI_ERROR("Invalid value: {}", size);
-				return false;
+				UI_ERROR("Fixed Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layout->Name(), size);
+				return std::nullopt;
 			}
 			break;
 		}
 
-		return true;
+		return std::make_tuple(type, size);
 	}
 
-	EG_CORE_ERROR("{}:{} - Height/Width value must be either a number or a string. Layout: {}. Invalid value: {}", __FILE__, __LINE__, layout->Name(), data);
-	UI_ERROR("{}", "Height/Width value must be either a number or a string.");
-	UI_ERROR("Layout: {}", layout->Name());
-	UI_ERROR("Invalid value: {}", data);
-	return false;
+	UI_ERROR("Height/Width value must be either a number or a string.\nLayout Name: {}\nInvalid value: {}", layout->Name(), data);
+	return std::nullopt;
 }
 
 bool UI::ImportJSON(json& data) noexcept
@@ -795,7 +769,6 @@ bool UI::ImportJSON(json& data) noexcept
 
 	if (!data["import"].is_string())
 	{
-		EG_CORE_ERROR("{}:{} - 'import' key must have a string-type value. Invalid value: {}", __FILE__, __LINE__, data["import"]);
 		UI_ERROR("'import' key must have a string-type value. Invalid value: {}", data["import"]);
 		return false;
 	}
@@ -813,22 +786,22 @@ bool UI::ImportJSON(json& data) noexcept
 	if (importValue.substr(importValue.size() - 5, 5).compare(".json") == 0)
 	{
 		std::filesystem::path importPath = std::filesystem::path(m_jsonRootDirectory).append(importValue);
-		std::optional<json> jsonImportOpt = LoadJSONFile(importPath);
-		if (!jsonImportOpt.has_value())
+		
+		if (std::optional<json> jsonImportOpt = LoadJSONFile(importPath))
 		{
-			EG_CORE_ERROR("{}:{} - Failed to import json file: {}", __FILE__, __LINE__, importPath.string());
+			jsonImport = jsonImportOpt.value();
+		}
+		else
+		{
 			UI_ERROR("Failed to import json file: {}", importPath.string());
 			return false;
 		}
-
-		jsonImport = jsonImportOpt.value();
 	}
 	else
 	{
 		// 'import' value is a json key that should exist at the root level of the initial json object
 		if (!m_jsonRoot.contains(importValue))
 		{
-			EG_CORE_ERROR("{}:{} - Unable to import key '{}'. Does not exist at the json root level.", __FILE__, __LINE__, importValue);
 			UI_ERROR("Unable to import key '{}'. Does not exist at the json root level.", importValue);
 			return false;
 		}
@@ -839,9 +812,7 @@ bool UI::ImportJSON(json& data) noexcept
 	// The imported json must be a json object
 	if (!jsonImport.is_object())
 	{
-		EG_CORE_ERROR("{}:{} - Unable to import key '{}'. Imported json value must be a json object. Invalid value: {}", __FILE__, __LINE__, importValue, jsonImport);
-		UI_ERROR("Unable to import key '{}'. Imported json value must be a json object.", importValue);
-		UI_ERROR("Invalid value: {}", jsonImport);
+		UI_ERROR("Unable to import key '{}'. Imported json value must be a json object.\nInvalid value: {}", importValue, jsonImport);
 		return false;
 	}
 
@@ -861,7 +832,6 @@ bool UI::ImportJSON(json& data) noexcept
 		// Make sure there are no key conflicts
 		if (data.contains(key))
 		{
-			EG_CORE_ERROR("{}:{} - Unable to import key '{}'. Both the original and imported json contain the same key: {}", __FILE__, __LINE__, importValue, key);
 			UI_ERROR("Unable to import key '{}'. Both the original and imported json contain the same key: {}", importValue, key);
 			return false;
 		}

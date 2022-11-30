@@ -30,11 +30,10 @@ protected:
 	ControlLoader() noexcept;
 	virtual bool PreLoadValidation(Layout* parent, json& data, const std::string& name) noexcept { return true; }
 
-
 	template<typename T>
 	bool LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, GlobalJsonData* globalData) noexcept;
 
-	bool ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept;
+	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
 
 	std::unordered_map<std::string, std::function<bool(Control*, json&, Layout*, GlobalJsonData*)>> m_keyLoaders;
 
@@ -45,6 +44,10 @@ protected:
 template<typename T>
 bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& name, GlobalJsonData* globalData) noexcept
 {
+	EG_CORE_ASSERT(deviceResources != nullptr, std::format("{}:{} - Control with name '{}': deviceResources cannot be nullptr", __FILE__, __LINE__, name));
+	EG_CORE_ASSERT(parentLayout != nullptr, std::format("{}:{} - Control with name '{}': parentLayout cannot be nullptr", __FILE__, __LINE__, name));
+	EG_CORE_ASSERT(globalData != nullptr, std::format("{}:{} - Control with name '{}': GlobalJsonData cannot be nullptr", __FILE__, __LINE__, name));
+
 	// Load implementation is part of the base class (ControlLoader).
 	// It will iterate over the keys the json data and attempt to call the correct
 	// parse function that should be stored in the m_keyLoaders map
@@ -57,14 +60,14 @@ bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, L
 	}
 
 	// Determine Row/Column positioning, create the control, then iterate over the other json keys
-	RowColumnPosition position;
-	if (!ParseRowColumnPosition(data, position))
+	std::optional<RowColumnPosition> positionOpt = ParseRowColumnPosition(data);
+	if (!positionOpt.has_value())
 	{
 		EG_CORE_ERROR("{}:{} - Control with name '{}': Failed to parse row/column positioning.", __FILE__, __LINE__, name);
 		return false;
 	}
 
-	if (std::optional<T*> control = parentLayout->AddControl<T>(position, deviceResources))
+	if (std::optional<T*> control = parentLayout->AddControl<T>(positionOpt.value(), deviceResources))
 	{
 		// Set the name for the control
 		control.value()->Name(name);

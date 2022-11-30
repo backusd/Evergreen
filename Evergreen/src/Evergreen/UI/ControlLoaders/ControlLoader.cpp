@@ -13,40 +13,42 @@ ControlLoader::ControlLoader() noexcept
 
 }
 
-bool ControlLoader::ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept
+std::optional<RowColumnPosition> ControlLoader::ParseRowColumnPosition(json& data) noexcept
 {
+	RowColumnPosition position;
+	position.Row = 0;
+	position.Column = 0;
+	position.RowSpan = 1;
+	position.ColumnSpan = 1;
+
 	if (data.contains("Row"))
 	{
 		if (!data["Row"].is_number_unsigned())
 		{
 			EG_CORE_ERROR("{}:{} - 'Row' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Row"]);
-			return false;
+			return std::nullopt;
 		}
 
 		position.Row = data["Row"].get<unsigned int>();
 	}
-	else
-		position.Row = 0;
 
 	if (data.contains("Column"))
 	{
 		if (!data["Column"].is_number_unsigned())
 		{
 			EG_CORE_ERROR("{}:{} - 'Column' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["Column"]);
-			return false;
+			return std::nullopt;
 		}
 
 		position.Column = data["Column"].get<unsigned int>();
 	}
-	else
-		position.Column = 0;
 
 	if (data.contains("RowSpan"))
 	{
 		if (!data["RowSpan"].is_number_unsigned())
 		{
 			EG_CORE_ERROR("{}:{} - 'RowSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["RowSpan"]);
-			return false;
+			return std::nullopt;
 		}
 
 		position.RowSpan = data["RowSpan"].get<unsigned int>();
@@ -57,15 +59,13 @@ bool ControlLoader::ParseRowColumnPosition(json& data, RowColumnPosition& positi
 			position.RowSpan = 1;
 		}
 	}
-	else
-		position.RowSpan = 1;
 
 	if (data.contains("ColumnSpan"))
 	{
 		if (!data["ColumnSpan"].is_number_unsigned())
 		{
 			EG_CORE_ERROR("{}:{} - 'ColumnSpan' value must be an unsigned int. Invalid value: {}", __FILE__, __LINE__, data["ColumnSpan"]);
-			return false;
+			return std::nullopt;
 		}
 
 		position.ColumnSpan = data["ColumnSpan"].get<unsigned int>();
@@ -76,10 +76,8 @@ bool ControlLoader::ParseRowColumnPosition(json& data, RowColumnPosition& positi
 			position.ColumnSpan = 1;
 		}
 	}
-	else
-		position.ColumnSpan = 1;
 
-	return true;
+	return position;
 }
 
 // ----------------------------------------------------------------------------

@@ -55,6 +55,9 @@ bool TextLoader::PreLoadValidation(Layout* parent, json& data, const std::string
 
 bool TextLoader::ParseText(Text* textControl, json& data) noexcept
 {
+	EG_CORE_ASSERT(textControl != nullptr, std::format("{}:{} - Text control cannot be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("Text"), std::format("{}:{} - Text control with name '{}': json data must contain key 'Text'", __FILE__, __LINE__, textControl->Name()));
+
 	if (!data["Text"].is_string())
 	{
 		EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Text' field must be a string. Invalid value: {}", __FILE__, __LINE__, textControl->Name(), data["Text"]);
@@ -96,6 +99,8 @@ bool TextLoader::ParseText(Text* textControl, json& data) noexcept
 }
 bool TextLoader::ParseStyle(Text* textControl, json& data, GlobalJsonData* globalData) noexcept
 {
+	EG_CORE_ASSERT(textControl != nullptr, std::format("{}:{} - Text control cannot be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("Style"), std::format("{}:{} - Text control with name '{}': json data must contain key 'Style'", __FILE__, __LINE__, textControl->Name()));
 	EG_CORE_ASSERT(globalData != nullptr, std::format("{}:{} - Text control with name '{}': GlobalJsonData cannot be nullptr", __FILE__, __LINE__, textControl->Name()));
 	
 	if (!data["Style"].is_string())
@@ -118,6 +123,8 @@ bool TextLoader::ParseStyle(Text* textControl, json& data, GlobalJsonData* globa
 }
 bool TextLoader::ParseTextStyleAttributes(Text* textControl, json& data) noexcept
 {
+	EG_CORE_ASSERT(textControl != nullptr, std::format("{}:{} - Text control cannot be nullptr", __FILE__, __LINE__));
+
 	// In order to parse TextStyle attributes within a Text control json object, we are going to say 
 	// that when the first TextStyle attribute is found, we will pass the json data to the TextStyleLoader 
 	// which will parse all of the json data and create the TextStyle. We will then assign the TextStyle to the Text

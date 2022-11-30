@@ -26,6 +26,7 @@ std::optional<std::shared_ptr<Style>> TextStyleLoader::Load(std::shared_ptr<Devi
 bool TextStyleLoader::ParseColor(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("Color"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'Color'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["Color"].is_string())
 	{
@@ -45,6 +46,7 @@ bool TextStyleLoader::ParseColor(TextStyle* textStyle, json& data) noexcept
 bool TextStyleLoader::ParseFontFamily(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("FontFamily"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'FontFamily'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["FontFamily"].is_string())
 	{
@@ -64,6 +66,7 @@ bool TextStyleLoader::ParseFontFamily(TextStyle* textStyle, json& data) noexcept
 bool TextStyleLoader::ParseFontSize(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("FontSize"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'FontSize'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["FontSize"].is_number())
 	{
@@ -85,6 +88,7 @@ bool TextStyleLoader::ParseFontSize(TextStyle* textStyle, json& data) noexcept
 bool TextStyleLoader::ParseFontWeight(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("FontWeight"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'FontWeight'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["FontWeight"].is_string())
 	{
@@ -126,6 +130,7 @@ bool TextStyleLoader::ParseFontWeight(TextStyle* textStyle, json& data) noexcept
 bool TextStyleLoader::ParseFontStyle(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("FontStyle"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'FontStyle'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["FontStyle"].is_string())
 	{
@@ -153,6 +158,7 @@ bool TextStyleLoader::ParseFontStyle(TextStyle* textStyle, json& data) noexcept
 bool TextStyleLoader::ParseFontStretch(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("FontStretch"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'FontStretch'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["FontStretch"].is_string())
 	{
@@ -188,6 +194,7 @@ bool TextStyleLoader::ParseFontStretch(TextStyle* textStyle, json& data) noexcep
 bool TextStyleLoader::ParseTextAlignment(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("TextAlignment"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'TextAlignment'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["TextAlignment"].is_string())
 	{
@@ -216,6 +223,7 @@ bool TextStyleLoader::ParseTextAlignment(TextStyle* textStyle, json& data) noexc
 bool TextStyleLoader::ParseParagraphAlignment(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("ParagraphAlignment"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'ParagraphAlignment'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["ParagraphAlignment"].is_string())
 	{
@@ -243,6 +251,7 @@ bool TextStyleLoader::ParseParagraphAlignment(TextStyle* textStyle, json& data) 
 bool TextStyleLoader::ParseWordWrapping(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
+	EG_CORE_ASSERT(data.contains("WordWrapping"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'WordWrapping'", __FILE__, __LINE__, textStyle->Name()));
 
 	if (!data["WordWrapping"].is_string())
 	{

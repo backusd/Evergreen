@@ -59,8 +59,8 @@ private:
 	bool LoadSubLayout(Layout* parent, json& data, const std::string& name) noexcept;
 	
 	bool ParseGlobalStyles(json& data) noexcept;
-	bool ParseRowColumnPosition(json& data, RowColumnPosition& position) noexcept;
-	bool ParseRowColumnTypeAndSize(json& data, Layout* layout, RowColumnType& type, float& size) noexcept;
+	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
+	std::optional<std::tuple<RowColumnType, float>> ParseRowColumnTypeAndSize(json& data, Layout* layout) noexcept;
 
 
 	// Function to handle 'import' key
@@ -74,7 +74,6 @@ private:
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 
-	// std::unordered_map<std::string, std::shared_ptr<TextStyle>> m_textStylesMap;
 	std::shared_ptr<GlobalJsonData> m_globalJsonData;
 
 	static std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>> m_loadControlFunctions;
