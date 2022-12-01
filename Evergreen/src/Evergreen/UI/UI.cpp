@@ -276,10 +276,14 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 	// -------------
 
+	std::vector<D2D1_GRADIENT_STOP> stops2;
+	stops2.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::Pink, 1.0f));
+	stops2.emplace_back(0.5f, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
+	stops2.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::LightBlue, 1.0f));
+
 	RadialBrush radialBrush(
-		m_deviceResources,
-		D2D1::ColorF(D2D1::ColorF::Red, 1.0f),
-		D2D1::ColorF(D2D1::ColorF::Blue, 1.0f),
+		m_deviceResources, 
+		stops2,
 		{ 600.0f, 600.0f },
 		75.0f, 75.0f
 	);
