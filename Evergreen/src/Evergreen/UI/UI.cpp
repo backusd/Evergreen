@@ -4,6 +4,9 @@
 
 #include <fstream>
 
+#include "Colors/SolidColorBrush.h"
+#include "Colors/GradientBrush.h"
+
 
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__)); ::Evergreen::Log::GetCoreLogger()->error(std::format(CAT2("{}:{} - ", fmt), __FILE__, __LINE__, __VA_ARGS__))
 
@@ -41,7 +44,6 @@ void UI::LoadDefaultUI() noexcept
 
 
 	// TEST CODE
-	/*
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	if (std::optional<Row*> row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
 	{
@@ -65,8 +67,9 @@ void UI::LoadDefaultUI() noexcept
 	std::shared_ptr<TextStyle> defaultStyle = std::make_shared<TextStyle>(m_deviceResources);
 	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
 		m_deviceResources,
+		"Custom Style",
 		Evergreen::Color::Black,
-		Evergreen::FontFamily::Segoe_MDL2_Assets,
+		Evergreen::FontFamily::Arial,
 		22.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
 		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
@@ -90,31 +93,7 @@ void UI::LoadDefaultUI() noexcept
 	position.RowSpan = 1;
 	position.ColumnSpan = 1;
 
-	//std::wstring s = std::format(L"{}{}", L"\\", L"xE10F");
-	std::wstring s1 = L"0xE1";
-	std::wstring s2 = L"0x0F";
-	std::wstring s3 = L"0xE10F";
-
-	std::wstring o = L"\xE10F";
-	std::wstring s;
-
-	try
-	{
-		int v1 = std::stoi(s1, nullptr, 16);
-		int v2 = std::stoi(s2, nullptr, 16);
-		int v3 = std::stoi(s3, nullptr, 16);
-
-		s.push_back(static_cast<wchar_t>(v3));
-		//s.push_back(static_cast<wchar_t>(v2));
-	}
-	catch (const std::invalid_argument& e)
-	{
-		int iii = 0;
-	}
-	catch (const std::out_of_range& e)
-	{
-		int iii = 0;
-	}
+	std::wstring s = L"Custom Text";
 
 	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, s, style))
 	{
@@ -124,7 +103,18 @@ void UI::LoadDefaultUI() noexcept
 	{
 		EG_CORE_ERROR("{}", "Failed to create custom text");
 	}
-	*/
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	/*
 	if (std::optional<Layout*> sublayoutOpt = m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout"))
@@ -262,6 +252,33 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 	deviceResources->BeginDraw();
 
 	m_rootLayout->Render(deviceResources);
+
+
+
+
+
+	//SolidColorBrush brush(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
+
+	std::vector<D2D1_GRADIENT_STOP> stops;
+	stops.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::DarkBlue, 1.0f));
+	stops.emplace_back(0.5f, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
+	stops.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::LightBlue, 1.0f));
+
+	GradientBrush brush(
+		m_deviceResources, 
+		stops,
+		{ 100.0f, 100.0f }, { 500.0f, 500.0f }
+	);
+
+	D2D1_RECT_F rect{ 100.0f, 100.0f, 500.0f, 500.0f };
+	m_deviceResources->D2DDeviceContext()->FillRectangle(&rect, brush.Get());
+
+
+
+
+
+
+
 
 	deviceResources->EndDraw();
 }

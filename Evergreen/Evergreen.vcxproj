@@ -25,6 +25,9 @@
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\UI\Colors\ColorBrush.h" />
+    <ClInclude Include="src\Evergreen\UI\Colors\GradientBrush.h" />
+    <ClInclude Include="src\Evergreen\UI\Colors\SolidColorBrush.h" />
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\ControlLoader.h" />
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\TextLoader.h" />
     <ClInclude Include="src\Evergreen\UI\GlobalJsonData.h" />
@@ -57,6 +60,9 @@
     <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Colors\ColorBrush.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Colors\GradientBrush.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Colors\SolidColorBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\ControlLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\TextLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\StyleLoaders\StyleLoader.cpp" />
