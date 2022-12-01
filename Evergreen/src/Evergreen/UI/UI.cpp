@@ -6,6 +6,7 @@
 
 #include "Colors/SolidColorBrush.h"
 #include "Colors/GradientBrush.h"
+#include "Colors/RadialBrush.h"
 
 
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__)); ::Evergreen::Log::GetCoreLogger()->error(std::format(CAT2("{}:{} - ", fmt), __FILE__, __LINE__, __VA_ARGS__))
@@ -273,7 +274,18 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 	D2D1_RECT_F rect{ 100.0f, 100.0f, 500.0f, 500.0f };
 	m_deviceResources->D2DDeviceContext()->FillRectangle(&rect, brush.Get());
 
+	// -------------
 
+	RadialBrush radialBrush(
+		m_deviceResources,
+		D2D1::ColorF(D2D1::ColorF::Red, 1.0f),
+		D2D1::ColorF(D2D1::ColorF::Blue, 1.0f),
+		{ 600.0f, 600.0f },
+		75.0f, 75.0f
+	);
+
+	D2D1_ELLIPSE ellipse = D2D1::Ellipse({ 600.0f, 600.0f }, 75.0f, 75.0f);
+	m_deviceResources->D2DDeviceContext()->FillEllipse(ellipse, radialBrush.Get());
 
 
 
