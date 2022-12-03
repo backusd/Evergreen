@@ -64,13 +64,15 @@ void GradientBrush::RefreshGradientStops() noexcept
 	// Refresh() will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,
 	// that functionality has been moved to this function.
-	m_deviceResources->D2DDeviceContext()->CreateGradientStopCollection(
-		m_stops.data(),
-		static_cast<UINT32>(m_stops.size()),
-		m_gamma,
-		m_extendMode,
-		m_pGradientStops.ReleaseAndGetAddressOf()
-	);
+	GFX_THROW_INFO(
+		m_deviceResources->D2DDeviceContext()->CreateGradientStopCollection(
+			m_stops.data(),
+			static_cast<UINT32>(m_stops.size()),
+			m_gamma,
+			m_extendMode,
+			m_pGradientStops.ReleaseAndGetAddressOf()
+		)
+	)
 }
 void GradientBrush::Refresh() noexcept
 {
@@ -79,12 +81,17 @@ void GradientBrush::Refresh() noexcept
 	// that functionality has been moved out of this function.
 	ComPtr<ID2D1LinearGradientBrush> gradientBrush = nullptr;
 
-	m_deviceResources->D2DDeviceContext()->CreateLinearGradientBrush(
-		D2D1::LinearGradientBrushProperties(m_gradientAxisStart, m_gradientAxisEnd),
-		m_pGradientStops.Get(),
-		gradientBrush.ReleaseAndGetAddressOf()
-	);
+	GFX_THROW_INFO(
+		m_deviceResources->D2DDeviceContext()->CreateLinearGradientBrush(
+			D2D1::LinearGradientBrushProperties(m_gradientAxisStart, m_gradientAxisEnd),
+			m_brushProperties,
+			m_pGradientStops.Get(),
+			gradientBrush.ReleaseAndGetAddressOf()
+		)
+	)
 
-	gradientBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf());
+	GFX_THROW_INFO(
+		gradientBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf())
+	)
 }
 }

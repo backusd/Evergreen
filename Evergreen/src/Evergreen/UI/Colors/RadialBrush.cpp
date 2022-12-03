@@ -72,13 +72,15 @@ void RadialBrush::RefreshGradientStops() noexcept
 	// Refresh() will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,
 	// that functionality has been moved to this function.
-	m_deviceResources->D2DDeviceContext()->CreateGradientStopCollection(
-		m_stops.data(),
-		static_cast<UINT32>(m_stops.size()),
-		m_gamma,
-		m_extendMode,
-		m_pGradientStops.ReleaseAndGetAddressOf()
-	);
+	GFX_THROW_INFO(
+		m_deviceResources->D2DDeviceContext()->CreateGradientStopCollection(
+			m_stops.data(),
+			static_cast<UINT32>(m_stops.size()),
+			m_gamma,
+			m_extendMode,
+			m_pGradientStops.ReleaseAndGetAddressOf()
+		)
+	)
 }
 void RadialBrush::Refresh() noexcept
 {
@@ -87,18 +89,22 @@ void RadialBrush::Refresh() noexcept
 	// that functionality has been moved out of this function.
 
 	ComPtr<ID2D1RadialGradientBrush> radialBrush = nullptr;
+	GFX_THROW_INFO(
+		m_deviceResources->D2DDeviceContext()->CreateRadialGradientBrush(
+			D2D1::RadialGradientBrushProperties(
+				m_center,
+				m_gradientOriginOffset,
+				m_radiusX,
+				m_radiusY),
+			m_brushProperties,
+			m_pGradientStops.Get(),
+			radialBrush.ReleaseAndGetAddressOf()
+		)
+	)
 
-	m_deviceResources->D2DDeviceContext()->CreateRadialGradientBrush(
-		D2D1::RadialGradientBrushProperties(
-			m_center,
-			m_gradientOriginOffset,
-			m_radiusX,
-			m_radiusY),
-		m_pGradientStops.Get(),
-		radialBrush.ReleaseAndGetAddressOf()
-	);
-
-	radialBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf());
+	GFX_THROW_INFO(
+		radialBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf())
+	)
 }
 
 

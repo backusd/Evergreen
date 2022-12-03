@@ -22,9 +22,13 @@ public:
 
 	virtual void Refresh() noexcept = 0;
 
+	void SetOpacity(float opacity) noexcept { m_brushProperties.opacity = opacity; Refresh(); }
+	void SetTransform(D2D1_MATRIX_3X2_F transform) noexcept { m_brushProperties.transform = transform; Refresh(); }
+
 protected:
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Microsoft::WRL::ComPtr<ID2D1Brush>	m_brush;
+	D2D1_BRUSH_PROPERTIES				m_brushProperties;
 };
 #pragma warning( pop )
 }

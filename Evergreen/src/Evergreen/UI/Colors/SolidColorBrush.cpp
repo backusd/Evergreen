@@ -28,12 +28,22 @@ void SolidColorBrush::operator=(const SolidColorBrush& rhs) noexcept
 void SolidColorBrush::Refresh() noexcept
 {
 	ComPtr<ID2D1SolidColorBrush> solidBrush;
+	GFX_THROW_INFO(
+		m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
+			m_color,
+			solidBrush.ReleaseAndGetAddressOf()
+		)
+	)
+
 	m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
 		m_color,
+		m_brushProperties,
 		solidBrush.ReleaseAndGetAddressOf()
 	);
 
-	solidBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf());
+	GFX_THROW_INFO(
+		solidBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf())
+	)
 }
 
 void SolidColorBrush::Color(const D2D1_COLOR_F& color) noexcept

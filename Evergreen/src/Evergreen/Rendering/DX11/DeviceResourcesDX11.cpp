@@ -194,14 +194,7 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources() noexcept
 }
 void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float height) noexcept
 {
-	float dpi = 0.0f;
-	unsigned int _dpi = GetDpiForWindow(m_hWnd);
-	if (_dpi == 0)
-	{
-		TERMINATE_ON_THROW(
-			throw std::exception("GetDpiForWindow returned 0\nFILE: " STRINGIFY(__FILE__) "\nLINE: " STRINGIFY(__LINE__))
-		)
-	}
+	float dpi = static_cast<float>(GetDpiForWindow(m_hWnd));
 	m_dpiScale = dpi / 96.0f;
 
 	// Clear the previous window size specific context

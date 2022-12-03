@@ -48,6 +48,9 @@ public:
 	static ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return Get().m_d3dRenderTargetView.Get(); }
 	*/
 
+	float DIPSToPixels(float dips) { return dips * m_dpiScale; }
+	float PixelsToDIPS(float pixels) { return pixels / m_dpiScale; }
+
 #if defined(_DEBUG)
 public:
 	static DxgiInfoManagerDX11& GetInfoManager() noexcept { return m_infoManager; }

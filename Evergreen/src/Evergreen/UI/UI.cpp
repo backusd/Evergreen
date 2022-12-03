@@ -7,6 +7,7 @@
 #include "Colors/SolidColorBrush.h"
 #include "Colors/GradientBrush.h"
 #include "Colors/RadialBrush.h"
+#include "Colors/BitmapBrush.h"
 
 
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__)); ::Evergreen::Log::GetCoreLogger()->error(std::format(CAT2("{}:{} - ", fmt), __FILE__, __LINE__, __VA_ARGS__))
@@ -260,6 +261,8 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 	//SolidColorBrush brush(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
 
+	/*
+
 	std::vector<D2D1_GRADIENT_STOP> stops;
 	stops.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::DarkBlue, 1.0f));
 	stops.emplace_back(0.5f, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
@@ -291,9 +294,23 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 	D2D1_ELLIPSE ellipse = D2D1::Ellipse({ 600.0f, 600.0f }, 75.0f, 75.0f);
 	m_deviceResources->D2DDeviceContext()->FillEllipse(ellipse, radialBrush.Get());
 
+	*/
 
+	// -----------------
 
+	D2D1_RECT_F rect2;
+	rect2.bottom = 450.0f;
+	rect2.left = 750.0f;
+	rect2.top = 200.0f;
+	rect2.right = 1050.0f;
 
+	BitmapBrush bmbrush(m_deviceResources, L"evergreen-image-1.jpg");
+	bmbrush.TransformToRect(rect2, TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_UNDERFILL_RECT);
+
+	m_deviceResources->D2DDeviceContext()->FillRectangle(
+		&rect2,
+		bmbrush.Get()
+	);
 
 
 	deviceResources->EndDraw();
