@@ -25,7 +25,9 @@
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\UI\ColorHelper.h" />
     <ClInclude Include="src\Evergreen\UI\Colors\BitmapBrush.h" />
+    <ClInclude Include="src\Evergreen\UI\Colors\Brushes.h" />
     <ClInclude Include="src\Evergreen\UI\Colors\ColorBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Colors\GradientBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Colors\RadialBrush.h" />
@@ -62,6 +64,7 @@
     <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
+    <ClCompile Include="src\Evergreen\UI\ColorHelper.cpp" />
     <ClCompile Include="src\Evergreen\UI\Colors\BitmapBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\Colors\ColorBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\Colors\GradientBrush.cpp" />

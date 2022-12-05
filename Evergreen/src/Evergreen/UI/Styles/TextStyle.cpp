@@ -5,6 +5,7 @@ using Microsoft::WRL::ComPtr;
 
 namespace Evergreen 
 {
+	/*
 	TextStyle::TextStyle(
 		std::shared_ptr<DeviceResources> deviceResources, const std::string& name, Evergreen::Color color, Evergreen::FontFamily fontFamily,
 		float fontSize, DWRITE_FONT_WEIGHT fontWeight, DWRITE_FONT_STYLE fontStyle, DWRITE_FONT_STRETCH fontStretch,
@@ -18,38 +19,64 @@ namespace Evergreen
 	{
 		Initialize();
 	}
-	TextStyle::TextStyle(const TextStyle& rhs) noexcept : 
-		Style(rhs.m_deviceResources, rhs.m_name),
-		m_color(rhs.m_color), m_fontFamily(rhs.m_fontFamily),
-		m_fontWeight(rhs.m_fontWeight), m_fontStyle(rhs.m_fontStyle), m_fontStretch(rhs.m_fontStretch), 
-		m_fontSize(rhs.m_fontSize),	m_locale(rhs.m_locale), m_textAlignment(rhs.m_textAlignment), 
-		m_paragraphAlignment(rhs.m_paragraphAlignment), m_wordWrapping(rhs.m_wordWrapping), m_trimming(rhs.m_trimming)
+	*/
+	/*
+	TextStyle::TextStyle(
+		std::shared_ptr<DeviceResources> deviceResources,
+		const std::string& name,
+		const D2D1_COLOR_F& solidColor,
+		Evergreen::FontFamily fontFamily,
+		float fontSize,
+		DWRITE_FONT_WEIGHT fontWeight,
+		DWRITE_FONT_STYLE fontStyle,
+		DWRITE_FONT_STRETCH fontStretch,
+		DWRITE_TEXT_ALIGNMENT textAlignment,
+		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment,
+		DWRITE_WORD_WRAPPING wordWrapping,
+		DWRITE_TRIMMING trimming,
+		const std::wstring& locale
+	) noexcept :
+		Style(deviceResources, name),
+		m_colorBrush(std::make_unique<SolidColorBrush>(deviceResources, solidColor)), // In this constructor where a single color was specified, just create a SolidColorBrush
+		m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), m_fontStretch(fontStretch), 
+		m_fontSize(fontSize), m_locale(locale), m_textAlignment(textAlignment), 
+		m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming)
 	{
 		Initialize();
 	}
-	void TextStyle::operator=(const TextStyle& rhs) noexcept
+	*/
+	TextStyle::TextStyle(
+		std::shared_ptr<DeviceResources> deviceResources,
+		const std::string& name,
+		std::unique_ptr<Evergreen::ColorBrush> colorBrush,
+		Evergreen::FontFamily fontFamily,
+		float fontSize,
+		DWRITE_FONT_WEIGHT fontWeight,
+		DWRITE_FONT_STYLE fontStyle,
+		DWRITE_FONT_STRETCH fontStretch,
+		DWRITE_TEXT_ALIGNMENT textAlignment,
+		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment,
+		DWRITE_WORD_WRAPPING wordWrapping,
+		DWRITE_TRIMMING trimming,
+		const std::wstring& locale
+	) noexcept :
+		Style(deviceResources, name), 
+		m_colorBrush(std::move(colorBrush)), m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), 
+		m_fontStretch(fontStretch), m_fontSize(fontSize), m_locale(locale), m_textAlignment(textAlignment),
+		m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming)
 	{
-		m_name = rhs.m_name + "_copy";
-		m_deviceResources = rhs.m_deviceResources;
-		m_color = rhs.m_color;
-		m_fontFamily = rhs.m_fontFamily;
-		m_fontWeight = rhs.m_fontWeight;
-		m_fontStyle = rhs.m_fontStyle; 
-		m_fontStretch = rhs.m_fontStretch;
-		m_fontSize = rhs.m_fontSize;
-		m_locale = rhs.m_locale;
-		m_textAlignment = rhs.m_textAlignment;
-		m_paragraphAlignment = rhs.m_paragraphAlignment;
-		m_wordWrapping = rhs.m_wordWrapping;
-		m_trimming = rhs.m_trimming;
+		// We cannot instantiate a SolidColorBrush as a default parameter, so the default is nullptr.
+		// So if the colorBrush is nullptr, create a default SolidColorBrush
+		if (m_colorBrush == nullptr)
+			m_colorBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 
 		Initialize();
 	}
+
+
 	void TextStyle::Initialize() noexcept
 	{
 		EG_CORE_ASSERT(m_deviceResources != nullptr, "Cannot initialize Text Style - DeviceResources is nullptr");
-
-		UpdateBrush();
 
 		// Create the trimming structure
 		ZeroMemory(&m_trimming, sizeof(DWRITE_TRIMMING));
@@ -57,14 +84,6 @@ namespace Evergreen
 
 		// Create the text format
 		UpdateTextFormat();
-	}
-
-	void TextStyle::UpdateBrush() noexcept
-	{
-		m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
-			D2D1::ColorF(m_color.R(), m_color.G(), m_color.B(), m_color.A()), 
-			m_colorBrush.ReleaseAndGetAddressOf()
-		);
 	}
 
 	void TextStyle::UpdateTextFormat() noexcept
@@ -95,11 +114,7 @@ namespace Evergreen
 		GFX_THROW_INFO(m_textFormat->SetTrimming(&m_trimming, nullptr));		
 	}
 
-	void TextStyle::Color(const Evergreen::Color& color) noexcept
-	{
-		m_color = color;
-		UpdateBrush();
-	}
+
 	void TextStyle::FontFamily(const Evergreen::FontFamily& fontFamily) noexcept 
 	{ 
 		m_fontFamily = fontFamily;

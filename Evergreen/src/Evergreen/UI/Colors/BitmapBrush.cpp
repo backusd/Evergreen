@@ -121,7 +121,7 @@ void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_MET
 
 	case TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_FILL_RECT:
 		// Only keep the maximum scale value. This represents the minimum amount of scale that
-		// is required for the bitmap to completely fill given rect
+		// is required for the bitmap to completely fill the given rect
 		scale.width = std::max(
 			(rect.right - rect.left) / originalBitmapSize.width,
 			(rect.bottom - rect.top) / originalBitmapSize.height
@@ -150,6 +150,33 @@ void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_MET
 	);
 }
 
+void BitmapBrush::ExtendMode(D2D1_EXTEND_MODE modeXAndY) noexcept
+{
+	m_bitmapBrushProperties.extendModeX = modeXAndY;
+	m_bitmapBrushProperties.extendModeY = modeXAndY;
+	Refresh();
+}
+void BitmapBrush::ExtendMode(D2D1_EXTEND_MODE modeX, D2D1_EXTEND_MODE modeY) noexcept
+{
+	m_bitmapBrushProperties.extendModeX = modeX;
+	m_bitmapBrushProperties.extendModeY = modeY;
+	Refresh();
+}
+void BitmapBrush::ExtendModeX(D2D1_EXTEND_MODE mode) noexcept
+{
+	m_bitmapBrushProperties.extendModeX = mode;
+	Refresh();
+}
+void BitmapBrush::ExtendModeY(D2D1_EXTEND_MODE mode) noexcept
+{
+	m_bitmapBrushProperties.extendModeY = mode;
+	Refresh();
+}
+void BitmapBrush::InterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE mode) noexcept
+{
+	m_bitmapBrushProperties.interpolationMode = mode;
+	Refresh();
+}
 
 
 }

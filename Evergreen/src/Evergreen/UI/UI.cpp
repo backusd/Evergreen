@@ -70,7 +70,7 @@ void UI::LoadDefaultUI() noexcept
 	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
 		m_deviceResources,
 		"Custom Style",
-		Evergreen::Color::Black,
+		std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f))),
 		Evergreen::FontFamily::Arial,
 		22.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
@@ -229,7 +229,7 @@ void UI::LoadErrorUI() noexcept
 	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
 		m_deviceResources,
 		"Error Style",
-		Evergreen::Color::Black,
+		std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f))),
 		Evergreen::FontFamily::Arial,
 		22.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
@@ -306,11 +306,14 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 	BitmapBrush bmbrush(m_deviceResources, L"evergreen-image-1.jpg");
 	bmbrush.TransformToRect(rect2, TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_UNDERFILL_RECT);
+	bmbrush.ExtendMode(D2D1_EXTEND_MODE_WRAP);
 
 	m_deviceResources->D2DDeviceContext()->FillRectangle(
 		&rect2,
 		bmbrush.Get()
 	);
+
+
 
 
 	deviceResources->EndDraw();

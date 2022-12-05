@@ -27,8 +27,17 @@ public:
 	void Refresh() noexcept override;
 
 	void LoadBitmapFile(const std::wstring& filename) noexcept;
+	void TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_METHOD method = TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_FILL_RECT) noexcept;
 
-	void TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_METHOD method) noexcept;
+	void ExtendMode(D2D1_EXTEND_MODE modeXAndY) noexcept;
+	void ExtendMode(D2D1_EXTEND_MODE modeX, D2D1_EXTEND_MODE modeY) noexcept;
+	void ExtendModeX(D2D1_EXTEND_MODE mode) noexcept;
+	void ExtendModeY(D2D1_EXTEND_MODE mode) noexcept;
+	void InterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE mode) noexcept;
+
+	const std::wstring& BitmapFileName() const noexcept { return m_bitmapFileName; }
+	const D2D1_BITMAP_BRUSH_PROPERTIES& BitMapBrushProperties() const noexcept { return m_bitmapBrushProperties; }
+	Microsoft::WRL::ComPtr<ID2D1Bitmap1> BitMap() const noexcept { return m_bitmap; }
 
 private:
 	void LoadBitmapFile() noexcept;
@@ -36,11 +45,6 @@ private:
 	std::wstring							m_bitmapFileName;
 	D2D1_BITMAP_BRUSH_PROPERTIES			m_bitmapBrushProperties;
 	Microsoft::WRL::ComPtr<ID2D1Bitmap1>	m_bitmap;
-
-	float m_top;
-	float m_left;
-	float m_scaleX;
-	float m_scaleY;
 
 
 };

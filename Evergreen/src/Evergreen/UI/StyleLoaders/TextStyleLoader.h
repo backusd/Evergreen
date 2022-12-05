@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "StyleLoader.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
+#include "Evergreen/UI/ColorHelper.h"
 
 namespace Evergreen
 {

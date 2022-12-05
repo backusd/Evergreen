@@ -34,11 +34,18 @@ bool TextStyleLoader::ParseColor(TextStyle* textStyle, json& data) noexcept
 		return false;
 	}
 
+	if (std::optional<D2D1_COLOR_F> colorOpt = Evergreen::ColorFromString(data["Color"].get<std::string>()))
+	{
+		textStyle->Color(colorOpt.value());
+		return true;
+	}
+	/*
 	if (std::optional<const Color> colorOpt = Color::GetColor(data["Color"].get<std::string>()))
 	{
 		textStyle->Color(colorOpt.value());
 		return true;
 	}
+	*/
 
 	EG_CORE_ERROR("{}:{} - TextStyle with name '{}': Unrecognized Color: {}", __FILE__, __LINE__, textStyle->Name(), data["Color"]);
 	return false;

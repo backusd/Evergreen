@@ -3,9 +3,11 @@
 #include "Style.h"
 #include "Evergreen/Core.h"
 #include "Evergreen/Log.h"
-#include "Evergreen/UI/Color.h"
+//#include "Evergreen/UI/Color.h"
 #include "FontFamily.h"
 #include "Evergreen/Rendering/DeviceResources.h"
+#include "Evergreen/UI/Colors/Brushes.h"
+
 
 
 namespace Evergreen
@@ -18,6 +20,7 @@ namespace Evergreen
 class EVERGREEN_API TextStyle : public Style
 {
 public:
+	/*
 	TextStyle(
 		std::shared_ptr<DeviceResources> deviceResources,
 		const std::string& name = "",
@@ -33,12 +36,49 @@ public:
 		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
 		const std::wstring& locale = L"en-US"
 	) noexcept;
-	TextStyle(const TextStyle&) noexcept;
-	void operator=(const TextStyle&) noexcept;
+	*/
+	/*
+	TextStyle(
+		std::shared_ptr<DeviceResources> deviceResources,
+		const std::string& name = "",
+		const D2D1_COLOR_F& solidColor = D2D1::ColorF(D2D1::ColorF::Black, 1.0f),
+		Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri,
+		float fontSize = 12.0f,
+		DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
+		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
+		DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP,
+		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
+		const std::wstring& locale = L"en-US"
+	) noexcept;
+	*/
+	TextStyle(
+		std::shared_ptr<DeviceResources> deviceResources,
+		const std::string& name = "",
+		std::unique_ptr<Evergreen::ColorBrush> colorBrush = nullptr,
+		Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri,
+		float fontSize = 12.0f,
+		DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
+		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
+		DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP,
+		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
+		const std::wstring& locale = L"en-US"
+	) noexcept;
+
+	// Deleting these because I'm not yet sure the best way to copy the unique_ptr to ColorBrush
+	TextStyle(const TextStyle&) noexcept = delete;
+	void operator=(const TextStyle&) noexcept = delete;
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
 
-	void Color(const Evergreen::Color& color) noexcept;
+	void Color(const D2D1_COLOR_F& color) noexcept { m_colorBrush = std::make_unique<SolidColorBrush>(m_deviceResources, color); }
+	void ColorBrush(std::unique_ptr<ColorBrush> colorBrush) noexcept { m_colorBrush = std::move(colorBrush); }
+
 	void FontFamily(const Evergreen::FontFamily& fontFamily) noexcept;
 	void FontWeight(DWRITE_FONT_WEIGHT weight) noexcept;
 	void FontStyle(DWRITE_FONT_STYLE style) noexcept;
@@ -51,8 +91,7 @@ public:
 	void Trimming(DWRITE_TRIMMING trimming) noexcept;
 	void TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noexcept;
 
-	Evergreen::Color Color() const noexcept { return m_color; }
-	ID2D1SolidColorBrush* ColorBrush() const noexcept { return m_colorBrush.Get(); }
+	ID2D1Brush* ColorBrush() const noexcept { return m_colorBrush->Get(); }	
 	Evergreen::FontFamily FontFamily() const noexcept { return m_fontFamily; }
 	DWRITE_FONT_WEIGHT FontWeight() const noexcept { return m_fontWeight; }
 	DWRITE_FONT_STYLE FontStyle() const noexcept { return m_fontStyle; }
@@ -67,10 +106,9 @@ public:
 private:
 	void Initialize() noexcept;
 	void UpdateTextFormat() noexcept;
-	void UpdateBrush() noexcept;	// With no parameters, just use m_color
 
-	Evergreen::Color								m_color;
-	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>	m_colorBrush;
+	std::unique_ptr<Evergreen::ColorBrush>			m_colorBrush;
+
 	Evergreen::FontFamily							m_fontFamily;
 	Microsoft::WRL::ComPtr<IDWriteFontCollection>	m_fontCollection; // Not sure what to do with this. Okay to always be nullptr
 	DWRITE_FONT_WEIGHT								m_fontWeight;
