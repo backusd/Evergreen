@@ -6,7 +6,7 @@ namespace Evergreen
 {
 TextStyleLoader::TextStyleLoader() noexcept
 {
-	m_keyLoaders["Color"] = [this](Style* textStyle, json& data) -> bool { return this->ParseColor(static_cast<TextStyle*>(textStyle), data); };
+	m_keyLoaders["Brush"] = [this](Style* textStyle, json& data) -> bool { return this->ParseBrush(static_cast<TextStyle*>(textStyle), data); };
 	m_keyLoaders["FontFamily"] = [this](Style* textStyle, json& data) -> bool { return this->ParseFontFamily(static_cast<TextStyle*>(textStyle), data); };
 	m_keyLoaders["FontSize"] = [this](Style* textStyle, json& data) -> bool { return this->ParseFontSize(static_cast<TextStyle*>(textStyle), data); };
 	m_keyLoaders["FontWeight"] = [this](Style* textStyle, json& data) -> bool { return this->ParseFontWeight(static_cast<TextStyle*>(textStyle), data); };
@@ -24,7 +24,7 @@ std::optional<std::shared_ptr<Style>> TextStyleLoader::Load(std::shared_ptr<Devi
 	return Get().LoadImpl<TextStyle>(deviceResources, data, name);
 }
 
-bool TextStyleLoader::ParseColor(TextStyle* textStyle, json& data) noexcept
+bool TextStyleLoader::ParseBrush(TextStyle* textStyle, json& data) noexcept
 {
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
 	EG_CORE_ASSERT(data.contains("Color"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'Color'", __FILE__, __LINE__, textStyle->Name()));
@@ -34,7 +34,7 @@ bool TextStyleLoader::ParseColor(TextStyle* textStyle, json& data) noexcept
 	{
 		if (std::optional<D2D1_COLOR_F> colorOpt = Evergreen::ColorFromString(data["Color"].get<std::string>()))
 		{
-			textStyle->Color(colorOpt.value());
+			// textStyle->Color(colorOpt.value());
 			return true;
 		}
 

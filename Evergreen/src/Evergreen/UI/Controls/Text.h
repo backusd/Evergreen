@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Control.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
+#include "Evergreen/UI/Colors/Brushes.h"
 
 
 namespace Evergreen
@@ -16,9 +17,30 @@ class EVERGREEN_API Text : public Control
 public:
 	Text(std::shared_ptr<DeviceResources> deviceResources, 
 		const std::wstring& text = L"",
+		std::unique_ptr<SolidColorBrush> brush = nullptr,
 		std::shared_ptr<TextStyle> style = nullptr) noexcept;
-	Text(const Text& text) noexcept;
-	void operator=(const Text&) noexcept;
+	Text(std::shared_ptr<DeviceResources> deviceResources,
+		const std::wstring& text,
+		std::unique_ptr<GradientBrush> brush,
+		std::shared_ptr<TextStyle> style = nullptr) noexcept;
+	Text(std::shared_ptr<DeviceResources> deviceResources,
+		const std::wstring& text,
+		std::unique_ptr<RadialBrush> brush,
+		std::shared_ptr<TextStyle> style = nullptr) noexcept;
+	Text(std::shared_ptr<DeviceResources> deviceResources,
+		const std::wstring& text,
+		std::unique_ptr<BitmapBrush> brush,
+		std::shared_ptr<TextStyle> style = nullptr) noexcept;
+
+
+
+
+	// I'm deleting these for now because in order to make a copy of m_colorBrush,
+	// you would have to check if the incoming m_colorBrush can be cast to each
+	// of the derived ColorBrush types and then create the appropriate unique_ptr.
+	// I just don't want to do this at the moment...
+	Text(const Text& text) noexcept = delete;		
+	void operator=(const Text&) noexcept = delete;
 	virtual ~Text() noexcept {}
 
 	// Inherited from Control
@@ -42,11 +64,18 @@ public:
 	void TextChanged();
 private:
 
-	std::wstring				m_text;
-	std::shared_ptr<TextStyle>	m_style;
-	DWRITE_TEXT_METRICS			m_textMetrics;
+	std::wstring							m_text;
+	std::shared_ptr<TextStyle>				m_style;
+	std::unique_ptr<Evergreen::ColorBrush>	m_colorBrush;
+	DWRITE_TEXT_METRICS						m_textMetrics;
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4>	m_textLayout;
 };
 #pragma warning( pop )
+
+
+
+
+
+
 }

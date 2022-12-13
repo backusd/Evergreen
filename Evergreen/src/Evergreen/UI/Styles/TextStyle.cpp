@@ -8,7 +8,6 @@ namespace Evergreen
 TextStyle::TextStyle(
 	std::shared_ptr<DeviceResources> deviceResources,
 	const std::string& name,
-	std::unique_ptr<Evergreen::ColorBrush> colorBrush,
 	Evergreen::FontFamily fontFamily,
 	float fontSize,
 	DWRITE_FONT_WEIGHT fontWeight,
@@ -21,15 +20,10 @@ TextStyle::TextStyle(
 	const std::wstring& locale
 ) noexcept :
 	Style(deviceResources, name), 
-	m_colorBrush(std::move(colorBrush)), m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), 
+	m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), 
 	m_fontStretch(fontStretch), m_fontSize(fontSize), m_locale(locale), m_textAlignment(textAlignment),
 	m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming)
 {
-	// We cannot instantiate a SolidColorBrush as a default parameter, so the default is nullptr.
-	// So if the colorBrush is nullptr, create a default SolidColorBrush
-	if (m_colorBrush == nullptr)
-		m_colorBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
-
 	Initialize();
 }
 
@@ -50,7 +44,6 @@ void TextStyle::UpdateTextFormat() noexcept
 {
 	std::string ff = m_fontFamily.Get();
 	std::wstring fontFamily(ff.begin(), ff.end());
-
 		
 	ComPtr<IDWriteTextFormat> textFormat = nullptr;
 	GFX_THROW_INFO(
@@ -132,7 +125,9 @@ void TextStyle::TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noe
 }
 
 ComPtr<IDWriteTextLayout4> TextStyle::CreateTextLayout(std::wstring text, float maxWidth, float maxHeight) noexcept
-{		
+{
+	EG_CORE_ASSERT(m_textFormat != nullptr, "text format is nullptr");
+
 	ComPtr<IDWriteTextLayout> textLayout;
 	ComPtr<IDWriteTextLayout4> textLayout4;
 

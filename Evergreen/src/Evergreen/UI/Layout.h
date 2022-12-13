@@ -150,9 +150,9 @@ public:
 	template<class T>
 	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept;
 	template<class T, class ... U>
-	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources, const U& ... args ) noexcept;
+	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args ) noexcept;
 	template<class T, class ... U>
-	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, const U& ... args) noexcept;
+	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept;
 
 
 
@@ -252,7 +252,7 @@ std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr
 	return (T*)m_controls.back().get();
 }
 template<class T, class ... U>
-std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources, const U& ... args) noexcept
+std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept
 {
 	RowColumnPosition position;
 	position.Row = 0;
@@ -260,14 +260,14 @@ std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceReso
 	position.RowSpan = 1;
 	position.ColumnSpan = 1;
 
-	return AddControl<T>(position, deviceResources, args...);
+	return AddControl<T>(position, deviceResources, std::forward<U>(args)...);
 }
 template<class T, class ... U>
-std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, const U& ... args) noexcept
+std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept
 {
 	m_controlPositions.push_back(position);
 
-	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, args...);
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, std::forward<U>(args)...);
 	control->TopLeftPosition(
 		m_columns[position.Column].Left(),
 		m_rows[position.Row].Top()

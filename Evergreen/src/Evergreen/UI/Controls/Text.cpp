@@ -5,40 +5,67 @@
 
 namespace Evergreen
 {
-Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, std::shared_ptr<TextStyle> style) noexcept : 
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, 
+	std::unique_ptr<SolidColorBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
 	Control(deviceResources),
 	m_text(text),
 	m_style(style),
-	m_textLayout(nullptr)
+	m_textLayout(nullptr),
+	m_colorBrush(std::move(brush))
 {
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
-
-	// Call text changed to initialize the text layout
-	TextChanged();
-}
-Text::Text(const Text& text) noexcept :
-	Control(text.m_deviceResources),
-	m_text(text.m_text),
-	m_style(text.m_style),
-	m_textLayout(nullptr)
-{
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
-
-	// Call text changed to initialize the text layout
-	TextChanged();
-}
-void Text::operator=(const Text& rhs) noexcept
-{
-	m_deviceResources = rhs.m_deviceResources;
-	m_text = rhs.m_text;
-	m_style = rhs.m_style;
-	m_textLayout = nullptr;
+	// We cannot instantiate a SolidColorBrush as a default parameter, so the default is nullptr.
+	// So if the colorBrush is nullptr, create a default SolidColorBrush
+	if (m_colorBrush == nullptr)
+		m_colorBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Call text changed to initialize the text layout
 	TextChanged();
 }
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text,
+	std::unique_ptr<GradientBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
+	Control(deviceResources),
+	m_text(text),
+	m_style(style),
+	m_textLayout(nullptr),
+	m_colorBrush(std::move(brush))
+{
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+
+	// Call text changed to initialize the text layout
+	TextChanged();
+}
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text,
+	std::unique_ptr<RadialBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
+	Control(deviceResources),
+	m_text(text),
+	m_style(style),
+	m_textLayout(nullptr),
+	m_colorBrush(std::move(brush))
+{
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+
+	// Call text changed to initialize the text layout
+	TextChanged();
+}
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text,
+	std::unique_ptr<BitmapBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
+	Control(deviceResources),
+	m_text(text),
+	m_style(style),
+	m_textLayout(nullptr),
+	m_colorBrush(std::move(brush))
+{
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+
+	// Call text changed to initialize the text layout
+	TextChanged();
+}
+
+
+
+
 
 void Text::Render() const noexcept
 {
@@ -51,7 +78,7 @@ void Text::Render() const noexcept
 	context->DrawTextLayout(
 		m_topLeftPosition,
 		m_textLayout.Get(),
-		m_style->ColorBrush(),
+		m_colorBrush->Get(),
 		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- TODO: investigate these options, clipping is interesting
 	);
 
@@ -96,7 +123,7 @@ void Text::TextChanged()
 		m_textLayout->GetMetrics(&m_textMetrics);
 
 		// If using a non-SolidColorBrush, we need to update the draw region for the brush
-		m_style->SetDrawRegion(
+		m_colorBrush->SetDrawRegion(
 			D2D1::RectF(
 				m_textMetrics.left,
 				m_textMetrics.top,

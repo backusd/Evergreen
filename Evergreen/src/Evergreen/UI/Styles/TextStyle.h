@@ -6,7 +6,7 @@
 //#include "Evergreen/UI/Color.h"
 #include "FontFamily.h"
 #include "Evergreen/Rendering/DeviceResources.h"
-#include "Evergreen/UI/Colors/Brushes.h"
+
 
 
 
@@ -23,7 +23,6 @@ public:
 	TextStyle(
 		std::shared_ptr<DeviceResources> deviceResources,
 		const std::string& name = "",
-		std::unique_ptr<Evergreen::ColorBrush> colorBrush = nullptr,
 		Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri,
 		float fontSize = 12.0f,
 		DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
@@ -42,9 +41,6 @@ public:
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
 
-	void Color(const D2D1_COLOR_F& color) noexcept { m_colorBrush = std::make_unique<SolidColorBrush>(m_deviceResources, color); }
-	void ColorBrush(std::unique_ptr<ColorBrush> colorBrush) noexcept { m_colorBrush = std::move(colorBrush); }
-
 	void FontFamily(const Evergreen::FontFamily& fontFamily) noexcept;
 	void FontWeight(DWRITE_FONT_WEIGHT weight) noexcept;
 	void FontStyle(DWRITE_FONT_STYLE style) noexcept;
@@ -57,7 +53,6 @@ public:
 	void Trimming(DWRITE_TRIMMING trimming) noexcept;
 	void TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noexcept;
 
-	ID2D1Brush* ColorBrush() const noexcept { return m_colorBrush->Get(); }	
 	Evergreen::FontFamily FontFamily() const noexcept { return m_fontFamily; }
 	DWRITE_FONT_WEIGHT FontWeight() const noexcept { return m_fontWeight; }
 	DWRITE_FONT_STYLE FontStyle() const noexcept { return m_fontStyle; }
@@ -69,13 +64,9 @@ public:
 	DWRITE_WORD_WRAPPING WordWrapping() const noexcept { return m_wordWrapping; }
 	DWRITE_TRIMMING Trimming() const noexcept { return m_trimming; }
 
-	void SetDrawRegion(const D2D1_RECT_F& rect) noexcept { m_colorBrush->SetDrawRegion(rect); }
-
 private:
 	void Initialize() noexcept;
 	void UpdateTextFormat() noexcept;
-
-	std::unique_ptr<Evergreen::ColorBrush>			m_colorBrush;
 
 	Evergreen::FontFamily							m_fontFamily;
 	Microsoft::WRL::ComPtr<IDWriteFontCollection>	m_fontCollection; // Not sure what to do with this. Okay to always be nullptr

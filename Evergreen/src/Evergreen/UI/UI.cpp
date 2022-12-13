@@ -73,7 +73,6 @@ void UI::LoadDefaultUI() noexcept
 	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
 		m_deviceResources,
 		"Custom Style",
-		std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f))),
 		Evergreen::FontFamily::Arial,
 		22.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
@@ -83,7 +82,9 @@ void UI::LoadDefaultUI() noexcept
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD
 	);
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(m_deviceResources, textString, defaultStyle))
+	std::unique_ptr<SolidColorBrush> b1 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(m_deviceResources, textString, std::move(b1), defaultStyle))
 	{
 		EG_CORE_TRACE("{}", "Successfully created default text");
 	}
@@ -99,8 +100,9 @@ void UI::LoadDefaultUI() noexcept
 	position.ColumnSpan = 1;
 
 	std::wstring s = L"Custom Text";
+	std::unique_ptr<SolidColorBrush> b2 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, s, style))
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, s, std::move(b2), style))
 	{
 		EG_CORE_TRACE("{}", "Successfully created custom text");
 	}
@@ -232,7 +234,6 @@ void UI::LoadErrorUI() noexcept
 	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
 		m_deviceResources,
 		"Error Style",
-		std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f))),
 		Evergreen::FontFamily::Arial,
 		22.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
@@ -249,7 +250,9 @@ void UI::LoadErrorUI() noexcept
 	for (const std::string& s : m_errorMessages)
 		text = std::format(L"{}\n{}\n", text, std::wstring(s.begin(), s.end()));
 
-	m_rootLayout->AddControl<Text>(m_deviceResources, text, style);
+	std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+
+	m_rootLayout->AddControl<Text>(m_deviceResources, text, std::move(brush), style);
 }
 
 void UI::Render(DeviceResources* deviceResources) const noexcept

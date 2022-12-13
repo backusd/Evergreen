@@ -33,7 +33,7 @@ private:
 
 	// bool PreLoadValidation(json& data, const std::string& name) noexcept override; <-- Can override this function
 
-	bool ParseColor(TextStyle* textStyle, json& data) noexcept;
+	bool ParseBrush(TextStyle* textStyle, json& data) noexcept;
 	bool ParseFontFamily(TextStyle* textStyle, json& data) noexcept;
 	bool ParseFontSize(TextStyle* textStyle, json& data) noexcept;
 	bool ParseFontWeight(TextStyle* textStyle, json& data) noexcept;
