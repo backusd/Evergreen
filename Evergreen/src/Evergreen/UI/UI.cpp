@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "UI.h"
 #include "ControlLoaders/TextLoader.h"
+#include "BrushLoaders/SolidColorBrushLoader.h"
 
 #include <fstream>
 
@@ -16,7 +17,7 @@ namespace Evergreen
 {
 std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>>			UI::m_loadControlFunctions;
 std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>>	UI::m_loadStyleFunctions;
-
+//std::unordered_map<std::string, std::function<std::optional<std::unique_ptr<ColorBrush>>(std::shared_ptr<DeviceResources>, json&)>>					UI::m_loadColorBrushFunctions;
 
 
 UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
@@ -32,6 +33,8 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	// Add built-in style loaders
 	UI::SetStyleLoaderFunction("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::optional<std::shared_ptr<Style>> { return TextStyleLoader::Load(deviceResources, data, styleName); });
 
+	// Add built-in brush loaders
+	//UI::SetBrushLoaderFunction("SolidColorBrush", [](std::shared_ptr<DeviceResources> deviceResources, json& data) -> std::optional<std::unique_ptr<ColorBrush>> { return SolidColorBrushLoader::Load(deviceResources, data); });
 
 
 	LoadDefaultUI();
@@ -261,7 +264,6 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 	//SolidColorBrush brush(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
 
-	/*
 
 	std::vector<D2D1_GRADIENT_STOP> stops;
 	stops.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::DarkBlue, 1.0f));
@@ -269,33 +271,31 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 	stops.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::LightBlue, 1.0f));
 
 	GradientBrush brush(
-		m_deviceResources, 
+		m_deviceResources,
 		stops,
-		{ 100.0f, 100.0f }, { 500.0f, 500.0f }
+		GRADIENT_AXIS::NWSE
 	);
 
 	D2D1_RECT_F rect{ 100.0f, 100.0f, 500.0f, 500.0f };
+	brush.SetDrawRegion(rect);
 	m_deviceResources->D2DDeviceContext()->FillRectangle(&rect, brush.Get());
 
 	// -------------
 
 	std::vector<D2D1_GRADIENT_STOP> stops2;
-	stops2.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::Pink, 1.0f));
+	stops2.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::Red, 1.0f));
 	stops2.emplace_back(0.5f, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
-	stops2.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::LightBlue, 1.0f));
+	stops2.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::Green, 1.0f));
 
 	RadialBrush radialBrush(
 		m_deviceResources, 
-		stops2,
-		{ 600.0f, 600.0f },
-		75.0f, 75.0f
+		stops2
 	);
 
 	D2D1_ELLIPSE ellipse = D2D1::Ellipse({ 600.0f, 600.0f }, 75.0f, 75.0f);
+	D2D1_RECT_F rect22 = D2D1::RectF(525.0f, 525.0f, 675.0f, 675.0f);
+	radialBrush.SetDrawRegion(rect22);
 	m_deviceResources->D2DDeviceContext()->FillEllipse(ellipse, radialBrush.Get());
-
-	*/
-
 	// -----------------
 
 	D2D1_RECT_F rect2;

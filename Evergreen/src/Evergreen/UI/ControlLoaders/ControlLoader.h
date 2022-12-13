@@ -79,11 +79,8 @@ bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, L
 			if (std::find(skippableKeys.begin(), skippableKeys.end(), key) != skippableKeys.end())
 				continue;
 
-			if (key.compare("import") == 0)
-			{
-				EG_CORE_ERROR("{}:{} - Control with name '{}': Found 'import' after it should have already been parsed and removed.", __FILE__, __LINE__, name);
-				return false;
-			}
+			// Use an assert here because if it triggers, it means there is a flaw in the code
+			EG_CORE_ASSERT(key.compare("import") != 0, std::format("Control with name '{}': Found 'import' after it should have already been parsed and removed.", name));
 
 			if (m_keyLoaders.find(key) == m_keyLoaders.end())
 			{

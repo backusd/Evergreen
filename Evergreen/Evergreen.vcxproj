@@ -25,6 +25,8 @@
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\UI\BrushLoaders\GradientBrushLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\BrushLoaders\SolidColorBrushLoader.h" />
     <ClInclude Include="src\Evergreen\UI\ColorHelper.h" />
     <ClInclude Include="src\Evergreen\UI\Colors\BitmapBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Colors\Brushes.h" />
@@ -35,6 +37,7 @@
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\ControlLoader.h" />
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\TextLoader.h" />
     <ClInclude Include="src\Evergreen\UI\GlobalJsonData.h" />
+    <ClInclude Include="src\Evergreen\UI\BrushLoaders\BrushLoader.h" />
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\StyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\FontFamily.h" />
@@ -64,6 +67,8 @@
     <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
+    <ClCompile Include="src\Evergreen\UI\BrushLoaders\GradientBrushLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\BrushLoaders\SolidColorBrushLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\ColorHelper.cpp" />
     <ClCompile Include="src\Evergreen\UI\Colors\BitmapBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\Colors\ColorBrush.cpp" />
@@ -72,6 +77,7 @@
     <ClCompile Include="src\Evergreen\UI\Colors\SolidColorBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\ControlLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\TextLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\BrushLoaders\BrushLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\StyleLoaders\StyleLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Styles\FontFamily.cpp" />

@@ -20,40 +20,6 @@ namespace Evergreen
 class EVERGREEN_API TextStyle : public Style
 {
 public:
-	/*
-	TextStyle(
-		std::shared_ptr<DeviceResources> deviceResources,
-		const std::string& name = "",
-		Evergreen::Color color = Evergreen::Color::Black,
-		Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri,
-		float fontSize = 12.0f,
-		DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
-		DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-		DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
-		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
-		DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP,
-		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
-		const std::wstring& locale = L"en-US"
-	) noexcept;
-	*/
-	/*
-	TextStyle(
-		std::shared_ptr<DeviceResources> deviceResources,
-		const std::string& name = "",
-		const D2D1_COLOR_F& solidColor = D2D1::ColorF(D2D1::ColorF::Black, 1.0f),
-		Evergreen::FontFamily fontFamily = Evergreen::FontFamily::Calibri,
-		float fontSize = 12.0f,
-		DWRITE_FONT_WEIGHT fontWeight = DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
-		DWRITE_FONT_STYLE fontStyle = DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH fontStretch = DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-		DWRITE_TEXT_ALIGNMENT textAlignment = DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
-		DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
-		DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP,
-		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
-		const std::wstring& locale = L"en-US"
-	) noexcept;
-	*/
 	TextStyle(
 		std::shared_ptr<DeviceResources> deviceResources,
 		const std::string& name = "",
@@ -102,6 +68,8 @@ public:
 	DWRITE_PARAGRAPH_ALIGNMENT ParagraphAlignment() const noexcept { return m_paragraphAlignment; }
 	DWRITE_WORD_WRAPPING WordWrapping() const noexcept { return m_wordWrapping; }
 	DWRITE_TRIMMING Trimming() const noexcept { return m_trimming; }
+
+	void SetDrawRegion(const D2D1_RECT_F& rect) noexcept { m_colorBrush->SetDrawRegion(rect); }
 
 private:
 	void Initialize() noexcept;

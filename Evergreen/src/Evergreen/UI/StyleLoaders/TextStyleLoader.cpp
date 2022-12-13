@@ -1,5 +1,6 @@
 #include "pch.h"
-#include "TextStyleLoader.h"																																						\
+#include "TextStyleLoader.h"
+
 
 namespace Evergreen
 {
@@ -28,26 +29,73 @@ bool TextStyleLoader::ParseColor(TextStyle* textStyle, json& data) noexcept
 	EG_CORE_ASSERT(textStyle != nullptr, std::format("{}:{} - textStyle is not allowed to be nullptr", __FILE__, __LINE__));
 	EG_CORE_ASSERT(data.contains("Color"), std::format("{}:{} - TextStyle with name '{}': json data must contain key 'Color'", __FILE__, __LINE__, textStyle->Name()));
 
-	if (!data["Color"].is_string())
+	// Color value can either be a string matching a D2D1::ColorF Enum or a json object that needs to be parsed using the BrushLoader
+	if (data["Color"].is_string())
 	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'Color' field must be a string. Invalid value: {}", __FILE__, __LINE__, textStyle->Name(), data["Color"]);
+		if (std::optional<D2D1_COLOR_F> colorOpt = Evergreen::ColorFromString(data["Color"].get<std::string>()))
+		{
+			textStyle->Color(colorOpt.value());
+			return true;
+		}
+
+		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': Evergreen::ColorFromString() returned nullopt. Invalid color string: {}", __FILE__, __LINE__, textStyle->Name(), data["Color"].get<std::string>());
 		return false;
 	}
-
-	if (std::optional<D2D1_COLOR_F> colorOpt = Evergreen::ColorFromString(data["Color"].get<std::string>()))
+	else if (data["Color"].is_object())
 	{
-		textStyle->Color(colorOpt.value());
-		return true;
-	}
-	/*
-	if (std::optional<const Color> colorOpt = Color::GetColor(data["Color"].get<std::string>()))
-	{
-		textStyle->Color(colorOpt.value());
-		return true;
-	}
-	*/
+		// Parse the json for the type of brush to load
+		json colorData = data["Color"];
 
-	EG_CORE_ERROR("{}:{} - TextStyle with name '{}': Unrecognized Color: {}", __FILE__, __LINE__, textStyle->Name(), data["Color"]);
+		if (!colorData.contains("Type"))
+		{
+			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': When specifying color using json object, you must specify the 'Type' of brush. Invalid data: {}", __FILE__, __LINE__, textStyle->Name(), colorData);
+			return false;
+		}
+
+		if (!colorData["Type"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'Type' of brush must have a string value. Invalid 'Type': {}", __FILE__, __LINE__, textStyle->Name(), colorData["Type"]);
+			return false;
+		}
+
+		std::string type = colorData["Type"].get<std::string>();
+
+		if (type.compare("SolidColorBrush") == 0)
+		{			
+			//if (std::optional<std::unique_ptr<ColorBrush>> brushOpt = SolidColorBrushLoader::Load(textStyle->GetDeviceResources(), colorData))
+			//{
+			//	textStyle->ColorBrush(std::move(brushOpt.value()));
+			//	return true;
+			//}
+			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': SolidColorBrushLoader() returned nullopt.", __FILE__, __LINE__, textStyle->Name());
+			return false;
+		}
+		else if (type.compare("GradientColorBrush") == 0)
+		{
+			//if (std::optional<std::unique_ptr<ColorBrush>> brushOpt = GradientBrushLoader::Load(textStyle->GetDeviceResources(), colorData))
+			//{
+			//	textStyle->ColorBrush(std::move(brushOpt.value()));
+			//	return true;
+			//}
+			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': GradientColorBrushLoader() returned nullopt.", __FILE__, __LINE__, textStyle->Name());
+			return false;
+		}
+		else if (type.compare("RadialColorBrush") == 0)
+		{
+			int iii = 0;
+		}
+		else if (type.compare("BitmapColorBrush") == 0)
+		{
+			int iii = 0;
+		}
+		else
+		{
+			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'Type' of brush must be one of (SolidColorBrush | GradientColorBrush | RadialColorBrush | BitmapColorBrush). Invalid 'Type': {}", __FILE__, __LINE__, textStyle->Name(), type);
+			return false;
+		}
+	}
+
+	EG_CORE_ERROR("{}:{} - TextStyle with name '{}': Invalid 'Color' value: {}", __FILE__, __LINE__, textStyle->Name(), data["Color"]);
 	return false;
 }
 bool TextStyleLoader::ParseFontFamily(TextStyle* textStyle, json& data) noexcept

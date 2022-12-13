@@ -12,6 +12,7 @@ namespace Evergreen
 class EVERGREEN_API SolidColorBrush : public ColorBrush
 {
 public:
+	// Add parameters after DeviceResources must have a default so that BrushLoader can create the brush
 	SolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const D2D1_COLOR_F& solidColor) noexcept;
 	SolidColorBrush(const SolidColorBrush&) noexcept;
 	void operator=(const SolidColorBrush&) noexcept;

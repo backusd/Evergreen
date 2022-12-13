@@ -3,6 +3,8 @@
 #include "StyleLoader.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
 #include "Evergreen/UI/ColorHelper.h"
+#include "Evergreen/UI/BrushLoaders/SolidColorBrushLoader.h"
+#include "Evergreen/UI/BrushLoaders/GradientBrushLoader.h"
 
 namespace Evergreen
 {

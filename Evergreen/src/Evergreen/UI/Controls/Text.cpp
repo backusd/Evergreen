@@ -94,6 +94,16 @@ void Text::TextChanged()
 	{
 		m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
 		m_textLayout->GetMetrics(&m_textMetrics);
+
+		// If using a non-SolidColorBrush, we need to update the draw region for the brush
+		m_style->SetDrawRegion(
+			D2D1::RectF(
+				m_textMetrics.left,
+				m_textMetrics.top,
+				m_textMetrics.left + m_textMetrics.width,
+				m_textMetrics.top + m_textMetrics.height
+			)
+		);
 	}
 }
 

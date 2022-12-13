@@ -31,15 +31,10 @@ void SolidColorBrush::Refresh() noexcept
 	GFX_THROW_INFO(
 		m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
 			m_color,
+			m_brushProperties,
 			solidBrush.ReleaseAndGetAddressOf()
 		)
 	)
-
-	m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
-		m_color,
-		m_brushProperties,
-		solidBrush.ReleaseAndGetAddressOf()
-	);
 
 	GFX_THROW_INFO(
 		solidBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf())

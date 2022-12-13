@@ -7,34 +7,42 @@ namespace Evergreen
 {
 // This constructor is for a gradient with exactly 2 colors - 1 at the beginning and 1 at the end
 GradientBrush::GradientBrush(std::shared_ptr<DeviceResources> deviceResources, const D2D1_COLOR_F& startColor, const D2D1_COLOR_F& endColor, 
-	const D2D1_POINT_2F& gradientAxisStart, const D2D1_POINT_2F& gradientAxisEnd, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
+	GRADIENT_AXIS axis, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
 	ColorBrush(deviceResources),
 	m_stops{{0.0f, startColor}, {1.0f, endColor}},
-	m_gradientAxisStart(gradientAxisStart),
-	m_gradientAxisEnd(gradientAxisEnd),
+	m_axis(axis),
+	m_gradientAxisStart(D2D1::Point2F(500.0f, 0.0f)),
+	m_gradientAxisEnd(D2D1::Point2F(500.0f, 1000.0f)),
 	m_extendMode(extendMode),
 	m_gamma(gamma),
 	m_pGradientStops(nullptr)
 {
 	RefreshGradientStops();
+	RefreshGradientAxis();
 	Refresh();
 }
 GradientBrush::GradientBrush(std::shared_ptr<DeviceResources> deviceResources, const std::vector<D2D1_GRADIENT_STOP>& stops,
-	const D2D1_POINT_2F& gradientAxisStart, const D2D1_POINT_2F& gradientAxisEnd, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
+	GRADIENT_AXIS axis, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
 	ColorBrush(deviceResources),
 	m_stops(stops),
-	m_gradientAxisStart(gradientAxisStart),
-	m_gradientAxisEnd(gradientAxisEnd),
+	m_axis(axis),
+	m_gradientAxisStart(D2D1::Point2F(500.0f, 0.0f)),
+	m_gradientAxisEnd(D2D1::Point2F(500.0f, 1000.0f)),
 	m_extendMode(extendMode),
 	m_gamma(gamma),
 	m_pGradientStops(nullptr)
 {
+	// Disallow creating the brush without at least two stops
+	EG_CORE_ASSERT(m_stops.size() >= 2, "Not enough stops supplied");
+
 	RefreshGradientStops();
+	RefreshGradientAxis();
 	Refresh();
 }
 GradientBrush::GradientBrush(const GradientBrush& rhs) noexcept :
 	ColorBrush(rhs.m_deviceResources),
 	m_stops(rhs.m_stops),
+	m_axis(rhs.m_axis),
 	m_gradientAxisStart(rhs.m_gradientAxisStart),
 	m_gradientAxisEnd(rhs.m_gradientAxisEnd),
 	m_extendMode(rhs.m_extendMode),
@@ -42,6 +50,7 @@ GradientBrush::GradientBrush(const GradientBrush& rhs) noexcept :
 	m_pGradientStops(nullptr)
 {
 	RefreshGradientStops();
+	// RefreshGradientAxis(); <-- No need to do this because copying the gradient axis start/end should already be accurate
 	Refresh();
 }
 void GradientBrush::operator=(const GradientBrush& rhs) noexcept
@@ -49,6 +58,7 @@ void GradientBrush::operator=(const GradientBrush& rhs) noexcept
 	m_deviceResources = rhs.m_deviceResources;
 	m_brush = nullptr;
 	m_stops = rhs.m_stops;
+	m_axis = rhs.m_axis;
 	m_gradientAxisStart = rhs.m_gradientAxisStart;
 	m_gradientAxisEnd = rhs.m_gradientAxisEnd;
 	m_extendMode = rhs.m_extendMode;
@@ -56,11 +66,51 @@ void GradientBrush::operator=(const GradientBrush& rhs) noexcept
 	m_pGradientStops = nullptr;
 
 	RefreshGradientStops();
+	// RefreshGradientAxis(); <-- No need to do this because copying the gradient axis start/end should already be accurate
 	Refresh();
 }
+void GradientBrush::RefreshGradientAxis() noexcept
+{
+	switch (m_axis)
+	{
+	case GRADIENT_AXIS::HORIZONTAL:
+		m_gradientAxisStart.x = m_drawRegion.left;
+		m_gradientAxisStart.y = m_drawRegion.top + ((m_drawRegion.bottom - m_drawRegion.top) / 2.0f);
 
+		m_gradientAxisEnd.x = m_drawRegion.right;
+		m_gradientAxisEnd.y = m_gradientAxisStart.y;
+		break;
+
+	case GRADIENT_AXIS::VERTICAL:
+		m_gradientAxisStart.x = m_drawRegion.left + ((m_drawRegion.right - m_drawRegion.left) / 2.0f);
+		m_gradientAxisStart.y = m_drawRegion.top;
+
+		m_gradientAxisEnd.x = m_gradientAxisStart.x;
+		m_gradientAxisEnd.y = m_drawRegion.bottom;
+		break;
+
+	case GRADIENT_AXIS::NESW:
+		m_gradientAxisStart.x = m_drawRegion.right;
+		m_gradientAxisStart.y = m_drawRegion.top;
+
+		m_gradientAxisEnd.x = m_drawRegion.left;
+		m_gradientAxisEnd.y = m_drawRegion.bottom;
+		break;
+
+	case GRADIENT_AXIS::NWSE:
+		m_gradientAxisStart.x = m_drawRegion.left;
+		m_gradientAxisStart.y = m_drawRegion.top;
+
+		m_gradientAxisEnd.x = m_drawRegion.right;
+		m_gradientAxisEnd.y = m_drawRegion.bottom;
+		break;
+	}
+}
 void GradientBrush::RefreshGradientStops() noexcept
 {
+	// Something went wrong if there are not at least two stops
+	EG_CORE_ASSERT(m_stops.size() >= 2, "Not enough stops supplied");
+
 	// Refresh() will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,
 	// that functionality has been moved to this function.
@@ -76,6 +126,9 @@ void GradientBrush::RefreshGradientStops() noexcept
 }
 void GradientBrush::Refresh() noexcept
 {
+	// gradient stops collection should have been created by now 
+	EG_CORE_ASSERT(m_pGradientStops != nullptr, "gradient stops collection is nullptr");
+
 	// Refresh will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,
 	// that functionality has been moved out of this function.
@@ -94,4 +147,36 @@ void GradientBrush::Refresh() noexcept
 		gradientBrush->QueryInterface<ID2D1Brush>(m_brush.ReleaseAndGetAddressOf())
 	)
 }
+
+void GradientBrush::Stops(const std::vector<D2D1_GRADIENT_STOP>& stops) noexcept
+{ 
+	// Disallow creating the brush without at least two stops
+	EG_CORE_ASSERT(stops.size() >= 2, "Not enough stops supplied");
+
+	m_stops = stops;
+	RefreshGradientStops(); 
+	Refresh();
+}
+void GradientBrush::Gamma(D2D1_GAMMA gamma) noexcept 
+{ 
+	m_gamma = gamma; 
+	RefreshGradientStops(); 
+	Refresh();
+}
+void GradientBrush::ExtendMode(D2D1_EXTEND_MODE mode) noexcept 
+{ 
+	m_extendMode = mode; 
+	RefreshGradientStops(); 
+	Refresh();
+}
+void GradientBrush::GradientAxis(GRADIENT_AXIS axis) noexcept 
+{ 
+	m_axis = axis; 
+	RefreshGradientAxis(); 
+	Refresh();
+}
+
+
+
+
 }

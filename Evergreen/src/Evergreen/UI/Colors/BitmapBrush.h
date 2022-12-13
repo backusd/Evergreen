@@ -20,6 +20,7 @@ enum class TRANSFORM_TO_RECT_METHOD
 class EVERGREEN_API BitmapBrush : public ColorBrush
 {
 public:
+	// Add parameters after DeviceResources must have a default so that BrushLoader can create the brush
 	BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& filename) noexcept;
 	BitmapBrush(const BitmapBrush&) noexcept;
 	void operator=(const BitmapBrush&) noexcept;

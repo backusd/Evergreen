@@ -44,8 +44,7 @@ public:
 
 	static void SetControlLoaderFunction(const std::string& controlName, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)> func) noexcept { m_loadControlFunctions[controlName] = func; }
 	static void SetStyleLoaderFunction(const std::string& styleName, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)> func) noexcept { m_loadStyleFunctions[styleName] = func; }
-
-
+	//static void SetBrushLoaderFunction(const std::string& brushName, std::function<std::optional<std::unique_ptr<ColorBrush>>(std::shared_ptr<DeviceResources>, json&)> func) noexcept { m_loadColorBrushFunctions[brushName] = func; }
 
 private:
 	void LoadDefaultUI() noexcept;
@@ -78,6 +77,7 @@ private:
 
 	static std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>> m_loadControlFunctions;
 	static std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>> m_loadStyleFunctions;
+	//static std::unordered_map<std::string, std::function<std::optional<std::unique_ptr<ColorBrush>>(std::shared_ptr<DeviceResources>, json&)>> m_loadColorBrushFunctions;
 
 };
 #pragma warning( pop )

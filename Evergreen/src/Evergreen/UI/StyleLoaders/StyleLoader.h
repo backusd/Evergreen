@@ -7,7 +7,6 @@
 #include "Evergreen/UI/GlobalJsonData.h"
 
 #include "Evergreen/Utils/std_format_specializations.h"
-
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -63,11 +62,8 @@ std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<Devi
 
 	for (auto& [key, value] : data.items())
 	{
-		if (key.compare("import") == 0)
-		{
-			EG_CORE_ERROR("{}:{} - Style with name '{}': Found 'import' after it should have already been parsed and removed.", __FILE__, __LINE__, name);
-			return std::nullopt;
-		}
+		// Use an assert here because if it triggers, it means there is a flaw in the code
+		EG_CORE_ASSERT(key.compare("import") != 0, std::format("Style with name '{}': Found 'import' after it should have already been parsed and removed.", name));
 
 		if (m_keyLoaders.find(key) == m_keyLoaders.end())
 		{

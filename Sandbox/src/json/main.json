@@ -17,19 +17,46 @@
 
 	"CustomTextStyle": {
 		"Type": "TextStyle",
-		"Color": "Green",
+		"Brush": "Green",
 		"FontFamily": "Arial",
 		"FontSize": 24
 	},
 
-	"CustomButtonStyle": {
-		"Type": "ButtonStyle",
-		"Color": "Green"
+
+
+
+	"SolidBrush1": {
+		"Brush": {
+			"Type": "SolidColorBrush",
+			"Color": "Aqua"
+		}
+	},
+	"SolidBrush2": {
+		"Brush": {
+			"Type": "SolidColorBrush",
+			"Color": [ 0.3, 0.45, 0.22 ]
+		}
 	},
 
-	"CustomColor": {
-		"Color": "Blue"
+	"GradientBrush1": {
+		"Brush": {
+			"Type": "GradientColorBrush",
+			"Stops": [
+				{
+					"Color": "Yellow",
+					"Position": 0.0
+				},
+				{
+					"Color": "Blue",
+					"Position": 1.0
+				}
+			],
+			"Gamma": "D2D1_GAMMA_2_2",
+			"ExtendMode": "D2D1_EXTEND_MODE_CLAMP",
+			"Axis": "Horizontal"
+		}
 	},
+
 
 
 
@@ -91,7 +118,7 @@
 				"Type": "Text",
 				"Text": "0xE10F",
 				"Column": 2,
-				"import": "CustomColor",
+				"import": "SolidBrush1",
 				"FontFamily": "Segoe MDL2 Assets",
 				"FontSize": 20,
 				"FontWeight": "Normal",

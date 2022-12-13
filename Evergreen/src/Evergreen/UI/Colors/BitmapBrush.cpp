@@ -11,6 +11,9 @@ BitmapBrush::BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const
 	m_bitmapFileName(filename),
 	m_bitmap(nullptr)
 {
+	// Enforce the brush to be created with a file specified
+	EG_CORE_ASSERT(m_bitmapFileName.size() > 0, "File not specified");
+
 	LoadBitmapFile();
 	Refresh();
 }
@@ -43,6 +46,9 @@ void BitmapBrush::LoadBitmapFile(const std::wstring& filename) noexcept
 
 void BitmapBrush::LoadBitmapFile() noexcept
 {
+	// This method should never be called before a file has been specified
+	EG_CORE_ASSERT(m_bitmapFileName.size() > 0, "File not specified");
+
 	ComPtr<IWICBitmapDecoder> pDecoder = nullptr;
 	ComPtr<IWICBitmapFrameDecode> pSource = nullptr;
 	ComPtr<IWICFormatConverter> pConverter = nullptr;
@@ -83,12 +89,13 @@ void BitmapBrush::LoadBitmapFile() noexcept
 			m_bitmap.ReleaseAndGetAddressOf()
 		)
 	)
-
-	Refresh();
 }
 
 void BitmapBrush::Refresh() noexcept
 {
+	// This method should never be called if we have not loaded the bitmap
+	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
+
 	ComPtr<ID2D1BitmapBrush> bitmapBrush = nullptr;
 
 	GFX_THROW_INFO(
@@ -107,10 +114,21 @@ void BitmapBrush::Refresh() noexcept
 
 void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_METHOD method) noexcept
 {
+	// This method should never be called if we have not loaded the bitmap
+	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
+
+	// Assigning the input rect to m_drawRegion doesn't really do anything other than allows
+	// m_drawRegion to hold accurate data and allow the GetDrawingRect() method to return this
+	// value. Otherwise, this data is not use elsewhere because this method updates m_brushProperties.transform
+	m_drawRegion = rect;
+
 	D2D1_POINT_2F topLeft = D2D1::Point2F(rect.left, rect.top);
 	D2D1_SIZE_F scale = D2D1::SizeF(1.0f, 1.0f);
 
 	D2D1_SIZE_F originalBitmapSize = m_bitmap->GetSize();
+
+	EG_CORE_ASSERT(originalBitmapSize.width > 0.0f, "original bitmap width cannot be 0");
+	EG_CORE_ASSERT(originalBitmapSize.height > 0.0f, "original bitmap height cannot be 0");
 
 	switch (method)
 	{
