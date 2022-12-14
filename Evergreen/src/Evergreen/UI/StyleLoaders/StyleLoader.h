@@ -6,7 +6,6 @@
 #include "Evergreen/UI/Styles/Style.h"
 #include "Evergreen/UI/GlobalJsonData.h"
 
-#include "Evergreen/Utils/std_format_specializations.h"
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
@@ -30,14 +29,14 @@ protected:
 	virtual bool PreLoadValidation(json& data, const std::string& name) noexcept { return true; }
 
 	template<typename T>
-	std::optional<std::shared_ptr<Style>> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept;
+	std::shared_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept;
 
 	std::unordered_map<std::string, std::function<bool(Style*, json&)>> m_keyLoaders;
 };
 #pragma warning( pop )
 
 template<typename T>
-std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
+std::shared_ptr<Style> StyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name) noexcept
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, std::format("{}:{} - Style with name '{}': deviceResources cannot be nullptr", __FILE__, __LINE__, name));
 
@@ -49,7 +48,7 @@ std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<Devi
 	if (!PreLoadValidation(data, name))
 	{
 		EG_CORE_ERROR("{}:{} - Style with name '{}': Call to PreLoadValidation failed.", __FILE__, __LINE__, name);
-		return std::nullopt;
+		return nullptr;
 	}
 
 	// Create shared_ptr to the style, then call keyLoader functions to set the style attributes
@@ -57,7 +56,7 @@ std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<Devi
 	if (style == nullptr)
 	{
 		EG_CORE_ERROR("{}:{} - Something went wrong. Creating the style with name '{}' returned nullptr.", __FILE__, __LINE__, name);
-		return std::nullopt;
+		return nullptr;
 	}
 
 	for (auto& [key, value] : data.items())
@@ -74,7 +73,7 @@ std::optional<std::shared_ptr<Style>> StyleLoader::LoadImpl(std::shared_ptr<Devi
 		if (!m_keyLoaders[key](static_cast<Style*>(style.get()), data))
 		{
 			EG_CORE_ERROR("{}:{} - Style with name '{}': Key Loader function failed for key: {}", __FILE__, __LINE__, name, key);
-			return std::nullopt;
+			return nullptr;
 		}
 	}
 

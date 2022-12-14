@@ -5,7 +5,6 @@
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Evergreen/UI/Colors/Brushes.h"
 
-#include "Evergreen/Utils/std_format_specializations.h"
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 

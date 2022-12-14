@@ -6,7 +6,7 @@
 namespace Evergreen
 {
 Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, 
-	std::unique_ptr<SolidColorBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
+	std::unique_ptr<ColorBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
 	Control(deviceResources),
 	m_text(text),
 	m_style(style),
@@ -18,57 +18,21 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 	if (m_colorBrush == nullptr)
 		m_colorBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 
+	if (m_style == nullptr)
+		m_style = std::make_shared<TextStyle>(m_deviceResources);
+
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Call text changed to initialize the text layout
 	TextChanged();
 }
-Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text,
-	std::unique_ptr<GradientBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
-	Control(deviceResources),
-	m_text(text),
-	m_style(style),
-	m_textLayout(nullptr),
-	m_colorBrush(std::move(brush))
-{
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
-
-	// Call text changed to initialize the text layout
-	TextChanged();
-}
-Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text,
-	std::unique_ptr<RadialBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
-	Control(deviceResources),
-	m_text(text),
-	m_style(style),
-	m_textLayout(nullptr),
-	m_colorBrush(std::move(brush))
-{
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
-
-	// Call text changed to initialize the text layout
-	TextChanged();
-}
-Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text,
-	std::unique_ptr<BitmapBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
-	Control(deviceResources),
-	m_text(text),
-	m_style(style),
-	m_textLayout(nullptr),
-	m_colorBrush(std::move(brush))
-{
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
-
-	// Call text changed to initialize the text layout
-	TextChanged();
-}
-
-
-
 
 
 void Text::Render() const noexcept
 {
+	EG_CORE_ASSERT(m_textLayout != nullptr, "TextLayout is nullptr");
+	EG_CORE_ASSERT(m_colorBrush != nullptr, "ColorBrush is nullptr");
+
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 	context->PushAxisAlignedClip(m_allowedRegion, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 
@@ -100,38 +64,21 @@ void Text::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 void Text::TextChanged()
 {
-	/*
-	D2D1_RECT_F rect = GetParentRect();
+	EG_CORE_ASSERT(m_style != nullptr, "Style not created");
+	EG_CORE_ASSERT(m_colorBrush != nullptr, "ColorBrush is nullptr");
 
-	// Adjust the rect with the margins
-	rect = D2D1::RectF(rect.left + m_marginLeft, rect.top + m_marginTop, rect.right - m_marginRight, rect.bottom - m_marginBottom);
+	m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
+	m_textLayout->GetMetrics(&m_textMetrics);
 
-	float maxWidth = rect.right - rect.left; // std::max(0, width of parent rect)
-	float maxHeight = rect.bottom - rect.top; // std::max(0, height of parent rect)
-
-	m_textLayout = m_textTheme->CreateTextLayout(m_text, maxWidth, maxHeight);
-
-	ThrowIfFailed(m_textLayout->GetMetrics(&m_textMetrics));
-
-
-	// Update Screen Translation ---
-	m_screenTranslation = D2D1::Matrix3x2F::Translation(rect.left, rect.top);
-	*/
-	if (m_style != nullptr)
-	{
-		m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
-		m_textLayout->GetMetrics(&m_textMetrics);
-
-		// If using a non-SolidColorBrush, we need to update the draw region for the brush
-		m_colorBrush->SetDrawRegion(
-			D2D1::RectF(
-				m_textMetrics.left,
-				m_textMetrics.top,
-				m_textMetrics.left + m_textMetrics.width,
-				m_textMetrics.top + m_textMetrics.height
-			)
-		);
-	}
+	// If using a non-SolidColorBrush, we need to update the draw region for the brush
+	m_colorBrush->SetDrawRegion(
+		D2D1::RectF(
+			m_textMetrics.left,
+			m_textMetrics.top,
+			m_textMetrics.left + m_textMetrics.width,
+			m_textMetrics.top + m_textMetrics.height
+		)
+	);
 }
 
 void Text::AllowedRegion(D2D1_RECT_F region) noexcept

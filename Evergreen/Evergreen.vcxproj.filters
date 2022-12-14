@@ -126,9 +126,6 @@
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Utils\std_format_specializations.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Evergreen\UI\GlobalJsonData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -160,6 +157,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\BrushLoaders\GradientBrushLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\JSONLoaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -261,6 +261,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\BrushLoaders\GradientBrushLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\JSONLoaders.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

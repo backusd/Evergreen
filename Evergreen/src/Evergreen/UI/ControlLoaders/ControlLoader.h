@@ -6,14 +6,37 @@
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/GlobalJsonData.h"
 
-#include "Evergreen/Utils/std_format_specializations.h"
-
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
 
 namespace Evergreen
 {
+// Drop this warning because the private members are not accessible by the client application, but 
+// the compiler will complain that they don't have a DLL interface
+// See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
+#pragma warning( push )
+#pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
+class EVERGREEN_API ControlLoader
+{
+public:
+	ControlLoader(const ControlLoader&) = delete;
+	void operator=(const ControlLoader&) = delete;
+	virtual ~ControlLoader() noexcept {}
+
+protected:
+	ControlLoader() noexcept = default;
+
+	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
+
+	std::string m_name;
+
+	
+};
+#pragma warning( pop )
+
+
+/*
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -101,6 +124,6 @@ bool ControlLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, L
 	EG_CORE_ERROR("{}:{} - Text control with name '{}': Failed to add control to the layout.", __FILE__, __LINE__, name);
 	return false;
 }
-
+*/
 }
 

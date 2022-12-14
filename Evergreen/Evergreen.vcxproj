@@ -38,11 +38,11 @@
     <ClInclude Include="src\Evergreen\UI\ControlLoaders\TextLoader.h" />
     <ClInclude Include="src\Evergreen\UI\GlobalJsonData.h" />
     <ClInclude Include="src\Evergreen\UI\BrushLoaders\BrushLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\JSONLoaders.h" />
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\StyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\FontFamily.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\Style.h" />
-    <ClInclude Include="src\Evergreen\Utils\std_format_specializations.h" />
     <ClInclude Include="src\Evergreen\Window\TranslateErrorCode.h" />
     <ClInclude Include="src\Evergreen\Window\WindowsMessageMap.h" />
     <ClInclude Include="src\Evergreen\Window\Window.h" />
@@ -78,6 +78,7 @@
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\ControlLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\ControlLoaders\TextLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\BrushLoaders\BrushLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\JSONLoaders.cpp" />
     <ClCompile Include="src\Evergreen\UI\StyleLoaders\StyleLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Styles\FontFamily.cpp" />

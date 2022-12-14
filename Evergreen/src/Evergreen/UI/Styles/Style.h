@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Evergreen/Core.h"
+#include "Evergreen/Log.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 
 namespace Evergreen

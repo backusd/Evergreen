@@ -10,13 +10,12 @@
 #include "Colors/RadialBrush.h"
 #include "Colors/BitmapBrush.h"
 
-
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__)); ::Evergreen::Log::GetCoreLogger()->error(std::format(CAT2("{}:{} - ", fmt), __FILE__, __LINE__, __VA_ARGS__))
 
 namespace Evergreen
 {
-std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>>			UI::m_loadControlFunctions;
-std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>>	UI::m_loadStyleFunctions;
+//std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>>			UI::m_loadControlFunctions;
+//std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>>	UI::m_loadStyleFunctions;
 //std::unordered_map<std::string, std::function<std::optional<std::unique_ptr<ColorBrush>>(std::shared_ptr<DeviceResources>, json&)>>					UI::m_loadColorBrushFunctions;
 
 
@@ -27,11 +26,16 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_rootLayout(nullptr),
 	m_globalJsonData(std::make_shared<GlobalJsonData>())
 {
+	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::shared_ptr<Style> { return TextStyleLoader::Load(deviceResources, data, styleName); });
+
+
+
 	// Add built-in control loaders
-	UI::SetControlLoaderFunction("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, GlobalJsonData* globalData) -> bool { return TextLoader::Load(deviceResources, parentLayout, data, controlName, globalData); });
+	//UI::SetControlLoaderFunction("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, GlobalJsonData* globalData) -> bool { return TextLoader::Load(deviceResources, parentLayout, data, controlName, globalData); });
 
 	// Add built-in style loaders
-	UI::SetStyleLoaderFunction("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::optional<std::shared_ptr<Style>> { return TextStyleLoader::Load(deviceResources, data, styleName); });
+	//UI::SetStyleLoaderFunction("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::optional<std::shared_ptr<Style>> { return TextStyleLoader::Load(deviceResources, data, styleName); });
 
 	// Add built-in brush loaders
 	//UI::SetBrushLoaderFunction("SolidColorBrush", [](std::shared_ptr<DeviceResources> deviceResources, json& data) -> std::optional<std::unique_ptr<ColorBrush>> { return SolidColorBrushLoader::Load(deviceResources, data); });
@@ -111,10 +115,22 @@ void UI::LoadDefaultUI() noexcept
 		EG_CORE_ERROR("{}", "Failed to create custom text");
 	}
 
+	RowColumnPosition position2;
+	position2.Row = 0;
+	position2.Column = 1;
+	position2.RowSpan = 1;
+	position2.ColumnSpan = 1;
 
+	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position2, m_deviceResources))
+	{
+		EG_CORE_TRACE("{}", "Successfully created custom text 2");
 
-
-
+		text.value()->SetText(L"nooooo...");
+	}
+	else
+	{
+		EG_CORE_ERROR("{}", "Failed to create custom text 2");
+	}
 
 
 
@@ -165,7 +181,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		// Set m_jsonRoot so we can access non-root keys for import within the Load methods
 		m_jsonRoot = data.value();
 
-		// Before constructing the layout, load global data that may be needed by Load* functions
+		// Before constructing the layout, load global data that can be retrieved later on
 		if (!ParseGlobalStyles(m_jsonRoot))
 		{
 			UI_ERROR("{}", "Call to ParseGlobalStyles failed");
@@ -352,13 +368,13 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 
 		if (!data[key].contains("Type"))
 		{
-			UI_ERROR("Control or sub-layout has no 'Type' definition: {}", data[key]);
+			UI_ERROR("Control or sub-layout has no 'Type' definition: {}", data[key].dump(4));
 			return false;
 		}
 
 		if (!data[key]["Type"].is_string())
 		{
-			UI_ERROR("Control or sub-layout 'Type' definition must be a string.\nInvalid value : {}", data[key]["Type"]);
+			UI_ERROR("Control or sub-layout 'Type' definition must be a string.\nInvalid value : {}", data[key]["Type"].dump(4));
 			return false;
 		}
 
@@ -370,6 +386,19 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 			if (!LoadSubLayout(layout, data[key], key))
 				return false;
 		}
+		else if (JSONLoaders::IsControlKey(type))
+		{
+			if (data[key].contains("import"))
+			{
+				if (!ImportJSON(data[key]))
+					return false;
+			}
+
+			Control* control = JSONLoaders::LoadControl(m_deviceResources, type, layout, data[key], key);
+			if (control == nullptr)
+				EG_CORE_ERROR("Failed to load control with name '{}'.", key);
+		}
+		/*
 		else if (m_loadControlFunctions.find(type) != m_loadControlFunctions.end())
 		{
 			if (data[key].contains("import"))
@@ -380,6 +409,7 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 
 			m_loadControlFunctions[type](m_deviceResources, layout, data[key], key, m_globalJsonData.get());
 		}
+		*/
 		else
 		{
 			EG_CORE_WARN("Attempting to load control: {} (... not yet supported ...)", type);
@@ -402,7 +432,7 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 				// Each row must contain a 'Height' key
 				if (!rowDefinition.contains("Height"))
 				{
-					UI_ERROR("RowDefinition for layout '{}' does not contain 'Height' key: {}", layout->Name(), rowDefinition);
+					UI_ERROR("RowDefinition for layout '{}' does not contain 'Height' key: {}", layout->Name(), rowDefinition.dump(4));
 					return false;
 				}
 
@@ -435,7 +465,7 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 								row.value()->TopIsAdjustable(rowDefinition[key].get<bool>());
 							else
 							{
-								UI_ERROR("RowDefinition TopAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key]);
+								UI_ERROR("RowDefinition TopAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key].dump(4));
 								return false;
 							}
 						}
@@ -445,7 +475,7 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 								row.value()->BottomIsAdjustable(rowDefinition[key].get<bool>());
 							else
 							{
-								UI_ERROR("RowDefinition BottomAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key]);
+								UI_ERROR("RowDefinition BottomAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key].dump(4));
 								return false;
 							}
 						}
@@ -480,7 +510,7 @@ bool UI::LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept
 		}
 		else
 		{
-			UI_ERROR("RowDefinitions value must be an array type. Invalid value: {}", data["RowDefinitions"]);
+			UI_ERROR("RowDefinitions value must be an array type. Invalid value: {}", data["RowDefinitions"].dump(4));
 			return false;
 		}
 	}
@@ -510,7 +540,7 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 				// Each column must contain a 'Width' key
 				if (!columnDefinition.contains("Width"))
 				{
-					UI_ERROR("ColumnDefinition for layout '{}' does not contain 'Width' key: {}", layout->Name(), columnDefinition);
+					UI_ERROR("ColumnDefinition for layout '{}' does not contain 'Width' key: {}", layout->Name(), columnDefinition.dump(4));
 					return false;
 				}
 
@@ -543,7 +573,7 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 								column.value()->LeftIsAdjustable(columnDefinition[key].get<bool>());
 							else
 							{
-								UI_ERROR("ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key]);
+								UI_ERROR("ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key].dump(4));
 								return false;
 							}
 						}
@@ -553,7 +583,7 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 								column.value()->RightIsAdjustable(columnDefinition[key].get<bool>());
 							else
 							{
-								UI_ERROR("ColumnDefinition RightAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key]);
+								UI_ERROR("ColumnDefinition RightAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key].dump(4));
 								return false;
 							}
 						}
@@ -588,7 +618,7 @@ bool UI::LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept
 		}
 		else
 		{
-			UI_ERROR("ColumnDefinitions value must be an array type. Invalid value: {}", data["ColumnDefinitions"]);
+			UI_ERROR("ColumnDefinitions value must be an array type. Invalid value: {}", data["ColumnDefinitions"].dump(4));
 			return false;
 		}
 	}
@@ -632,12 +662,25 @@ bool UI::ParseGlobalStyles(json& data) noexcept
 		{
 			if (!data[key]["Type"].is_string())
 			{
-				UI_ERROR("Failed to parse global data for key '{}'. 'Type' field must be a string.\nInvalid value : {}", key, data[key]["Type"]);
+				UI_ERROR("Failed to parse global data for key '{}'. 'Type' field must be a string.\nInvalid value : {}", key, data[key]["Type"].dump(4));
 				return false;
 			}
 
 			std::string styleType = data[key]["Type"].get<std::string>();
 
+			if (JSONLoaders::IsStyleKey(styleType))
+			{
+				// Just calling LoadStyle is enough for the style to become cached within JSONLoaders.
+				// Therefore, there is no reason to do anything with the return value.
+				JSONLoaders::LoadStyle(m_deviceResources, styleType, data[key], key);
+
+			}
+			else if (styleType.size() > 5 && styleType.substr(styleType.size() - 5, 5).compare("Style") == 0) // If the typeString ends in "Style", warn the user they probably did not set up the StyleLoader correctly
+			{
+				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but did not file a StyleLoader within JSONLoaders. You may have forgotten to call JSONLoaders::AddStyleLoader()", __FILE__, __LINE__, styleType, key);
+			}
+
+			/*
 			// Check if key is a key for a style loader
 			if (m_loadStyleFunctions.find(styleType) != m_loadStyleFunctions.end())
 			{
@@ -653,6 +696,7 @@ bool UI::ParseGlobalStyles(json& data) noexcept
 			{
 				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but no associated LoadStyle function. You may have forgotten to call UI::SetStyleLoaderFunction()", __FILE__, __LINE__, styleType, key);
 			}
+			*/
 		}
 	}
 
@@ -670,7 +714,7 @@ std::optional<RowColumnPosition> UI::ParseRowColumnPosition(json& data) noexcept
 	{
 		if (!data["Row"].is_number_unsigned())
 		{
-			UI_ERROR("'Row' value must be an unsigned int.\nInvalid value: {}", data["Row"]);
+			UI_ERROR("'Row' value must be an unsigned int.\nInvalid value: {}", data["Row"].dump(4));
 			return std::nullopt;
 		}
 
@@ -681,7 +725,7 @@ std::optional<RowColumnPosition> UI::ParseRowColumnPosition(json& data) noexcept
 	{
 		if (!data["Column"].is_number_unsigned())
 		{
-			UI_ERROR("'Column' value must be an unsigned int.\nInvalid value: {}", data["Column"]);
+			UI_ERROR("'Column' value must be an unsigned int.\nInvalid value: {}", data["Column"].dump(4));
 			return std::nullopt;
 		}
 
@@ -692,7 +736,7 @@ std::optional<RowColumnPosition> UI::ParseRowColumnPosition(json& data) noexcept
 	{
 		if (!data["RowSpan"].is_number_unsigned())
 		{
-			UI_ERROR("'RowSpan' value must be an unsigned int.\nInvalid value : {}", data["RowSpan"]);
+			UI_ERROR("'RowSpan' value must be an unsigned int.\nInvalid value : {}", data["RowSpan"].dump(4));
 			return std::nullopt;
 		}
 
@@ -709,7 +753,7 @@ std::optional<RowColumnPosition> UI::ParseRowColumnPosition(json& data) noexcept
 	{
 		if (!data["ColumnSpan"].is_number_unsigned())
 		{
-			UI_ERROR("{}", "'ColumnSpan' value must be an unsigned int.\nInvalid value : {}", data["ColumnSpan"]);
+			UI_ERROR("{}", "'ColumnSpan' value must be an unsigned int.\nInvalid value : {}", data["ColumnSpan"].dump(4));
 			return std::nullopt;
 		}
 
@@ -811,7 +855,7 @@ std::optional<std::tuple<RowColumnType, float>> UI::ParseRowColumnTypeAndSize(js
 		return std::make_tuple(type, size);
 	}
 
-	UI_ERROR("Height/Width value must be either a number or a string.\nLayout Name: {}\nInvalid value: {}", layout->Name(), data);
+	UI_ERROR("Height/Width value must be either a number or a string.\nLayout Name: {}\nInvalid value: {}", layout->Name(), data.dump(4));
 	return std::nullopt;
 }
 
@@ -819,13 +863,13 @@ bool UI::ImportJSON(json& data) noexcept
 {
 	if (!data.contains("import"))
 	{
-		EG_CORE_WARN("{}:{} - UI::ImportJSON called but could not find 'import' key: {}", __FILE__, __LINE__, data);
+		EG_CORE_WARN("{}:{} - UI::ImportJSON called but could not find 'import' key: {}", __FILE__, __LINE__, data.dump(4));
 		return true; // Return true because this is not a true error. The program can still continue to parse the json data.
 	}
 
 	if (!data["import"].is_string())
 	{
-		UI_ERROR("'import' key must have a string-type value. Invalid value: {}", data["import"]);
+		UI_ERROR("'import' key must have a string-type value. Invalid value: {}", data["import"].dump(4));
 		return false;
 	}
 
@@ -833,7 +877,7 @@ bool UI::ImportJSON(json& data) noexcept
 
 	if (importValue.size() == 0)
 	{
-		EG_CORE_WARN("{}:{} - 'import' key has an empty value. json data: {}", __FILE__, __LINE__, data);
+		EG_CORE_WARN("{}:{} - 'import' key has an empty value. json data: {}", __FILE__, __LINE__, data.dump(4));
 		return true; // Return true because this is not a true error. The program can still continue to parse the json data.
 	}
 
@@ -868,7 +912,7 @@ bool UI::ImportJSON(json& data) noexcept
 	// The imported json must be a json object
 	if (!jsonImport.is_object())
 	{
-		UI_ERROR("Unable to import key '{}'. Imported json value must be a json object.\nInvalid value: {}", importValue, jsonImport);
+		UI_ERROR("Unable to import key '{}'. Imported json value must be a json object.\nInvalid value: {}", importValue, jsonImport.dump(4));
 		return false;
 	}
 
