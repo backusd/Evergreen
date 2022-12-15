@@ -8,14 +8,23 @@ namespace Evergreen
 Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name) noexcept
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
-	m_deviceResources = deviceResources;
 	m_name = name;
 
 	std::wstring text = L"";
+	RowColumnPosition rowCol;
 
 	// Validate JSON
 	if (!ValidateJSONData(data))
 		return nullptr;
+
+	// Parse Row/Column
+	if (std::optional<RowColumnPosition> rowColOpt = ParseRowColumnPosition(data))
+		rowCol = rowColOpt.value();
+	else
+	{
+		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseRowColumnPosition() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
+		return nullptr;
+	}
 
 	// Parse Text
 	if (std::optional<std::wstring> textOpt = ParseText(data))
@@ -27,7 +36,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Parse Brush
-	std::unique_ptr<ColorBrush> brush = ParseBrush(data);
+	std::unique_ptr<ColorBrush> brush = ParseBrush(deviceResources, data);
 	if (brush == nullptr)
 	{
 		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseBrush() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
@@ -35,14 +44,14 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Parse Style
-	std::shared_ptr<TextStyle> style = ParseStyle(data);
+	std::shared_ptr<TextStyle> style = ParseStyle(deviceResources, data);
 	if (style == nullptr)
 	{
 		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseStyle() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
 		return nullptr;
 	}
 
-	if (std::optional<Text*> textOpt = parent->AddControl<Text>(deviceResources, text, std::move(brush), style))
+	if (std::optional<Text*> textOpt = parent->AddControl<Text>(rowCol, deviceResources, text, std::move(brush), style))
 		return textOpt.value();
 
 	return nullptr;
@@ -115,9 +124,9 @@ std::optional<std::wstring> TextLoader::ParseText(const json& data) noexcept
 
 	return text;
 }
-std::unique_ptr<ColorBrush> TextLoader::ParseBrush(const json& data) noexcept
+std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept
 {
-	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
 	if (!data.contains("Brush"))
 	{
@@ -125,10 +134,12 @@ std::unique_ptr<ColorBrush> TextLoader::ParseBrush(const json& data) noexcept
 		return nullptr;
 	}
 
-	return std::move(JSONLoaders::LoadBrush(m_deviceResources, data["Brush"]));
+	return std::move(JSONLoaders::LoadBrush(deviceResources, data["Brush"]));
 }
-std::shared_ptr<TextStyle> TextLoader::ParseStyle(const json& data) noexcept
+std::shared_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept
 {
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
+
 	// Must parse out the name of the TextStyle before you can call JSONLoaders::LoadStyle
 	std::string stylename;
 	if (data.contains("Style"))
@@ -154,7 +165,7 @@ std::shared_ptr<TextStyle> TextLoader::ParseStyle(const json& data) noexcept
 	}
 
 
-	std::shared_ptr<Style> style = JSONLoaders::LoadStyle(m_deviceResources, "TextStyle", data, stylename);
+	std::shared_ptr<Style> style = JSONLoaders::LoadStyle(deviceResources, "TextStyle", data, stylename);
 	if (style == nullptr)
 	{
 		EG_CORE_ERROR("{}:{} - Text control with name '{}': JSONLoaders::GetStyle() failed for Text object: {}", __FILE__, __LINE__, m_name, data.dump(4));

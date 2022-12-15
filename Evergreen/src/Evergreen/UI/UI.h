@@ -10,7 +10,7 @@
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/ControlLoaders/ControlLoader.h"
 #include "Evergreen/UI/StyleLoaders/TextStyleLoader.h"
-#include "Evergreen/UI/GlobalJsonData.h"
+// #include "Evergreen/UI/GlobalJsonData.h"
 
 #include "JSONLoading/JSONLoaders.h"
 
@@ -75,7 +75,7 @@ private:
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 
-	std::shared_ptr<GlobalJsonData> m_globalJsonData;
+	// std::shared_ptr<GlobalJsonData> m_globalJsonData;
 
 	//static std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>> m_loadControlFunctions;
 	//static std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>> m_loadStyleFunctions;

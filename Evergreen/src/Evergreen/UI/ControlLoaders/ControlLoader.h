@@ -27,7 +27,7 @@ public:
 protected:
 	ControlLoader() noexcept = default;
 
-	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
+	std::optional<RowColumnPosition> ParseRowColumnPosition(const json& data) noexcept;
 
 	std::string m_name;
 

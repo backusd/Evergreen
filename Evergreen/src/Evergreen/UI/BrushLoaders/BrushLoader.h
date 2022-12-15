@@ -8,6 +8,7 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
+/*
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 
@@ -80,3 +81,4 @@ std::optional<std::unique_ptr<ColorBrush>> BrushLoader::LoadImpl(std::shared_ptr
 	return std::move(brush);
 }
 }
+*/

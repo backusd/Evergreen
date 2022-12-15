@@ -26,6 +26,7 @@ class EVERGREEN_API JSONLoaders
 public:
 	JSONLoaders(const JSONLoaders&) = delete;
 	void operator=(const JSONLoaders&) = delete;
+	~JSONLoaders() noexcept = default;
 
 	static void AddControlLoader(std::string key, ControlLoaderFn loader) noexcept { Get().AddControlLoaderImpl(key, loader); }
 	static void AddStyleLoader(std::string key, StyleLoaderFn loader) noexcept { Get().AddStyleLoaderImpl(key, loader); }
@@ -38,6 +39,8 @@ public:
 	static bool IsControlKey(const std::string& controlKey) noexcept { return Get().IsControlKeyImpl(controlKey); }
 	static bool IsStyleKey(const std::string& styleKey) noexcept { return Get().IsStyleKeyImpl(styleKey); }
 
+	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
+
 private:
 	JSONLoaders() noexcept = default;
 
@@ -46,6 +49,8 @@ private:
 		static JSONLoaders singleton;
 		return singleton;
 	}
+
+	void ClearCacheImpl() noexcept { m_stylesCache.clear(); }
 
 	void AddControlLoaderImpl(std::string key, ControlLoaderFn loader) noexcept { m_controlLoaders[key] = loader; }
 	void AddStyleLoaderImpl(std::string key, StyleLoaderFn loader) noexcept { m_styleLoaders[key] = loader; }
@@ -64,8 +69,8 @@ private:
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;
 
-	// Keep a copy of all existing styles for quick lookup
-	std::unordered_map<std::string, std::shared_ptr<Style>> m_existingStyles;
+	// Keep a cache of styles that have been parsed for quick lookup
+	std::unordered_map<std::string, std::shared_ptr<Style>> m_stylesCache;
 };
 #pragma warning( pop )
 }

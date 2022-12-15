@@ -4,7 +4,7 @@
 
 namespace Evergreen
 {
-std::optional<RowColumnPosition> ControlLoader::ParseRowColumnPosition(json& data) noexcept
+std::optional<RowColumnPosition> ControlLoader::ParseRowColumnPosition(const json& data) noexcept
 {
 	RowColumnPosition position;
 	position.Row = 0;

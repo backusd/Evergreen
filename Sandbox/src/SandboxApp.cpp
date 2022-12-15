@@ -10,7 +10,7 @@ public:
 	}
 	~Sandbox() noexcept
 	{
-
+		int iii = 0;
 	}
 };
 

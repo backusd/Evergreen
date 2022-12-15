@@ -17,7 +17,7 @@ class EVERGREEN_API TextLoader : public ControlLoader
 public:
 	TextLoader(const TextLoader&) = delete;
 	void operator=(const TextLoader&) = delete;
-	virtual ~TextLoader() noexcept {}
+	~TextLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name) noexcept { return std::move(Get().LoadImpl(deviceResources, parent, data, name)); }
 
@@ -35,18 +35,8 @@ private:
 	bool ValidateJSONData(const json& data) noexcept;
 
 	std::optional<std::wstring> ParseText(const json& data) noexcept;
-	std::unique_ptr<ColorBrush> ParseBrush(const json& data) noexcept;
-	std::shared_ptr<TextStyle> ParseStyle(const json& data) noexcept;
-
-
-
-	std::shared_ptr<DeviceResources> m_deviceResources;
-
-
-
-
-
-
+	std::unique_ptr<ColorBrush> ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
+	std::shared_ptr<TextStyle> ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
 
 
 };

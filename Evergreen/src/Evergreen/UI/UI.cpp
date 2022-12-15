@@ -23,8 +23,8 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_deviceResources(deviceResources),
 	m_window(window),
 	m_jsonRoot({}),
-	m_rootLayout(nullptr),
-	m_globalJsonData(std::make_shared<GlobalJsonData>())
+	m_rootLayout(nullptr)
+	// m_globalJsonData(std::make_shared<GlobalJsonData>())
 {
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::shared_ptr<Style> { return TextStyleLoader::Load(deviceResources, data, styleName); });
@@ -196,12 +196,24 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		if (!LoadLayoutDetails(m_rootLayout.get(), rootLayoutData))
 		{
 			m_jsonRoot = {};
-			m_globalJsonData = nullptr;
+			//m_globalJsonData = nullptr;
 			LoadErrorUI();
 			return;
 		}
 
-		m_globalJsonData = nullptr;
+		// There is a somewhat weird behavior in DirectX reporting memory leaks on application shutdown.
+		// In a DEBUG build, DirectX will report on any DirectX resources that have outstanding reference
+		// counts. However, this check appears to be performed prior to static class instance destruction.
+		// This means that if we have a static class (ex. any singleton class) with a reference to DirectX 
+		// resources (such as a shared_ptr to DeviceResources), DirectX will report a memory leak because
+		// the static instance of the class has not yet been destructed.
+		// 
+		// In this specific case, JSONLoaders keeps a cache of all Styles that have been loaded and each
+		// style has a shared_ptr to DeviceResources. So here, we just clean that up, which is also just a
+		// good idea because there is no need to keep the cached styles around anyways.
+		JSONLoaders::ClearCache();
+
+		//m_globalJsonData = nullptr;
 
 		// LayoutCheck is entirely optional - In a Release build, this does nothing
 		m_rootLayout->LayoutCheck();
@@ -209,7 +221,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 	else
 	{
 		m_jsonRoot = {};
-		m_globalJsonData = nullptr;
+		//m_globalJsonData = nullptr;
 		LoadErrorUI();
 	}
 }

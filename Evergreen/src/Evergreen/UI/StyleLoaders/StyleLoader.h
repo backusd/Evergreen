@@ -9,7 +9,7 @@
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
 
-
+/*
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 
@@ -81,3 +81,4 @@ std::shared_ptr<Style> StyleLoader::LoadImpl(std::shared_ptr<DeviceResources> de
 }
 
 }
+*/

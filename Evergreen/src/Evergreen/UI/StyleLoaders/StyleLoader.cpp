@@ -3,9 +3,9 @@
 
 namespace Evergreen
 {
-StyleLoader::StyleLoader() noexcept
-{
-}
+//StyleLoader::StyleLoader() noexcept
+//{
+//}
 
 
 

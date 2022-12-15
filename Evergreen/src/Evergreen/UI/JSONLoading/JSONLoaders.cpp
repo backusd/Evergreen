@@ -138,15 +138,15 @@ std::shared_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResource
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
 	// Check to see if name of the style already exists, otherwise, parse the json data
-	if (m_existingStyles.find(stylename) != m_existingStyles.end())
-		return m_existingStyles[stylename];
+	if (m_stylesCache.find(stylename) != m_stylesCache.end())
+		return m_stylesCache[stylename];
 
 	std::shared_ptr<Style> style = m_styleLoaders[key](deviceResources, data, stylename);
 
 	if (style == nullptr)
 		EG_CORE_ERROR("{}:{} - JSONLoaders: Style loader failed for stylename '{}' with key '{}' on data: {}", __FILE__, __LINE__, stylename, key, data.dump(4));
 	else
-		m_existingStyles[stylename] = style;
+		m_stylesCache[stylename] = style;
 
 	return style;
 }

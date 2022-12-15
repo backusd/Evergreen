@@ -146,13 +146,13 @@ public:
 	std::optional<Layout*> AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") noexcept;
 
 	template<class T>
-	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources) noexcept;
+	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>);
 	template<class T>
-	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept;
+	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>);
 	template<class T, class ... U>
-	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args ) noexcept;
+	std::optional<T*> AddControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args ) noexcept requires (std::is_base_of_v<Control, T>);
 	template<class T, class ... U>
-	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept;
+	std::optional<T*> AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
 
 
 
@@ -221,7 +221,7 @@ public:
 #pragma warning( pop )
 
 template<class T>
-std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources) noexcept
+std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>)
 {
 	RowColumnPosition position;
 	position.Row = 0;
@@ -232,7 +232,7 @@ std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceReso
 	return AddControl<T>(position, deviceResources);
 }
 template<class T>
-std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept
+std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>)
 {
 	m_controlPositions.push_back(position);
 
@@ -252,7 +252,7 @@ std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr
 	return (T*)m_controls.back().get();
 }
 template<class T, class ... U>
-std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept
+std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>)
 {
 	RowColumnPosition position;
 	position.Row = 0;
@@ -263,7 +263,7 @@ std::optional<T*> Layout::AddControl(std::shared_ptr<DeviceResources> deviceReso
 	return AddControl<T>(position, deviceResources, std::forward<U>(args)...);
 }
 template<class T, class ... U>
-std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept
+std::optional<T*> Layout::AddControl(RowColumnPosition position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>)
 {
 	m_controlPositions.push_back(position);
 

@@ -4,9 +4,9 @@
 
 namespace Evergreen
 {
-BrushLoader::BrushLoader() noexcept
-{
-}
+//BrushLoader::BrushLoader() noexcept
+//{
+//}
 /*
 std::optional<std::unique_ptr<ColorBrush>> BrushLoader::LoadImpl2(std::shared_ptr<DeviceResources> deviceResources, json& data) noexcept
 {
