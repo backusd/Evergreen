@@ -41,6 +41,8 @@ void Control::Margin(float left, float top, float right, float bottom) noexcept
 	m_margin.Top = top;
 	m_margin.Right = right;
 	m_margin.Bottom = bottom;
+
+	OnMarginChanged();
 }
 
 void Control::AllowedRegion(float left, float top, float right, float bottom) noexcept
@@ -49,6 +51,8 @@ void Control::AllowedRegion(float left, float top, float right, float bottom) no
 	m_allowedRegion.top = top;
 	m_allowedRegion.right = right;
 	m_allowedRegion.bottom = bottom;
+
+	OnAllowedRegionChanged();
 }
 
 

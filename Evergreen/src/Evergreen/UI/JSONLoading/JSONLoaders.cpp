@@ -126,7 +126,162 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadGradientBrush(std::shared_ptr<Devic
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
-	return nullptr;
+	std::vector<D2D1_GRADIENT_STOP> stops;
+	GRADIENT_AXIS axis = GRADIENT_AXIS::VERTICAL;
+	D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP;
+	D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2;
+
+	if (!data.contains("Stops"))
+	{
+		EG_CORE_ERROR("{}:{} - GradientBrush json object must have key 'Stops'. Incomplete 'GradientBrush' object: {}", __FILE__, __LINE__, data.dump(4));
+		return nullptr;
+	}
+
+	if (!data["Stops"].is_array())
+	{
+		EG_CORE_ERROR("{}:{} - GradientBrush json object 'Stops' value must be an array. Invalid 'GradientBrush' object: {}", __FILE__, __LINE__, data.dump(4));
+		return nullptr;
+	}
+
+	for (auto& stopObject : data["Stops"])
+	{
+		D2D1_GRADIENT_STOP stop;
+
+		if (!stopObject.is_object())
+		{
+			EG_CORE_ERROR("{}:{} - 'Stops' array values must be json objects. Invalid 'Stops' object: {}", __FILE__, __LINE__, stopObject.dump(4));
+			return nullptr;
+		}
+
+		if (!stopObject.contains("Color"))
+		{
+			EG_CORE_ERROR("{}:{} - Each 'Stops' array values must contain the key 'Color'. Invalid 'Stops' object: {}", __FILE__, __LINE__, stopObject.dump(4));
+			return nullptr;
+		}
+
+		if (!stopObject.contains("Position"))
+		{
+			EG_CORE_ERROR("{}:{} - Each 'Stops' array values must contain the key 'Position'. Invalid 'Stops' object: {}", __FILE__, __LINE__, stopObject.dump(4));
+			return nullptr;
+		}
+
+		// Warn about unrecognized keys
+		constexpr std::array recognizedKeys{ "Color", "Position" };
+		for (auto& [key, value] : stopObject.items())
+		{
+			if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+				EG_CORE_WARN("{}:{} - JSONLoaders::LoadGradientBrush() 'Stops' value unrecognized key: '{}'.", __FILE__, __LINE__, key);
+		}
+
+		if (std::optional<D2D1_COLOR_F> colorOpt = JSONLoaders::LoadColor(stopObject["Color"]))
+			stop.color = colorOpt.value();
+		else
+		{
+			EG_CORE_ERROR("{}:{} - 'Stops' array value failed to load color for object: {}", __FILE__, __LINE__, stopObject.dump(4));
+			return nullptr;
+		}
+
+		if (!stopObject["Position"].is_number())
+		{
+			EG_CORE_ERROR("{}:{} - 'Stops' array value 'Position' field must be a number. Invalid 'Stops' object: {}", __FILE__, __LINE__, stopObject.dump(4));
+			return nullptr;
+		}
+
+		stop.position = stopObject["Position"].get<float>();
+
+		if (stop.position < 0.0f || stop.position > 1.0f)
+		{
+			EG_CORE_ERROR("{}:{} - 'Stops' array value 'Position' field must be between [0.0 - 1.0]. Invalid 'Stops' object: {}", __FILE__, __LINE__, stopObject.dump(4));
+			return nullptr;
+		}
+
+		stops.push_back(stop);
+	}
+
+	// Axis
+	if (data.contains("Axis"))
+	{
+		if (!data["Axis"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - 'Axis' value must be a string. Invalid 'Axis' value: {}", __FILE__, __LINE__, data.dump(4));
+			return nullptr;
+		}
+
+		static const std::unordered_map<std::string, GRADIENT_AXIS> axisMap = {
+			{ "Horizontal", GRADIENT_AXIS::HORIZONTAL },
+			{ "Vertical", GRADIENT_AXIS::VERTICAL },
+			{ "NESW", GRADIENT_AXIS::NESW },
+			{ "NWSE", GRADIENT_AXIS::NWSE }
+		};
+
+		std::string axisStr = data["Axis"].get<std::string>();
+
+		if (axisMap.find(axisStr) == axisMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - GradientBrush 'Axis' field value was unrecognized. Invalid value: {}", __FILE__, __LINE__, axisStr);
+			return nullptr;
+		}
+
+		axis = axisMap.at(axisStr);
+	}
+
+	// ExtendMode
+	if (data.contains("ExtendMode"))
+	{
+		if (!data["ExtendMode"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - 'ExtendMode' value must be a string. Invalid 'ExtendMode' value: {}", __FILE__, __LINE__, data.dump(4));
+			return nullptr;
+		}
+
+		static const std::unordered_map<std::string, D2D1_EXTEND_MODE> modeMap = {
+			{ "D2D1_EXTEND_MODE_CLAMP", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP },
+			{ "D2D1_EXTEND_MODE_MIRROR", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_MIRROR },
+			{ "D2D1_EXTEND_MODE_WRAP", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_WRAP },
+			{ "D2D1_EXTEND_MODE_FORCE_DWORD", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_FORCE_DWORD },
+			{ "Clamp", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP },
+			{ "Mirror", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_MIRROR },
+			{ "Wrap", D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_WRAP },
+		};
+
+		std::string modeStr = data["ExtendMode"].get<std::string>();
+
+		if (modeMap.find(modeStr) == modeMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - GradientBrush 'ExtendMode' field value was unrecognized. Invalid value: {}", __FILE__, __LINE__, modeStr);
+			return nullptr;
+		}
+
+		extendMode = modeMap.at(modeStr);
+	}
+
+	// Gamma
+	if (data.contains("Gamma"))
+	{
+		if (!data["Gamma"].is_string())
+		{
+			EG_CORE_ERROR("{}:{} - 'Gamma' value must be a string. Invalid 'Gamma' value: {}", __FILE__, __LINE__, data.dump(4));
+			return nullptr;
+		}
+
+		static const std::unordered_map<std::string, D2D1_GAMMA> gammaMap = {
+			{ "D2D1_GAMMA_1_0", D2D1_GAMMA::D2D1_GAMMA_1_0 },
+			{ "D2D1_GAMMA_2_2", D2D1_GAMMA::D2D1_GAMMA_2_2 },
+			{ "D2D1_GAMMA_FORCE_DWORD", D2D1_GAMMA::D2D1_GAMMA_FORCE_DWORD }
+		};
+
+		std::string gammaStr = data["Gamma"].get<std::string>();
+
+		if (gammaMap.find(gammaStr) == gammaMap.end())
+		{
+			EG_CORE_ERROR("{}:{} - GradientBrush 'Gamma' field value was unrecognized. Invalid value: {}", __FILE__, __LINE__, gammaStr);
+			return nullptr;
+		}
+
+		gamma = gammaMap.at(gammaStr);
+	}
+
+	return std::move(std::make_unique<GradientBrush>(deviceResources, stops, axis, extendMode, gamma));
 }
 std::unique_ptr<ColorBrush> JSONLoaders::LoadRadialBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept
 {

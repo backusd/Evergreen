@@ -35,17 +35,17 @@ public:
 	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
 	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept {}
 
-	void Name(const std::string& name) noexcept { m_name = name; }
-	void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; }
+	void Name(const std::string& name) noexcept { m_name = name; OnNameChanged(); }
+	void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; OnMarginChanged(); }
 	void Margin(float left, float top, float right, float bottom) noexcept;
-	void MarginLeft(float left) noexcept { m_margin.Left = left; }
-	void MarginTop(float top) noexcept { m_margin.Top = top; }
-	void MarginRight(float right) noexcept { m_margin.Right = right; }
-	void MarginBottom(float bottom) noexcept { m_margin.Bottom = bottom; }
-	virtual void AllowedRegion(D2D1_RECT_F region) noexcept { m_allowedRegion = region; }
-	virtual void AllowedRegion(float left, float top, float right, float bottom) noexcept;
-	void TopLeftPosition(D2D1_POINT_2F point) noexcept { m_topLeftPosition = point; }
-	void TopLeftPosition(float left, float top) noexcept { m_topLeftPosition = { left, top }; }
+	void MarginLeft(float left) noexcept { m_margin.Left = left; OnMarginChanged(); }
+	void MarginTop(float top) noexcept { m_margin.Top = top; OnMarginChanged(); }
+	void MarginRight(float right) noexcept { m_margin.Right = right; OnMarginChanged(); }
+	void MarginBottom(float bottom) noexcept { m_margin.Bottom = bottom; OnMarginChanged();}
+	void AllowedRegion(D2D1_RECT_F region) noexcept { m_allowedRegion = region; OnAllowedRegionChanged(); }
+	void AllowedRegion(float left, float top, float right, float bottom) noexcept;
+	void TopLeftPosition(D2D1_POINT_2F point) noexcept { m_topLeftPosition = point; OnPositionChanged(); }
+	void TopLeftPosition(float left, float top) noexcept { m_topLeftPosition = { left, top }; OnPositionChanged(); }
 
 	const std::string& Name() const noexcept { return m_name; }
 	Evergreen::Margin Margin() const noexcept { return m_margin; }
@@ -57,6 +57,12 @@ public:
 	D2D1_POINT_2F TopLeftPosition() const noexcept { return m_topLeftPosition; }
 
 protected:
+	// On* functions allow derived controls to perform necessary additional actions when a base class method is called
+	virtual void OnNameChanged() noexcept {}
+	virtual void OnMarginChanged() noexcept {}
+	virtual void OnAllowedRegionChanged() noexcept {}
+	virtual void OnPositionChanged() noexcept {}
+
 	std::string							m_name;
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;

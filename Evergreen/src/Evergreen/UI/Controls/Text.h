@@ -33,8 +33,6 @@ public:
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-	void AllowedRegion(D2D1_RECT_F region) noexcept override;
-	void AllowedRegion(float left, float top, float right, float bottom) noexcept override;
 
 	// Text specific
 	const std::wstring& GetText() const noexcept { return m_text; }
@@ -45,9 +43,16 @@ public:
 	void Style(std::shared_ptr<TextStyle> style) noexcept { m_style = style; TextChanged(); }
 
 
-public:
-	void TextChanged();
 private:
+	void TextChanged();
+
+	// React to changes made when base-class methods are called
+	void OnMarginChanged() noexcept override;
+	void OnAllowedRegionChanged() noexcept override;
+	void OnPositionChanged() noexcept override;
+
+	void UpdateBrushDrawRegion() noexcept;
+
 
 	std::wstring							m_text;
 	std::shared_ptr<TextStyle>				m_style;

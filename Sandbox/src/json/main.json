@@ -40,7 +40,7 @@
 
 	"GradientBrush1": {
 		"Brush": {
-			"Type": "GradientColorBrush",
+			"Type": "GradientBrush",
 			"Stops": [
 				{
 					"Color": "Yellow",
@@ -120,10 +120,10 @@
 				"Type": "Text",
 				"Text": "0xE10F",
 				"Column": 2,
-				"import": "SolidBrush1",
+				"import": "GradientBrush1",
 				"FontFamily": "Segoe MDL2 Assets",
-				"FontSize": 20,
-				"FontWeight": "Normal",
+				"FontSize": 30,
+				"FontWeight": "Bold",
 				"FontStyle": "Normal",
 				"FontStretch": "Expanded",
 				"TextAlignment": "Center",

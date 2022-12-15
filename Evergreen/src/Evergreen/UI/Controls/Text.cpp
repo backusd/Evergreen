@@ -49,19 +49,6 @@ void Text::Render() const noexcept
 	context->PopAxisAlignedClip();
 }
 
-void Text::OnMouseMove(MouseMoveEvent& e) noexcept 
-{
-
-}
-void Text::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept 
-{
-
-}
-void Text::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept 
-{
-
-}
-
 void Text::TextChanged()
 {
 	EG_CORE_ASSERT(m_style != nullptr, "Style not created");
@@ -71,28 +58,43 @@ void Text::TextChanged()
 	m_textLayout->GetMetrics(&m_textMetrics);
 
 	// If using a non-SolidColorBrush, we need to update the draw region for the brush
-	m_colorBrush->SetDrawRegion(
-		D2D1::RectF(
-			m_textMetrics.left,
-			m_textMetrics.top,
-			m_textMetrics.left + m_textMetrics.width,
-			m_textMetrics.top + m_textMetrics.height
-		)
-	);
+	UpdateBrushDrawRegion();
 }
 
-void Text::AllowedRegion(D2D1_RECT_F region) noexcept
+
+
+void Text::OnMarginChanged() noexcept
 {
-	m_allowedRegion = region;
+
+}
+void Text::OnAllowedRegionChanged() noexcept
+{
+	// Just call TextChanged to completely recreate the TextLayout
 	TextChanged();
 }
-void Text::AllowedRegion(float left, float top, float right, float bottom) noexcept
+void Text::OnPositionChanged() noexcept
 {
-	m_allowedRegion.left = left;
-	m_allowedRegion.top = top;
-	m_allowedRegion.right = right;
-	m_allowedRegion.bottom = bottom;
-	TextChanged();
+
+}
+
+void Text::UpdateBrushDrawRegion() noexcept
+{
+	// If using a non-SolidColorBrush, we need to update the draw region for the brush
+	m_colorBrush->SetDrawRegion(m_allowedRegion);
+}
+
+
+void Text::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+
+}
+void Text::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+
+}
+void Text::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+
 }
 
 } // namespace Evergreen
