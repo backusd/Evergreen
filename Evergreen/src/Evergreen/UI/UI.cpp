@@ -1,45 +1,29 @@
 #include "pch.h"
 #include "UI.h"
-#include "ControlLoaders/TextLoader.h"
-#include "BrushLoaders/SolidColorBrushLoader.h"
+#include "JSONLoading/ControlLoaders/TextLoader.h"
 
 #include <fstream>
 
-#include "Colors/SolidColorBrush.h"
-#include "Colors/GradientBrush.h"
-#include "Colors/RadialBrush.h"
-#include "Colors/BitmapBrush.h"
+#include "Brushes/SolidColorBrush.h"
+#include "Brushes/GradientBrush.h"
+#include "Brushes/RadialBrush.h"
+#include "Brushes/BitmapBrush.h"
 
 #define UI_ERROR(fmt, ...) m_errorMessages.push_back(std::format(fmt, __VA_ARGS__)); ::Evergreen::Log::GetCoreLogger()->error(std::format(CAT2("{}:{} - ", fmt), __FILE__, __LINE__, __VA_ARGS__))
 
 namespace Evergreen
 {
-//std::unordered_map<std::string, std::function<bool(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&, GlobalJsonData*)>>			UI::m_loadControlFunctions;
-//std::unordered_map<std::string, std::function<std::optional<std::shared_ptr<Style>>(std::shared_ptr<DeviceResources>, json&, const std::string&)>>	UI::m_loadStyleFunctions;
-//std::unordered_map<std::string, std::function<std::optional<std::unique_ptr<ColorBrush>>(std::shared_ptr<DeviceResources>, json&)>>					UI::m_loadColorBrushFunctions;
-
-
 UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
 	m_deviceResources(deviceResources),
 	m_window(window),
 	m_jsonRoot({}),
 	m_rootLayout(nullptr)
-	// m_globalJsonData(std::make_shared<GlobalJsonData>())
 {
-	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::shared_ptr<Style> { return TextStyleLoader::Load(deviceResources, data, styleName); });
-
-
-
 	// Add built-in control loaders
-	//UI::SetControlLoaderFunction("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, GlobalJsonData* globalData) -> bool { return TextLoader::Load(deviceResources, parentLayout, data, controlName, globalData); });
-
+	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
+	
 	// Add built-in style loaders
-	//UI::SetStyleLoaderFunction("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::optional<std::shared_ptr<Style>> { return TextStyleLoader::Load(deviceResources, data, styleName); });
-
-	// Add built-in brush loaders
-	//UI::SetBrushLoaderFunction("SolidColorBrush", [](std::shared_ptr<DeviceResources> deviceResources, json& data) -> std::optional<std::unique_ptr<ColorBrush>> { return SolidColorBrushLoader::Load(deviceResources, data); });
-
+	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::shared_ptr<Style> { return TextStyleLoader::Load(deviceResources, data, styleName); });
 
 	LoadDefaultUI();
 }
@@ -196,7 +180,6 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		if (!LoadLayoutDetails(m_rootLayout.get(), rootLayoutData))
 		{
 			m_jsonRoot = {};
-			//m_globalJsonData = nullptr;
 			LoadErrorUI();
 			return;
 		}
@@ -213,15 +196,12 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		// good idea because there is no need to keep the cached styles around anyways.
 		JSONLoaders::ClearCache();
 
-		//m_globalJsonData = nullptr;
-
 		// LayoutCheck is entirely optional - In a Release build, this does nothing
 		m_rootLayout->LayoutCheck();
 	}
 	else
 	{
 		m_jsonRoot = {};
-		//m_globalJsonData = nullptr;
 		LoadErrorUI();
 	}
 }
@@ -410,18 +390,6 @@ bool UI::LoadLayoutDetails(Layout* layout, json& data) noexcept
 			if (control == nullptr)
 				EG_CORE_ERROR("Failed to load control with name '{}'.", key);
 		}
-		/*
-		else if (m_loadControlFunctions.find(type) != m_loadControlFunctions.end())
-		{
-			if (data[key].contains("import"))
-			{
-				if (!ImportJSON(data[key]))
-					return false;
-			}
-
-			m_loadControlFunctions[type](m_deviceResources, layout, data[key], key, m_globalJsonData.get());
-		}
-		*/
 		else
 		{
 			EG_CORE_WARN("Attempting to load control: {} (... not yet supported ...)", type);
@@ -691,24 +659,6 @@ bool UI::ParseGlobalStyles(json& data) noexcept
 			{
 				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but did not file a StyleLoader within JSONLoaders. You may have forgotten to call JSONLoaders::AddStyleLoader()", __FILE__, __LINE__, styleType, key);
 			}
-
-			/*
-			// Check if key is a key for a style loader
-			if (m_loadStyleFunctions.find(styleType) != m_loadStyleFunctions.end())
-			{
-				if (std::optional<std::shared_ptr<Style>> styleOpt = m_loadStyleFunctions.at(styleType)(m_deviceResources, data[key], key))
-					m_globalJsonData->m_stylesMap[key] = styleOpt.value();
-				else
-				{
-					UI_ERROR("Failed to parse global data for key '{}'. The call to the LoadStyle function for style '{}' failed.", key, styleType);
-					return false;
-				}
-			}
-			else if (styleType.size() > 5 && styleType.substr(styleType.size() - 5, 5).compare("Style") == 0) // If the typeString ends in "Style", warn the user they probably did not set up the StyleLoader correctly
-			{
-				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but no associated LoadStyle function. You may have forgotten to call UI::SetStyleLoaderFunction()", __FILE__, __LINE__, styleType, key);
-			}
-			*/
 		}
 	}
 

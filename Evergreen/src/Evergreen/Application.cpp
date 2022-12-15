@@ -63,12 +63,7 @@ void Application::Render() noexcept
 	// NOTE: Do not need to reset the render target - DeviceResources handles that itself
 //	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
 
-	std::optional<const Color> color = Color::GetColor("Lavender");
-	if (color.has_value())
-		m_deviceResources->ClearBackground(color.value());
-	else
-		m_deviceResources->ClearBackground(Color::Black);
-
+	m_deviceResources->ClearBackground(D2D1::ColorF(D2D1::ColorF::Lavender));
 	
 	m_ui->Render(m_deviceResources.get());
 }

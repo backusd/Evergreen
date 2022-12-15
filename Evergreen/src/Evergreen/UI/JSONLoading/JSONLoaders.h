@@ -5,7 +5,7 @@
 #include "Evergreen/UI/Layout.h"
 #include "Evergreen/UI/Styles/Style.h"
 #include "Evergreen/UI/Controls/Control.h"
-#include "Evergreen/UI/Colors/Brushes.h"
+#include "Evergreen/UI/Brushes/Brushes.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;

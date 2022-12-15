@@ -415,13 +415,14 @@ void DeviceResourcesDX11::SetRenderTarget() noexcept
 	)
 }
 
-void DeviceResourcesDX11::ClearBackground(const Color& color) noexcept
+void DeviceResourcesDX11::ClearBackground(const D2D1_COLOR_F& color) noexcept
 {
 	GFX_THROW_INFO_ONLY(
 		m_d3dDeviceContext->ClearDepthStencilView(m_d3dDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0)
 	)
+
 	GFX_THROW_INFO_ONLY(
-		m_d3dDeviceContext->ClearRenderTargetView(m_d3dRenderTargetView.Get(), color.Data())
+		m_d3dDeviceContext->ClearRenderTargetView(m_d3dRenderTargetView.Get(), (float*)&color)
 	)
 }
 
@@ -459,12 +460,12 @@ void DeviceResourcesDX11::EndDraw() noexcept
 	m_d2dDeviceContext->RestoreDrawingState(m_drawingStateBlock.Get());
 }
 
-void DeviceResourcesDX11::DrawLine(float x0, float y0, float x1, float y1, const Color& color, float strokeWidth) noexcept
+void DeviceResourcesDX11::DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth) noexcept
 {
 	ComPtr<ID2D1SolidColorBrush> brush;
 	GFX_THROW_INFO(
 		m_d2dDeviceContext->CreateSolidColorBrush(
-			D2D1::ColorF(color.R(), color.G(), color.B(), color.A()),
+			color,
 			brush.ReleaseAndGetAddressOf()
 		)
 	)

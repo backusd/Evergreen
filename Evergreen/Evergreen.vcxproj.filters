@@ -87,9 +87,6 @@
     <ClInclude Include="src\Evergreen\UI\Layout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Color.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Evergreen\UI\UI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -108,55 +105,40 @@
     <ClInclude Include="src\Evergreen\UI\Styles\TextStyle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Styles\FontFamily.h">
+    <ClInclude Include="src\Evergreen\UI\Utils\FontFamily.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\ControlLoaders\ControlLoader.h">
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ControlLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\ControlLoaders\TextLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\StyleLoaders\StyleLoader.h">
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\Styles\Style.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.h">
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\StyleLoaders\TextStyleLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\GlobalJsonData.h">
+    <ClInclude Include="src\Evergreen\UI\Brushes\ColorBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Colors\ColorBrush.h">
+    <ClInclude Include="src\Evergreen\UI\Brushes\SolidColorBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Colors\SolidColorBrush.h">
+    <ClInclude Include="src\Evergreen\UI\Brushes\GradientBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Colors\GradientBrush.h">
+    <ClInclude Include="src\Evergreen\UI\Brushes\RadialBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Colors\RadialBrush.h">
+    <ClInclude Include="src\Evergreen\UI\Brushes\BitmapBrush.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Colors\BitmapBrush.h">
+    <ClInclude Include="src\Evergreen\UI\Brushes\Brushes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Colors\Brushes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\ColorHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\BrushLoaders\BrushLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\BrushLoaders\SolidColorBrushLoader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\BrushLoaders\GradientBrushLoader.h">
+    <ClInclude Include="src\Evergreen\UI\Utils\ColorHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\JSONLoading\JSONLoaders.h">
@@ -200,9 +182,6 @@
     <ClCompile Include="src\Evergreen\UI\Layout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Color.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Evergreen\UI\UI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -218,49 +197,37 @@
     <ClCompile Include="src\Evergreen\UI\Styles\TextStyle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Styles\FontFamily.cpp">
+    <ClCompile Include="src\Evergreen\UI\Utils\FontFamily.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\ControlLoaders\ControlLoader.cpp">
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ControlLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\ControlLoaders\TextLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\StyleLoaders\StyleLoader.cpp">
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\Styles\Style.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\StyleLoaders\TextStyleLoader.cpp">
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\StyleLoaders\TextStyleLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Colors\ColorBrush.cpp">
+    <ClCompile Include="src\Evergreen\UI\Brushes\ColorBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Colors\SolidColorBrush.cpp">
+    <ClCompile Include="src\Evergreen\UI\Brushes\SolidColorBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Colors\GradientBrush.cpp">
+    <ClCompile Include="src\Evergreen\UI\Brushes\GradientBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Colors\RadialBrush.cpp">
+    <ClCompile Include="src\Evergreen\UI\Brushes\RadialBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Colors\BitmapBrush.cpp">
+    <ClCompile Include="src\Evergreen\UI\Brushes\BitmapBrush.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\ColorHelper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\BrushLoaders\BrushLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\BrushLoaders\SolidColorBrushLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\BrushLoaders\GradientBrushLoader.cpp">
+    <ClCompile Include="src\Evergreen\UI\Utils\ColorHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\JSONLoaders.cpp">

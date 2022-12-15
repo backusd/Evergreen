@@ -431,18 +431,18 @@ void Layout::DrawBorders(DeviceResources* deviceResources) const noexcept
 {
 	for (const Row& row : m_rows)
 	{
-		deviceResources->DrawLine(row.Left(), row.Top(), row.Right(), row.Top(), Color::Red);
-		deviceResources->DrawLine(row.Left(), row.Top(), row.Left(), row.Bottom(), Color::Red);
-		deviceResources->DrawLine(row.Left(), row.Bottom(), row.Right(), row.Bottom(), Color::Red);
-		deviceResources->DrawLine(row.Right(), row.Top(), row.Right(), row.Bottom(), Color::Red);
+		deviceResources->DrawLine(row.Left(), row.Top(), row.Right(), row.Top(), D2D1::ColorF(D2D1::ColorF::Red));
+		deviceResources->DrawLine(row.Left(), row.Top(), row.Left(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
+		deviceResources->DrawLine(row.Left(), row.Bottom(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
+		deviceResources->DrawLine(row.Right(), row.Top(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
 	}
 
 	for (const Column& col : m_columns)
 	{
-		deviceResources->DrawLine(col.Left(), col.Top(), col.Right(), col.Top(), Color::Blue);
-		deviceResources->DrawLine(col.Left(), col.Top(), col.Left(), col.Bottom(), Color::Blue);
-		deviceResources->DrawLine(col.Left(), col.Bottom(), col.Right(), col.Bottom(), Color::Blue);
-		deviceResources->DrawLine(col.Right(), col.Top(), col.Right(), col.Bottom(), Color::Blue);
+		deviceResources->DrawLine(col.Left(), col.Top(), col.Right(), col.Top(), D2D1::ColorF(D2D1::ColorF::Blue));
+		deviceResources->DrawLine(col.Left(), col.Top(), col.Left(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
+		deviceResources->DrawLine(col.Left(), col.Bottom(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
+		deviceResources->DrawLine(col.Right(), col.Top(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
 	}
 }
 

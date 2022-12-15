@@ -3,7 +3,6 @@
 
 #include "pch.h"
 #include "DxgiInfoManagerDX11.h"
-#include "Evergreen/UI/Color.h"
 #include "Evergreen/Window/Window.h"
 
 namespace Evergreen
@@ -20,13 +19,13 @@ public:
 	DeviceResourcesDX11(const DeviceResourcesDX11&) = delete;
 	void operator=(const DeviceResourcesDX11&) = delete;
 
-	void ClearBackground(const Color& color) noexcept;
+	void ClearBackground(const D2D1_COLOR_F& color) noexcept;
 
 	void Present() noexcept;
 
 	void OnResize(float width, float height) noexcept;
 
-	void DrawLine(float x0, float y0, float x1, float y1, const Color& color, float strokeWidth = 1.0f) noexcept;
+	void DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth = 1.0f) noexcept;
 
 	void BeginDraw() noexcept;
 	void EndDraw() noexcept;
