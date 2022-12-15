@@ -108,6 +108,14 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadSolidColorBrush(std::shared_ptr<Dev
 		return nullptr;
 	}
 
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "Type", "Color" };
+	for (auto& [key, value] : data.items())
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+			EG_CORE_WARN("{}:{} - JSONLoaders::LoadSolidColorBrush() unrecognized key: '{}'.", __FILE__, __LINE__, key);
+	}
+
 	if (std::optional<D2D1_COLOR_F> colorOpt = JSONLoaders::LoadColor(data["Color"]))
 		return std::move(std::make_unique<SolidColorBrush>(deviceResources, colorOpt.value()));
 	

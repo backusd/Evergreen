@@ -51,6 +51,17 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 		return nullptr;
 	}
 
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan",
+	"Style", "Brush", "FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
+	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale"};
+	for (auto& [key, value] : data.items())
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+			EG_CORE_WARN("{}:{} - Text control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+	}
+
+	// Create the new Text control
 	if (std::optional<Text*> textOpt = parent->AddControl<Text>(rowCol, deviceResources, text, std::move(brush), style))
 		return textOpt.value();
 
@@ -64,7 +75,7 @@ bool TextLoader::ValidateJSONData(const json& data) noexcept
 	if (data.contains("Style"))
 	{
 		constexpr std::array testStyleFields = {
-			"Color", "FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
+			"FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
 			"ParagraphAlignment", "WordWrapping", "Trimming", "Locale"
 		};
 
