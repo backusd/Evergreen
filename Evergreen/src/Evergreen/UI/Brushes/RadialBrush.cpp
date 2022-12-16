@@ -7,10 +7,10 @@ namespace Evergreen
 {
 // This constructor is for a gradient with exactly 2 colors - 1 at the center and 1 at the edge
 RadialBrush::RadialBrush(std::shared_ptr<DeviceResources> deviceResources, const D2D1_COLOR_F& startColor, 
-	const D2D1_COLOR_F& endColor, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
+	const D2D1_COLOR_F& endColor, const D2D1_POINT_2F& originOffset, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
 	ColorBrush(deviceResources),
 	m_stops{ {0.0f, startColor}, {1.0f, endColor} },
-	m_gradientOriginOffset(D2D1::Point2F(0.0f, 0.0)),
+	m_gradientOriginOffset(originOffset),
 	m_extendMode(extendMode),
 	m_gamma(gamma),
 	m_pGradientStops(nullptr)
@@ -19,10 +19,10 @@ RadialBrush::RadialBrush(std::shared_ptr<DeviceResources> deviceResources, const
 	Refresh();
 }
 RadialBrush::RadialBrush(std::shared_ptr<DeviceResources> deviceResources, const std::vector<D2D1_GRADIENT_STOP>& stops, 
-	D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
+	const D2D1_POINT_2F& originOffset, D2D1_EXTEND_MODE extendMode, D2D1_GAMMA gamma) noexcept :
 	ColorBrush(deviceResources),
 	m_stops(stops),
-	m_gradientOriginOffset(D2D1::Point2F(0.0f, 0.0)),
+	m_gradientOriginOffset(originOffset),
 	m_extendMode(extendMode),
 	m_gamma(gamma),
 	m_pGradientStops(nullptr)

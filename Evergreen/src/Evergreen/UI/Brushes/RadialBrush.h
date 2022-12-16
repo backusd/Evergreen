@@ -16,14 +16,17 @@ public:
 	RadialBrush(std::shared_ptr<DeviceResources> deviceResources,
 		const D2D1_COLOR_F& startColor,
 		const D2D1_COLOR_F& endColor,
+		const D2D1_POINT_2F& originOffset = D2D1::Point2F(),
 		D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP,
 		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2) noexcept;
 	RadialBrush(std::shared_ptr<DeviceResources> deviceResources,
 		const std::vector<D2D1_GRADIENT_STOP>& stops,
+		const D2D1_POINT_2F& originOffset = D2D1::Point2F(),
 		D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP,
 		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2) noexcept;
 	RadialBrush(const RadialBrush&) noexcept;
 	void operator=(const RadialBrush&) noexcept;
+	~RadialBrush() noexcept override {}
 
 	void Refresh() noexcept override;
 

@@ -63,7 +63,10 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 
 	// Create the new Text control
 	if (std::optional<Text*> textOpt = parent->AddControl<Text>(rowCol, deviceResources, text, std::move(brush), style))
+	{
+		textOpt.value()->Name(name);
 		return textOpt.value();
+	}
 
 	return nullptr;
 }

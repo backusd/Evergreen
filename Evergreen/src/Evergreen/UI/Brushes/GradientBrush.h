@@ -36,6 +36,7 @@ public:
 		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2) noexcept;
 	GradientBrush(const GradientBrush&) noexcept;
 	void operator=(const GradientBrush&) noexcept;
+	~GradientBrush() noexcept override {}
 
 	void Refresh() noexcept override;
 

@@ -47,6 +47,10 @@
 					"Position": 0.0
 				},
 				{
+					"Color": "Red",
+					"Position": 0.5
+				},
+				{
 					"Color": "Blue",
 					"Position": 1.0
 				}
@@ -54,6 +58,41 @@
 			"Gamma": "D2D1_GAMMA_2_2",
 			"ExtendMode": "D2D1_EXTEND_MODE_CLAMP",
 			"Axis": "Horizontal"
+		}
+	},
+
+
+
+	"RadialBrush1": {
+		"Brush": {
+			"Type": "RadialBrush",
+			"Stops": [
+				{
+					"Color": "Yellow",
+					"Position": 0.0
+				},
+				{
+					"Color": "Blue",
+					"Position": 1.0
+				}
+			],
+			"OriginOffset": [ 0.0, 1.5 ],
+			"Gamma": "D2D1_GAMMA_2_2",
+			"ExtendMode": "D2D1_EXTEND_MODE_CLAMP"
+		}
+	},
+
+
+
+
+	"BitmapBrush1": {
+		"Brush": {
+			"Type": "BitmapBrush",
+			"File": "evergreen-image-1.jpg",
+			"TransformMethod": "KEEP_XY_RATIO_FILL_RECT",
+			"ExtendModeX": "D2D1_EXTEND_MODE_CLAMP",
+			"ExtendModeY": "D2D1_EXTEND_MODE_CLAMP",
+			"InterpolationMode": "Linear"
 		}
 	},
 
@@ -120,7 +159,7 @@
 				"Type": "Text",
 				"Text": "0xE10F",
 				"Column": 2,
-				"import": "GradientBrush1",
+				"import": "BitmapBrush1",
 				"FontFamily": "Segoe MDL2 Assets",
 				"FontSize": 30,
 				"FontWeight": "Bold",

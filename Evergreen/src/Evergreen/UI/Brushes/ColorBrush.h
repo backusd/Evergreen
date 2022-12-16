@@ -18,6 +18,7 @@ public:
 		const D2D1_RECT_F& drawRegion = D2D1::RectF(0.0f, 0.0f, 1000.0f, 1000.0f)) noexcept;
 	ColorBrush(const ColorBrush&) noexcept;
 	void operator=(const ColorBrush&) noexcept;
+	virtual ~ColorBrush() noexcept {}
 
 	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 	ID2D1Brush* Get() const noexcept;

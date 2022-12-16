@@ -5,25 +5,30 @@ using Microsoft::WRL::ComPtr;
 
 namespace Evergreen
 {
-BitmapBrush::BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& filename) noexcept :
+BitmapBrush::BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& filename,
+	TRANSFORM_TO_RECT_METHOD method, const D2D1_BITMAP_BRUSH_PROPERTIES& properties) noexcept :
 	ColorBrush(deviceResources),
-	m_bitmapBrushProperties(D2D1::BitmapBrushProperties()),
+	m_bitmapBrushProperties(properties),
 	m_bitmapFileName(filename),
+	m_transformMethod(method),
 	m_bitmap(nullptr)
 {
 	// Enforce the brush to be created with a file specified
 	EG_CORE_ASSERT(m_bitmapFileName.size() > 0, "File not specified");
 
 	LoadBitmapFile();
+	TransformToRect();
 	Refresh();
 }
 BitmapBrush::BitmapBrush(const BitmapBrush& rhs) noexcept :
 	ColorBrush(rhs.m_deviceResources),
 	m_bitmapBrushProperties(rhs.m_bitmapBrushProperties),
 	m_bitmapFileName(rhs.m_bitmapFileName),
+	m_transformMethod(rhs.m_transformMethod),
 	m_bitmap(nullptr)
 {
 	LoadBitmapFile();
+	TransformToRect();
 	Refresh();
 }
 void BitmapBrush::operator=(const BitmapBrush& rhs) noexcept
@@ -31,16 +36,19 @@ void BitmapBrush::operator=(const BitmapBrush& rhs) noexcept
 	m_deviceResources = rhs.m_deviceResources;
 	m_bitmapBrushProperties = rhs.m_bitmapBrushProperties;
 	m_bitmapFileName = rhs.m_bitmapFileName;
+	m_transformMethod = rhs.m_transformMethod;
 	m_bitmap = nullptr;
 
 	LoadBitmapFile();
+	TransformToRect();
 	Refresh();
 }
 
 void BitmapBrush::LoadBitmapFile(const std::wstring& filename) noexcept
 { 
 	m_bitmapFileName = filename; 
-	LoadBitmapFile(); 
+	LoadBitmapFile();
+	TransformToRect();
 	Refresh();
 }
 
@@ -117,12 +125,18 @@ void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_MET
 	// This method should never be called if we have not loaded the bitmap
 	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
 
-	// Assigning the input rect to m_drawRegion doesn't really do anything other than allows
-	// m_drawRegion to hold accurate data and allow the GetDrawingRect() method to return this
-	// value. Otherwise, this data is not use elsewhere because this method updates m_brushProperties.transform
 	m_drawRegion = rect;
+	m_transformMethod = method;
 
-	D2D1_POINT_2F topLeft = D2D1::Point2F(rect.left, rect.top);
+	TransformToRect();
+}
+
+void BitmapBrush::TransformToRect() noexcept
+{
+	// This method should never be called if we have not loaded the bitmap
+	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
+
+	D2D1_POINT_2F topLeft = D2D1::Point2F(m_drawRegion.left, m_drawRegion.top);
 	D2D1_SIZE_F scale = D2D1::SizeF(1.0f, 1.0f);
 
 	D2D1_SIZE_F originalBitmapSize = m_bitmap->GetSize();
@@ -130,19 +144,19 @@ void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_MET
 	EG_CORE_ASSERT(originalBitmapSize.width > 0.0f, "original bitmap width cannot be 0");
 	EG_CORE_ASSERT(originalBitmapSize.height > 0.0f, "original bitmap height cannot be 0");
 
-	switch (method)
+	switch (m_transformMethod)
 	{
 	case TRANSFORM_TO_RECT_METHOD::SCALE_TO_EXACT_RECT_DIMENSIONS:
-		scale.width  = (rect.right - rect.left) / originalBitmapSize.width;
-		scale.height = (rect.bottom - rect.top) / originalBitmapSize.height;
+		scale.width = (m_drawRegion.right - m_drawRegion.left) / originalBitmapSize.width;
+		scale.height = (m_drawRegion.bottom - m_drawRegion.top) / originalBitmapSize.height;
 		break;
 
 	case TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_FILL_RECT:
 		// Only keep the maximum scale value. This represents the minimum amount of scale that
 		// is required for the bitmap to completely fill the given rect
 		scale.width = std::max(
-			(rect.right - rect.left) / originalBitmapSize.width,
-			(rect.bottom - rect.top) / originalBitmapSize.height
+			(m_drawRegion.right - m_drawRegion.left) / originalBitmapSize.width,
+			(m_drawRegion.bottom - m_drawRegion.top) / originalBitmapSize.height
 		);
 		scale.height = scale.width;
 		break;
@@ -151,8 +165,8 @@ void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_MET
 		// Only keep the minimum scale value. This represents the scale that
 		// is required for the bitmap to fill the axis that requires the most change
 		scale.width = std::min(
-			(rect.right - rect.left) / originalBitmapSize.width,
-			(rect.bottom - rect.top) / originalBitmapSize.height
+			(m_drawRegion.right - m_drawRegion.left) / originalBitmapSize.width,
+			(m_drawRegion.bottom - m_drawRegion.top) / originalBitmapSize.height
 		);
 		scale.height = scale.width;
 		break;
@@ -163,7 +177,7 @@ void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_MET
 	// and call FillRectangle. The brush itself must also be translated to the top left of the rect area
 	// and then scaled down from there.
 	SetTransform(
-		D2D1::Matrix3x2F::Translation(D2D1::SizeF(topLeft.x, topLeft.y)) * 
+		D2D1::Matrix3x2F::Translation(D2D1::SizeF(topLeft.x, topLeft.y)) *
 		D2D1::Matrix3x2F::Scale(scale, topLeft)
 	);
 }
