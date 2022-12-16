@@ -8,7 +8,7 @@ public:
 		m_ui->SetUIRoot("src/json/");
 		m_ui->LoadUI("main.json");
 	}
-	~Sandbox() noexcept
+	~Sandbox() noexcept override
 	{
 		int iii = 0;
 	}

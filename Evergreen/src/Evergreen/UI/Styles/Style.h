@@ -17,6 +17,7 @@ public:
 	Style(std::shared_ptr<DeviceResources> deviceResources, const std::string& name = "") noexcept;
 	Style(const Style& style) noexcept;
 	void operator=(const Style& rhs) noexcept;
+	virtual ~Style() noexcept {}
 
 	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 	void Name(const std::string& name) noexcept { m_name = name; }

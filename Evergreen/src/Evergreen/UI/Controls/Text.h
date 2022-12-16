@@ -26,7 +26,7 @@ public:
 	// I just don't want to do this at the moment...
 	Text(const Text& text) noexcept = delete;		
 	void operator=(const Text&) noexcept = delete;
-	virtual ~Text() noexcept {}
+	virtual ~Text() noexcept override {}
 
 	// Inherited from Control
 	void Render() const noexcept override;
