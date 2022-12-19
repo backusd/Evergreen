@@ -12,6 +12,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 
 	std::wstring text = L"";
 	RowColumnPosition rowCol;
+	Margin margin{ 0 };
 
 	// Validate JSON
 	if (!ValidateJSONData(data))
@@ -20,6 +21,15 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	// Parse Row/Column
 	if (std::optional<RowColumnPosition> rowColOpt = ParseRowColumnPosition(data))
 		rowCol = rowColOpt.value();
+	else
+	{
+		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseRowColumnPosition() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
+		return nullptr;
+	}
+
+	// Parse Margin
+	if (std::optional<Margin> marginOpt = ParseMargin(data))
+		margin = marginOpt.value();
 	else
 	{
 		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseRowColumnPosition() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
@@ -52,7 +62,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan",
+	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"Style", "Brush", "FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
 	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale"};
 	for (auto& [key, value] : data.items())
@@ -62,7 +72,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Create the new Text control
-	if (std::optional<Text*> textOpt = parent->AddControl<Text>(rowCol, deviceResources, text, std::move(brush), style))
+	if (std::optional<Text*> textOpt = parent->AddControl<Text>(rowCol, deviceResources, text, std::move(brush), style, margin))
 	{
 		textOpt.value()->Name(name);
 		return textOpt.value();

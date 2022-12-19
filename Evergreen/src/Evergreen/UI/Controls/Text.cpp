@@ -6,8 +6,8 @@
 namespace Evergreen
 {
 Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, 
-	std::unique_ptr<ColorBrush> brush, std::shared_ptr<TextStyle> style) noexcept :
-	Control(deviceResources),
+	std::unique_ptr<ColorBrush> brush, std::shared_ptr<TextStyle> style, const Evergreen::Margin& margin) noexcept :
+	Control(deviceResources, margin),
 	m_text(text),
 	m_style(style),
 	m_textLayout(nullptr),
@@ -40,7 +40,7 @@ void Text::Render() const noexcept
 	//context->SetTransform(D2D1::Matrix3x2F::Translation(m_topLeftPosition.x, m_topLeftPosition.y - 15.0f));
 
 	context->DrawTextLayout(
-		m_topLeftPosition,
+		D2D1::Point2F(m_topLeftPosition.x + m_margin.Left, m_topLeftPosition.y + m_margin.Top),
 		m_textLayout.Get(),
 		m_colorBrush->Get(),
 		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- TODO: investigate these options, clipping is interesting
@@ -54,7 +54,11 @@ void Text::TextChanged()
 	EG_CORE_ASSERT(m_style != nullptr, "Style not created");
 	EG_CORE_ASSERT(m_colorBrush != nullptr, "ColorBrush is nullptr");
 
-	m_textLayout = m_style->CreateTextLayout(m_text, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top);
+	m_textLayout = m_style->CreateTextLayout(
+		m_text, 
+		(m_allowedRegion.right - m_margin.Right) - (m_allowedRegion.left + m_margin.Left), 
+		(m_allowedRegion.bottom - m_margin.Bottom) - (m_allowedRegion.top + m_margin.Top)
+	);
 	m_textLayout->GetMetrics(&m_textMetrics);
 
 	// If using a non-SolidColorBrush, we need to update the draw region for the brush

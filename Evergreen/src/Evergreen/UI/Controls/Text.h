@@ -18,7 +18,8 @@ public:
 	Text(std::shared_ptr<DeviceResources> deviceResources, 
 		const std::wstring& text = L"",
 		std::unique_ptr<ColorBrush> brush = nullptr,
-		std::shared_ptr<TextStyle> style = nullptr) noexcept;
+		std::shared_ptr<TextStyle> style = nullptr, 
+		const Evergreen::Margin& margin = { 0 }) noexcept;
 
 	// I'm deleting these for now because in order to make a copy of m_colorBrush,
 	// you would have to check if the incoming m_colorBrush can be cast to each

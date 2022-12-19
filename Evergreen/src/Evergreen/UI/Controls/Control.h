@@ -22,7 +22,7 @@ namespace Evergreen
 class EVERGREEN_API Control
 {
 public:
-	Control(std::shared_ptr<DeviceResources> deviceResources) noexcept;
+	Control(std::shared_ptr<DeviceResources> deviceResources, const Evergreen::Margin& margin = { 0 }) noexcept;
 	Control(const Control& control) noexcept;
 	void operator=(const Control& control) noexcept;
 	virtual ~Control() noexcept {}
@@ -66,6 +66,8 @@ protected:
 	std::string							m_name;
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;
+
+	
 
 	// Allowed region should be set by the parent layout
 	// Position is allowed to reside outside of the allowed region (ex. object that has been scrolled out of view)

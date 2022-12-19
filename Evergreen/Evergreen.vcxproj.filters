@@ -240,5 +240,6 @@
     <None Include="src\Evergreen\UI\json-examples\Text.json" />
     <None Include="src\Evergreen\UI\json-examples\Button.json" />
     <None Include="src\Evergreen\UI\json-examples\import.json" />
+    <None Include="src\Evergreen\UI\json-examples\Margin.json" />
   </ItemGroup>
 </Project>

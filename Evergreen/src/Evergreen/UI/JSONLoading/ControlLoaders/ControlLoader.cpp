@@ -71,4 +71,59 @@ std::optional<RowColumnPosition> ControlLoader::ParseRowColumnPosition(const jso
 	return position;
 }
 
+std::optional<Margin> ControlLoader::ParseMargin(const json& data) noexcept
+{
+	Margin margin{ 0 };
+
+	if (data.contains("Margin"))
+	{
+		const json& marginData = data["Margin"];
+
+		if (!marginData.is_array())
+		{
+			EG_CORE_ERROR("{}:{} - Control with name: '{}'. 'Margin' value must be an array. Invalid data: {}", __FILE__, __LINE__, m_name, data.dump(4));
+			return std::nullopt;
+		}
+
+		for (auto& marginValue : marginData)
+		{
+			if (!marginValue.is_number())
+			{
+				EG_CORE_ERROR("{}:{} - Control with name: '{}'. 'Margin' array values must be numbers. Invalid data: {}", __FILE__, __LINE__, m_name, data.dump(4));
+				return std::nullopt;
+			}
+		}
+
+		if (marginData.size() == 1)
+		{
+			margin.Bottom = marginData[0].get<float>();
+			margin.Left = margin.Bottom;
+			margin.Right = margin.Bottom;
+			margin.Top = margin.Bottom;
+		}
+		else if (marginData.size() == 2)
+		{
+			margin.Left = marginData[0].get<float>();
+			margin.Right = margin.Left;
+
+			margin.Top = marginData[1].get<float>();
+			margin.Bottom = margin.Top;
+		}
+		else if (marginData.size() == 4)
+		{
+			margin.Left = marginData[0].get<float>();
+			margin.Top = marginData[1].get<float>();
+			margin.Right = marginData[2].get<float>();
+			margin.Bottom = marginData[3].get<float>();
+		}
+		else
+		{
+			EG_CORE_ERROR("{}:{} - Control with name: '{}'. 'Margin' array must have 1, 2, or 4 values. Invalid data: {}", __FILE__, __LINE__, m_name, data.dump(4));
+			return std::nullopt;
+		}
+	}
+
+	return margin;
+}
+
 }

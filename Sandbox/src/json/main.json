@@ -152,7 +152,8 @@
 				"Text": "Edit",
 				"Column": 1,
 				"Style": "CustomTextStyle",
-				"Brush": "Black"
+				"Brush": "Black",
+				"Margin": [ 5, 10 ]
 			},
 
 			"ViewText": {

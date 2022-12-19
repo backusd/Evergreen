@@ -1,0 +1,18 @@
+{
+	// Basics:	The 'Margin' keyword can be added to any control. 
+	//					The value must be an array of numbers. The array can be one of three sizes:
+	//							One value: This will assign the given value to all margin values
+	//							Two values: The first will get assigned to margin left and right - the second will go to margin top and bottom
+	//							Four values: The values will get assigned to margin left, top, right, bottom in that order
+	"SomeControl": {
+		"Margin": [ 5 ]
+	},
+
+	"SomeControl2": {
+		"Margin": [ 5, 10 ]
+	},
+
+	"SomeControl3": {
+		"Margin": [ 5, 10, 12, 44 ]
+	}
+}
