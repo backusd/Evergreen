@@ -187,7 +187,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Sandbox\" </Command>
+      <Command>xcopy /y "$(SolutionDir)bin\Release-x64\Evergreen\*.dll" "$(SolutionDir)bin\Release-x64\Sandbox\" </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

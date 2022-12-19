@@ -10,7 +10,9 @@
 
 using Microsoft::WRL::ComPtr;
 
+#if defined(_DEBUG)
 Evergreen::DxgiInfoManagerDX11 Evergreen::DeviceResourcesDX11::m_infoManager = Evergreen::DxgiInfoManagerDX11();
+#endif
 
 namespace Evergreen
 {
