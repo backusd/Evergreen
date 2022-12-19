@@ -1,0 +1,76 @@
+{
+	// Root layout: There must exist a key called 'root' at the "root level" of the main json document.
+	//							The value for the 'root' key must be a json object which will describe the application layout
+	"root": {
+		...
+	},
+
+	// Row/ColumnDefinitions: Can be applied to either the 'root' key or a 'Layout' key (if the control accepts the 'Layout' key. See below for adding SubLayouts as well)
+	//												Value must always be an array of RowHeight/ColumnWidth objects
+	//												There are 3 types of Height/Width values:
+	//															Fixed:		The Row/Column will have a fixed pixel height/width
+	//															Percent:	The Row/Column height/width with occupy a percent of the the parent layout's overall height/width
+	//															Star:			This type of value means "fill remaining". This means that after all Fixed and Percent Rows/Columns
+	//																				have been accounted for, use the remaining space for all Star Rows/Columns. If multiple Star Rows/Columns
+	//                                        are given, the overall Star space is allocated according the the number of stars given to the corresponding
+	//                                        Row/Column
+	"a": {
+		"Layout": {
+			"RowDefinitions": [
+				{
+					"Height": "1*" // Declare a single Row that spans the entire height of the Layout
+				}
+			],
+			"ColumnDefinitions": [
+				{ "Width": 50 }, // Declare the first column to have a Fixed width of 50 pixels
+				{ "Width": "25%" }, // Declare the second column to occupy 25% of the Layout's width
+				{ "Width": "1*" },
+				{ "Width": "2*" } // Third and fourth columns will occupy all remaining Layout width with 1/3rd of that going to column 3 and 2/3rds going to column 4
+			]
+		}
+	},
+
+	// Top/BottomAdjustable + Left/RightAdjustable: Rows can be Top/Bottom adjustable and Columns can be Left/Right adjustable
+	//                                              Adjustability is disabled by default
+	//																							If enabling adjustability, you can also set Min/MaxHeight for Rows and Min/MaxWidth for Columns
+	//																							The allowed values for Min/Max follows the same pattern as that for Row/Column Height/Width values (see above)
+	"b": {
+		"Layout": {
+			"RowDefinitions": [
+				{
+					"Height": "50",
+					"BottomAdjustable": true,
+					"MinHeight": "40"
+				},
+				{
+					"Height": "20%",
+					"TopAdjustable": true,
+					"import": "row_max_min"
+				},
+				{
+					"Height": "1*"
+				}
+			],
+			"ColumnDefinitions": [
+				{
+					"Width": "50%",
+					"RightAdjustable": true,
+					"MinWidth": "20%"
+				},
+				{
+					"Width": "30",
+					"LeftAdjustable": true
+				},
+				{ "Width": "2*" },
+				{ "Width": "1*" }
+			]
+		}
+	},
+
+	// SubLayouts: To add a Layout to a parent layout, you need to specify the sublayout name and in the corresponding json object, set the 'Type' to 'Layout'
+	"SubLayoutName": {
+		"Type": "Layout",
+		...
+	}
+
+	}

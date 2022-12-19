@@ -91,6 +91,13 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Evergreen\UI\json-examples\Brushes.json" />
+    <None Include="src\Evergreen\UI\json-examples\Button.json" />
+    <None Include="src\Evergreen\UI\json-examples\import.json" />
+    <None Include="src\Evergreen\UI\json-examples\Layout.json" />
+    <None Include="src\Evergreen\UI\json-examples\Text.json" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

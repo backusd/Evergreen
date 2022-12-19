@@ -1,0 +1,100 @@
+{
+	// All Brushes: Use the 'Brush' keyword to indicate loading a Brush
+	"Brush": ...,
+
+	// SolidColorBrush: There are 3 different ways to declare a SolidColorBrush
+	//										1. Assign the 'Brush' key a string value that will be interpreted as a color name
+	//										2. Assign the 'Brush' key an array of floats that will be interpreted as RGB[A] values
+	//										3. Assign the 'Brush' key a json object with "Type":"SolidColorBrush"
+	"SomeControl1": {
+		"Brush": "Green" // Will be interpreted as a D2D1::ColorF::Enum (See Evergreen/UI/Utils/ColorHelper.cpp for available values)
+	},
+	"SomeControl2": {
+		"Brush": [ 0.3, 0.45, 0.22, 1.0 ] // Will be interpreted as RGB[A] values. Each value must be in range [0.0 - 1.0]. 4th value is optional - will default to 1
+	},
+	"SomeControl3": {
+		"Brush": {
+			"Type": "SolidColorBrush",
+			"Color": "Blue" // When specifying Brush as json object, must use the 'Color' key to specify the color of the brush. Same rules as first two examples apply
+		}
+	},
+
+	// GradientBrush: Must specify the 'Brush' as json object
+	//								Must contain at least 2 'Stops' in the 'Stops' array. 
+	//                Each stop object must contain 'Color' and 'Position' keys
+	//											'Color' key: Same rules apply as for SolidColorBrush
+	//											'Position' key: Must be float in the range [0.0 - 1.0]
+	//								'Axis' is optional and will default to "Vertical"
+	//											Allowed values: Horizontal, Vertical, NESW, NWSE
+	//                'Gamma' is optional and will default to "D2D1_GAMMA_2_2"
+	//											Allowed values: D2D1_GAMMA_2_2, D2D1_GAMMA_1_0, D2D1_GAMMA_FORCE_DWORD
+	//								'ExtendMode' is optional and will default to "D2D1_EXTEND_MODE_CLAMP"
+	//											Allowed values: D2D1_EXTEND_MODE_CLAMP, Clamp, D2D1_EXTEND_MODE_MIRROR, Mirror, D2D1_EXTEND_MODE_WRAP, Wrap, D2D1_EXTEND_MODE_FORCE_DWORD
+	"SomeControl4": {
+		"Brush": {
+			"Type": "GradientBrush",
+			"Stops": [
+				{
+					"Color": "Yellow",
+					"Position": 0.0
+				},
+				{
+					"Color": "Red",
+					"Position": 0.5
+				},
+				{
+					"Color": "Blue",
+					"Position": 1.0
+				}
+			],
+			"Axis": "Horizontal",
+			"Gamma": "D2D1_GAMMA_2_2",
+			"ExtendMode": "D2D1_EXTEND_MODE_CLAMP"
+		}
+	},
+
+	// RadialBrush: Must specify the 'Brush' as json object
+	//							Must contain at least 2 'Stops' in the 'Stops' array. 
+	//              'Stops' array follows the same rules as for GradientBrush
+	//              'Gamma' is optional and follows the same rules as for GradientBrush
+	//							'ExtendMode' is optional and follows the same rules as for GradientBrush
+	//							'OriginOffset' is optional and will default to [0.0, 0.0]
+	//									If specified, it must be an array of 2 floats specifying the (x,y) position to offset the origin of the gradient
+	"SomeControl5": {
+		"Brush": {
+			"Type": "RadialBrush",
+			"Stops": [
+				{
+					"Color": "Yellow",
+					"Position": 0.0
+				},
+				{
+					"Color": "Blue",
+					"Position": 1.0
+				}
+			],
+			"OriginOffset": [ 0.0, 1.5 ],
+			"Gamma": "D2D1_GAMMA_2_2",
+			"ExtendMode": "D2D1_EXTEND_MODE_CLAMP"
+		}
+	},
+
+	// BitmapBrush: Must specify the 'Brush' as json object
+	//							'File' key is required and should be path to image file that a bitmap will be created from 
+	//              'TransformMethod' is optional and will default to "KEEP_XY_RATIO_FILL_RECT"
+	//										Allowed values: KEEP_XY_RATIO_FILL_RECT, KEEP_XY_RATIO_UNDERFILL_RECT, SCALE_TO_EXACT_RECT_DIMENSIONS
+	//              'ExtendModeX(Y)' is optional and will default to D2D1_EXTEND_MODE_CLAMP
+	//										Allowed values: Same as GradientBrush->ExtendMode
+	//							'InterpolationMode' is optional and will default to D2D1_INTERPOLATION_MODE_LINEAR
+	//										Allowed values: D2D1_INTERPOLATION_MODE_LINEAR, Linear, D2D1_INTERPOLATION_MODE_NEAREST_NEIGHBOR, NearestNeighbor, D2D1_INTERPOLATION_MODE_FORCE_DWORD
+	"SomeControl6": {
+		"Brush": {
+			"Type": "BitmapBrush",
+			"File": "evergreen-image-1.jpg",
+			"TransformMethod": "KEEP_XY_RATIO_FILL_RECT",
+			"ExtendModeX": "D2D1_EXTEND_MODE_CLAMP",
+			"ExtendModeY": "D2D1_EXTEND_MODE_CLAMP",
+			"InterpolationMode": "Linear"
+		}
+	}
+}

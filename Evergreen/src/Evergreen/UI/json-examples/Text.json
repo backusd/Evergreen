@@ -1,0 +1,47 @@
+{
+	// Basics:	Declare a control by specifying the name of the Text control and specify the Type as "Text"
+	//					See example below for available attributes
+	"TextControlName": {
+		"Type": "Text",
+		"Text": "Some long text string",
+		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 1,
+		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 2,
+		"Brush": "Blue", // See Brushes.json for details on using a color brush
+		"FontFamily": "Calibri", // See Evergreen/UI/Utils/FontFamily.h for all available values
+		"FontSize": 30,
+		"FontWeight": "Bold", // Allowed values: Black, Bold, DemiBold, ExtraBlack, ExtraLight, Heavy, Light, Medium, Normal, Regular, SemiBold, SemiLight, Thin, UltraBlack, UltraBold, UltraLight
+		"FontStyle": "Normal", // Allowed values: Italic, Normal, Oblique
+		"FontStretch": "Expanded", // Allowed values: Condensed, Expanded, ExtraCondensed, Medium, Normal, SemiCondensed, SemiExpanded, UltraCondensed, UltraExpanded, Undefined
+		"TextAlignment": "Center", // Allowed values: Center, Justified, Leading, Trailing
+		"ParagraphAlignment": "Center", // Allowed values: Center, Far, Near
+		"WordWrapping": "None" // Allowed values: Character, EmergencyBreak, None, Word, Wrap
+	},
+
+	// TextStyle: If more than one Text control will use the same font styling values, we can create a global TextStyle and reference it in the Text control
+	//						The global TextStyle must be defined at "root scope", meaning at the same level within json as the 'root' key
+	//						If the 'Style' key is used, you can NOT use any other styling keywords. 
+	//            However, 'Brush' is NOT apart of TextStyle, so it must still be specified in the Text control
+	"CustomTextStyle": {
+		"Type": "TextStyle",
+		"FontFamily": "Arial",
+		"FontSize": 24,
+		...
+	},
+
+	"TextControl": {
+		"Type": "Text",
+		...
+		"Style": "CustomTextStyle",
+		"Brush": "Green" // Must still be specified in the Text control (not part of TextStyle)
+	},
+
+	// Special Text: In the case of using SegoeMDL2Assets, you need to specify Text as a hex value
+	"SpecialTextControl": {
+		"Type": "Text",
+		"Text": "0xE10F", // Starting the string with '0x' will parse this into a hex value
+		"FontFamily": "Segoe MDL2 Assets",
+		...
+	}
+}

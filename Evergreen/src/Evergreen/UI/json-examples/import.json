@@ -1,0 +1,53 @@
+{
+	// At every level of the json specification, the key 'import' can be used to import json that is defined elsewhere
+	// There are two types of imports:
+	//			1. Global - json in the main json file that is defined OUTSIDE of the 'root' tag can be imported
+	//			2. External file - a separate file containing json can be loaded
+
+	// -------- Global Import example ----------------------------------------------
+	// BEFORE import
+	"custom-margin": {
+		"Margin": [ 5, 5, 5, 5 ]
+	},
+
+	"root": {
+		"MyText": {
+			"Type": "Text",
+			"import": "custom-margin"
+		}
+	},
+
+	// AFTER import
+	// Note: The "import" key is removed and the contents of the referenced object are added
+	"root1": {
+		"MyText": {
+			"Type": "Text",
+			"Margin": [ 5, 5, 5, 5 ]
+		}
+	},
+
+
+	// -------- External File Import example ----------------------------------------------
+	// BEFORE import
+	// some-file.json
+	{
+		"Margin": [ 5, 5, 5, 5 ]
+	},
+
+	// main.json
+	"root2": {
+		"MyText": {
+			"Type": "Text",
+			"import": "some-file.json" // NOTE: To import an external file, the file MUST end in '.json'
+		}
+	},
+
+	// AFTER import
+	// main.json
+	"root3": {
+		"MyText": {
+			"Type": "Text",
+			"Margin": [ 5, 5, 5, 5 ]
+		}
+	}
+}
