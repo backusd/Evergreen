@@ -10,7 +10,6 @@ public:
 	}
 	~Sandbox() noexcept override
 	{
-		int iii = 0;
 	}
 };
 

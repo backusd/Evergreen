@@ -40,26 +40,9 @@ public:
 private:
 	void LoadDefaultUI() noexcept;
 	void LoadErrorUI() noexcept;
-	std::optional<json> LoadJSONFile(std::filesystem::path filePath) noexcept;
 
-	// Load Layout/Control methods
-	bool LoadLayoutDetails(Layout* layout, json& data) noexcept;
-	bool LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept;
-	bool LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept;
-	bool LoadSubLayout(Layout* parent, json& data, const std::string& name) noexcept;
-	
-	bool ParseGlobalStyles(json& data) noexcept;
-	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
-	std::optional<std::tuple<RowColumnType, float>> ParseRowColumnTypeAndSize(json& data, Layout* layout) noexcept;
-
-
-	// Function to handle 'import' key
-	bool ImportJSON(json& data) noexcept;
-
-	json						m_jsonRoot;
 	std::shared_ptr<Window>		m_window;
 	std::unique_ptr<Layout>		m_rootLayout;
-	std::vector<std::string>	m_errorMessages;
 	std::filesystem::path		m_jsonRootDirectory;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;

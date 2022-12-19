@@ -36,6 +36,12 @@ public:
 	static std::unique_ptr<ColorBrush> LoadBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
 	static std::optional<D2D1_COLOR_F> LoadColor(const json& data) noexcept;
 
+	static bool LoadUI(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept { return Get().LoadUIImpl(deviceResources, rootDirectory, rootFile, rootLayout); }
+	static std::optional<json> LoadJSONFile(std::filesystem::path filePath) noexcept;
+
+	static bool ImportJSON(json& data) noexcept { return Get().ImportJSONImpl(data); }
+
+
 	static bool IsControlKey(const std::string& controlKey) noexcept { return Get().IsControlKeyImpl(controlKey); }
 	static bool IsStyleKey(const std::string& styleKey) noexcept { return Get().IsStyleKeyImpl(styleKey); }
 
@@ -63,6 +69,23 @@ private:
 	static std::unique_ptr<ColorBrush> LoadRadialBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
 	static std::unique_ptr<ColorBrush> LoadBitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
 
+	
+	bool LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept;
+	bool LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources) noexcept;
+	bool LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data) noexcept;
+	
+	bool LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept;
+	bool LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept;
+	bool LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) noexcept;
+
+	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
+	std::optional<std::tuple<RowColumnType, float>> ParseRowColumnTypeAndSize(json& data, Layout* layout) noexcept;
+
+	bool ImportJSONImpl(json& data) noexcept;
+
+
+
+
 	bool IsControlKeyImpl(const std::string& controlKey) const noexcept { return m_controlLoaders.find(controlKey) != m_controlLoaders.end(); }
 	bool IsStyleKeyImpl(const std::string& styleKey) const noexcept { return m_styleLoaders.find(styleKey) != m_styleLoaders.end(); }
 
@@ -71,6 +94,9 @@ private:
 
 	// Keep a cache of styles that have been parsed for quick lookup
 	std::unordered_map<std::string, std::shared_ptr<Style>> m_stylesCache;
+
+	json					m_jsonRoot;
+	std::filesystem::path	m_jsonRootDirectory;
 };
 #pragma warning( pop )
 }
