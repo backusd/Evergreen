@@ -34,7 +34,7 @@ void UI::LoadDefaultUI() noexcept
 
 
 	// TEST CODE
-	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout = std::make_unique<Layout>(m_deviceResources, 0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	
 	Row* row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	row0->BottomIsAdjustable(true);
@@ -87,34 +87,13 @@ void UI::LoadDefaultUI() noexcept
 	Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
 	text3->SetText(L"nooooo...");
 
-	
-	/*
-	if (std::optional<Layout*> sublayoutOpt = m_rootLayout->AddSubLayout({ 0, 0, 1, 1 }, "Test Layout"))
-	{
-		Layout* sublayout = sublayoutOpt.value();
 
-		sublayout->AddRow({RowColumnType::STAR, 1.0f});
-		sublayout->AddRow({ RowColumnType::STAR, 1.0f });
-		sublayout->AddRow({ RowColumnType::STAR, 1.0f });
-
-		if (std::optional<Column*> col1 = sublayout->AddColumn({ RowColumnType::STAR, 1.0f }))
-		{
-			col1.value()->RightIsAdjustable(true);
-			col1.value()->MinWidth(10.0f);
-		}
-		if (std::optional<Column*> col2 = sublayout->AddColumn({ RowColumnType::STAR, 1.0f }))
-		{
-			col2.value()->LeftIsAdjustable(true);
-			col2.value()->MinWidth(10.0f);
-		}
-	}
-	*/
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
 {
 	// Create a new root layout - this will destroy any layout that previously existed
-	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()), "Root Layout");
+	m_rootLayout = std::make_unique<Layout>(m_deviceResources, 0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()), "Root Layout");
 
 	if (!JSONLoaders::LoadUI(m_deviceResources, m_jsonRootDirectory, fileName, m_rootLayout.get()))
 	{
@@ -124,7 +103,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 
 void UI::LoadErrorUI() noexcept
 {
-	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout = std::make_unique<Layout>(m_deviceResources, 0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
 	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 	
@@ -153,11 +132,11 @@ void UI::LoadErrorUI() noexcept
 	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), style);
 }
 
-void UI::Render(DeviceResources* deviceResources) const noexcept
+void UI::Render() const noexcept
 {
-	deviceResources->BeginDraw();
+	m_deviceResources->BeginDraw();
 
-	m_rootLayout->Render(deviceResources);
+	m_rootLayout->Render();
 
 
 
@@ -217,7 +196,7 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 
 
-	deviceResources->EndDraw();
+	m_deviceResources->EndDraw();
 }
 
 void UI::OnWindowResize(WindowResizeEvent& e) noexcept

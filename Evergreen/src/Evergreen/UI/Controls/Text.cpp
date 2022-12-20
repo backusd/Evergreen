@@ -33,6 +33,9 @@ void Text::Render() const noexcept
 	EG_CORE_ASSERT(m_textLayout != nullptr, "TextLayout is nullptr");
 	EG_CORE_ASSERT(m_colorBrush != nullptr, "ColorBrush is nullptr");
 
+	// NOTE: No need for any sort of error checking on the D2D API function calls.
+	//       They don't report success/failure - you need to check the result of EndDraw() which we already do
+
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
 	context->PushAxisAlignedClip(m_allowedRegion, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 

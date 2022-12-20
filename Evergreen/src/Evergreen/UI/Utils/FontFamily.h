@@ -28,7 +28,7 @@ private:
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
 #pragma warning( push )
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
-class FontFamily
+class EVERGREEN_API FontFamily
 {	
 public:
 	static const FontFamily Arial;

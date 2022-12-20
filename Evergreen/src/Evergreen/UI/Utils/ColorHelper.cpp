@@ -3,7 +3,7 @@
 
 namespace Evergreen
 {
-	D2D1_COLOR_F ColorFromString(const std::string& colorName) noexcept
+	D2D1_COLOR_F ColorFromString(const std::string& colorName)
 	{
 		static const std::unordered_map<std::string, const D2D1::ColorF::Enum> colorNameMap = {
 			{ "AliceBlue", D2D1::ColorF::AliceBlue },

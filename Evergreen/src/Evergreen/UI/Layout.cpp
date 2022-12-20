@@ -131,10 +131,11 @@ std::string LayoutException::GetErrorInfo() const noexcept
 }
 
 // Layout ------------------------------------------------------------------------------
-Layout::Layout(float top, float left, float width, float height, const std::string& name) noexcept :
+Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, float top, float left, float width, float height, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
 	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
-	m_adjustingLayout(false)
+	m_adjustingLayout(false),
+	m_deviceResources(deviceResources)
 {
 	// Leave rows and columns empty for now
 }
@@ -401,32 +402,32 @@ void Layout::ClearColumns() noexcept
 	m_columnDefinitions.clear();
 }
 
-void Layout::Render(DeviceResources* deviceResources) const noexcept
+void Layout::Render() const noexcept
 {
-	DrawBorders(deviceResources);
+	DrawBorders();
 
 	for (const std::unique_ptr<Control>& control : m_controls)
 		control->Render();
 
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
-		sublayout->Render(deviceResources);
+		sublayout->Render();
 }
-void Layout::DrawBorders(DeviceResources* deviceResources) const noexcept
+void Layout::DrawBorders() const noexcept
 {
 	for (const Row& row : m_rows)
 	{
-		deviceResources->DrawLine(row.Left(), row.Top(), row.Right(), row.Top(), D2D1::ColorF(D2D1::ColorF::Red));
-		deviceResources->DrawLine(row.Left(), row.Top(), row.Left(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
-		deviceResources->DrawLine(row.Left(), row.Bottom(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
-		deviceResources->DrawLine(row.Right(), row.Top(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
+		m_deviceResources->DrawLine(row.Left(), row.Top(), row.Right(), row.Top(), D2D1::ColorF(D2D1::ColorF::Red));
+		m_deviceResources->DrawLine(row.Left(), row.Top(), row.Left(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
+		m_deviceResources->DrawLine(row.Left(), row.Bottom(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
+		m_deviceResources->DrawLine(row.Right(), row.Top(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
 	}
 
 	for (const Column& col : m_columns)
 	{
-		deviceResources->DrawLine(col.Left(), col.Top(), col.Right(), col.Top(), D2D1::ColorF(D2D1::ColorF::Blue));
-		deviceResources->DrawLine(col.Left(), col.Top(), col.Left(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
-		deviceResources->DrawLine(col.Left(), col.Bottom(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
-		deviceResources->DrawLine(col.Right(), col.Top(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
+		m_deviceResources->DrawLine(col.Left(), col.Top(), col.Right(), col.Top(), D2D1::ColorF(D2D1::ColorF::Blue));
+		m_deviceResources->DrawLine(col.Left(), col.Top(), col.Left(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
+		m_deviceResources->DrawLine(col.Left(), col.Bottom(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
+		m_deviceResources->DrawLine(col.Right(), col.Top(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
 	}
 }
 
@@ -676,6 +677,7 @@ Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name
 
 	m_subLayouts.push_back(
 		std::make_unique<Layout>(
+			m_deviceResources,
 			m_rows[position.Row].Top(),
 			m_columns[position.Column].Left(),
 			m_columns[position.Column + position.ColumnSpan - 1].Right() - m_columns[position.Column].Left(),

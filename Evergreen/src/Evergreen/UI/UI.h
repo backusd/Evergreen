@@ -30,7 +30,7 @@ public:
 
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
-	void Render(DeviceResources* deviceResources) const noexcept;
+	void Render() const noexcept;
 
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
 	void OnMouseMove(MouseMoveEvent& e) noexcept;

@@ -65,7 +65,7 @@ void Application::Render() noexcept
 
 	m_deviceResources->ClearBackground(D2D1::ColorF(D2D1::ColorF::Lavender));
 	
-	m_ui->Render(m_deviceResources.get());
+	m_ui->Render();
 }
 
 void Application::Present() noexcept

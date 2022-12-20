@@ -6,13 +6,13 @@
 
 namespace Evergreen
 {
-	struct Margin
-	{
-		float Left;
-		float Top;
-		float Right;
-		float Bottom;
-	};
+struct EVERGREEN_API Margin
+{
+	float Left;
+	float Top;
+	float Right;
+	float Bottom;
+};
 
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
