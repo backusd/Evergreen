@@ -3,6 +3,7 @@
 #include "Evergreen/UI/Styles/Style.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
 #include "Evergreen/UI/Utils/ColorHelper.h"
+#include "Evergreen/Exceptions/JSONLoadersException.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -21,7 +22,7 @@ public:
 	void operator=(const TextStyleLoader&) = delete;
 	~TextStyleLoader() noexcept {}
 
-	static std::shared_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "") noexcept { return Get().LoadImpl(deviceResources, data, name); }
+	static std::shared_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "") { return Get().LoadImpl(deviceResources, data, name); }
 
 private:
 	TextStyleLoader() noexcept = default;
@@ -32,16 +33,16 @@ private:
 		return loader;
 	}
 
-	std::shared_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "") noexcept;
+	std::shared_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "");
 
-	std::optional<Evergreen::FontFamily> ParseFontFamily(const json& data) noexcept;
-	std::optional<float> ParseFontSize(const json& data) noexcept;
-	std::optional<DWRITE_FONT_WEIGHT> ParseFontWeight(const json& data) noexcept;
-	std::optional<DWRITE_FONT_STYLE> ParseFontStyle(const json& data) noexcept;
-	std::optional<DWRITE_FONT_STRETCH> ParseFontStretch(const json& data) noexcept;
-	std::optional<DWRITE_TEXT_ALIGNMENT> ParseTextAlignment(const json& data) noexcept;
-	std::optional<DWRITE_PARAGRAPH_ALIGNMENT> ParseParagraphAlignment(const json& data) noexcept;
-	std::optional<DWRITE_WORD_WRAPPING> ParseWordWrapping(const json& data) noexcept;
+	Evergreen::FontFamily ParseFontFamily(const json& data);
+	float ParseFontSize(const json& data);
+	DWRITE_FONT_WEIGHT ParseFontWeight(const json& data);
+	DWRITE_FONT_STYLE ParseFontStyle(const json& data);
+	DWRITE_FONT_STRETCH ParseFontStretch(const json& data);
+	DWRITE_TEXT_ALIGNMENT ParseTextAlignment(const json& data);
+	DWRITE_PARAGRAPH_ALIGNMENT ParseParagraphAlignment(const json& data);
+	DWRITE_WORD_WRAPPING ParseWordWrapping(const json& data);
 
 	std::string m_name;
 };

@@ -6,6 +6,7 @@
 #include "Evergreen/UI/Styles/Style.h"
 #include "Evergreen/UI/Controls/Control.h"
 #include "Evergreen/UI/Brushes/Brushes.h"
+#include "Evergreen/Exceptions/JSONLoadersException.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -31,15 +32,15 @@ public:
 	static void AddControlLoader(std::string key, ControlLoaderFn loader) noexcept { Get().AddControlLoaderImpl(key, loader); }
 	static void AddStyleLoader(std::string key, StyleLoaderFn loader) noexcept { Get().AddStyleLoaderImpl(key, loader); }
 
-	static Control* LoadControl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name) noexcept { return Get().LoadControlImpl(deviceResources, key, parent, data, name); }
-	static std::shared_ptr<Style> LoadStyle(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename) noexcept { return Get().LoadStyleImpl(deviceResources, key, data, stylename); }
-	static std::unique_ptr<ColorBrush> LoadBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
-	static std::optional<D2D1_COLOR_F> LoadColor(const json& data) noexcept;
+	static Control* LoadControl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name) { return Get().LoadControlImpl(deviceResources, key, parent, data, name); }
+	static std::shared_ptr<Style> LoadStyle(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename) { return Get().LoadStyleImpl(deviceResources, key, data, stylename); }
+	static std::unique_ptr<ColorBrush> LoadBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
+	static D2D1_COLOR_F LoadColor(const json& data);
 
 	static bool LoadUI(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept { return Get().LoadUIImpl(deviceResources, rootDirectory, rootFile, rootLayout); }
-	static std::optional<json> LoadJSONFile(std::filesystem::path filePath) noexcept;
+	static json LoadJSONFile(std::filesystem::path filePath);
 
-	static bool ImportJSON(json& data) noexcept { return Get().ImportJSONImpl(data); }
+	static void ImportJSON(json& data) { Get().ImportJSONImpl(data); }
 
 
 	static bool IsControlKey(const std::string& controlKey) noexcept { return Get().IsControlKeyImpl(controlKey); }
@@ -61,29 +62,27 @@ private:
 	void AddControlLoaderImpl(std::string key, ControlLoaderFn loader) noexcept { m_controlLoaders[key] = loader; }
 	void AddStyleLoaderImpl(std::string key, StyleLoaderFn loader) noexcept { m_styleLoaders[key] = loader; }
 
-	Control* LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name) noexcept;
-	std::shared_ptr<Style> LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename) noexcept;
+	Control* LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name);
+	std::shared_ptr<Style> LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename);
 
-	static std::unique_ptr<ColorBrush> LoadSolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
-	static std::unique_ptr<ColorBrush> LoadGradientBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
-	static std::unique_ptr<ColorBrush> LoadRadialBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
-	static std::unique_ptr<ColorBrush> LoadBitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept;
+	static std::unique_ptr<ColorBrush> LoadSolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
+	static std::unique_ptr<ColorBrush> LoadGradientBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
+	static std::unique_ptr<ColorBrush> LoadRadialBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
+	static std::unique_ptr<ColorBrush> LoadBitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
 
 	
 	bool LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept;
-	bool LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources) noexcept;
-	bool LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data) noexcept;
+	void LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources);
+	void LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 	
-	bool LoadLayoutRowDefinitions(Layout* layout, json& data) noexcept;
-	bool LoadLayoutColumnDefinitions(Layout* layout, json& data) noexcept;
-	bool LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) noexcept;
+	void LoadLayoutRowDefinitions(Layout* layout, json& data);
+	void LoadLayoutColumnDefinitions(Layout* layout, json& data);
+	void LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
 
-	std::optional<RowColumnPosition> ParseRowColumnPosition(json& data) noexcept;
-	std::optional<std::tuple<RowColumnType, float>> ParseRowColumnTypeAndSize(json& data, Layout* layout) noexcept;
+	RowColumnPosition ParseRowColumnPosition(json& data);
+	std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, Layout* layout);
 
-	bool ImportJSONImpl(json& data) noexcept;
-
-
+	void ImportJSONImpl(json& data);
 
 
 	bool IsControlKeyImpl(const std::string& controlKey) const noexcept { return m_controlLoaders.find(controlKey) != m_controlLoaders.end(); }

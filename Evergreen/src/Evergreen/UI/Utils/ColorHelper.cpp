@@ -3,7 +3,7 @@
 
 namespace Evergreen
 {
-	std::optional<D2D1_COLOR_F> ColorFromString(const std::string& colorName) noexcept
+	D2D1_COLOR_F ColorFromString(const std::string& colorName) noexcept
 	{
 		static const std::unordered_map<std::string, const D2D1::ColorF::Enum> colorNameMap = {
 			{ "AliceBlue", D2D1::ColorF::AliceBlue },
@@ -151,6 +151,28 @@ namespace Evergreen
 		if (colorNameMap.find(colorName) != colorNameMap.end())
 			return D2D1::ColorF(colorNameMap.at(colorName), 1.0f);
 
-		return std::nullopt;
+		throw ColorException(__LINE__, __FILE__, std::format("Invalid color string: {}", colorName));
 	}
+
+
+
+
+ColorException::ColorException(int line, const char* file, const std::string& message) noexcept :
+	BaseException(line, file),
+	m_message(message)
+{
+}
+const char* ColorException::what() const noexcept
+{
+	m_whatBuffer = std::format("{}\n\n[Error Info]\n{}\n\n{}", GetType(), GetErrorInfo(), GetOriginString());
+	return m_whatBuffer.c_str();
+}
+const char* ColorException::GetType() const noexcept
+{
+	return "Color Exception";
+}
+std::string ColorException::GetErrorInfo() const noexcept
+{
+	return m_message;
+}
 }

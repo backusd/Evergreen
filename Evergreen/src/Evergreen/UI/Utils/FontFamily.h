@@ -1,9 +1,28 @@
 #pragma once
 #include "pch.h"
-
+#include "Evergreen/Exceptions/BaseException.h"
 
 namespace Evergreen
 {
+class FontFamilyException : public BaseException
+{
+public:
+	FontFamilyException(int line, const char* file, const std::string& message) noexcept;
+	FontFamilyException(const FontFamilyException&) = delete;
+	void operator=(const FontFamilyException&) = delete;
+	virtual ~FontFamilyException() noexcept override {}
+
+	const char* what() const noexcept override;
+
+	const char* GetType() const noexcept override;
+	std::string GetErrorInfo() const noexcept;
+
+private:
+	std::string m_message;
+};
+
+
+
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -194,7 +213,7 @@ public:
 	std::string Get() { return m_value; }
 
 	static bool IsValidFontFamily(std::string fontFamily) noexcept { return m_fontFamilyNameMap.find(fontFamily) != m_fontFamilyNameMap.end(); }
-	static std::optional<const FontFamily> GetFontFamily(const std::string& name) noexcept;
+	static const FontFamily& GetFontFamily(const std::string& name);
 	
 
 private:

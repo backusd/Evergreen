@@ -19,7 +19,7 @@ public:
 class InfoException : public BaseException
 {
 public:
-	InfoException(int line, const char* file, std::vector<std::string> infoMsgs) noexcept;
+	InfoException(int line, const char* file, const std::vector<std::string>& infoMsgs) noexcept;
 	const char* what() const noexcept override;
 	const char* GetType() const noexcept override;
 	std::string GetErrorInfo() const noexcept;

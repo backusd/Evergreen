@@ -194,7 +194,7 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 
 
 
-
+	/*
 	//SolidColorBrush brush(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
 
 
@@ -245,7 +245,7 @@ void UI::Render(DeviceResources* deviceResources) const noexcept
 		&rect2,
 		bmbrush.Get()
 	);
-
+	*/
 
 
 

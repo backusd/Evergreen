@@ -3,6 +3,7 @@
 #include "Evergreen/Core.h"
 #include "Evergreen/Log.h"
 #include "Evergreen/UI/Layout.h"
+#include "Evergreen/Exceptions/JSONLoadersException.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -25,8 +26,8 @@ public:
 protected:
 	ControlLoader() noexcept = default;
 
-	std::optional<RowColumnPosition> ParseRowColumnPosition(const json& data) noexcept;
-	std::optional<Margin> ParseMargin(const json& data) noexcept;
+	RowColumnPosition ParseRowColumnPosition(const json& data);
+	Margin ParseMargin(const json& data);
 
 	std::string m_name;
 

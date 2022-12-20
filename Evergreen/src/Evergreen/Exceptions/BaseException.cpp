@@ -33,6 +33,6 @@ const std::string& BaseException::GetFile() const noexcept
 
 std::string BaseException::GetOriginString() const noexcept
 {
-	return std::format("[File] {}\n[Line] {}", m_file, m_line);
+	return std::format("[File] {}\n[Line] {}\n", m_file, m_line);
 }
 }

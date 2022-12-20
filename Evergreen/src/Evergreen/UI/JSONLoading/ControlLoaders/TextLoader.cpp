@@ -5,61 +5,35 @@
 
 namespace Evergreen
 {
-Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name) noexcept
+Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
 
-	std::wstring text = L"";
+	std::wstring text;
 	RowColumnPosition rowCol;
-	Margin margin{ 0 };
+	Margin margin;
 
-	// Validate JSON
-	if (!ValidateJSONData(data))
-		return nullptr;
+	// Validate JSON (will throw if there is a problem)
+	ValidateJSONData(data);
 
 	// Parse Row/Column
-	if (std::optional<RowColumnPosition> rowColOpt = ParseRowColumnPosition(data))
-		rowCol = rowColOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseRowColumnPosition() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	rowCol = ParseRowColumnPosition(data);
 
 	// Parse Margin
-	if (std::optional<Margin> marginOpt = ParseMargin(data))
-		margin = marginOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseRowColumnPosition() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	margin = ParseMargin(data);
 
 	// Parse Text
-	if (std::optional<std::wstring> textOpt = ParseText(data))
-		text = textOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseText() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	text = ParseText(data);
 
 	// Parse Brush
 	std::unique_ptr<ColorBrush> brush = ParseBrush(deviceResources, data);
-	if (brush == nullptr)
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseBrush() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	EG_CORE_ASSERT(brush != nullptr, "Not allowed to return nullptr. Should have thrown exception");
 
 	// Parse Style
 	std::shared_ptr<TextStyle> style = ParseStyle(deviceResources, data);
-	if (style == nullptr)
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': ParseStyle() failed for data: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
+
 
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
@@ -81,41 +55,31 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	return nullptr;
 }
 
-bool TextLoader::ValidateJSONData(const json& data) noexcept
+void TextLoader::ValidateJSONData(const json& data)
 {
 	// Because Text may contain TextStyle fields, make sure that if 'Style' is specified,
 	// no other TextStyle fields are present
 	if (data.contains("Style"))
 	{
-		constexpr std::array testStyleFields = {
+		constexpr std::array textStyleFields = {
 			"FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
 			"ParagraphAlignment", "WordWrapping", "Trimming", "Locale"
 		};
 
 		for (auto& [key, value] : data.items())
 		{
-			if (std::find(testStyleFields.begin(), testStyleFields.end(), key) != testStyleFields.end())
-			{
-				EG_CORE_ERROR("{}:{} - Invalid json for Text control with name '{}'. Cannot include '{}' field if 'Style' field is specified.", __FILE__, __LINE__, m_name, key);
-				return false;
-			}
+			JSON_LOADER_EXCEPTION_IF_FALSE(std::find(textStyleFields.begin(), textStyleFields.end(), key) == textStyleFields.end(), "Invalid json for Text control with name '{}'. Cannot include '{}' field if 'Style' field is specified.", m_name, key);
 		}
 	}
-
-	return true;
 }
 
-std::optional<std::wstring> TextLoader::ParseText(const json& data) noexcept
+std::wstring TextLoader::ParseText(const json& data)
 {
 	std::wstring text = L"";
 
 	if (data.contains("Text"))
 	{
-		if (!data["Text"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Text' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["Text"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["Text"].is_string(), "Text control with name '{}': 'Text' field must be a string. Invalid value: {}", m_name, data["Text"].dump(4));
 
 		std::string parsedText = data["Text"].get<std::string>();
 		std::wstring s = std::wstring(parsedText.begin(), parsedText.end());
@@ -129,15 +93,11 @@ std::optional<std::wstring> TextLoader::ParseText(const json& data) noexcept
 			}
 			catch (const std::invalid_argument& e)
 			{
-				EG_CORE_ERROR("{}:{} - Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw invalid_argument exception.", __FILE__, __LINE__, m_name, parsedText);
-				EG_CORE_ERROR("Exception Description: {}", e.what());
-				return std::nullopt;
+				JSON_LOADER_EXCEPTION("Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw invalid_argument exception.\nException Description: {}", m_name, parsedText, e.what());
 			}
 			catch (const std::out_of_range& e)
 			{
-				EG_CORE_ERROR("{}:{} - Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw out_of_range exception.", __FILE__, __LINE__, m_name, parsedText);
-				EG_CORE_ERROR("Exception Description: {}", e.what());
-				return std::nullopt;
+				JSON_LOADER_EXCEPTION("Text control with name '{}': Parsing 'Text' value ('{}') as hex value threw out_of_range exception.\nException Description: {}", m_name, parsedText, e.what());
 			}
 		}
 		else
@@ -148,19 +108,15 @@ std::optional<std::wstring> TextLoader::ParseText(const json& data) noexcept
 
 	return text;
 }
-std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept
+std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
-	if (!data.contains("Brush"))
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': No 'Brush' key. Incomplete Text object: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("Brush"), "Text control with name '{}': No 'Brush' key. Incomplete Text object: {}", m_name, data.dump(4));
 
 	return std::move(JSONLoaders::LoadBrush(deviceResources, data["Brush"]));
 }
-std::shared_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data) noexcept
+std::shared_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -168,33 +124,19 @@ std::shared_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResource
 	std::string stylename;
 	if (data.contains("Style"))
 	{
-		if (data["Style"].is_string())
-		{
-			stylename = data["Style"].get<std::string>();
-			if (stylename.size() == 0)
-			{
-				EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Style' field cannot be an empty string.", __FILE__, __LINE__, m_name);
-				return nullptr;
-			}
-		}
-		else
-		{
-			EG_CORE_ERROR("{}:{} - Text control with name '{}': 'Style' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["Style"].dump(4));
-			return nullptr;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["Style"].is_string(), "Text control with name '{}': 'Style' field must be a string. Invalid value: {}", m_name, data["Style"].dump(4));
+
+		stylename = data["Style"].get<std::string>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(stylename.size() > 0, "Text control with name '{}': 'Style' field cannot be an empty string.", m_name);
 	}
 	else
 	{
 		stylename = m_name + "_TextStyle";
 	}
 
-
 	std::shared_ptr<Style> style = JSONLoaders::LoadStyle(deviceResources, "TextStyle", data, stylename);
-	if (style == nullptr)
-	{
-		EG_CORE_ERROR("{}:{} - Text control with name '{}': JSONLoaders::GetStyle() failed for Text object: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		return nullptr;
-	}
+	EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
 
 	return std::static_pointer_cast<TextStyle>(style);
 }

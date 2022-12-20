@@ -3,6 +3,27 @@
 
 namespace Evergreen
 {
+FontFamilyException::FontFamilyException(int line, const char* file, const std::string& message) noexcept :
+	BaseException(line, file),
+	m_message(message)
+{
+}
+const char* FontFamilyException::what() const noexcept
+{
+	m_whatBuffer = std::format("{}\n\n[Error Info]\n{}\n\n{}", GetType(), GetErrorInfo(), GetOriginString());
+	return m_whatBuffer.c_str();
+}
+const char* FontFamilyException::GetType() const noexcept
+{
+	return "FontFamily Exception";
+}
+std::string FontFamilyException::GetErrorInfo() const noexcept
+{
+	return m_message;
+}
+
+
+
 const FontFamily FontFamily::Arial("Arial");
 const FontFamily FontFamily::Bahnschrift("Bahnschrift");
 const FontFamily FontFamily::Calibri("Calibri");
@@ -372,10 +393,10 @@ void FontFamily::operator=(const FontFamily& rhs) noexcept
 	m_value = rhs.m_value;
 }
 
-std::optional<const FontFamily> FontFamily::GetFontFamily(const std::string& name) noexcept
+const FontFamily& FontFamily::GetFontFamily(const std::string& name)
 {
 	if (!IsValidFontFamily(name))
-		return std::nullopt;
+		throw FontFamilyException(__LINE__, __FILE__, std::format("Invalid FontFamilly string: {}", name));
 
 	return m_fontFamilyNameMap.at(name);
 }

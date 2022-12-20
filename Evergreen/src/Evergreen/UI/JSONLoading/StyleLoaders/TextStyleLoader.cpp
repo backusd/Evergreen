@@ -4,7 +4,7 @@
 namespace Evergreen
 {
 
-std::shared_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name) noexcept
+std::shared_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -20,76 +20,28 @@ std::shared_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources
 	DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP;
 
 	// FontFamily
-	if (std::optional<Evergreen::FontFamily> fontFamilyOpt = Get().ParseFontFamily(data))
-		fontFamily = fontFamilyOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseFontFamily() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	fontFamily = ParseFontFamily(data);
 
 	// Font Size
-	if (std::optional<float> fontSizeOpt = Get().ParseFontSize(data))
-		fontSize = fontSizeOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseFontSize() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	fontSize = ParseFontSize(data);
 
 	// Font Weight
-	if (std::optional<DWRITE_FONT_WEIGHT> fontWeightOpt = Get().ParseFontWeight(data))
-		fontWeight = fontWeightOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseFontWeight() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	fontWeight = ParseFontWeight(data);
 
 	// Font Style
-	if (std::optional<DWRITE_FONT_STYLE> fontStyleOpt = Get().ParseFontStyle(data))
-		fontStyle = fontStyleOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseFontStyle() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	fontStyle = ParseFontStyle(data);
 
 	// Font Stretch
-	if (std::optional<DWRITE_FONT_STRETCH> fontStretchOpt = Get().ParseFontStretch(data))
-		fontStretch = fontStretchOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseFontStretch() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	fontStretch = ParseFontStretch(data);
 
 	// Text Alignment
-	if (std::optional<DWRITE_TEXT_ALIGNMENT> textAlignmentOpt = Get().ParseTextAlignment(data))
-		textAlignment = textAlignmentOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseTextAlignment() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	textAlignment = ParseTextAlignment(data);
 
 	// Paragraph Alignment
-	if (std::optional<DWRITE_PARAGRAPH_ALIGNMENT> paragraphAlignmentOpt = Get().ParseParagraphAlignment(data))
-		paragraphAlignment = paragraphAlignmentOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseParagraphAlignment() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	paragraphAlignment = ParseParagraphAlignment(data);
 
 	// Word Wrapping
-	if (std::optional<DWRITE_WORD_WRAPPING> wordWrappingOpt = Get().ParseWordWrapping(data))
-		wordWrapping = wordWrappingOpt.value();
-	else
-	{
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': ParseWordWrapping() failed", __FILE__, __LINE__, name);
-		return nullptr;
-	}
+	wordWrapping = ParseWordWrapping(data);
 
 	if (data.contains("Trimming"))
 		EG_CORE_WARN("{}:{} - TextStyle with name '{}': 'Trimming' field not yet supported", __FILE__, __LINE__, m_name);
@@ -112,43 +64,27 @@ std::shared_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources
 		fontStyle, fontStretch,	textAlignment, paragraphAlignment, wordWrapping);
 }
 
-std::optional<Evergreen::FontFamily> TextStyleLoader::ParseFontFamily(const json& data) noexcept
+Evergreen::FontFamily TextStyleLoader::ParseFontFamily(const json& data)
 {
 	if (data.contains("FontFamily"))
 	{
-		if (!data["FontFamily"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontFamily' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["FontFamily"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["FontFamily"].is_string(), "TextStyle with name '{}': 'FontFamily' field must be a string. Invalid value: {}", m_name, data["FontFamily"].dump(4));
 
-		if (std::optional<const Evergreen::FontFamily> fontFamilyOpt = FontFamily::GetFontFamily(data["FontFamily"].get<std::string>()))
-			return fontFamilyOpt.value();		
-
-		EG_CORE_ERROR("{}:{} - TextStyle with name '{}': FontFamily::GetFontFamily() failed for value: {}", __FILE__, __LINE__, m_name, data["FontFamily"].get<std::string>());
-		return std::nullopt;
+		return FontFamily::GetFontFamily(data["FontFamily"].get<std::string>());
 	}
 
 	// Default value
 	return Evergreen::FontFamily::Calibri;
 }
-std::optional<float> TextStyleLoader::ParseFontSize(const json& data) noexcept
+float TextStyleLoader::ParseFontSize(const json& data)
 {
 	if (data.contains("FontSize"))
 	{
-		if (!data["FontSize"].is_number())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontSize' field must be a number. Invalid value: {}", __FILE__, __LINE__, m_name, data["FontSize"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["FontSize"].is_number(), "TextStyle with name '{}': 'FontSize' field must be a number. Invalid value: {}", m_name, data["FontSize"].dump(4));
 
 		float fontSize = data["FontSize"].get<float>();
 
-		if (fontSize <= 0)
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontSize' must be greater than 0. Invalid value: {}", __FILE__, __LINE__, m_name, fontSize);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(fontSize > 0.0f, "TextStyle with name '{}': 'FontSize' must be greater than 0. Invalid value: {}", m_name, fontSize);
 
 		return fontSize;
 	}
@@ -156,15 +92,11 @@ std::optional<float> TextStyleLoader::ParseFontSize(const json& data) noexcept
 	// Default value
 	return 12.0f;
 }
-std::optional<DWRITE_FONT_WEIGHT> TextStyleLoader::ParseFontWeight(const json& data) noexcept
+DWRITE_FONT_WEIGHT TextStyleLoader::ParseFontWeight(const json& data)
 {
 	if (data.contains("FontWeight"))
 	{
-		if (!data["FontWeight"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontWeight' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["FontWeight"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["FontWeight"].is_string(), "TextStyle with name '{}': 'FontWeight' field must be a string. Invalid value: {}", m_name, data["FontWeight"].dump(4));
 
 		static const std::unordered_map<std::string, DWRITE_FONT_WEIGHT> fontWeightMap = {
 			{ "Black", DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BLACK },
@@ -188,11 +120,7 @@ std::optional<DWRITE_FONT_WEIGHT> TextStyleLoader::ParseFontWeight(const json& d
 
 		std::string fontWeightString = data["FontWeight"].get<std::string>();
 
-		if (fontWeightMap.find(fontWeightString) == fontWeightMap.end())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontWeight' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, m_name, fontWeightString);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(fontWeightMap.find(fontWeightString) != fontWeightMap.end(), "TextStyle with name '{}': 'FontWeight' field was unrecognized. Invalid value: {}", m_name, fontWeightString);
 
 		return fontWeightMap.at(fontWeightString);
 	}
@@ -200,15 +128,11 @@ std::optional<DWRITE_FONT_WEIGHT> TextStyleLoader::ParseFontWeight(const json& d
 	// Default value
 	return DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR;
 }
-std::optional<DWRITE_FONT_STYLE> TextStyleLoader::ParseFontStyle(const json& data) noexcept
+DWRITE_FONT_STYLE TextStyleLoader::ParseFontStyle(const json& data)
 {
 	if (data.contains("FontStyle"))
 	{
-		if (!data["FontStyle"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontStyle' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["FontStyle"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["FontStyle"].is_string(), "TextStyle with name '{}': 'FontStyle' field must be a string. Invalid value: {}", m_name, data["FontStyle"].dump(4));
 
 		static const std::unordered_map<std::string, DWRITE_FONT_STYLE> fontStyleMap = {
 			{ "Italic", DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_ITALIC },
@@ -218,11 +142,7 @@ std::optional<DWRITE_FONT_STYLE> TextStyleLoader::ParseFontStyle(const json& dat
 
 		std::string fontStyleString = data["FontStyle"].get<std::string>();
 
-		if (fontStyleMap.find(fontStyleString) == fontStyleMap.end())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontStyle' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, m_name, fontStyleString);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(fontStyleMap.find(fontStyleString) != fontStyleMap.end(), "TextStyle with name '{}': 'FontStyle' field was unrecognized. Invalid value: {}", m_name, fontStyleString);
 
 		return fontStyleMap.at(fontStyleString);
 	}
@@ -230,15 +150,11 @@ std::optional<DWRITE_FONT_STYLE> TextStyleLoader::ParseFontStyle(const json& dat
 	// Default value
 	return DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL;
 }
-std::optional<DWRITE_FONT_STRETCH> TextStyleLoader::ParseFontStretch(const json& data) noexcept
+DWRITE_FONT_STRETCH TextStyleLoader::ParseFontStretch(const json& data)
 {
 	if (data.contains("FontStretch"))
 	{
-		if (!data["FontStretch"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontStretch' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["FontStretch"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["FontStretch"].is_string(), "TextStyle with name '{}': 'FontStretch' field must be a string. Invalid value: {}", m_name, data["FontStretch"].dump(4));
 
 		static const std::unordered_map<std::string, DWRITE_FONT_STRETCH> fontStretchMap = {
 			{ "Condensed", DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_CONDENSED },
@@ -256,11 +172,7 @@ std::optional<DWRITE_FONT_STRETCH> TextStyleLoader::ParseFontStretch(const json&
 
 		std::string fontStretchString = data["FontStretch"].get<std::string>();
 
-		if (fontStretchMap.find(fontStretchString) == fontStretchMap.end())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'FontStretch' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, m_name, fontStretchString);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(fontStretchMap.find(fontStretchString) != fontStretchMap.end(), "TextStyle with name '{}': 'FontStretch' field was unrecognized. Invalid value: {}", m_name, fontStretchString);
 
 		return fontStretchMap.at(fontStretchString);
 	}
@@ -268,15 +180,11 @@ std::optional<DWRITE_FONT_STRETCH> TextStyleLoader::ParseFontStretch(const json&
 	// Default value
 	return DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL;
 }
-std::optional<DWRITE_TEXT_ALIGNMENT> TextStyleLoader::ParseTextAlignment(const json& data) noexcept
+DWRITE_TEXT_ALIGNMENT TextStyleLoader::ParseTextAlignment(const json& data)
 {
 	if (data.contains("TextAlignment"))
 	{
-		if (!data["TextAlignment"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'TextAlignment' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["TextAlignment"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["TextAlignment"].is_string(), "TextStyle with name '{}': 'TextAlignment' field must be a string. Invalid value: {}", m_name, data["TextAlignment"].dump(4));
 
 		static const std::unordered_map<std::string, DWRITE_TEXT_ALIGNMENT> textAlignmentMap = {
 			{ "Center", DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER },
@@ -287,11 +195,7 @@ std::optional<DWRITE_TEXT_ALIGNMENT> TextStyleLoader::ParseTextAlignment(const j
 
 		std::string textAlignmentString = data["TextAlignment"].get<std::string>();
 
-		if (textAlignmentMap.find(textAlignmentString) == textAlignmentMap.end())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'TextAlignment' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, m_name, textAlignmentString);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(textAlignmentMap.find(textAlignmentString) != textAlignmentMap.end(), "TextStyle with name '{}': 'TextAlignment' field was unrecognized. Invalid value: {}", m_name, textAlignmentString);
 
 		return textAlignmentMap.at(textAlignmentString);
 	}
@@ -299,15 +203,11 @@ std::optional<DWRITE_TEXT_ALIGNMENT> TextStyleLoader::ParseTextAlignment(const j
 	// Default value
 	return DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING;
 }
-std::optional<DWRITE_PARAGRAPH_ALIGNMENT> TextStyleLoader::ParseParagraphAlignment(const json& data) noexcept
+DWRITE_PARAGRAPH_ALIGNMENT TextStyleLoader::ParseParagraphAlignment(const json& data)
 {
 	if (data.contains("ParagraphAlignment"))
 	{
-		if (!data["ParagraphAlignment"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'ParagraphAlignment' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["ParagraphAlignment"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["ParagraphAlignment"].is_string(), "TextStyle with name '{}': 'ParagraphAlignment' field must be a string. Invalid value: {}", m_name, data["ParagraphAlignment"].dump(4));
 
 		static const std::unordered_map<std::string, DWRITE_PARAGRAPH_ALIGNMENT> paragraphAlignmentMap = {
 			{ "Center", DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER },
@@ -317,11 +217,7 @@ std::optional<DWRITE_PARAGRAPH_ALIGNMENT> TextStyleLoader::ParseParagraphAlignme
 
 		std::string paragraphAlignmentString = data["ParagraphAlignment"].get<std::string>();
 
-		if (paragraphAlignmentMap.find(paragraphAlignmentString) == paragraphAlignmentMap.end())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'ParagraphAlignment' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, m_name, paragraphAlignmentString);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(paragraphAlignmentMap.find(paragraphAlignmentString) != paragraphAlignmentMap.end(), "TextStyle with name '{}': 'ParagraphAlignment' field was unrecognized. Invalid value: {}", m_name, paragraphAlignmentString);
 
 		return paragraphAlignmentMap.at(paragraphAlignmentString);
 	}
@@ -329,15 +225,11 @@ std::optional<DWRITE_PARAGRAPH_ALIGNMENT> TextStyleLoader::ParseParagraphAlignme
 	// Default value
 	return DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
 }
-std::optional<DWRITE_WORD_WRAPPING> TextStyleLoader::ParseWordWrapping(const json& data) noexcept
+DWRITE_WORD_WRAPPING TextStyleLoader::ParseWordWrapping(const json& data)
 {
 	if (data.contains("WordWrapping"))
 	{
-		if (!data["WordWrapping"].is_string())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'WordWrapping' field must be a string. Invalid value: {}", __FILE__, __LINE__, m_name, data["WordWrapping"].dump(4));
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["WordWrapping"].is_string(), "TextStyle with name '{}': 'WordWrapping' field must be a string. Invalid value: {}", m_name, data["WordWrapping"].dump(4));
 
 		static const std::unordered_map<std::string, DWRITE_WORD_WRAPPING> wordWrappingMap = {
 			{ "Character", DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_CHARACTER },
@@ -349,11 +241,7 @@ std::optional<DWRITE_WORD_WRAPPING> TextStyleLoader::ParseWordWrapping(const jso
 
 		std::string wordWrappingString = data["WordWrapping"].get<std::string>();
 
-		if (wordWrappingMap.find(wordWrappingString) == wordWrappingMap.end())
-		{
-			EG_CORE_ERROR("{}:{} - TextStyle with name '{}': 'WordWrapping' field was unrecognized. Invalid value: {}", __FILE__, __LINE__, m_name, wordWrappingString);
-			return std::nullopt;
-		}
+		JSON_LOADER_EXCEPTION_IF_FALSE(wordWrappingMap.find(wordWrappingString) != wordWrappingMap.end(), "TextStyle with name '{}': 'WordWrapping' field was unrecognized. Invalid value: {}", m_name, wordWrappingString);
 
 		return wordWrappingMap.at(wordWrappingString);
 	}

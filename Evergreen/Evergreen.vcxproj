@@ -23,6 +23,7 @@
     <ClInclude Include="src\Evergreen\Events\MouseEvent.h" />
     <ClInclude Include="src\Evergreen\Exceptions\BaseException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />
+    <ClInclude Include="src\Evergreen\Exceptions\JSONLoadersException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
     <ClInclude Include="src\Evergreen\UI\Utils\ColorHelper.h" />
@@ -59,6 +60,7 @@
     <ClCompile Include="src\Evergreen\Application.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\BaseException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
+    <ClCompile Include="src\Evergreen\Exceptions\JSONLoadersException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\UI\Utils\ColorHelper.cpp" />

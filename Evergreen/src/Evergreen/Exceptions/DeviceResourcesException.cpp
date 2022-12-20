@@ -15,7 +15,7 @@ const char* DeviceResourcesException::GetType() const noexcept
 }
 
 // InfoException ====================================================================================
-InfoException::InfoException(int line, const char* file, std::vector<std::string> infoMsgs) noexcept :
+InfoException::InfoException(int line, const char* file, const std::vector<std::string>& infoMsgs) noexcept :
 	BaseException(line, file)
 {
 	// join all info messages with newlines into single string

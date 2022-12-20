@@ -144,6 +144,9 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\JSONLoaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\Exceptions\JSONLoadersException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -231,6 +234,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\JSONLoaders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\Exceptions\JSONLoadersException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
