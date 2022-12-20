@@ -665,38 +665,14 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 }
 
 
-std::optional<Layout*> Layout::AddSubLayout(RowColumnPosition position, const std::string& name) noexcept
+Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name)
 {
-	if (position.Row >= m_rows.size())
-	{
-		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Row ({}) was greater than maximum row index ({})", __FILE__, __LINE__, name, m_name, position.Row, m_rows.size() - 1);
-		return std::nullopt;
-	}
-	if (position.Column >= m_columns.size())
-	{
-		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Column ({}) was greater than maximum column index ({})", __FILE__, __LINE__, name, m_name, position.Column, m_columns.size() - 1);
-		return std::nullopt;
-	}
-	if (position.RowSpan == 0)
-	{
-		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.RowSpan must be greater than 0", __FILE__, __LINE__, name, m_name);
-		return std::nullopt;
-	}
-	if (position.ColumnSpan == 0)
-	{
-		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.ColumnSpan must be greater than 0", __FILE__, __LINE__, name, m_name);
-		return std::nullopt;
-	}
-	if (position.RowSpan > m_rows.size() - position.Row)
-	{
-		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.RowSpan ({}) was greater than maximum spannable rows ({})", __FILE__, __LINE__, name, m_name, position.RowSpan, m_rows.size() - position.Row);
-		return std::nullopt;
-	}
-	if (position.ColumnSpan > m_columns.size() - position.Column)
-	{
-		EG_CORE_ERROR("{}:{} Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.ColumnSpan ({}) was greater than maximum spannable columns ({})", __FILE__, __LINE__, name, m_name, position.ColumnSpan, m_columns.size() - position.Column);
-		return std::nullopt;
-	}
+	LAYOUT_EXCEPTION_IF_FALSE(position.Row < m_rows.size(), "Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Row ({}) was greater than maximum row index ({})", name, m_name, position.Row, m_rows.size() - 1);
+	LAYOUT_EXCEPTION_IF_FALSE(position.Column < m_columns.size(), "Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Column ({}) was greater than maximum column index ({})", name, m_name, position.Column, m_columns.size() - 1);
+	LAYOUT_EXCEPTION_IF_FALSE(position.RowSpan > 0, "Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.RowSpan must be greater than 0", name, m_name);
+	LAYOUT_EXCEPTION_IF_FALSE(position.ColumnSpan > 0, "Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.ColumnSpan must be greater than 0", name, m_name);
+	LAYOUT_EXCEPTION_IF_FALSE(position.RowSpan <= m_rows.size() - position.Row, "Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.RowSpan ({}) was greater than maximum spannable rows ({})", name, m_name, position.RowSpan, m_rows.size() - position.Row);
+	LAYOUT_EXCEPTION_IF_FALSE(position.ColumnSpan <= m_columns.size() - position.Column, "Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.ColumnSpan ({}) was greater than maximum spannable columns ({})", name, m_name, position.ColumnSpan, m_columns.size() - position.Column);
 
 	m_subLayouts.push_back(
 		std::make_unique<Layout>(
@@ -710,6 +686,7 @@ std::optional<Layout*> Layout::AddSubLayout(RowColumnPosition position, const st
 
 	m_subLayoutPositions.push_back(position);
 
+	EG_CORE_ASSERT(m_subLayouts.back() != nullptr, "Something went wrong.");
 	return m_subLayouts.back().get();
 }
  

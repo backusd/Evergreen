@@ -769,10 +769,8 @@ void JSONLoaders::LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources
 	// Parse the row/column/rowspan/columnspan values
 	RowColumnPosition position = ParseRowColumnPosition(data);
 
-	if (std::optional<Layout*> sublayoutOpt = parent->AddSubLayout(position, name))
-		return LoadLayoutDetails(deviceResources, sublayoutOpt.value(), data);
-
-	JSON_LOADER_EXCEPTION("Sublayout with name '{}': Failed to add as sublayout.", name);
+	Layout* sublayout = parent->AddSubLayout(position, name);
+	return LoadLayoutDetails(deviceResources, sublayout, data);
 }
 
 RowColumnPosition JSONLoaders::ParseRowColumnPosition(json& data)

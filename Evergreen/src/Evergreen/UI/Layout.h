@@ -162,7 +162,7 @@ public:
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
 
-	std::optional<Layout*> AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") noexcept;
+	Layout* AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed");
 
 	template<class T>
 	T* CreateControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>);
