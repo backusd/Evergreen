@@ -9,6 +9,8 @@
 #include "Brushes/RadialBrush.h"
 #include "Brushes/BitmapBrush.h"
 
+#include <chrono>
+
 namespace Evergreen
 {
 UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
@@ -87,6 +89,15 @@ void UI::LoadDefaultUI() noexcept
 	Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
 	text3->SetText(L"nooooo...");
 
+	text3->AddValueBinding([](Text* text) 
+		{
+			auto now = std::chrono::system_clock::now();
+			std::string s = std::format("{}", now);
+			std::wstring newtext(s.begin(), s.end());
+
+			text->SetText(newtext);
+		}
+	);
 
 }
 
@@ -130,6 +141,11 @@ void UI::LoadErrorUI() noexcept
 	std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	
 	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), style);
+}
+
+void UI::Update() noexcept
+{
+	m_rootLayout->Update();
 }
 
 void UI::Render() const noexcept

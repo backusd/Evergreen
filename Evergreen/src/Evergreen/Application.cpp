@@ -55,6 +55,7 @@ int Application::Run() noexcept
 void Application::Update() noexcept
 {
 	m_window->OnUpdate();
+	m_ui->Update();
 }
 
 void Application::Render() noexcept

@@ -402,6 +402,14 @@ void Layout::ClearColumns() noexcept
 	m_columnDefinitions.clear();
 }
 
+void Layout::Update() noexcept
+{
+	for (const std::unique_ptr<Control>& control : m_controls)
+		control->Update();
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+		sublayout->Update();
+}
 void Layout::Render() const noexcept
 {
 	DrawBorders();

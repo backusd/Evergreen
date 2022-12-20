@@ -27,6 +27,11 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 	TextChanged();
 }
 
+void Text::Update() const noexcept
+{
+	for (auto& fn : m_valueBindings)
+		fn((Text*)this);	// I guess we need the cast because otherwise 'this' gives a const Text*
+}
 
 void Text::Render() const noexcept
 {

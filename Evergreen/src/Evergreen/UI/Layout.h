@@ -192,6 +192,7 @@ public:
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 
+	void Update() noexcept;
 	void Render() const noexcept;
 	void DrawBorders() const noexcept;
 

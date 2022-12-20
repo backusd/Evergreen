@@ -30,6 +30,7 @@ public:
 	virtual ~Text() noexcept override {}
 
 	// Inherited from Control
+	void Update() const noexcept override;
 	void Render() const noexcept override;
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
@@ -43,6 +44,8 @@ public:
 	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
 	void Style(std::shared_ptr<TextStyle> style) noexcept { m_style = style; TextChanged(); }
 
+	void AddValueBinding(const std::function<void(Text*)>& fn) noexcept { m_valueBindings.push_back(fn); }
+
 
 private:
 	void TextChanged();
@@ -54,6 +57,7 @@ private:
 
 	void UpdateBrushDrawRegion() noexcept;
 
+	std::vector<std::function<void(Text*)>> m_valueBindings;
 
 	std::wstring							m_text;
 	std::shared_ptr<TextStyle>				m_style;

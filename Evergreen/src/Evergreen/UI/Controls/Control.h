@@ -27,6 +27,7 @@ public:
 	void operator=(const Control& control) noexcept;
 	virtual ~Control() noexcept {}
 
+	virtual void Update() const noexcept = 0;
 	virtual void Render() const noexcept = 0;
 
 	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
