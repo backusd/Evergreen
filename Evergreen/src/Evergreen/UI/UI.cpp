@@ -35,23 +35,19 @@ void UI::LoadDefaultUI() noexcept
 
 	// TEST CODE
 	m_rootLayout = std::make_unique<Layout>(0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
-	if (std::optional<Row*> row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
-	{
-		row0.value()->BottomIsAdjustable(true);
-	}
-	if (std::optional<Row*> row1 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f }))
-	{
-		row1.value()->TopIsAdjustable(true);
-	}
+	
+	Row* row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	row0->BottomIsAdjustable(true);
 
-	if (std::optional<Column*> column = m_rootLayout->AddColumn({ RowColumnType::FIXED, 100.0f }))
-	{
-		column.value()->RightIsAdjustable(true);
-	}
-	if (std::optional<Column*> column = m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f }))
-	{
-		column.value()->LeftIsAdjustable(true);
-	}
+	Row* row1 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	row1->TopIsAdjustable(true);
+	
+
+	Column* column1 = m_rootLayout->AddColumn({ RowColumnType::FIXED, 100.0f });
+	column1->RightIsAdjustable(true);
+	
+	Column* column2 = m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+	column2->LeftIsAdjustable(true);
 
 	std::wstring textString = L"Some very long test text";
 	std::shared_ptr<TextStyle> defaultStyle = std::make_shared<TextStyle>(m_deviceResources);
@@ -69,14 +65,7 @@ void UI::LoadDefaultUI() noexcept
 	);
 	std::unique_ptr<SolidColorBrush> b1 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(m_deviceResources, textString, std::move(b1), defaultStyle))
-	{
-		EG_CORE_TRACE("{}", "Successfully created default text");
-	}
-	else
-	{
-		EG_CORE_ERROR("{}", "Failed to create default text");
-	}
+	Text* text = m_rootLayout->CreateControl<Text>(m_deviceResources, textString, std::move(b1), defaultStyle);
 
 	RowColumnPosition position;
 	position.Row = 1;
@@ -87,14 +76,7 @@ void UI::LoadDefaultUI() noexcept
 	std::wstring s = L"Custom Text";
 	std::unique_ptr<SolidColorBrush> b2 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position, m_deviceResources, s, std::move(b2), style))
-	{
-		EG_CORE_TRACE("{}", "Successfully created custom text");
-	}
-	else
-	{
-		EG_CORE_ERROR("{}", "Failed to create custom text");
-	}
+	Text* text2 = m_rootLayout->CreateControl<Text>(position, m_deviceResources, s, std::move(b2), style);
 
 	RowColumnPosition position2;
 	position2.Row = 0;
@@ -102,22 +84,8 @@ void UI::LoadDefaultUI() noexcept
 	position2.RowSpan = 1;
 	position2.ColumnSpan = 1;
 
-	if (std::optional<Text*> text = m_rootLayout->AddControl<Text>(position2, m_deviceResources))
-	{
-		EG_CORE_TRACE("{}", "Successfully created custom text 2");
-
-		text.value()->SetText(L"nooooo...");
-	}
-	else
-	{
-		EG_CORE_ERROR("{}", "Failed to create custom text 2");
-	}
-
-
-
-
-
-
+	Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
+	text3->SetText(L"nooooo...");
 
 	
 	/*
@@ -182,7 +150,7 @@ void UI::LoadErrorUI() noexcept
 	*/
 	std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
 	
-	m_rootLayout->AddControl<Text>(m_deviceResources, text, std::move(brush), style);
+	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), style);
 }
 
 void UI::Render(DeviceResources* deviceResources) const noexcept

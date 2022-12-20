@@ -46,13 +46,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Create the new Text control
-	if (std::optional<Text*> textOpt = parent->AddControl<Text>(rowCol, deviceResources, text, std::move(brush), style, margin))
-	{
-		textOpt.value()->Name(name);
-		return textOpt.value();
-	}
-
-	return nullptr;
+	return parent->CreateControl<Text>(rowCol, deviceResources, text, std::move(brush), style, margin);
 }
 
 void TextLoader::ValidateJSONData(const json& data)

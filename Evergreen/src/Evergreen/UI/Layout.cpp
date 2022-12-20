@@ -110,6 +110,26 @@ float Column::MinWidth() const noexcept
 	return 1.0f;
 }
 
+// LayoutException ------------------------------------------------------------------------------
+LayoutException::LayoutException(int line, const char* file, const std::string& message) noexcept :
+	BaseException(line, file),
+	m_message(message)
+{
+}
+const char* LayoutException::what() const noexcept
+{
+	m_whatBuffer = std::format("{}\n\n[Error Info]\n{}\n\n{}", GetType(), GetErrorInfo(), GetOriginString());
+	return m_whatBuffer.c_str();
+}
+const char* LayoutException::GetType() const noexcept
+{
+	return "Layout Exception";
+}
+std::string LayoutException::GetErrorInfo() const noexcept
+{
+	return m_message;
+}
+
 // Layout ------------------------------------------------------------------------------
 Layout::Layout(float top, float left, float width, float height, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
@@ -119,90 +139,54 @@ Layout::Layout(float top, float left, float width, float height, const std::stri
 	// Leave rows and columns empty for now
 }
 
-std::optional<Row*> Layout::AddRow(RowColumnDefinition definition) noexcept
+Row* Layout::AddRow(RowColumnDefinition definition)
 {
 	switch (definition.Type)
 	{
-	case RowColumnType::FIXED:		
-		if (definition.Value < 0.0f)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddRow, with an invalid FIXED value ({}). Must be between greater than 0", __FILE__, __LINE__, m_name, definition.Value);
-			EG_CORE_ERROR("    Unable to add row -> Ignoring it");
-			return std::nullopt;
-		}
-		else if (definition.Value > m_height)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddRow, with a FIXED height ({}) greater than the layout's current height ({})", __FILE__, __LINE__, m_name, definition.Value, m_height);
-			EG_CORE_ERROR("    Unable to add row -> Ignoring it");
-			return std::nullopt;
-		}
+	case RowColumnType::FIXED:
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value > 0.0f, "Layout (name: {}) called AddRow(), with an invalid FIXED value ({}). Must be between greater than 0", m_name, definition.Value);
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value <= m_height, "Layout (name: {}) called AddRow, with a FIXED height ({}) greater than the layout's current height ({})", m_name, definition.Value, m_height);
 		break;
 
 	case RowColumnType::PERCENT:
-		if (definition.Value > 1.0f || definition.Value < 0.0f)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddRow, with an invalid PERCENT height ({}). Must be between [0, 1]", __FILE__, __LINE__, m_name, definition.Value);
-			EG_CORE_ERROR("    Unable to add row -> Ignoring it");
-			return std::nullopt;
-		}
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value <= 1.0f && definition.Value > 0.0f, "Layout (name: {}) called AddRow, with an invalid PERCENT height ({}). Must be between [0, 1]", m_name, definition.Value);
 		break;
 
 	case RowColumnType::STAR:
-		if (definition.Value < 0.0f)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddRow, with an invalid STAR value ({}). Must be between greater than 0", __FILE__, __LINE__, m_name, definition.Value);
-			EG_CORE_ERROR("    Unable to add row -> Ignoring it");
-			return std::nullopt;
-		}
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value > 0.0f, "Layout (name: {}) called AddRow, with an invalid STAR value ({}). Must be between greater than 0", m_name, definition.Value);
 		break;
 	}
 
 	m_rowDefinitions.push_back(definition);
 	UpdateRows();
 
+	EG_CORE_ASSERT(m_rows.size() > 0, "Adding row failed. Should have thrown exception.");
+	EG_CORE_ASSERT(&m_rows.back() != nullptr, "Row entry should never be nullptr. Should have thrown exception.");
 	return &m_rows.back();
 }
-std::optional<Column*> Layout::AddColumn(RowColumnDefinition definition) noexcept
+Column* Layout::AddColumn(RowColumnDefinition definition)
 {
 	switch (definition.Type)
 	{
 	case RowColumnType::FIXED:
-		if (definition.Value < 0.0f)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddColumn, with an invalid FIXED value ({}). Must be between greater than 0", __FILE__, __LINE__, m_name, definition.Value);
-			EG_CORE_ERROR("    Unable to add column -> Ignoring it");
-			return std::nullopt;
-		}
-		else if (definition.Value > m_height)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddColumn, with a FIXED width ({}) greater than the layout's current width ({})", __FILE__, __LINE__, m_name, definition.Value, m_width);
-			EG_CORE_ERROR("    Unable to add column -> Ignoring it");
-			return std::nullopt;
-		}
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value > 0.0f, "Layout (name: {}) called AddColumn, with an invalid FIXED value ({}). Must be between greater than 0", m_name, definition.Value);
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value <= m_height, "Layout (name: {}) called AddColumn, with a FIXED width ({}) greater than the layout's current width ({})", m_name, definition.Value, m_width);
 		break;
 
 	case RowColumnType::PERCENT:
-		if (definition.Value > 1.0f || definition.Value < 0.0f)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddColumn, with an invalid PERCENT height ({}). Must be between [0, 1]", __FILE__, __LINE__, m_name, definition.Value);
-			EG_CORE_ERROR("    Unable to add column -> Ignoring it");
-			return std::nullopt;
-		}
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value <= 1.0f && definition.Value > 0.0f, "Layout (name: {}) called AddColumn, with an invalid PERCENT height ({}). Must be between (0, 1]", m_name, definition.Value);
 		break;
 
 	case RowColumnType::STAR:
-		if (definition.Value < 0.0f)
-		{
-			EG_CORE_ERROR("{}:{} - Layout (name: {}) called AddColumn, with an invalid STAR value ({}). Must be between greater than 0", __FILE__, __LINE__, m_name, definition.Value);
-			EG_CORE_ERROR("    Unable to add column -> Ignoring it");
-			return std::nullopt;
-		}
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value > 0.0f, "Layout (name: {}) called AddColumn, with an invalid STAR value ({}). Must be between greater than 0", m_name, definition.Value);
 		break;
 	}
 
 	m_columnDefinitions.push_back(definition);
 	UpdateColumns();
 
+	EG_CORE_ASSERT(m_columns.size() > 0, "Adding column failed. Should have thrown exception.");
+	EG_CORE_ASSERT(&m_columns.back() != nullptr, "Column entry should never be nullptr. Should have thrown exception.");
 	return &m_columns.back();
 }
 
@@ -222,7 +206,7 @@ void Layout::UpdateRows() noexcept
 	// If there are no rows, log a warning but then create a single row that takes up all the space
 	if (m_rowDefinitions.size() == 0)
 	{
-		EG_CORE_WARN("{}:{} - Layout (name: {}) called UpdateRows, but no rows exist", __FILE__, __LINE__, m_name);
+		EG_CORE_WARN("{}:{} - Layout (name: {}) called UpdateRows, but no row definitions exist", __FILE__, __LINE__, m_name);
 		AddRow({ RowColumnType::STAR, 1.0f });
 	}
 

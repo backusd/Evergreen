@@ -654,56 +654,49 @@ void JSONLoaders::LoadLayoutRowDefinitions(Layout* layout, json& data)
 			auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(rowDefinition["Height"], layout);
 
 			// Create the row and get a pointer to it so we can edit it further
-			if (std::optional<Row*> row = layout->AddRow({ rowColType, rowColSize }))
-			{
-				// Before looping over all the row definition key/value pairs, first check if we need to import other json data
-				ImportJSON(rowDefinition);
+			Row* row = layout->AddRow({ rowColType, rowColSize });
 
-				// Iterate over the other keys in the row definition
-				for (auto& [key, value] : rowDefinition.items())
+			// Before looping over all the row definition key/value pairs, first check if we need to import other json data
+			ImportJSON(rowDefinition);
+
+			// Iterate over the other keys in the row definition
+			for (auto& [key, value] : rowDefinition.items())
+			{
+				if (key.compare("Height") == 0 || key.compare("comment") == 0 || key.compare("import") == 0)
+					continue;
+				else if (key.compare("TopAdjustable") == 0)
 				{
-					if (key.compare("Height") == 0 || key.compare("comment") == 0 || key.compare("import") == 0)
-						continue;
-					else if (key.compare("TopAdjustable") == 0)
-					{
-						JSON_LOADER_EXCEPTION_IF_FALSE(rowDefinition[key].is_boolean(), "RowDefinition TopAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key].dump(4));
-						row.value()->TopIsAdjustable(rowDefinition[key].get<bool>());
-					}
-					else if (key.compare("BottomAdjustable") == 0)
-					{
-						JSON_LOADER_EXCEPTION_IF_FALSE(rowDefinition[key].is_boolean(), "RowDefinition BottomAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key].dump(4));
-						row.value()->BottomIsAdjustable(rowDefinition[key].get<bool>());
-					}
-					else if (key.compare("MaxHeight") == 0)
-					{
-						auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout);
-						row.value()->MaxHeight({ type, size });
-					}
-					else if (key.compare("MinHeight") == 0)
-					{
-						auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout);
-						row.value()->MinHeight({ type, size });
-					}
-					else
-					{
-						// Just a warning because the key will be ignored
-						EG_CORE_WARN("{}:{} - Unrecognized key ({}) in RowDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
-					}
+					JSON_LOADER_EXCEPTION_IF_FALSE(rowDefinition[key].is_boolean(), "RowDefinition TopAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key].dump(4));
+					row->TopIsAdjustable(rowDefinition[key].get<bool>());
+				}
+				else if (key.compare("BottomAdjustable") == 0)
+				{
+					JSON_LOADER_EXCEPTION_IF_FALSE(rowDefinition[key].is_boolean(), "RowDefinition BottomAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), rowDefinition[key].dump(4));
+					row->BottomIsAdjustable(rowDefinition[key].get<bool>());
+				}
+				else if (key.compare("MaxHeight") == 0)
+				{
+					auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout);
+					row->MaxHeight({ type, size });
+				}
+				else if (key.compare("MinHeight") == 0)
+				{
+					auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout);
+					row->MinHeight({ type, size });
+				}
+				else
+				{
+					// Just a warning because the key will be ignored
+					EG_CORE_WARN("{}:{} - Unrecognized key ({}) in RowDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
 				}
 			}
-			else
-			{
-				JSON_LOADER_EXCEPTION("Failed to add a row for layout with name: {}\nIntended type: {} - Intended height: {}", layout->Name(), rowColType, rowColSize);
-			}
+
 		}
 	}
 	else
 	{
 		// Add a single row that spans the layout
-		if (!layout->AddRow({ RowColumnType::STAR, 1.0f }))
-		{
-			JSON_LOADER_EXCEPTION("Failed to add a single default row for layout with name: {}", layout->Name());
-		}
+		layout->AddRow({ RowColumnType::STAR, 1.0f });
 	}
 }
 void JSONLoaders::LoadLayoutColumnDefinitions(Layout* layout, json& data)
@@ -724,56 +717,48 @@ void JSONLoaders::LoadLayoutColumnDefinitions(Layout* layout, json& data)
 			auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(columnDefinition["Width"], layout);
 
 			// Create the column and get a pointer to it so we can edit it further
-			if (std::optional<Column*> column = layout->AddColumn({ rowColType, rowColSize }))
-			{
-				// Before looping over all the row definition key/value pairs, first check if we need to import other json data
-				ImportJSON(columnDefinition);
+			Column* column = layout->AddColumn({ rowColType, rowColSize });
 
-				// Iterate over the other keys in the column definition
-				for (auto& [key, value] : columnDefinition.items())
-				{
-					if (key.compare("Width") == 0 || key.compare("comment") == 0 || key.compare("import") == 0)
-						continue;
-					else if (key.compare("LeftAdjustable") == 0)
-					{
-						JSON_LOADER_EXCEPTION_IF_FALSE(columnDefinition[key].is_boolean(), "ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key].dump(4));
-						column.value()->LeftIsAdjustable(columnDefinition[key].get<bool>());
-					}
-					else if (key.compare("RightAdjustable") == 0)
-					{
-						JSON_LOADER_EXCEPTION_IF_FALSE(columnDefinition[key].is_boolean(), "ColumnDefinition RightAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key].dump(4));
-						column.value()->RightIsAdjustable(columnDefinition[key].get<bool>());
-					}
-					else if (key.compare("MaxWidth") == 0)
-					{
-						auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout);
-						column.value()->MaxWidth({ type, size });
-					}
-					else if (key.compare("MinWidth") == 0)
-					{
-						auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout);
-						column.value()->MinWidth({ type, size });
-					}
-					else
-					{
-						// Just a warning because the key will be ignored
-						EG_CORE_WARN("{}:{} - Unrecognized key ({}) in ColumnDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
-					}
-				}
-			}
-			else
+			// Before looping over all the row definition key/value pairs, first check if we need to import other json data
+			ImportJSON(columnDefinition);
+
+			// Iterate over the other keys in the column definition
+			for (auto& [key, value] : columnDefinition.items())
 			{
-				JSON_LOADER_EXCEPTION("Failed to add a column for layout with name: {}\nIntended type: {} - Intended width: {}", layout->Name(), rowColType, rowColSize);
+				if (key.compare("Width") == 0 || key.compare("comment") == 0 || key.compare("import") == 0)
+					continue;
+				else if (key.compare("LeftAdjustable") == 0)
+				{
+					JSON_LOADER_EXCEPTION_IF_FALSE(columnDefinition[key].is_boolean(), "ColumnDefinition LeftAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key].dump(4));
+					column->LeftIsAdjustable(columnDefinition[key].get<bool>());
+				}
+				else if (key.compare("RightAdjustable") == 0)
+				{
+					JSON_LOADER_EXCEPTION_IF_FALSE(columnDefinition[key].is_boolean(), "ColumnDefinition RightAdjustable field for layout '{}' must have boolean type.\nInvalid value: {}", layout->Name(), columnDefinition[key].dump(4));
+					column->RightIsAdjustable(columnDefinition[key].get<bool>());
+				}
+				else if (key.compare("MaxWidth") == 0)
+				{
+					auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout);
+					column->MaxWidth({ type, size });
+				}
+				else if (key.compare("MinWidth") == 0)
+				{
+					auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout);
+					column->MinWidth({ type, size });
+				}
+				else
+				{
+					// Just a warning because the key will be ignored
+					EG_CORE_WARN("{}:{} - Unrecognized key ({}) in ColumnDefinition for layout '{}'.", __FILE__, __LINE__, key, layout->Name());
+				}
 			}
 		}
 	}
 	else
 	{
 		// Add a single column that spans the layout
-		if (!layout->AddColumn({ RowColumnType::STAR, 1.0f }))
-		{
-			JSON_LOADER_EXCEPTION("Failed to add a single default column for layout with name: {}", layout->Name());
-		}
+		layout->AddColumn({ RowColumnType::STAR, 1.0f });
 	}
 }
 void JSONLoaders::LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
