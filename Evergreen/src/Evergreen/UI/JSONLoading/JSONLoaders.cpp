@@ -401,17 +401,18 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadBitmapBrush(std::shared_ptr<DeviceR
 	return std::move(std::make_unique<BitmapBrush>(deviceResources, file, method, props));
 }
 
-std::shared_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename)
+std::unique_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
 	// Check to see if name of the style already exists, otherwise, parse the json data
+
 	if (m_stylesCache.find(stylename) != m_stylesCache.end())
-		return m_stylesCache[stylename];
+		return std::move(m_stylesCache[stylename]->Duplicate());
 
-	std::shared_ptr<Style> style = m_styleLoaders[key](deviceResources, data, stylename);
+	std::unique_ptr<Style> style = m_styleLoaders[key](deviceResources, data, stylename);
 
-	m_stylesCache[stylename] = style;
+	m_stylesCache[stylename] = std::move(style->Duplicate());
 
 	return style;
 }
@@ -439,7 +440,7 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 		LoadGlobalStyles(deviceResources);
 
 		// Load all the json data under the 'root' key
-		LoadLayoutDetails(deviceResources, rootLayout, m_jsonRoot["root"]);
+ 		LoadLayoutDetails(deviceResources, rootLayout, m_jsonRoot["root"]);
 
 		// There is a somewhat weird behavior in DirectX reporting memory leaks on application shutdown.
 		// In a DEBUG build, DirectX will report on any DirectX resources that have outstanding reference
@@ -549,6 +550,9 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 	// First, import any necessary data
 	ImportJSON(data);
 
+	// Load layout brush
+	LoadLayoutBrush(deviceResources, layout, data);
+
 	// Load Row/Column definitions
 	LoadLayoutRowDefinitions(layout, data);
 	LoadLayoutColumnDefinitions(layout, data);
@@ -558,6 +562,7 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 	{
 		if (key.compare("import") == 0 ||
 			key.compare("Type") == 0 ||
+			key.compare("Brush") == 0 ||
 			key.compare("Row") == 0 ||
 			key.compare("Column") == 0 ||
 			key.compare("RowSpan") == 0 ||
@@ -636,8 +641,19 @@ void JSONLoaders::ImportJSONImpl(json& data)
 		data.erase("import");
 	}
 }
+void JSONLoaders::LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
+{
+	EG_CORE_ASSERT(layout != nullptr, "Layout cannot be nullptr");
+
+	JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("Brush"), "Layout must contain key 'Brush'. Invalid Layout: {}", data.dump(4));
+
+	std::unique_ptr<ColorBrush> brush = JSONLoaders::LoadBrush(deviceResources, data["Brush"]);
+	layout->Brush(std::move(brush));
+}
 void JSONLoaders::LoadLayoutRowDefinitions(Layout* layout, json& data)
 {
+	EG_CORE_ASSERT(layout != nullptr, "Layout cannot be nullptr");
+
 	// The 'RowDefinitions' parameter is not required
 	// If not included, a single row will be created that spans the layout
 	if (data.contains("RowDefinitions"))

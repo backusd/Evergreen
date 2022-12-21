@@ -6,31 +6,25 @@
 namespace Evergreen
 {
 Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, 
-	std::unique_ptr<ColorBrush> brush, std::shared_ptr<TextStyle> style, const Evergreen::Margin& margin) noexcept :
+	std::unique_ptr<ColorBrush> brush, std::unique_ptr<TextStyle> style, const Evergreen::Margin& margin) noexcept :
 	Control(deviceResources, margin),
 	m_text(text),
-	m_style(style),
+	m_style(std::move(style)),
 	m_textLayout(nullptr),
 	m_colorBrush(std::move(brush))
 {
 	// We cannot instantiate a SolidColorBrush as a default parameter, so the default is nullptr.
 	// So if the colorBrush is nullptr, create a default SolidColorBrush
 	if (m_colorBrush == nullptr)
-		m_colorBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+		m_colorBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
 	if (m_style == nullptr)
-		m_style = std::make_shared<TextStyle>(m_deviceResources);
+		m_style = std::make_unique<TextStyle>(m_deviceResources);
 
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Call text changed to initialize the text layout
 	TextChanged();
-}
-
-void Text::Update() const noexcept
-{
-	for (auto& fn : m_valueBindings)
-		fn((Text*)this);	// I guess we need the cast because otherwise 'this' gives a const Text*
 }
 
 void Text::Render() const noexcept

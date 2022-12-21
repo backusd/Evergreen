@@ -18,7 +18,7 @@ public:
 	Text(std::shared_ptr<DeviceResources> deviceResources, 
 		const std::wstring& text = L"",
 		std::unique_ptr<ColorBrush> brush = nullptr,
-		std::shared_ptr<TextStyle> style = nullptr, 
+		std::unique_ptr<TextStyle> style = nullptr, 
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 
 	// I'm deleting these for now because in order to make a copy of m_colorBrush,
@@ -30,7 +30,7 @@ public:
 	virtual ~Text() noexcept override {}
 
 	// Inherited from Control
-	void Update() const noexcept override;
+	void Update() const noexcept override {}
 	void Render() const noexcept override;
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
@@ -38,14 +38,12 @@ public:
 
 	// Text specific
 	const std::wstring& GetText() const noexcept { return m_text; }
-	std::shared_ptr<TextStyle> Style() const noexcept { return m_style; }
-
+	TextStyle* GetTextStyle() const noexcept { return m_style.get(); }
+	ColorBrush* GetColorBrush() const noexcept { return m_colorBrush.get(); }
 
 	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
-	void Style(std::shared_ptr<TextStyle> style) noexcept { m_style = style; TextChanged(); }
-
-	void AddValueBinding(const std::function<void(Text*)>& fn) noexcept { m_valueBindings.push_back(fn); }
-
+	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept { m_style = std::move(style); TextChanged(); }
+	void SetColorBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
 
 private:
 	void TextChanged();
@@ -57,12 +55,10 @@ private:
 
 	void UpdateBrushDrawRegion() noexcept;
 
-	std::vector<std::function<void(Text*)>> m_valueBindings;
-
-	std::wstring							m_text;
-	std::shared_ptr<TextStyle>				m_style;
-	std::unique_ptr<Evergreen::ColorBrush>	m_colorBrush;
-	DWRITE_TEXT_METRICS						m_textMetrics;
+	std::wstring				m_text;
+	std::unique_ptr<TextStyle>	m_style;
+	std::unique_ptr<ColorBrush>	m_colorBrush;
+	DWRITE_TEXT_METRICS			m_textMetrics;
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4>	m_textLayout;
 };

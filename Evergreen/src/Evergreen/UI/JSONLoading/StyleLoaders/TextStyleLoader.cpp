@@ -4,7 +4,7 @@
 namespace Evergreen
 {
 
-std::shared_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name)
+std::unique_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -60,7 +60,7 @@ std::shared_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources
 	}
 
 	// Return a new TextStyle
-	return std::make_shared<TextStyle>(deviceResources, name, fontFamily, fontSize, fontWeight, 
+	return std::make_unique<TextStyle>(deviceResources, name, fontFamily, fontSize, fontWeight, 
 		fontStyle, fontStretch,	textAlignment, paragraphAlignment, wordWrapping);
 }
 

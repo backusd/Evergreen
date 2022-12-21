@@ -31,7 +31,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	EG_CORE_ASSERT(brush != nullptr, "Not allowed to return nullptr. Should have thrown exception");
 
 	// Parse Style
-	std::shared_ptr<TextStyle> style = ParseStyle(deviceResources, data);
+	std::unique_ptr<TextStyle> style = ParseStyle(deviceResources, data);
 	EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
 
 
@@ -46,7 +46,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Create the new Text control
-	return parent->CreateControl<Text>(rowCol, deviceResources, text, std::move(brush), style, margin);
+	return parent->CreateControl<Text>(rowCol, deviceResources, text, std::move(brush), std::move(style), margin);
 }
 
 void TextLoader::ValidateJSONData(const json& data)
@@ -110,7 +110,7 @@ std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResourc
 
 	return std::move(JSONLoaders::LoadBrush(deviceResources, data["Brush"]));
 }
-std::shared_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -129,10 +129,10 @@ std::shared_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResource
 		stylename = m_name + "_TextStyle";
 	}
 
-	std::shared_ptr<Style> style = JSONLoaders::LoadStyle(deviceResources, "TextStyle", data, stylename);
+	std::unique_ptr<Style> style = JSONLoaders::LoadStyle(deviceResources, "TextStyle", data, stylename);
 	EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
 
-	return std::static_pointer_cast<TextStyle>(style);
+	return std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(style.release())));
 }
 
 

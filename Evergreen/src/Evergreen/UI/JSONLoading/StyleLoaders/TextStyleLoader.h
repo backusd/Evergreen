@@ -22,7 +22,7 @@ public:
 	void operator=(const TextStyleLoader&) = delete;
 	~TextStyleLoader() noexcept {}
 
-	static std::shared_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "") { return Get().LoadImpl(deviceResources, data, name); }
+	static std::unique_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "") { return std::move(Get().LoadImpl(deviceResources, data, name)); }
 
 private:
 	TextStyleLoader() noexcept = default;
@@ -33,7 +33,7 @@ private:
 		return loader;
 	}
 
-	std::shared_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "");
+	std::unique_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "");
 
 	Evergreen::FontFamily ParseFontFamily(const json& data);
 	float ParseFontSize(const json& data);

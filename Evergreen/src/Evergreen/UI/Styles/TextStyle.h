@@ -32,10 +32,11 @@ public:
 		const std::wstring& locale = L"en-US"
 	) noexcept;
 
-	// Deleting these because I'm not yet sure the best way to copy the unique_ptr to ColorBrush
-	TextStyle(const TextStyle&) noexcept = delete;
-	void operator=(const TextStyle&) noexcept = delete;
+	TextStyle(const TextStyle&) noexcept;
+	void operator=(const TextStyle&) noexcept;
 	~TextStyle() noexcept override {}
+
+	std::unique_ptr<Style> Duplicate() const noexcept override;
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
 

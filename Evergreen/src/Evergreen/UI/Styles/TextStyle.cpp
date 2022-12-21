@@ -26,6 +26,38 @@ TextStyle::TextStyle(
 {
 	Initialize();
 }
+TextStyle::TextStyle(const TextStyle& rhs) noexcept : 
+	Style(rhs.m_deviceResources, rhs.m_name + "_copy"),
+	m_fontFamily(rhs.m_fontFamily), 
+	m_fontWeight(rhs.m_fontWeight), 
+	m_fontStyle(rhs.m_fontStyle),
+	m_fontStretch(rhs.m_fontStretch), 
+	m_fontSize(rhs.m_fontSize), 
+	m_locale(rhs.m_locale), 
+	m_textAlignment(rhs.m_textAlignment),
+	m_paragraphAlignment(rhs.m_paragraphAlignment),
+	m_wordWrapping(rhs.m_wordWrapping), 
+	m_trimming(rhs.m_trimming)
+{
+	Initialize();
+}
+void TextStyle::operator=(const TextStyle& rhs) noexcept
+{
+	m_deviceResources = rhs.m_deviceResources;
+	m_name = rhs.m_name + "_copy";
+	m_fontFamily = rhs.m_fontFamily;
+	m_fontWeight = rhs.m_fontWeight;
+	m_fontStyle = rhs.m_fontStyle;
+	m_fontStretch = rhs.m_fontStretch;
+	m_fontSize = rhs.m_fontSize;
+	m_locale = rhs.m_locale;
+	m_textAlignment = rhs.m_textAlignment;
+	m_paragraphAlignment = rhs.m_paragraphAlignment;
+	m_wordWrapping = rhs.m_wordWrapping;
+	m_trimming = rhs.m_trimming;
+
+	Initialize();
+}
 
 void TextStyle::Initialize() noexcept
 {
@@ -39,6 +71,10 @@ void TextStyle::Initialize() noexcept
 	UpdateTextFormat();
 }
 
+std::unique_ptr<Style> TextStyle::Duplicate() const noexcept
+{
+	return std::move(std::make_unique<TextStyle>(*this));
+}
 
 void TextStyle::UpdateTextFormat() noexcept
 {

@@ -131,12 +131,17 @@ std::string LayoutException::GetErrorInfo() const noexcept
 }
 
 // Layout ------------------------------------------------------------------------------
-Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, float top, float left, float width, float height, const std::string& name) noexcept :
+Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, float top, float left, float width, float height, std::unique_ptr<ColorBrush> brush, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
 	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
 	m_adjustingLayout(false),
 	m_deviceResources(deviceResources)
 {
+	if (brush == nullptr)
+		m_colorBrush = std::make_unique<SolidColorBrush>(deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
+	else
+		m_colorBrush = std::move(brush);
+
 	// Leave rows and columns empty for now
 }
 
@@ -412,6 +417,9 @@ void Layout::Update() noexcept
 }
 void Layout::Render() const noexcept
 {
+	auto context = m_deviceResources->D2DDeviceContext();
+	context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_colorBrush->Get());
+
 	DrawBorders();
 
 	for (const std::unique_ptr<Control>& control : m_controls)
@@ -690,6 +698,7 @@ Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name
 			m_columns[position.Column].Left(),
 			m_columns[position.Column + position.ColumnSpan - 1].Right() - m_columns[position.Column].Left(),
 			m_rows[position.Row + position.RowSpan - 1].Bottom() - m_rows[position.Row].Top(),
+			nullptr,
 			name
 		)
 	);

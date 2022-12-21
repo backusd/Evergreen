@@ -9,8 +9,6 @@
 #include "Brushes/RadialBrush.h"
 #include "Brushes/BitmapBrush.h"
 
-#include <chrono>
-
 namespace Evergreen
 {
 UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
@@ -22,7 +20,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
 	
 	// Add built-in style loaders
-	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::shared_ptr<Style> { return TextStyleLoader::Load(deviceResources, data, styleName); });
+	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
 
 	LoadDefaultUI();
 }
@@ -36,7 +34,11 @@ void UI::LoadDefaultUI() noexcept
 
 
 	// TEST CODE
-	m_rootLayout = std::make_unique<Layout>(m_deviceResources, 0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout = std::make_unique<Layout>(
+		m_deviceResources, 
+		0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()),
+		nullptr, 
+		"root layout");
 	
 	Row* row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	row0->BottomIsAdjustable(true);
@@ -52,8 +54,8 @@ void UI::LoadDefaultUI() noexcept
 	column2->LeftIsAdjustable(true);
 
 	std::wstring textString = L"Some very long test text";
-	std::shared_ptr<TextStyle> defaultStyle = std::make_shared<TextStyle>(m_deviceResources);
-	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
+	std::unique_ptr<TextStyle> defaultStyle = std::make_unique<TextStyle>(m_deviceResources);
+	std::unique_ptr<TextStyle> style = std::make_unique<TextStyle>(
 		m_deviceResources,
 		"Custom Style",
 		Evergreen::FontFamily::Arial,
@@ -65,9 +67,9 @@ void UI::LoadDefaultUI() noexcept
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD
 	);
-	std::unique_ptr<SolidColorBrush> b1 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	std::unique_ptr<SolidColorBrush> b1 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
-	Text* text = m_rootLayout->CreateControl<Text>(m_deviceResources, textString, std::move(b1), defaultStyle);
+	Text* text = m_rootLayout->CreateControl<Text>(m_deviceResources, textString, std::move(b1), std::move(defaultStyle));
 
 	RowColumnPosition position;
 	position.Row = 1;
@@ -76,9 +78,9 @@ void UI::LoadDefaultUI() noexcept
 	position.ColumnSpan = 1;
 
 	std::wstring s = L"Custom Text";
-	std::unique_ptr<SolidColorBrush> b2 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	std::unique_ptr<SolidColorBrush> b2 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
-	Text* text2 = m_rootLayout->CreateControl<Text>(position, m_deviceResources, s, std::move(b2), style);
+	Text* text2 = m_rootLayout->CreateControl<Text>(position, m_deviceResources, s, std::move(b2), std::move(style));
 
 	RowColumnPosition position2;
 	position2.Row = 0;
@@ -89,22 +91,18 @@ void UI::LoadDefaultUI() noexcept
 	Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
 	text3->SetText(L"nooooo...");
 
-	text3->AddValueBinding([](Text* text) 
-		{
-			auto now = std::chrono::system_clock::now();
-			std::string s = std::format("{}", now);
-			std::wstring newtext(s.begin(), s.end());
 
-			text->SetText(newtext);
-		}
-	);
 
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
 {
 	// Create a new root layout - this will destroy any layout that previously existed
-	m_rootLayout = std::make_unique<Layout>(m_deviceResources, 0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()), "Root Layout");
+	m_rootLayout = std::make_unique<Layout>(
+		m_deviceResources, 
+		0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()),
+		nullptr,
+		"Root Layout");
 
 	if (!JSONLoaders::LoadUI(m_deviceResources, m_jsonRootDirectory, fileName, m_rootLayout.get()))
 	{
@@ -114,11 +112,15 @@ void UI::LoadUI(const std::string& fileName) noexcept
 
 void UI::LoadErrorUI() noexcept
 {
-	m_rootLayout = std::make_unique<Layout>(m_deviceResources, 0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()));
+	m_rootLayout = std::make_unique<Layout>(
+		m_deviceResources, 
+		0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()),
+		nullptr, 
+		"error UI root layout");
 	m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	m_rootLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 	
-	std::shared_ptr<TextStyle> style = std::make_shared<TextStyle>(
+	std::unique_ptr<TextStyle> style = std::make_unique<TextStyle>(
 		m_deviceResources,
 		"Error Style",
 		Evergreen::FontFamily::Arial,
@@ -138,9 +140,9 @@ void UI::LoadErrorUI() noexcept
 	for (const std::string& s : m_errorMessages)
 		text = std::format(L"{}\n{}\n", text, std::wstring(s.begin(), s.end()));
 	*/
-	std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black, 1.0f));
+	std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 	
-	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), style);
+	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), std::move(style));
 }
 
 void UI::Update() noexcept

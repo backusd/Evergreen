@@ -21,7 +21,7 @@ namespace Evergreen
 class EVERGREEN_API JSONLoaders
 {
 	using ControlLoaderFn = std::function<Control*(std::shared_ptr<DeviceResources>, Layout*, const json&, const std::string&)>;
-	using StyleLoaderFn = std::function<std::shared_ptr<Style>(std::shared_ptr<DeviceResources>, const json&, const std::string&)>;
+	using StyleLoaderFn = std::function<std::unique_ptr<Style>(std::shared_ptr<DeviceResources>, const json&, const std::string&)>;
 
 
 public:
@@ -33,7 +33,7 @@ public:
 	static void AddStyleLoader(std::string key, StyleLoaderFn loader) noexcept { Get().AddStyleLoaderImpl(key, loader); }
 
 	static Control* LoadControl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name) { return Get().LoadControlImpl(deviceResources, key, parent, data, name); }
-	static std::shared_ptr<Style> LoadStyle(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename) { return Get().LoadStyleImpl(deviceResources, key, data, stylename); }
+	static std::unique_ptr<Style> LoadStyle(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename) { return std::move(Get().LoadStyleImpl(deviceResources, key, data, stylename)); }
 	static std::unique_ptr<ColorBrush> LoadBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
 	static D2D1_COLOR_F LoadColor(const json& data);
 
@@ -63,7 +63,7 @@ private:
 	void AddStyleLoaderImpl(std::string key, StyleLoaderFn loader) noexcept { m_styleLoaders[key] = loader; }
 
 	Control* LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name);
-	std::shared_ptr<Style> LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename);
+	std::unique_ptr<Style> LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename);
 
 	static std::unique_ptr<ColorBrush> LoadSolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
 	static std::unique_ptr<ColorBrush> LoadGradientBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
@@ -75,6 +75,8 @@ private:
 	void LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources);
 	void LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 	
+
+	void LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 	void LoadLayoutRowDefinitions(Layout* layout, json& data);
 	void LoadLayoutColumnDefinitions(Layout* layout, json& data);
 	void LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
@@ -92,7 +94,7 @@ private:
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;
 
 	// Keep a cache of styles that have been parsed for quick lookup
-	std::unordered_map<std::string, std::shared_ptr<Style>> m_stylesCache;
+	std::unordered_map<std::string, std::unique_ptr<Style>> m_stylesCache;
 
 	json					m_jsonRoot;
 	std::filesystem::path	m_jsonRootDirectory;

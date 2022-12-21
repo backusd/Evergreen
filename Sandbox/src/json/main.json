@@ -100,6 +100,7 @@
 
 
 	"root": {
+		"Brush": "Gray",
 		"RowDefinitions": [
 			{
 				"Height": "50",
@@ -131,6 +132,7 @@
 
 		"MenuBarLayout": {
 			"Type": "Layout",
+			"Brush": "Green",
 			"import": "MenuBarLayoutPosition",
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [

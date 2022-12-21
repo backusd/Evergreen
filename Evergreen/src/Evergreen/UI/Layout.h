@@ -4,6 +4,7 @@
 #include "Evergreen/Log.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Evergreen/UI/Controls/Control.h"
+#include "Evergreen/UI/Brushes/Brushes.h"
 #include "Evergreen/Exceptions/BaseException.h"
 
 
@@ -158,7 +159,8 @@ private:
 class EVERGREEN_API Layout
 {
 public:
-	Layout(std::shared_ptr<DeviceResources> m_deviceResources, float top, float left, float width, float height, const std::string& name = "Unnamed") noexcept;
+	Layout(std::shared_ptr<DeviceResources> m_deviceResources, float top, float left, float width, float height, 
+		std::unique_ptr<ColorBrush> brush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
 
@@ -173,7 +175,8 @@ public:
 	template<class T, class ... U>
 	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
 
-
+	void Brush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
+	ColorBrush* Brush() const noexcept { return m_colorBrush.get(); }
 
 	Row* AddRow(RowColumnDefinition definition);
 	Column* AddColumn(RowColumnDefinition definition);
@@ -212,6 +215,8 @@ private:
 	std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
+
+	std::unique_ptr<Evergreen::ColorBrush> m_colorBrush;
 
 	float							 m_top;
 	float							 m_left;

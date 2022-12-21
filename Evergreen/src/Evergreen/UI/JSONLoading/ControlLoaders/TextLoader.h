@@ -36,7 +36,7 @@ private:
 
 	std::wstring ParseText(const json& data);
 	std::unique_ptr<ColorBrush> ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
-	std::shared_ptr<TextStyle> ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data);
+	std::unique_ptr<TextStyle> ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data);
 
 
 };
