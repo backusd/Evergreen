@@ -39,6 +39,7 @@ public:
 	~GradientBrush() noexcept override {}
 
 	void Refresh() noexcept override;
+	std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
 	void Stops(const std::vector<D2D1_GRADIENT_STOP>& stops) noexcept;
 	void Gamma(D2D1_GAMMA gamma) noexcept;

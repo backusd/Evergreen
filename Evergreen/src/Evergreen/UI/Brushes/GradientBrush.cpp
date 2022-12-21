@@ -69,6 +69,10 @@ void GradientBrush::operator=(const GradientBrush& rhs) noexcept
 	// RefreshGradientAxis(); <-- No need to do this because copying the gradient axis start/end should already be accurate
 	Refresh();
 }
+std::unique_ptr<ColorBrush> GradientBrush::Duplicate() noexcept
+{
+	return std::move(std::make_unique<GradientBrush>(*this));
+}
 void GradientBrush::RefreshGradientAxis() noexcept
 {
 	switch (m_axis)

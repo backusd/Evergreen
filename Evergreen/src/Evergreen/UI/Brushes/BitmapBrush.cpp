@@ -43,7 +43,10 @@ void BitmapBrush::operator=(const BitmapBrush& rhs) noexcept
 	TransformToRect();
 	Refresh();
 }
-
+std::unique_ptr<ColorBrush> BitmapBrush::Duplicate() noexcept
+{
+	return std::move(std::make_unique<BitmapBrush>(*this));
+}
 void BitmapBrush::LoadBitmapFile(const std::wstring& filename) noexcept
 { 
 	m_bitmapFileName = filename; 

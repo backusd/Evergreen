@@ -25,8 +25,9 @@ public:
 	// you would have to check if the incoming m_colorBrush can be cast to each
 	// of the derived ColorBrush types and then create the appropriate unique_ptr.
 	// I just don't want to do this at the moment...
-	Text(const Text& text) noexcept = delete;		
-	void operator=(const Text&) noexcept = delete;
+	// ...could implement Duplicate() the way I did for TextStyle
+	Text(const Text& text) noexcept;		
+	void operator=(const Text&) noexcept;
 	virtual ~Text() noexcept override {}
 
 	// Inherited from Control

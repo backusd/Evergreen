@@ -25,6 +25,11 @@ void SolidColorBrush::operator=(const SolidColorBrush& rhs) noexcept
 	Refresh();
 }
 
+std::unique_ptr<ColorBrush> SolidColorBrush::Duplicate() noexcept
+{
+	return std::move(std::make_unique<SolidColorBrush>(*this));
+}
+
 void SolidColorBrush::Refresh() noexcept
 {
 	ComPtr<ID2D1SolidColorBrush> solidBrush;

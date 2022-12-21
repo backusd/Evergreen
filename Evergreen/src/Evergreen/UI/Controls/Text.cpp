@@ -26,6 +26,31 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 	// Call text changed to initialize the text layout
 	TextChanged();
 }
+Text::Text(const Text& rhs) noexcept :
+	Control(rhs.m_deviceResources, rhs.m_margin),
+	m_text(rhs.m_text),
+	m_style(std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(rhs.m_style->Duplicate().release())))),
+	m_textLayout(nullptr),
+	m_colorBrush(std::move(std::unique_ptr<ColorBrush>(static_cast<ColorBrush*>(rhs.m_colorBrush->Duplicate().release()))))
+{
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+
+	// Call text changed to initialize the text layout
+	TextChanged();
+}
+void Text::operator=(const Text& rhs) noexcept
+{
+	m_text = rhs.m_text;
+	m_textLayout = nullptr;
+	m_style = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(rhs.m_style->Duplicate().release())));
+	m_colorBrush = std::move(std::unique_ptr<ColorBrush>(static_cast<ColorBrush*>(rhs.m_colorBrush->Duplicate().release())));
+
+	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
+
+	// Call text changed to initialize the text layout
+	TextChanged();
+}
+
 
 void Text::Render() const noexcept
 {

@@ -29,6 +29,7 @@ public:
 	~BitmapBrush() noexcept override {}
 
 	void Refresh() noexcept override;
+	std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
 	void LoadBitmapFile(const std::wstring& filename) noexcept;
 

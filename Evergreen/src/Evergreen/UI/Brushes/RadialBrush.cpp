@@ -57,7 +57,10 @@ void RadialBrush::operator=(const RadialBrush& rhs) noexcept
 	RefreshGradientStops();
 	Refresh();
 }
-
+std::unique_ptr<ColorBrush> RadialBrush::Duplicate() noexcept
+{
+	return std::move(std::make_unique<RadialBrush>(*this));
+}
 void RadialBrush::RefreshGradientStops() noexcept
 {
 	// Something went wrong if there are not at least two stops
