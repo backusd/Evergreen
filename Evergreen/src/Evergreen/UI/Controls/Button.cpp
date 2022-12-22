@@ -20,32 +20,30 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	if (m_borderBrush == nullptr)
 		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
-	// Just create the layout with a dummy size that will get updated when the allowed region is updated
-	// NOTE: Have the layout use a transparent brush so it does not overwrite coloring of the Button background
-	//       
-	std::unique_ptr<SolidColorBrush> transparentBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+	// Move the background brush into the Button's layout. The button won't try to draw the background - will just allow the button's layout to draw the background
+	// Create it with a dummy size - will get adjusted later when the allowed region is updated
 	m_layout = std::make_unique<Layout>(
 		m_deviceResources,
 		0.0f, 0.0f, 1000.0f, 1000.0f,
-		std::move(transparentBrush),
+		std::move(m_backgroundBrush),
 		"button layout");
+
+	m_backgroundBrush = nullptr;
 }
 
 void Button::Render() const noexcept
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
-	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_backgroundBrush == nullptr, "Background brush is supposed to be nullptr");
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 
-	auto context = m_deviceResources->D2DDeviceContext();
-
-	context->FillRectangle(m_backgroundRect, m_backgroundBrush->Get());
-
-	if (m_borderWidth > 0.0f)
-		context->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);
-
+	// Have the layout draw the background and contents of the brush
 	m_layout->Render();
+
+	// Draw the border last so it appears on top
+	if (m_borderWidth > 0.0f)
+		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);	
 }
 
 void Button::ButtonChanged() noexcept
@@ -57,7 +55,6 @@ void Button::ButtonChanged() noexcept
 	m_backgroundRect.bottom = m_allowedRegion.bottom - m_margin.Bottom;
 
 	m_layout->Resize(m_backgroundRect);
-
 }
 
 void Button::OnMarginChanged() noexcept
@@ -66,9 +63,12 @@ void Button::OnMarginChanged() noexcept
 }
 void Button::OnAllowedRegionChanged() noexcept
 {
+	EG_CORE_ASSERT(m_backgroundBrush == nullptr, "Background brush is supposed to be nullptr");
+	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+
 	// If using a non-SolidColorBrush, we need to update the draw region for the brushes
-	m_backgroundBrush->SetDrawRegion(m_allowedRegion);
-	m_backgroundBrush->SetDrawRegion(m_allowedRegion);
+	// m_backgroundBrush->SetDrawRegion(m_allowedRegion);
+	m_borderBrush->SetDrawRegion(m_allowedRegion);
 
 	ButtonChanged();
 }

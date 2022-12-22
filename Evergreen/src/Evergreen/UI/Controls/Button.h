@@ -34,15 +34,11 @@ public:
 	ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
 	ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
 	Layout* GetLayout() const noexcept { return m_layout.get(); }
-	//float Height() const noexcept { return m_height; }
-	//float Width() const noexcept { return m_width; }
 	float BorderWidth() const noexcept { return m_borderWidth; }
 	const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
 
-	void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); }
+	virtual void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_layout->Brush(std::move(brush)); } // Pass the brush to the layout
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
-	//void Height(float height) noexcept { m_height = height; }
-	//void Width(float width) noexcept { m_width = width; }
 	void BorderWidth(float width) noexcept { m_borderWidth = width; }
 
 protected:
@@ -50,7 +46,6 @@ protected:
 
 	virtual void OnMarginChanged() noexcept override;
 	virtual void OnAllowedRegionChanged() noexcept override;
-	//virtual void OnPositionChanged() noexcept override {}
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;

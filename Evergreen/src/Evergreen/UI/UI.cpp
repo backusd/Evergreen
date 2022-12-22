@@ -107,6 +107,11 @@ void UI::LoadDefaultUI() noexcept
 		margin
 	);
 
+	Layout* buttonLayout = button->GetLayout();
+	buttonLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+
 	//Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
 	//text3->SetText(L"nooooo...");
 

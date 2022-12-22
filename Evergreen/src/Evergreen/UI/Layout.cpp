@@ -203,18 +203,17 @@ void Layout::UpdateLayout() noexcept
 	UpdateSubLayouts();
 	UpdateControls();
 
+	m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+
 #ifdef _DEBUG
 	LayoutCheck();
 #endif // _DEBUG
 }
 void Layout::UpdateRows() noexcept
 {
-	// If there are no rows, log a warning but then create a single row that takes up all the space
+	// If there are no rows, just return. We will work off the assumption that rows will be added later
 	if (m_rowDefinitions.size() == 0)
-	{
-		EG_CORE_WARN("{}:{} - Layout (name: {}) called UpdateRows, but no row definitions exist", __FILE__, __LINE__, m_name);
-		AddRow({ RowColumnType::STAR, 1.0f });
-	}
+		return;
 
 	// Get the total fixed & percent height
 	float totalFixedHeight = GetTotalFixedSize(m_rowDefinitions, m_height);
@@ -273,12 +272,9 @@ void Layout::UpdateRows() noexcept
 }
 void Layout::UpdateColumns() noexcept
 {
-	// If there are no columns, log a warning but then create a single column that takes up all the space
+	// If there are no rows, just return. We will work off the assumption that columns will be added later
 	if (m_columnDefinitions.size() == 0)
-	{
-		EG_CORE_WARN("{}:{} - Layout (name: {}) called UpdateColumns, but no columns exist", __FILE__, __LINE__, m_name);
-		AddColumn({ RowColumnType::STAR, 1.0f });
-	}
+		return;
 
 	// Get the total fixed & percent height
 	float totalFixedWidth = GetTotalFixedSize(m_columnDefinitions, m_width);
@@ -355,10 +351,6 @@ void Layout::UpdateControls() noexcept
 
 	for (unsigned int iii = 0; iii < m_controls.size(); ++iii)
 	{
-//		m_controls[iii]->TopLeftPosition(
-//			m_columns[m_controlPositions[iii].Column].Left(),
-//			m_rows[m_controlPositions[iii].Row].Top()
-//		);
 		m_controls[iii]->AllowedRegion(
 			m_columns[m_controlPositions[iii].Column].Left(),
 			m_rows[m_controlPositions[iii].Row].Top(),
@@ -417,6 +409,11 @@ void Layout::Update() noexcept
 }
 void Layout::Render() const noexcept
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_colorBrush != nullptr, "No color brush");
+	EG_CORE_ASSERT(m_rows.size() > 0, "No rows added");
+	EG_CORE_ASSERT(m_columns.size() > 0, "No columns added");
+
 	auto context = m_deviceResources->D2DDeviceContext();
 	context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_colorBrush->Get());
 
@@ -826,10 +823,10 @@ void Layout::LayoutCheck() const noexcept
 				EG_CORE_ERROR("{}:{} - Layout (name: {}): row #{} bottom adjustability ({}) does not match row #{} top adjustability ({})", __FILE__, __LINE__, m_name, iii, m_rows[iii].BottomIsAdjustable() ? "true" : "false", iii + 1, m_rows[iii + 1].TopIsAdjustable() ? "true" : "false");
 		}
 	}
-	if (m_rows[0].TopIsAdjustable())
+	if (m_rows.size() > 0 && m_rows[0].TopIsAdjustable())
 		EG_CORE_ERROR("{}:{} - Layout (name: {}): row #0 is not allowed to be top adjustable", __FILE__, __LINE__, m_name);
 
-	if (m_rows.back().BottomIsAdjustable())
+	if (m_rows.size() > 0 && m_rows.back().BottomIsAdjustable())
 		EG_CORE_ERROR("{}:{} - Layout (name: {}): last row is not allowed to be bottom adjustable", __FILE__, __LINE__, m_name);
 
 	// 12. Make sure all adjacent columns have matching adjustability
@@ -841,10 +838,10 @@ void Layout::LayoutCheck() const noexcept
 				EG_CORE_ERROR("{}:{} - Layout (name: {}): column #{} right adjustability ({}) does not match row #{} left adjustability ({})", __FILE__, __LINE__, m_name, iii, m_columns[iii].RightIsAdjustable() ? "true" : "false", iii + 1, m_columns[iii + 1].LeftIsAdjustable() ? "true" : "false");
 		}
 	}
-	if (m_columns[0].LeftIsAdjustable())
+	if (m_columns.size() > 0 && m_columns[0].LeftIsAdjustable())
 		EG_CORE_ERROR("{}:{} - Layout (name: {}): column #0 is not allowed to be left adjustable", __FILE__, __LINE__, m_name);
 
-	if (m_columns.back().RightIsAdjustable())
+	if (m_columns.size() > 0 && m_columns.back().RightIsAdjustable())
 		EG_CORE_ERROR("{}:{} - Layout (name: {}): last column is not allowed to be right adjustable", __FILE__, __LINE__, m_name);
 }
 #else

@@ -267,10 +267,6 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 	m_controlPositions.push_back(position);
 
 	std::unique_ptr<T> control = std::make_unique<T>(deviceResources);
-	control->TopLeftPosition(
-		m_columns[position.Column].Left(),
-		m_rows[position.Row].Top()
-	);
 	control->AllowedRegion(
 		m_columns[position.Column].Left(),
 		m_rows[position.Row].Top(),
@@ -298,10 +294,6 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 	m_controlPositions.push_back(position);
 
 	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, std::forward<U>(args)...);
-//	control->TopLeftPosition(
-//		m_columns[position.Column].Left(),
-//		m_rows[position.Row].Top()
-//	);
 	control->AllowedRegion(
 		m_columns[position.Column].Left(),
 		m_rows[position.Row].Top(),

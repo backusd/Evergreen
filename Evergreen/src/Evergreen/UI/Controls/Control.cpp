@@ -11,7 +11,6 @@ Control::Control(std::shared_ptr<DeviceResources> deviceResources, const Evergre
 	m_deviceResources(deviceResources),
 	m_margin(margin),
 	m_allowedRegion({ 0.0f, 0.0f, FLT_MAX, FLT_MAX })
-	// m_topLeftPosition({ 0.0f, 0.0f })
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
@@ -20,7 +19,6 @@ Control::Control(const Control& control) noexcept :
 	m_deviceResources(control.m_deviceResources),
 	m_margin(control.m_margin),
 	m_allowedRegion({ 0.0f, 0.0f, FLT_MAX, FLT_MAX })
-	// m_topLeftPosition({ 0.0f, 0.0f })
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
@@ -30,7 +28,6 @@ void Control::operator=(const Control& control) noexcept
 	m_deviceResources = control.m_deviceResources; 
 	m_margin = control.m_margin;
 	m_allowedRegion = control.m_allowedRegion;
-	// m_topLeftPosition = control.m_topLeftPosition;
 
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
