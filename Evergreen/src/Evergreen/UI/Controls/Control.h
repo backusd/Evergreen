@@ -45,8 +45,8 @@ public:
 	void MarginBottom(float bottom) noexcept { m_margin.Bottom = bottom; OnMarginChanged();}
 	void AllowedRegion(D2D1_RECT_F region) noexcept { m_allowedRegion = region; OnAllowedRegionChanged(); }
 	void AllowedRegion(float left, float top, float right, float bottom) noexcept;
-	void TopLeftPosition(D2D1_POINT_2F point) noexcept { m_topLeftPosition = point; OnPositionChanged(); }
-	void TopLeftPosition(float left, float top) noexcept { m_topLeftPosition = { left, top }; OnPositionChanged(); }
+	//void TopLeftPosition(D2D1_POINT_2F point) noexcept { m_topLeftPosition = point; OnPositionChanged(); }
+	//void TopLeftPosition(float left, float top) noexcept { m_topLeftPosition = { left, top }; OnPositionChanged(); }
 
 	const std::string& Name() const noexcept { return m_name; }
 	Evergreen::Margin Margin() const noexcept { return m_margin; }
@@ -55,25 +55,23 @@ public:
 	float MarginRight() const noexcept { return m_margin.Right; }
 	float MarginBottom() const noexcept { return m_margin.Bottom; }
 	D2D1_RECT_F AllowedRegion() const noexcept { return m_allowedRegion; }
-	D2D1_POINT_2F TopLeftPosition() const noexcept { return m_topLeftPosition; }
+	//D2D1_POINT_2F TopLeftPosition() const noexcept { return m_topLeftPosition; }
 
 protected:
 	// On* functions allow derived controls to perform necessary additional actions when a base class method is called
 	virtual void OnNameChanged() noexcept {}
 	virtual void OnMarginChanged() noexcept {}
 	virtual void OnAllowedRegionChanged() noexcept {}
-	virtual void OnPositionChanged() noexcept {}
+	//virtual void OnPositionChanged() noexcept {}
 
 	std::string							m_name;
 	std::shared_ptr<DeviceResources>	m_deviceResources;
-	Evergreen::Margin					m_margin;
-
-	
+	Evergreen::Margin					m_margin;	
 
 	// Allowed region should be set by the parent layout
 	// Position is allowed to reside outside of the allowed region (ex. object that has been scrolled out of view)
 	D2D1_RECT_F							m_allowedRegion;
-	D2D1_POINT_2F						m_topLeftPosition;
+	//D2D1_POINT_2F						m_topLeftPosition;
 
 };
 #pragma warning ( pop )

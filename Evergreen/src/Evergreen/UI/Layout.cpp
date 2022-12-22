@@ -355,10 +355,10 @@ void Layout::UpdateControls() noexcept
 
 	for (unsigned int iii = 0; iii < m_controls.size(); ++iii)
 	{
-		m_controls[iii]->TopLeftPosition(
-			m_columns[m_controlPositions[iii].Column].Left(),
-			m_rows[m_controlPositions[iii].Row].Top()
-		);
+//		m_controls[iii]->TopLeftPosition(
+//			m_columns[m_controlPositions[iii].Column].Left(),
+//			m_rows[m_controlPositions[iii].Row].Top()
+//		);
 		m_controls[iii]->AllowedRegion(
 			m_columns[m_controlPositions[iii].Column].Left(),
 			m_rows[m_controlPositions[iii].Row].Top(),
@@ -480,7 +480,23 @@ std::optional<unsigned int> Layout::MouseOverAdjustableRow(float mouseX, float m
 	return std::nullopt;
 }
 
-void Layout::OnResize(float width, float height) noexcept
+void Layout::Resize(const D2D1_RECT_F& rect) noexcept
+{
+	m_top = rect.top;
+	m_left = rect.left;
+	m_width = rect.right - rect.left;
+	m_height = rect.bottom - rect.top;
+	UpdateLayout();
+}
+void Layout::Resize(float top, float left, float width, float height) noexcept
+{
+	m_top = top;
+	m_left = left;
+	m_width = width;
+	m_height = height;
+	UpdateLayout();
+}
+void Layout::Resize(float width, float height) noexcept
 {
 	m_width = width;
 	m_height = height;

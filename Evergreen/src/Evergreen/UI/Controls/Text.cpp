@@ -67,7 +67,7 @@ void Text::Render() const noexcept
 	//context->SetTransform(D2D1::Matrix3x2F::Translation(m_topLeftPosition.x, m_topLeftPosition.y - 15.0f));
 
 	context->DrawTextLayout(
-		D2D1::Point2F(m_topLeftPosition.x + m_margin.Left, m_topLeftPosition.y + m_margin.Top),
+		D2D1::Point2F(m_allowedRegion.left + m_margin.Left, m_allowedRegion.top + m_margin.Top),
 		m_textLayout.Get(),
 		m_colorBrush->Get(),
 		D2D1_DRAW_TEXT_OPTIONS_CLIP			// <-- TODO: investigate these options, clipping is interesting
@@ -102,10 +102,6 @@ void Text::OnAllowedRegionChanged() noexcept
 {
 	// Just call TextChanged to completely recreate the TextLayout
 	TextChanged();
-}
-void Text::OnPositionChanged() noexcept
-{
-
 }
 
 void Text::UpdateBrushDrawRegion() noexcept

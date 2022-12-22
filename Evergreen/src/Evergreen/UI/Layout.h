@@ -190,7 +190,10 @@ public:
 	const std::vector<Row>& Rows() const noexcept { return m_rows; }
 	const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
-	void OnResize(float width, float height) noexcept;
+	void Resize(const D2D1_RECT_F& rect) noexcept;
+	void Resize(float top, float left, float width, float height) noexcept;
+	void Resize(float width, float height) noexcept;
+
 	void OnMouseMove(MouseMoveEvent& e) noexcept;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
@@ -295,10 +298,10 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 	m_controlPositions.push_back(position);
 
 	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, std::forward<U>(args)...);
-	control->TopLeftPosition(
-		m_columns[position.Column].Left(),
-		m_rows[position.Row].Top()
-	);
+//	control->TopLeftPosition(
+//		m_columns[position.Column].Left(),
+//		m_rows[position.Row].Top()
+//	);
 	control->AllowedRegion(
 		m_columns[position.Column].Left(),
 		m_rows[position.Row].Top(),

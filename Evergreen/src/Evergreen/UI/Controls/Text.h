@@ -20,12 +20,6 @@ public:
 		std::unique_ptr<ColorBrush> brush = nullptr,
 		std::unique_ptr<TextStyle> style = nullptr, 
 		const Evergreen::Margin& margin = { 0 }) noexcept;
-
-	// I'm deleting these for now because in order to make a copy of m_colorBrush,
-	// you would have to check if the incoming m_colorBrush can be cast to each
-	// of the derived ColorBrush types and then create the appropriate unique_ptr.
-	// I just don't want to do this at the moment...
-	// ...could implement Duplicate() the way I did for TextStyle
 	Text(const Text& text) noexcept;		
 	void operator=(const Text&) noexcept;
 	virtual ~Text() noexcept override {}
@@ -52,7 +46,7 @@ private:
 	// React to changes made when base-class methods are called
 	void OnMarginChanged() noexcept override;
 	void OnAllowedRegionChanged() noexcept override;
-	void OnPositionChanged() noexcept override;
+	//void OnPositionChanged() noexcept override {}
 
 	void UpdateBrushDrawRegion() noexcept;
 

@@ -82,14 +82,33 @@ void UI::LoadDefaultUI() noexcept
 
 	Text* text2 = m_rootLayout->CreateControl<Text>(position, m_deviceResources, s, std::move(b2), std::move(style));
 
+
+
+
+
+
 	RowColumnPosition position2;
 	position2.Row = 0;
 	position2.Column = 1;
 	position2.RowSpan = 1;
 	position2.ColumnSpan = 1;
 
-	Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
-	text3->SetText(L"nooooo...");
+	std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue));
+	std::unique_ptr<SolidColorBrush> borderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Red));
+
+	Evergreen::Margin margin = { 10.0f, 10.0f, 10.0f, 10.0f };
+
+	Button* button = m_rootLayout->CreateControl<Button>(
+		position2, 
+		m_deviceResources,
+		std::move(backgroundBrush),
+		std::move(borderBrush),
+		3.0f,
+		margin
+	);
+
+	//Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
+	//text3->SetText(L"nooooo...");
 
 
 
@@ -219,7 +238,7 @@ void UI::Render() const noexcept
 
 void UI::OnWindowResize(WindowResizeEvent& e) noexcept
 {
-	m_rootLayout->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
+	m_rootLayout->Resize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 }
 
 void UI::OnMouseMove(MouseMoveEvent& e) noexcept
