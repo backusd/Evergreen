@@ -40,6 +40,8 @@ public:
 
 	Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
 
+	void SetOnTextFormatChanged(std::function<void()> func) noexcept { m_OnTextFormatChanged = func; }
+
 	void FontFamily(const Evergreen::FontFamily& fontFamily) noexcept;
 	void FontWeight(DWRITE_FONT_WEIGHT weight) noexcept;
 	void FontStyle(DWRITE_FONT_STYLE style) noexcept;
@@ -66,6 +68,8 @@ public:
 private:
 	void Initialize() noexcept;
 	void UpdateTextFormat() noexcept;
+
+	std::function<void()> m_OnTextFormatChanged;
 
 	Evergreen::FontFamily							m_fontFamily;
 	Microsoft::WRL::ComPtr<IDWriteFontCollection>	m_fontCollection; // Not sure what to do with this. Okay to always be nullptr

@@ -42,6 +42,7 @@ void UI::LoadDefaultUI() noexcept
 	
 	Row* row0 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	row0->BottomIsAdjustable(true);
+	row0->MinHeight(110.0f);
 
 	Row* row1 = m_rootLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	row1->TopIsAdjustable(true);
@@ -84,22 +85,33 @@ void UI::LoadDefaultUI() noexcept
 
 
 
+	// ================================================================================================
+	RowColumnPosition sublayoutPosition;
+	sublayoutPosition.Row = 0;
+	sublayoutPosition.Column = 1;
+
+	Layout* sublayout = m_rootLayout->AddSubLayout(sublayoutPosition);
+	sublayout->AddRow({ RowColumnType::FIXED, 50.0f });
+	sublayout->AddRow({ RowColumnType::FIXED, 50.0f });
+	sublayout->AddRow({ RowColumnType::STAR, 1.0f });
+	sublayout->AddColumn({ RowColumnType::FIXED, 100.0f });
+	sublayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 
 
-	RowColumnPosition position2;
-	position2.Row = 0;
-	position2.Column = 1;
-	position2.RowSpan = 1;
-	position2.ColumnSpan = 1;
+
+
+	RowColumnPosition buttonPosition;
+	buttonPosition.Row = 0;
+	buttonPosition.Column = 0;
 
 	std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue));
 	std::unique_ptr<SolidColorBrush> borderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Red));
 
 	Evergreen::Margin margin = { 10.0f, 10.0f, 10.0f, 10.0f };
 
-	Button* button = m_rootLayout->CreateControl<Button>(
-		position2, 
+	Button* button = sublayout->CreateControl<Button>(
+		buttonPosition,
 		m_deviceResources,
 		std::move(backgroundBrush),
 		std::move(borderBrush),
@@ -112,9 +124,39 @@ void UI::LoadDefaultUI() noexcept
 	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 
-	//Text* text3 = m_rootLayout->CreateControl<Text>(position2, m_deviceResources);
-	//text3->SetText(L"nooooo...");
 
+
+
+
+
+	RowColumnPosition buttonPosition2;
+	buttonPosition2.Row = 1;
+	buttonPosition2.Column = 0;
+
+	std::unique_ptr<SolidColorBrush> backgroundBrush2 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Yellow));
+	std::unique_ptr<SolidColorBrush> borderBrush2 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Red));
+
+	Evergreen::Margin margin2 = { 10.0f, 10.0f, 10.0f, 10.0f };
+
+	RoundedButton* button2 = sublayout->CreateControl<RoundedButton>(
+		buttonPosition2,
+		m_deviceResources,
+		std::move(backgroundBrush2),
+		std::move(borderBrush2),
+		10.0f,
+		10.0f,
+		2.0f,
+		margin2
+		);
+
+	Layout* buttonLayout2 = button2->GetLayout();
+	buttonLayout2->AddRow({ RowColumnType::STAR, 1.0f });
+	buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	Text* text3 = buttonLayout2->CreateControl<Text>(m_deviceResources);
+	text3->SetText(L"nooooo...");
+	text3->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	text3->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 
 
 }

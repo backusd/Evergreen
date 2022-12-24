@@ -11,6 +11,7 @@
 #include "JSONLoading/StyleLoaders/TextStyleLoader.h"
 #include "JSONLoading/JSONLoaders.h"
 #include "Controls/Button.h"
+#include "Controls/RoundedButton.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;

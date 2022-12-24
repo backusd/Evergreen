@@ -30,10 +30,10 @@ struct EVERGREEN_API RowColumnDefinition
 // SubLayoutDefinition ------------------------------------------------------------------------------
 struct EVERGREEN_API RowColumnPosition
 {
-	unsigned int Row;
-	unsigned int Column;
-	unsigned int RowSpan;
-	unsigned int ColumnSpan;
+	unsigned int Row = 0;
+	unsigned int Column = 0;
+	unsigned int RowSpan = 1;
+	unsigned int ColumnSpan = 1;
 };
 
 // Row ------------------------------------------------------------------------------
@@ -253,11 +253,7 @@ public:
 template<class T>
 T* Layout::CreateControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>)
 {
-	RowColumnPosition position;
-	position.Row = 0;
-	position.Column = 0;
-	position.RowSpan = 1;
-	position.ColumnSpan = 1;
+	RowColumnPosition position; // will default to row/col 0 and rowSpan/colSpan 1
 
 	return CreateControl<T>(position, deviceResources);
 }
@@ -280,11 +276,7 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 template<class T, class ... U>
 T* Layout::CreateControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>)
 {
-	RowColumnPosition position;
-	position.Row = 0;
-	position.Column = 0;
-	position.RowSpan = 1;
-	position.ColumnSpan = 1;
+	RowColumnPosition position; // will default to row/col 0 and rowSpan/colSpan 1
 
 	return CreateControl<T>(position, deviceResources, std::forward<U>(args)...);
 }

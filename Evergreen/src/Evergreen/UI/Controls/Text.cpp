@@ -21,6 +21,8 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 	if (m_style == nullptr)
 		m_style = std::make_unique<TextStyle>(m_deviceResources);
 
+	m_style->SetOnTextFormatChanged([this]() { TextChanged(); });
+
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Call text changed to initialize the text layout
@@ -33,6 +35,8 @@ Text::Text(const Text& rhs) noexcept :
 	m_textLayout(nullptr),
 	m_colorBrush(std::move(std::unique_ptr<ColorBrush>(static_cast<ColorBrush*>(rhs.m_colorBrush->Duplicate().release()))))
 {
+	m_style->SetOnTextFormatChanged([this]() { TextChanged(); });
+
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Call text changed to initialize the text layout
@@ -45,10 +49,20 @@ void Text::operator=(const Text& rhs) noexcept
 	m_style = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(rhs.m_style->Duplicate().release())));
 	m_colorBrush = std::move(std::unique_ptr<ColorBrush>(static_cast<ColorBrush*>(rhs.m_colorBrush->Duplicate().release())));
 
+	m_style->SetOnTextFormatChanged([this]() { TextChanged(); });
+
 	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
 
 	// Call text changed to initialize the text layout
 	TextChanged();
+}
+
+void Text::SetTextStyle(std::unique_ptr<TextStyle> style) noexcept 
+{ 
+	m_style = std::move(style); 
+	m_style->SetOnTextFormatChanged([this]() { TextChanged(); });
+
+	TextChanged(); 
 }
 
 

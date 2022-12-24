@@ -27,6 +27,7 @@
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h" />
     <ClInclude Include="src\Evergreen\UI\Utils\ColorHelper.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\BitmapBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\Brushes.h" />
@@ -65,6 +66,7 @@
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Utils\ColorHelper.cpp" />
     <ClCompile Include="src\Evergreen\UI\Brushes\BitmapBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\Brushes\ColorBrush.cpp" />

@@ -48,6 +48,8 @@ void Button::Render() const noexcept
 
 void Button::ButtonChanged() noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// Update the button rect to fill the allowed region minus the margin
 	m_backgroundRect.left = m_allowedRegion.left + m_margin.Left;
 	m_backgroundRect.top = m_allowedRegion.top + m_margin.Top;
@@ -63,11 +65,9 @@ void Button::OnMarginChanged() noexcept
 }
 void Button::OnAllowedRegionChanged() noexcept
 {
-	EG_CORE_ASSERT(m_backgroundBrush == nullptr, "Background brush is supposed to be nullptr");
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 
 	// If using a non-SolidColorBrush, we need to update the draw region for the brushes
-	// m_backgroundBrush->SetDrawRegion(m_allowedRegion);
 	m_borderBrush->SetDrawRegion(m_allowedRegion);
 
 	ButtonChanged();

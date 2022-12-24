@@ -37,7 +37,7 @@ public:
 	ColorBrush* GetColorBrush() const noexcept { return m_colorBrush.get(); }
 
 	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
-	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept { m_style = std::move(style); TextChanged(); }
+	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept;
 	void SetColorBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
 
 private:

@@ -22,7 +22,8 @@ TextStyle::TextStyle(
 	Style(deviceResources, name), 
 	m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), 
 	m_fontStretch(fontStretch), m_fontSize(fontSize), m_locale(locale), m_textAlignment(textAlignment),
-	m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming)
+	m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming),
+	m_OnTextFormatChanged([]() {})
 {
 	Initialize();
 }
@@ -37,7 +38,8 @@ TextStyle::TextStyle(const TextStyle& rhs) noexcept :
 	m_textAlignment(rhs.m_textAlignment),
 	m_paragraphAlignment(rhs.m_paragraphAlignment),
 	m_wordWrapping(rhs.m_wordWrapping), 
-	m_trimming(rhs.m_trimming)
+	m_trimming(rhs.m_trimming),
+	m_OnTextFormatChanged([]() {})
 {
 	Initialize();
 }
@@ -55,6 +57,8 @@ void TextStyle::operator=(const TextStyle& rhs) noexcept
 	m_paragraphAlignment = rhs.m_paragraphAlignment;
 	m_wordWrapping = rhs.m_wordWrapping;
 	m_trimming = rhs.m_trimming;
+
+	m_OnTextFormatChanged = []() {};
 
 	Initialize();
 }
@@ -100,7 +104,9 @@ void TextStyle::UpdateTextFormat() noexcept
 	GFX_THROW_INFO(m_textFormat->SetTextAlignment(m_textAlignment));
 	GFX_THROW_INFO(m_textFormat->SetParagraphAlignment(m_paragraphAlignment));
 	GFX_THROW_INFO(m_textFormat->SetWordWrapping(m_wordWrapping));
-	GFX_THROW_INFO(m_textFormat->SetTrimming(&m_trimming, nullptr));		
+	GFX_THROW_INFO(m_textFormat->SetTrimming(&m_trimming, nullptr));	
+
+	m_OnTextFormatChanged();
 }
 
 
