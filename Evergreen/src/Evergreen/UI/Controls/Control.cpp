@@ -6,11 +6,13 @@
 
 namespace Evergreen
 {
-Control::Control(std::shared_ptr<DeviceResources> deviceResources, const Evergreen::Margin& margin) noexcept :
+Control::Control(std::shared_ptr<DeviceResources> deviceResources, 
+				 const D2D1_RECT_F& allowedRegion,
+	             const Evergreen::Margin& margin) noexcept :
 	m_name(""),
 	m_deviceResources(deviceResources),
 	m_margin(margin),
-	m_allowedRegion({ 0.0f, 0.0f, FLT_MAX, FLT_MAX })
+	m_allowedRegion(allowedRegion)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
@@ -18,7 +20,7 @@ Control::Control(const Control& control) noexcept :
 	m_name(control.m_name + "_copy"),
 	m_deviceResources(control.m_deviceResources),
 	m_margin(control.m_margin),
-	m_allowedRegion({ 0.0f, 0.0f, FLT_MAX, FLT_MAX })
+	m_allowedRegion(control.m_allowedRegion)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }

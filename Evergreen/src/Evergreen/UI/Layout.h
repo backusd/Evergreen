@@ -264,13 +264,14 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 {
 	m_controlPositions.push_back(position);
 
-	std::unique_ptr<T> control = std::make_unique<T>(deviceResources);
-	control->AllowedRegion(
+	D2D1_RECT_F rect = D2D1::RectF(
 		m_columns[position.Column].Left(),
 		m_rows[position.Row].Top(),
 		m_columns[position.Column + position.ColumnSpan - 1].Right(),
 		m_rows[position.Row + position.RowSpan - 1].Bottom()
 	);
+
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, rect);
 
 	m_controls.push_back(std::move(control));
 	return (T*)m_controls.back().get();
@@ -287,13 +288,14 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 {
 	m_controlPositions.push_back(position);
 
-	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, std::forward<U>(args)...);
-	control->AllowedRegion(
+	D2D1_RECT_F rect = D2D1::RectF(
 		m_columns[position.Column].Left(),
 		m_rows[position.Row].Top(),
 		m_columns[position.Column + position.ColumnSpan - 1].Right(),
 		m_rows[position.Row + position.RowSpan - 1].Bottom()
 	);
+
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, rect, std::forward<U>(args)...);
 
 	m_controls.push_back(std::move(control));
 	return (T*)m_controls.back().get();

@@ -5,9 +5,13 @@
 
 namespace Evergreen
 {
-Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& text, 
-	std::unique_ptr<ColorBrush> brush, std::unique_ptr<TextStyle> style, const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, margin),
+Text::Text(std::shared_ptr<DeviceResources> deviceResources, 
+			const D2D1_RECT_F& allowedRegion,
+			const std::wstring& text, 
+			std::unique_ptr<ColorBrush> brush, 
+			std::unique_ptr<TextStyle> style, 
+			const Evergreen::Margin& margin) noexcept :
+	Control(deviceResources, allowedRegion, margin),
 	m_text(text),
 	m_style(std::move(style)),
 	m_textLayout(nullptr),
@@ -29,7 +33,7 @@ Text::Text(std::shared_ptr<DeviceResources> deviceResources, const std::wstring&
 	TextChanged();
 }
 Text::Text(const Text& rhs) noexcept :
-	Control(rhs.m_deviceResources, rhs.m_margin),
+	Control(rhs.m_deviceResources, rhs.m_allowedRegion, rhs.m_margin),
 	m_text(rhs.m_text),
 	m_style(std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(rhs.m_style->Duplicate().release())))),
 	m_textLayout(nullptr),
@@ -48,6 +52,7 @@ void Text::operator=(const Text& rhs) noexcept
 	m_textLayout = nullptr;
 	m_style = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(rhs.m_style->Duplicate().release())));
 	m_colorBrush = std::move(std::unique_ptr<ColorBrush>(static_cast<ColorBrush*>(rhs.m_colorBrush->Duplicate().release())));
+	m_allowedRegion = rhs.m_allowedRegion;
 
 	m_style->SetOnTextFormatChanged([this]() { TextChanged(); });
 

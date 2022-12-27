@@ -16,6 +16,7 @@ class EVERGREEN_API Text : public Control
 {	
 public:
 	Text(std::shared_ptr<DeviceResources> deviceResources, 
+		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		const std::wstring& text = L"",
 		std::unique_ptr<ColorBrush> brush = nullptr,
 		std::unique_ptr<TextStyle> style = nullptr, 

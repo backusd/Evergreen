@@ -100,7 +100,8 @@ void UI::LoadDefaultUI() noexcept
 
 
 
-	/*
+
+
 	RowColumnPosition buttonPosition;
 	buttonPosition.Row = 0;
 	buttonPosition.Column = 0;
@@ -157,7 +158,7 @@ void UI::LoadDefaultUI() noexcept
 
 		}
 	);
-	*/
+
 
 
 
@@ -182,7 +183,7 @@ void UI::LoadDefaultUI() noexcept
 		15.0f,
 		2.0f,
 		margin2
-		);
+	);
 
 	Layout* buttonLayout2 = button2->GetLayout();
 	buttonLayout2->AddRow({ RowColumnType::STAR, 1.0f });
@@ -235,7 +236,6 @@ void UI::LoadDefaultUI() noexcept
 
 		}
 	);
-
 	button2->OnClick(
 		[](Button* b)
 		{

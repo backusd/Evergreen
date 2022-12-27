@@ -7,13 +7,14 @@
 namespace Evergreen
 {
 RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
+								const D2D1_RECT_F& allowedRegion,
 								std::unique_ptr<ColorBrush> backgroundBrush,
 								std::unique_ptr<ColorBrush> borderBrush,
 								float radiusX,
 								float radiusY,
 								float borderWidth,
 								const Evergreen::Margin& margin) :
-	Button(deviceResources, nullptr, std::move(borderBrush), borderWidth, margin),
+	Button(deviceResources, allowedRegion, nullptr, std::move(borderBrush), borderWidth, margin),
 	m_radiusX(radiusX),
 	m_radiusY(radiusY)
 {
@@ -23,17 +24,12 @@ RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
 	else
 		m_backgroundBrush = std::move(backgroundBrush);
 
-	// Create rounded rect
-	m_roundedRect = D2D1::RoundedRect(m_backgroundRect, m_radiusX, m_radiusY);
-
 	// Make sure layout uses a transparent brush
 	std::unique_ptr<Evergreen::SolidColorBrush> transparentBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 	m_layout->Brush(std::move(transparentBrush));
 
-	// Create the rounded rect geometry (used for determining if mouse is over button)
-	GFX_THROW_INFO(
-		m_deviceResources->D2DFactory()->CreateRoundedRectangleGeometry(m_roundedRect, m_roundedRectGeometry.ReleaseAndGetAddressOf())
-	)
+	// Update the rounded rect and rounded rect geometry
+	ButtonChanged();
 }
 
 void RoundedButton::Render() const noexcept

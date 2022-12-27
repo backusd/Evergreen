@@ -22,7 +22,9 @@ struct EVERGREEN_API Margin
 class EVERGREEN_API Control
 {
 public:
-	Control(std::shared_ptr<DeviceResources> deviceResources, const Evergreen::Margin& margin = { 0 }) noexcept;
+	Control(std::shared_ptr<DeviceResources> deviceResources, 
+		    const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+		    const Evergreen::Margin& margin = { 0 }) noexcept;
 	Control(const Control& control) noexcept;
 	void operator=(const Control& control) noexcept;
 	virtual ~Control() noexcept {}

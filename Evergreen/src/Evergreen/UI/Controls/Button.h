@@ -16,6 +16,7 @@ class EVERGREEN_API Button : public Control
 {
 public:
 	Button(std::shared_ptr<DeviceResources> deviceResources,
+		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
@@ -64,9 +65,9 @@ protected:
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
-	std::unique_ptr<Layout> m_layout;
-	float m_borderWidth;
-	D2D1_RECT_F m_backgroundRect;
+	std::unique_ptr<Layout>		m_layout;
+	float						m_borderWidth;
+	D2D1_RECT_F					m_backgroundRect;
 
 	bool m_mouseIsOver;
 	bool m_mouseLButtonIsDown;

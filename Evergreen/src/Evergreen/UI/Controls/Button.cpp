@@ -3,12 +3,13 @@
 
 namespace Evergreen
 {
-Button::Button(std::shared_ptr<DeviceResources> deviceResources, 
+Button::Button(std::shared_ptr<DeviceResources> deviceResources,
+				const D2D1_RECT_F& allowedRegion,
 				std::unique_ptr<ColorBrush> backgroundBrush,
 				std::unique_ptr<ColorBrush> borderBrush,
 				float borderWidth,
 				const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, margin),
+	Control(deviceResources, allowedRegion, margin),
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidth(borderWidth),
@@ -28,7 +29,7 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
 	// Move the background brush into the Button's layout. The button won't try to draw the background - will just allow the button's layout to draw the background
-	// Create it with a dummy size - will get adjusted later when the allowed region is updated
+	// Create it with a dummy size - will get adjusted later when ButtonChanged is called
 	m_layout = std::make_unique<Layout>(
 		m_deviceResources,
 		0.0f, 0.0f, 1000.0f, 1000.0f,
@@ -36,6 +37,8 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 		"button layout");
 
 	m_backgroundBrush = nullptr;
+
+	ButtonChanged();
 }
 
 void Button::Render() const noexcept
