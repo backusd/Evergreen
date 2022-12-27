@@ -477,6 +477,12 @@ std::optional<unsigned int> Layout::MouseOverAdjustableRow(float mouseX, float m
 	return std::nullopt;
 }
 
+Control* Layout::GetControl(unsigned int index) const noexcept
+{
+	EG_CORE_ASSERT(index < m_controls.size(), "Index is too large/not enough controls");
+	return m_controls[index].get();
+}
+
 void Layout::Resize(const D2D1_RECT_F& rect) noexcept
 {
 	m_top = rect.top;
@@ -610,6 +616,12 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			if (e.Handled())
 				return;
 		}
+		for (const std::unique_ptr<Control>& control : m_controls)
+		{
+			control->OnMouseMove(e);
+			if (e.Handled())
+				return;
+		}
 
 		if (m_columnIndexBeingAdjusted.has_value())
 		{
@@ -645,7 +657,13 @@ void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		sublayout->OnMouseButtonPressed(e);
 		if (e.Handled())
 			return;
-	}	
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnMouseButtonPressed(e);
+		if (e.Handled())
+			return;
+	}
 
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
@@ -688,6 +706,13 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
 		{
 			sublayout->OnMouseButtonReleased(e);
+			if (e.Handled())
+				return;
+		}
+
+		for (const std::unique_ptr<Control>& control : m_controls)
+		{
+			control->OnMouseButtonReleased(e);
 			if (e.Handled())
 				return;
 		}

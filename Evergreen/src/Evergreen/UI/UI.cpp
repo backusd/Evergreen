@@ -100,7 +100,7 @@ void UI::LoadDefaultUI() noexcept
 
 
 
-
+	/*
 	RowColumnPosition buttonPosition;
 	buttonPosition.Row = 0;
 	buttonPosition.Column = 0;
@@ -123,6 +123,41 @@ void UI::LoadDefaultUI() noexcept
 	buttonLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
+	button->OnMouseEnter(
+		[](Button* b) 
+		{
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
+			b->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	button->OnMouseLeave(
+		[](Button* b)
+		{
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
+			b->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	button->OnMouseLButtonDown(
+		[](Button* b)
+		{
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
+			b->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	button->OnMouseLButtonUp(
+		[](Button* b)
+		{
+			// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
+			// OnMouseLeave event will fire and set the background color anyways)
+			if (b->MouseIsOver())
+			{
+				std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
+				b->BackgroundBrush(std::move(backgroundBrush));
+			}
+
+		}
+	);
+	*/
 
 
 
@@ -143,8 +178,8 @@ void UI::LoadDefaultUI() noexcept
 		m_deviceResources,
 		std::move(backgroundBrush2),
 		std::move(borderBrush2),
-		10.0f,
-		10.0f,
+		15.0f,
+		15.0f,
 		2.0f,
 		margin2
 		);
@@ -157,6 +192,65 @@ void UI::LoadDefaultUI() noexcept
 	text3->SetText(L"nooooo...");
 	text3->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	text3->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	
+	button2->OnMouseEnter(
+		[](Button* b)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::AliceBlue));
+			rb->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	button2->OnMouseLeave(
+		[](Button* b)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Yellow));
+			rb->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	button2->OnMouseLButtonDown(
+		[](Button* b)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightBlue));
+			rb->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	button2->OnMouseLButtonUp(
+		[](Button* b)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
+			// OnMouseLeave event will fire and set the background color anyways)
+			if (rb->MouseIsOver())
+			{
+				std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::AliceBlue));
+				rb->BackgroundBrush(std::move(backgroundBrush));
+			}
+
+		}
+	);
+
+	button2->OnClick(
+		[](Button* b)
+		{
+			static int iii = 0;
+
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			Layout* layout = rb->GetLayout();
+
+			Text* text = static_cast<Text*>(layout->GetControl(0));
+			text->SetText(std::format(L"{}", iii));
+
+			++iii;
+		}
+	);
 
 
 }

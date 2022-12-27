@@ -108,11 +108,11 @@ void Text::TextChanged()
 
 
 
-void Text::OnMarginChanged() noexcept
+void Text::OnMarginChanged()
 {
 
 }
-void Text::OnAllowedRegionChanged() noexcept
+void Text::OnAllowedRegionChanged()
 {
 	// Just call TextChanged to completely recreate the TextLayout
 	TextChanged();

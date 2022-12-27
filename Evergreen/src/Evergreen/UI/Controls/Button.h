@@ -27,9 +27,9 @@ public:
 	// Inherited from Control
 	void Update() const noexcept override {}
 	virtual void Render() const noexcept override;
-	//void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	//void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	//void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
+	virtual void OnMouseMove(MouseMoveEvent& e) noexcept override;
+	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
+	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
 
 	ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
 	ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
@@ -41,17 +41,35 @@ public:
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
 	void BorderWidth(float width) noexcept { m_borderWidth = width; }
 
-protected:
-	virtual void ButtonChanged() noexcept;
+	void OnMouseEnter(std::function<void(Button*)> func) noexcept { m_OnMouseEnter = func; }
+	void OnMouseLeave(std::function<void(Button*)> func) noexcept { m_OnMouseLeave = func; }
+	void OnMouseLButtonDown(std::function<void(Button*)> func) noexcept { m_OnMouseLButtonDown = func; }
+	void OnMouseLButtonUp(std::function<void(Button*)> func) noexcept { m_OnMouseLButtonUp = func; }
+	void OnClick(std::function<void(Button*)> func) noexcept { m_OnClick = func; }
 
-	virtual void OnMarginChanged() noexcept override;
-	virtual void OnAllowedRegionChanged() noexcept override;
+	bool MouseIsOver() const noexcept { return m_mouseIsOver; }
+
+protected:
+	virtual bool ContainsPoint(float x, float y) const noexcept;
+	virtual void ButtonChanged();
+
+	virtual void OnMarginChanged() override;
+	virtual void OnAllowedRegionChanged() override;
+
+	std::function<void(Button*)> m_OnMouseEnter;
+	std::function<void(Button*)> m_OnMouseLeave;
+	std::function<void(Button*)> m_OnMouseLButtonDown;
+	std::function<void(Button*)> m_OnMouseLButtonUp;
+	std::function<void(Button*)> m_OnClick;
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
 	std::unique_ptr<Layout> m_layout;
 	float m_borderWidth;
 	D2D1_RECT_F m_backgroundRect;
+
+	bool m_mouseIsOver;
+	bool m_mouseLButtonIsDown;
 };
 #pragma warning( pop )
 

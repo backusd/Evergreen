@@ -12,7 +12,14 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidth(borderWidth),
-	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }) // dummy values that will be written over when allowed region is updated
+	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
+	m_mouseIsOver(false), 
+	m_mouseLButtonIsDown(false),
+	m_OnMouseEnter([](Button*){}),
+	m_OnMouseLeave([](Button*) {}),
+	m_OnMouseLButtonDown([](Button*) {}),
+	m_OnMouseLButtonUp([](Button*) {}),
+	m_OnClick([](Button*) {})
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -46,7 +53,7 @@ void Button::Render() const noexcept
 		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);	
 }
 
-void Button::ButtonChanged() noexcept
+void Button::ButtonChanged()
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -59,11 +66,11 @@ void Button::ButtonChanged() noexcept
 	m_layout->Resize(m_backgroundRect);
 }
 
-void Button::OnMarginChanged() noexcept
+void Button::OnMarginChanged()
 {
 	ButtonChanged();
 }
-void Button::OnAllowedRegionChanged() noexcept
+void Button::OnAllowedRegionChanged()
 {
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 
@@ -73,29 +80,69 @@ void Button::OnAllowedRegionChanged() noexcept
 	ButtonChanged();
 }
 
- // ================================================================================
-/*
-RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources) noexcept :
-	Button(deviceResources)
+bool Button::ContainsPoint(float x, float y) const noexcept
 {
+	return m_layout->ContainsPoint(x, y);
 }
-void RoundedButton::Render() const noexcept
+
+void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
-	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
-	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+	bool currentMouseIsOver = ContainsPoint(e.GetX(), e.GetY());
 
-	auto context = m_deviceResources->D2DDeviceContext();
+	if (m_mouseIsOver)
+	{
+		// Check if the mouse just left the button area
+		if (!currentMouseIsOver)
+		{
+			m_mouseIsOver = false;
+			m_OnMouseLeave(this);
 
-	context->FillRoundedRectangle(m_roundedRect, m_backgroundBrush->Get());
+			// Only set handled=true if the mouse is down, making it so that another control can not process this event
+			// The button should continue to handle mouse events until the mouse button is released
+			if (m_mouseLButtonIsDown)
+				e.Handled(true);
 
-	if (m_borderWidth > 0.0f)
-		context->DrawRoundedRectangle(m_roundedRect, m_borderBrush->Get(), m_borderWidth);
+			return;
+		}
 
-	m_layout->Render();
+		// Nothing changed here, just make sure the event is handled and return
+		e.Handled(true);
+		return;
+	}
+
+	// Check if the mouse is newly over the button
+	if (currentMouseIsOver)
+	{
+		m_mouseIsOver = true;
+		m_mouseLButtonIsDown = false; // Assume the mouse is down when entering
+		m_OnMouseEnter(this);
+		e.Handled(true);
+		return;
+	}
 }
-*/
+void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+	// Only process the event if the mouse is over the button and if its the LButton
+	if (m_mouseIsOver && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	{
+		m_mouseLButtonIsDown = true;
+		m_OnMouseLButtonDown(this);
+		e.Handled(true);
+		return;
+	}
+}
+void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+	// Only process the event if the mouse is over the button and if its the LButton
+	if (m_mouseIsOver && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	{
+		m_mouseLButtonIsDown = false;
+		m_OnMouseLButtonUp(this);
+		m_OnClick(this);
+		e.Handled(true);
+		return;
+	}
+}
 
 
 }

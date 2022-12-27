@@ -190,6 +190,8 @@ public:
 	const std::vector<Row>& Rows() const noexcept { return m_rows; }
 	const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
+	Control* GetControl(unsigned int index) const noexcept;
+
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;
 	void Resize(float width, float height) noexcept;

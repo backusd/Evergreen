@@ -18,7 +18,7 @@ public:
 		float radiusX = 5.0f,
 		float radiusY = 5.0f,
 		float borderWidth = 0.0f,
-		const Evergreen::Margin& margin = { 0 }) noexcept;
+		const Evergreen::Margin& margin = { 0 });
 	//RoundedButton(const RoundedButton& text) noexcept;
 	//void operator=(const RoundedButton&) noexcept;
 	virtual ~RoundedButton() noexcept override {}
@@ -28,14 +28,20 @@ public:
 
 	const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
 
+	bool ContainsPoint(float x, float y) const noexcept override;
+
+	void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); }
+
 
 protected:
-	void ButtonChanged() noexcept override;
+	void ButtonChanged() override;
+	virtual void OnAllowedRegionChanged() noexcept override;
 
 
 	float m_radiusX;
 	float m_radiusY;
 	D2D1_ROUNDED_RECT m_roundedRect;
+	Microsoft::WRL::ComPtr<ID2D1RoundedRectangleGeometry> m_roundedRectGeometry;
 };
 #pragma warning( pop )
 

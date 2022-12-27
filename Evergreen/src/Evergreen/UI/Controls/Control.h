@@ -57,8 +57,8 @@ public:
 protected:
 	// On* functions allow derived controls to perform necessary additional actions when a base class method is called
 	virtual void OnNameChanged() noexcept {}
-	virtual void OnMarginChanged() noexcept {}
-	virtual void OnAllowedRegionChanged() noexcept {}
+	virtual void OnMarginChanged() {}
+	virtual void OnAllowedRegionChanged() {}
 
 	std::string							m_name;
 	std::shared_ptr<DeviceResources>	m_deviceResources;

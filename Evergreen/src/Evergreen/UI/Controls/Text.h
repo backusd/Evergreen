@@ -44,8 +44,8 @@ private:
 	void TextChanged();
 
 	// React to changes made when base-class methods are called
-	void OnMarginChanged() noexcept override;
-	void OnAllowedRegionChanged() noexcept override;
+	void OnMarginChanged() override;
+	void OnAllowedRegionChanged() override;
 	//void OnPositionChanged() noexcept override {}
 
 	void UpdateBrushDrawRegion() noexcept;
