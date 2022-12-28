@@ -511,7 +511,7 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 	// If adjustingLayout is true, then mouse L button is down over either a row or column
 	if (m_adjustingLayout)
 	{
-		e.Handled(true);
+		e.Handled(this);
 
 		// If m_columnIndexBeingAdjusted has a value, the mouse is currently hovering over an adjustable column border
 		if (m_columnIndexBeingAdjusted.has_value())
@@ -670,12 +670,12 @@ void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		if (m_columnIndexBeingAdjusted.has_value())
 		{
 			m_adjustingLayout = true;
-			e.Handled(true);
+			e.Handled(this);
 		}
 		else if (m_rowIndexBeingAdjusted.has_value())
 		{
 			m_adjustingLayout = true;
-			e.Handled(true);
+			e.Handled(this);
 		}
 		else
 		{
@@ -688,7 +688,7 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 	// If we are adjusting the layout, no need to pass to sublayouts
 	if (m_adjustingLayout && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
-		e.Handled(true);
+		e.Handled(this);
 
 		m_adjustingLayout = false;
 

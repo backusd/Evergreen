@@ -90,6 +90,11 @@ bool Button::ContainsPoint(float x, float y) const noexcept
 
 void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 {
+	// First pass to layout, if the layout does not handle it, then the button can handle it
+	m_layout->OnMouseMove(e);
+	if (e.Handled())
+		return;
+
 	bool currentMouseIsOver = ContainsPoint(e.GetX(), e.GetY());
 
 	if (m_mouseIsOver)
@@ -103,47 +108,77 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 			// Only set handled=true if the mouse is down, making it so that another control can not process this event
 			// The button should continue to handle mouse events until the mouse button is released
 			if (m_mouseLButtonIsDown)
-				e.Handled(true);
+				e.Handled(this);
 
-			return;
+			return; // Need this return because it is invalid to set e.Handled() more than once
 		}
 
 		// Nothing changed here, just make sure the event is handled and return
-		e.Handled(true);
-		return;
+		e.Handled(this);
 	}
-
-	// Check if the mouse is newly over the button
-	if (currentMouseIsOver)
+	else if (currentMouseIsOver) // Check if the mouse is newly over the button
 	{
 		m_mouseIsOver = true;
-		m_mouseLButtonIsDown = false; // Assume the mouse is down when entering
 		m_OnMouseEnter(this);
-		e.Handled(true);
-		return;
+		e.Handled(this);
+	}
+	else if (m_mouseLButtonIsDown)
+	{
+		// If the mouse is outside the button but the LButton was pressed while the mouse was
+		// over the button, we still want the button to handle the move event until the mouse 
+		// LButton is released
+		e.Handled(this);
 	}
 }
 void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
-	// Only process the event if the mouse is over the button and if its the LButton
-	if (m_mouseIsOver && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
-	{
-		m_mouseLButtonIsDown = true;
-		m_OnMouseLButtonDown(this);
-		e.Handled(true);
+	// First pass to layout, if the layout does not handle it, then the button can handle it
+	m_layout->OnMouseButtonPressed(e);
+	if (e.Handled())
 		return;
+
+	// Only process the event if the mouse is over the button and if its the LButton
+	if (m_mouseIsOver)
+	{
+		// As long as the mouse is still over the button, we want to consider the event to be handled,
+		// even if we don't actually do anything
+		e.Handled(this);
+
+		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+		{
+			m_mouseLButtonIsDown = true;
+			m_OnMouseLButtonDown(this);
+		}
 	}
 }
 void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
-	// Only process the event if the mouse is over the button and if its the LButton
-	if (m_mouseIsOver && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
-	{
-		m_mouseLButtonIsDown = false;
-		m_OnMouseLButtonUp(this);
-		m_OnClick(this);
-		e.Handled(true);
+	// First pass to layout, if the layout does not handle it, then the button can handle it
+	m_layout->OnMouseButtonReleased(e);
+	if (e.Handled())
 		return;
+
+	// Only process the event if the mouse is over the button and if its the LButton
+	if (m_mouseIsOver)
+	{
+		// As long as the mouse is still over the button, we want to consider the event to be handled,
+		// even if we don't actually do anything
+		e.Handled(this);
+
+		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+		{
+			m_mouseLButtonIsDown = false;
+			m_OnMouseLButtonUp(this);
+			m_OnClick(this);
+		}
+	}
+	else
+	{
+		// It is possible to get this event when the mouse LButton had been clicked down when the mouse
+		// was over the button, but got moved off the button before the LButton was released. In this case,
+		// we need to make sure that we clear the m_mouseLButtonIsDown so that mouse move events don't continue
+		// to be handled by this button
+		m_mouseLButtonIsDown = false;
 	}
 }
 

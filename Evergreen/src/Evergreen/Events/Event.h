@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Evergreen/Core.h"
+#include "Evergreen/Log.h"
 
 #define EVENT_FORMATTER(class_type) \
 	template <>																		\
@@ -12,6 +13,10 @@
 
 namespace Evergreen
 {
+// forward declare Control & Layout so we can store pointer to these in Event
+class Control;
+class Layout;
+
 enum class EventType
 {
 	None = 0,
@@ -34,7 +39,6 @@ enum EventCategory
 
 class EVERGREEN_API Event
 {
-	friend class EventDispatcher;
 public:
 	virtual EventType GetEventType() const noexcept = 0;
 	virtual const char* GetName() const noexcept = 0;
@@ -46,11 +50,30 @@ public:
 		return GetCategoryFlags() & category;
 	}
 
-	inline void Handled(bool handled) noexcept { m_handled = handled; }
-	inline bool Handled() const noexcept { return m_handled; }
+	inline bool Handled() const noexcept { return m_handlingControl != nullptr || m_handlingLayout != nullptr; }
+
+	void Handled(Control* control) noexcept 
+	{ 
+		EG_CORE_ASSERT(m_handlingControl == nullptr, "Handling control should not already be set");
+		EG_CORE_ASSERT(m_handlingLayout == nullptr, "Handling layout should not already be set");
+		
+		m_handlingControl = control;
+	}
+	void Handled(Layout* layout) noexcept 
+	{ 
+		EG_CORE_ASSERT(m_handlingControl == nullptr, "Handling control should not already be set");
+		EG_CORE_ASSERT(m_handlingLayout == nullptr, "Handling layout should not already be set");
+		
+		m_handlingLayout = layout;
+	}
+
+	Control* HandlingControl() const noexcept { return m_handlingControl; }
+	Layout* HandlingLayout() const noexcept { return m_handlingLayout; }
 
 protected:
-	bool m_handled = false;
+	// One and ONLY one of these should be set when a control/layout is handling an event
+	Control* m_handlingControl = nullptr;
+	Layout*  m_handlingLayout = nullptr;
 };
 
 }

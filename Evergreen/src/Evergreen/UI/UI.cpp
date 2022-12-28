@@ -14,7 +14,11 @@ namespace Evergreen
 UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window> window) noexcept :
 	m_deviceResources(deviceResources),
 	m_window(window),
-	m_rootLayout(nullptr)
+	m_rootLayout(nullptr),
+	m_mouseHandlingControl(nullptr),
+	m_mouseHandlingLayout(nullptr),
+	m_kayboardHandlingControl(nullptr),
+	m_keyboardHandlingLayout(nullptr)
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
@@ -187,7 +191,12 @@ void UI::LoadDefaultUI() noexcept
 
 	Layout* buttonLayout2 = button2->GetLayout();
 	buttonLayout2->AddRow({ RowColumnType::STAR, 1.0f });
-	buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
+	Column* column = buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
+	column->RightIsAdjustable(true);
+	column->MinWidth(10.0f);
+	column = buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
+	column->LeftIsAdjustable(true);
+	column->MinWidth(10.0f);
 
 	Text* text3 = buttonLayout2->CreateControl<Text>(m_deviceResources);
 	text3->SetText(L"nooooo...");
@@ -384,15 +393,54 @@ void UI::OnWindowResize(WindowResizeEvent& e) noexcept
 
 void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	m_rootLayout->OnMouseMove(e);
+	if (m_mouseHandlingControl != nullptr)
+	{
+		m_mouseHandlingControl->OnMouseMove(e);
+	}
+	else if (m_mouseHandlingLayout != nullptr)
+	{
+		m_mouseHandlingLayout->OnMouseMove(e);
+	}
+
+	if (!e.Handled())
+		m_rootLayout->OnMouseMove(e);
+
+	m_mouseHandlingControl = e.HandlingControl();
+	m_mouseHandlingLayout = e.HandlingLayout();
 }
 void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
-	m_rootLayout->OnMouseButtonPressed(e);
+	if (m_mouseHandlingControl != nullptr)
+	{
+		m_mouseHandlingControl->OnMouseButtonPressed(e);
+	}
+	else if (m_mouseHandlingLayout != nullptr)
+	{
+		m_mouseHandlingLayout->OnMouseButtonPressed(e);
+	}
+
+	if (!e.Handled())
+		m_rootLayout->OnMouseButtonPressed(e);
+
+	m_mouseHandlingControl = e.HandlingControl();
+	m_mouseHandlingLayout = e.HandlingLayout();
 }
 void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
-	m_rootLayout->OnMouseButtonReleased(e);
+	if (m_mouseHandlingControl != nullptr)
+	{
+		m_mouseHandlingControl->OnMouseButtonReleased(e);
+	}
+	else if (m_mouseHandlingLayout != nullptr)
+	{
+		m_mouseHandlingLayout->OnMouseButtonReleased(e);
+	}
+
+	if (!e.Handled())
+		m_rootLayout->OnMouseButtonReleased(e);
+
+	m_mouseHandlingControl = e.HandlingControl();
+	m_mouseHandlingLayout = e.HandlingLayout();
 }
 
 

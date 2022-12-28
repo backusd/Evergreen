@@ -50,6 +50,13 @@ private:
 	std::filesystem::path		m_jsonRootDirectory;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
+
+	// Controls/Layouts that have handled key/mouse events
+	Control* m_mouseHandlingControl;
+	Layout*  m_mouseHandlingLayout;
+
+	Control* m_kayboardHandlingControl;
+	Layout*  m_keyboardHandlingLayout;
 };
 #pragma warning( pop )
 
