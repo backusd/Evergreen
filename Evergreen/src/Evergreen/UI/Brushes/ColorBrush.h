@@ -28,7 +28,8 @@ public:
 
 	void SetOpacity(float opacity) noexcept { m_brushProperties.opacity = opacity; Refresh(); }
 	void SetTransform(const D2D1_MATRIX_3X2_F& transform) noexcept { m_brushProperties.transform = transform; Refresh(); }
-	void SetDrawRegion(const D2D1_RECT_F& rect) noexcept { m_drawRegion = rect; OnDrawRegionChanged(); }
+	void SetDrawRegion(const D2D1_RECT_F& rect) noexcept;
+	inline void SetDrawRegionRectModifier(std::function<D2D1_RECT_F(const D2D1_RECT_F&, ColorBrush*)> func) noexcept { m_DrawRegionRectModifier = func; }
 
 	ND const D2D1_RECT_F& GetDrawingRect() const noexcept { return m_drawRegion; }
 
@@ -38,6 +39,12 @@ protected:
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Microsoft::WRL::ComPtr<ID2D1Brush>	m_brush;
 	D2D1_BRUSH_PROPERTIES				m_brushProperties;
+
+	// This functional is called in the SetDrawRegion function. It provides a default behavior that most brushes
+	// will use, but there are occassions where we want to override this behavior. For example, if we are doing an
+	// effect where the mouse is over a button and we want to apply a radial brush that follows the mouse, we need
+	// to set the draw region to be a square that may be different than the button's draw region
+	std::function<D2D1_RECT_F(const D2D1_RECT_F&, ColorBrush*)> m_DrawRegionRectModifier = [](const D2D1_RECT_F& rect, ColorBrush* brush) -> const D2D1_RECT_F& { return rect; };
 
 	// The draw region will have different interpretations depending on the derived type
 	// SolidColorBrush		- Does not use the draw region

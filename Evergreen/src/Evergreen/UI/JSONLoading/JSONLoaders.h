@@ -7,6 +7,7 @@
 #include "Evergreen/UI/Controls/Control.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/Exceptions/JSONLoadersException.h"
+#include "Evergreen/Events/Event.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -49,9 +50,9 @@ public:
 
 	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
 
-	static void AddControlFunction(const std::string& key, std::function<void(Control*)> func) noexcept { Get().AddControlFunctionImpl(key, func); }
+	static void AddControlFunction(const std::string& key, std::function<void(Control*, Event&)> func) noexcept { Get().AddControlFunctionImpl(key, func); }
 	static bool ControlFunctionKeyExists(const std::string& key) noexcept { return Get().ControlFunctionKeyExistsImpl(key); }
-	static std::function<void(Control*)> GetControlFunction(const std::string& key) { return Get().GetControlFunctionImpl(key); }
+	static std::function<void(Control*, Event&)> GetControlFunction(const std::string& key) { return Get().GetControlFunctionImpl(key); }
 
 
 private:
@@ -96,9 +97,9 @@ private:
 	bool IsControlKeyImpl(const std::string& controlKey) const noexcept { return m_controlLoaders.find(controlKey) != m_controlLoaders.end(); }
 	bool IsStyleKeyImpl(const std::string& styleKey) const noexcept { return m_styleLoaders.find(styleKey) != m_styleLoaders.end(); }
 
-	void AddControlFunctionImpl(const std::string& key, std::function<void(Control*)> func) noexcept { m_functionsMap[key] = func; }
+	void AddControlFunctionImpl(const std::string& key, std::function<void(Control*, Event&)> func) noexcept { m_functionsMap[key] = func; }
 	bool ControlFunctionKeyExistsImpl(const std::string& key) noexcept { return m_functionsMap.contains(key); }
-	std::function<void(Control*)> GetControlFunctionImpl(const std::string& key) { return m_functionsMap[key]; }
+	std::function<void(Control*, Event&)> GetControlFunctionImpl(const std::string& key) { return m_functionsMap[key]; }
 
 
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
@@ -108,10 +109,11 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<Style>> m_stylesCache;
 
 	// Map of function callbacks
-	std::unordered_map<std::string, std::function<void(Control*)>> m_functionsMap;
+	std::unordered_map<std::string, std::function<void(Control*, Event&)>> m_functionsMap;
 
 	json					m_jsonRoot;
 	std::filesystem::path	m_jsonRootDirectory;
 };
 #pragma warning( pop )
+
 }

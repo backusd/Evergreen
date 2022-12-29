@@ -37,4 +37,12 @@ ID2D1Brush* ColorBrush::Get() const noexcept
 
 	return m_brush.Get(); 
 }
+
+void ColorBrush::SetDrawRegion(const D2D1_RECT_F& rect) noexcept
+{ 
+	// Call the modifier functional which may or mar not modify the rect to set as the draw region
+	m_drawRegion = m_DrawRegionRectModifier(rect, this);
+	OnDrawRegionChanged(); 
+}
+
 }

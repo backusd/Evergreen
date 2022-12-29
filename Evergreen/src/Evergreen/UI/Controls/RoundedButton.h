@@ -27,7 +27,8 @@ public:
 	// Inherited from Control
 	void Render() const noexcept override;
 
-	const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
+	ND inline ColorBrush* BackgroundBrush() const noexcept override { return m_backgroundBrush.get(); }
+	ND inline const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
 
 	bool ContainsPoint(float x, float y) const noexcept override;
 

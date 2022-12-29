@@ -133,7 +133,7 @@ void UI::LoadDefaultUI() noexcept
 	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 	button->OnMouseEnter(
-		[](Control* control) 
+		[](Control* control, Event& e) 
 		{
 			Button* b = static_cast<Button*>(control);
 			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
@@ -141,7 +141,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button->OnMouseLeave(
-		[](Control* control)
+		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
 			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
@@ -149,7 +149,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button->OnMouseLButtonDown(
-		[](Control* control)
+		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
 			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
@@ -157,7 +157,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button->OnMouseLButtonUp(
-		[](Control* control)
+		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
 			// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
@@ -212,7 +212,7 @@ void UI::LoadDefaultUI() noexcept
 	text3->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	
 	button2->OnMouseEnter(
-		[](Control* b)
+		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -221,7 +221,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnMouseLeave(
-		[](Control* b)
+		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -230,7 +230,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnMouseLButtonDown(
-		[](Control* b)
+		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -239,7 +239,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnMouseLButtonUp(
-		[](Control* b)
+		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -254,7 +254,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnClick(
-		[](Control* b)
+		[](Control* b, Event& e)
 		{
 			static int iii = 0;
 

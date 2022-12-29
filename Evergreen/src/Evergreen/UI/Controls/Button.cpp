@@ -15,13 +15,7 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_borderWidth(borderWidth),
 	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
 	m_mouseIsOver(false), 
-	m_mouseLButtonIsDown(false),
-	m_OnMouseEnter([](Control*){}),
-	m_OnMouseLeave([](Control*) {}),
-	m_OnMouseMoved([](Control*) {}),
-	m_OnMouseLButtonDown([](Control*) {}),
-	m_OnMouseLButtonUp([](Control*) {}),
-	m_OnClick([](Control*) {})
+	m_mouseLButtonIsDown(false)
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -104,7 +98,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 		if (!currentMouseIsOver)
 		{
 			m_mouseIsOver = false;
-			m_OnMouseLeave(this);
+			m_OnMouseLeave(this, e);
 
 			// Only set handled=true if the mouse is down, making it so that another control can not process this event
 			// The button should continue to handle mouse events until the mouse button is released
@@ -115,13 +109,13 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 
 		// Nothing changed here, just make sure the event is handled and return
-		m_OnMouseMoved(this);
+		m_OnMouseMoved(this, e);
 		e.Handled(this);
 	}
 	else if (currentMouseIsOver) // Check if the mouse is newly over the button
 	{
 		m_mouseIsOver = true;
-		m_OnMouseEnter(this);
+		m_OnMouseEnter(this, e);
 		e.Handled(this);
 	}
 	else if (m_mouseLButtonIsDown)
@@ -149,7 +143,7 @@ void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseLButtonIsDown = true;
-			m_OnMouseLButtonDown(this);
+			m_OnMouseLButtonDown(this, e);
 		}
 	}
 }
@@ -170,8 +164,8 @@ void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseLButtonIsDown = false;
-			m_OnMouseLButtonUp(this);
-			m_OnClick(this);
+			m_OnMouseLButtonUp(this, e);
+			m_OnClick(this, e);
 		}
 	}
 	else

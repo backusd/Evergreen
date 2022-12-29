@@ -244,6 +244,7 @@
 
 				"OnMouseEnter": "TestButton2OnMouseEnter",
 				"OnMouseLeave": "TestButton2OnMouseLeave",
+				"OnMouseMoved": "TestButton2OnMouseMoved",
 				"OnMouseLButtonDown": "TestButton2OnMouseLButtonDown",
 				"OnMouseLButtonUp": "TestButton2OnMouseLButtonUp",
 				"OnClick": "TestButton2OnClick"
