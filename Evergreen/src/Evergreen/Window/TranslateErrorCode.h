@@ -1,8 +1,9 @@
 #pragma once
 #include "pch.h"
+#include "Evergreen/Core.h"
 
 namespace Evergreen
 {
-	std::string TranslateErrorCode(HRESULT hr) noexcept;
+	ND std::string TranslateErrorCode(HRESULT hr) noexcept;
 }
 

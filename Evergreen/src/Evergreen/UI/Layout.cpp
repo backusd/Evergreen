@@ -196,6 +196,13 @@ Column* Layout::AddColumn(RowColumnDefinition definition)
 	return &m_columns.back();
 }
 
+void Layout::Brush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+	EG_CORE_ASSERT(brush != nullptr, "brush cannot be nullptr");
+	m_colorBrush = std::move(brush);
+	m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+}
+
 void Layout::UpdateLayout() noexcept
 {
 	UpdateRows();

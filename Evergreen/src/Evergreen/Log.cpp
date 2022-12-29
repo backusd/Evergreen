@@ -17,7 +17,6 @@ void Log::Init() noexcept
 
 	m_clientLogger = spdlog::stdout_color_mt("APP");
 	m_clientLogger->set_level(spdlog::level::trace);
-
 }
 
 

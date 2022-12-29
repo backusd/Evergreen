@@ -62,7 +62,7 @@ void Application::Render() noexcept
 {
 	// Must always start the render by clearing the background
 	// NOTE: Do not need to reset the render target - DeviceResources handles that itself
-//	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
+	//	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
 
 	m_deviceResources->ClearBackground(D2D1::ColorF(D2D1::ColorF::Lavender));
 	

@@ -53,8 +53,6 @@ private:
 
 	std::shared_ptr<Window> m_window;
 	std::shared_ptr<DeviceResources> m_deviceResources;
-
-
 };
 #pragma warning( pop )
 

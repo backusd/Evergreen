@@ -44,16 +44,16 @@ public:
 	Row(const Row&) noexcept;
 	void operator=(const Row& rhs) noexcept;
 
-	inline float Top() const noexcept { return m_top; }
-	inline float Left() const noexcept { return m_left; }
-	inline float Right() const noexcept { return m_left + m_width; }
-	inline float Bottom() const noexcept { return m_top + m_height; }
-	inline float Width() const noexcept { return m_width; }
-	inline float Height() const noexcept { return m_height; }
-	float MaxHeight() const noexcept;
-	float MinHeight() const noexcept;
-	inline bool TopIsAdjustable() const noexcept { return m_topAdjustable; }
-	inline bool BottomIsAdjustable() const noexcept { return m_bottomAdjustable; }
+	ND inline float Top() const noexcept { return m_top; }
+	ND inline float Left() const noexcept { return m_left; }
+	ND inline float Right() const noexcept { return m_left + m_width; }
+	ND inline float Bottom() const noexcept { return m_top + m_height; }
+	ND inline float Width() const noexcept { return m_width; }
+	ND inline float Height() const noexcept { return m_height; }
+	ND float MaxHeight() const noexcept;
+	ND float MinHeight() const noexcept;
+	ND inline bool TopIsAdjustable() const noexcept { return m_topAdjustable; }
+	ND inline bool BottomIsAdjustable() const noexcept { return m_bottomAdjustable; }
 
 	void Top(float top) noexcept { m_top = top; }
 	void Left(float left) noexcept { m_left = left; }
@@ -87,23 +87,20 @@ private:
 class EVERGREEN_API Column
 {
 public:
-	/*
-	Column(float top = 0.0f, float left = 0.0f, float width = 0.0f, float height = 0.0f, float maxWidth = FLT_MAX, float minWidth = 1.0f, bool leftAdjustable = false, bool rightAdjustable = false) noexcept;
-	*/
 	Column(float top = 0.0f, float left = 0.0f, float width = 0.0f, float height = 0.0f, RowColumnDefinition maxWidthDef = { RowColumnType::FIXED, FLT_MAX }, RowColumnDefinition minWidthDef = { RowColumnType::FIXED, 1.0f }, bool leftAdjustable = false, bool rightAdjustable = false) noexcept;
 	Column(const Column&) noexcept;
 	void operator=(const Column& rhs) noexcept;
 
-	inline float Top() const noexcept { return m_top; }
-	inline float Left() const noexcept { return m_left; }
-	inline float Right() const noexcept { return m_left + m_width; }
-	inline float Bottom() const noexcept { return m_top + m_height; }
-	inline float Width() const noexcept { return m_width; }
-	inline float Height() const noexcept { return m_height; }
-	float MaxWidth() const noexcept;
-	float MinWidth() const noexcept;
-	inline bool LeftIsAdjustable() const noexcept { return m_leftAdjustable; }
-	inline bool RightIsAdjustable() const noexcept { return m_rightAdjustable; }
+	ND inline float Top() const noexcept { return m_top; }
+	ND inline float Left() const noexcept { return m_left; }
+	ND inline float Right() const noexcept { return m_left + m_width; }
+	ND inline float Bottom() const noexcept { return m_top + m_height; }
+	ND inline float Width() const noexcept { return m_width; }
+	ND inline float Height() const noexcept { return m_height; }
+	ND float MaxWidth() const noexcept;
+	ND float MinWidth() const noexcept;
+	ND inline bool LeftIsAdjustable() const noexcept { return m_leftAdjustable; }
+	ND inline bool RightIsAdjustable() const noexcept { return m_rightAdjustable; }
 
 	void Top(float top) noexcept { m_top = top; }
 	void Left(float left) noexcept { m_left = left; }
@@ -142,9 +139,9 @@ public:
 	void operator=(const LayoutException&) = delete;
 	virtual ~LayoutException() noexcept override {}
 
-	const char* what() const noexcept override;
-	const char* GetType() const noexcept override;
-	std::string GetErrorInfo() const noexcept;
+	ND const char* what() const noexcept override;
+	ND const char* GetType() const noexcept override;
+	ND std::string GetErrorInfo() const noexcept;
 
 private:
 	std::string m_message;
@@ -175,13 +172,8 @@ public:
 	template<class T, class ... U>
 	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
 
-	void Brush(std::unique_ptr<ColorBrush> brush) noexcept 
-	{ 
-		EG_CORE_ASSERT(brush != nullptr, "brush cannot be nullptr");
-		m_colorBrush = std::move(brush); 
-		m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
-	}
-	ColorBrush* Brush() const noexcept { return m_colorBrush.get(); }
+	void Brush(std::unique_ptr<ColorBrush> brush) noexcept;
+	ND ColorBrush* Brush() const noexcept { return m_colorBrush.get(); }
 
 	Row* AddRow(RowColumnDefinition definition);
 	Column* AddColumn(RowColumnDefinition definition);
@@ -189,13 +181,13 @@ public:
 	void ClearRows() noexcept;
 	void ClearColumns() noexcept;
 
-	std::string Name() const noexcept { return m_name; }
+	ND inline std::string Name() const noexcept { return m_name; }
 	void Name(const std::string& name) noexcept { m_name = name; }
 
-	const std::vector<Row>& Rows() const noexcept { return m_rows; }
-	const std::vector<Column>& Columns() const noexcept { return m_columns; }
+	ND inline const std::vector<Row>& Rows() const noexcept { return m_rows; }
+	ND inline const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
-	Control* GetControl(unsigned int index) const noexcept;
+	ND inline Control* GetControl(unsigned int index) const noexcept;
 
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;
@@ -209,7 +201,7 @@ public:
 	void Render() const noexcept;
 	void DrawBorders() const noexcept;
 
-	inline bool ContainsPoint(float x, float y) const noexcept { return m_left <= x && m_left + m_width >= x && m_top <= y && m_top + m_height >= y; }
+	ND inline bool ContainsPoint(float x, float y) const noexcept { return m_left <= x && m_left + m_width >= x && m_top <= y && m_top + m_height >= y; }
 
 private:
 	void UpdateLayout() noexcept;
@@ -218,11 +210,11 @@ private:
 	void UpdateSubLayouts() noexcept;
 	void UpdateControls() noexcept;
 
-	float GetTotalFixedSize(const std::vector<RowColumnDefinition>& defs, const float totalSpace) const noexcept;
-	float GetTotalStars(const std::vector<RowColumnDefinition>& defs) const noexcept;
+	ND float GetTotalFixedSize(const std::vector<RowColumnDefinition>& defs, const float totalSpace) const noexcept;
+	ND float GetTotalStars(const std::vector<RowColumnDefinition>& defs) const noexcept;
 
-	std::optional<unsigned int> MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept;
-	std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
+	ND std::optional<unsigned int> MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept;
+	ND std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 

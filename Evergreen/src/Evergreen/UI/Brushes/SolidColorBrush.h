@@ -18,10 +18,10 @@ public:
 	void operator=(const SolidColorBrush&) noexcept;
 
 	void Refresh() noexcept override;
-	std::unique_ptr<ColorBrush> Duplicate() noexcept override;
+	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
 	void Color(const D2D1_COLOR_F& color) noexcept;
-	const D2D1_COLOR_F& Color() const noexcept { return m_color; }
+	ND inline const D2D1_COLOR_F& Color() const noexcept { return m_color; }
 
 private:
 	D2D1_COLOR_F m_color;

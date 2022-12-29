@@ -333,64 +333,6 @@ void UI::Render() const noexcept
 
 	m_rootLayout->Render();
 
-
-
-
-	/*
-	//SolidColorBrush brush(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
-
-
-	std::vector<D2D1_GRADIENT_STOP> stops;
-	stops.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::DarkBlue, 1.0f));
-	stops.emplace_back(0.5f, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
-	stops.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::LightBlue, 1.0f));
-
-	GradientBrush brush(
-		m_deviceResources,
-		stops,
-		GRADIENT_AXIS::NWSE
-	);
-
-	D2D1_RECT_F rect{ 100.0f, 100.0f, 500.0f, 500.0f };
-	brush.SetDrawRegion(rect);
-	m_deviceResources->D2DDeviceContext()->FillRectangle(&rect, brush.Get());
-
-	// -------------
-
-	std::vector<D2D1_GRADIENT_STOP> stops2;
-	stops2.emplace_back(0.0f, D2D1::ColorF(D2D1::ColorF::Red, 1.0f));
-	stops2.emplace_back(0.5f, D2D1::ColorF(D2D1::ColorF::Blue, 1.0f));
-	stops2.emplace_back(1.0f, D2D1::ColorF(D2D1::ColorF::Green, 1.0f));
-
-	RadialBrush radialBrush(
-		m_deviceResources, 
-		stops2
-	);
-
-	D2D1_ELLIPSE ellipse = D2D1::Ellipse({ 600.0f, 600.0f }, 75.0f, 75.0f);
-	D2D1_RECT_F rect22 = D2D1::RectF(525.0f, 525.0f, 675.0f, 675.0f);
-	radialBrush.SetDrawRegion(rect22);
-	m_deviceResources->D2DDeviceContext()->FillEllipse(ellipse, radialBrush.Get());
-	// -----------------
-
-	D2D1_RECT_F rect2;
-	rect2.bottom = 450.0f;
-	rect2.left = 750.0f;
-	rect2.top = 200.0f;
-	rect2.right = 1050.0f;
-
-	BitmapBrush bmbrush(m_deviceResources, L"evergreen-image-1.jpg");
-	bmbrush.TransformToRect(rect2, TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_UNDERFILL_RECT);
-	bmbrush.ExtendMode(D2D1_EXTEND_MODE_WRAP);
-
-	m_deviceResources->D2DDeviceContext()->FillRectangle(
-		&rect2,
-		bmbrush.Get()
-	);
-	*/
-
-
-
 	m_deviceResources->EndDraw();
 }
 

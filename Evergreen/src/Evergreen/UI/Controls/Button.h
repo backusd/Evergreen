@@ -35,7 +35,7 @@ public:
 	ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
 	ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
 	Layout* GetLayout() const noexcept { return m_layout.get(); }
-	float BorderWidth() const noexcept { return m_borderWidth; }
+	ND float BorderWidth() const noexcept { return m_borderWidth; }
 	const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
 
 	virtual void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_layout->Brush(std::move(brush)); } // Pass the brush to the layout

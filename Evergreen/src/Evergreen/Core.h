@@ -11,7 +11,7 @@
 
 #define ERROR_POPUP(text, caption) MessageBox(nullptr, text, caption, MB_OK | MB_ICONEXCLAMATION)
 
-
+#define ND [[nodiscard]]
 
 #ifdef EG_ENABLE_ASSERTS
 	#define EG_ASSERT(x, ...) { if (!(x)) { EG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }

@@ -20,17 +20,17 @@ public:
 	void operator=(const ColorBrush&) noexcept;
 	virtual ~ColorBrush() noexcept {}
 
-	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
-	ID2D1Brush* Get() const noexcept;
+	ND std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+	ND inline ID2D1Brush* Get() const noexcept;
 
 	virtual void Refresh() noexcept = 0;
-	virtual std::unique_ptr<ColorBrush> Duplicate() noexcept = 0;
+	ND virtual std::unique_ptr<ColorBrush> Duplicate() noexcept = 0;
 
 	void SetOpacity(float opacity) noexcept { m_brushProperties.opacity = opacity; Refresh(); }
 	void SetTransform(const D2D1_MATRIX_3X2_F& transform) noexcept { m_brushProperties.transform = transform; Refresh(); }
 	void SetDrawRegion(const D2D1_RECT_F& rect) noexcept { m_drawRegion = rect; OnDrawRegionChanged(); }
 
-	const D2D1_RECT_F& GetDrawingRect() const noexcept { return m_drawRegion; }
+	ND const D2D1_RECT_F& GetDrawingRect() const noexcept { return m_drawRegion; }
 
 protected:
 	virtual void OnDrawRegionChanged() noexcept {}

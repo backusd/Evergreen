@@ -16,17 +16,17 @@ public:
 	void operator=(const WindowTemplate&) = delete;
 	~WindowTemplate() noexcept;
 
-	virtual LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+	ND virtual LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 	{
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
-	HWND GetHWND() const noexcept { return m_hWnd; }
+	ND HWND GetHWND() const noexcept { return m_hWnd; }
 
 
 protected:
-	static LRESULT CALLBACK HandleMsgSetupBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
-	static LRESULT CALLBACK HandleMsgBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
+	ND static LRESULT CALLBACK HandleMsgSetupBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
+	ND static LRESULT CALLBACK HandleMsgBase(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
 	// Window Class Data
 	static constexpr const char* wndBaseClassName = "Windows Window";
@@ -93,7 +93,6 @@ WindowTemplate<T>::WindowTemplate(const WindowProperties& props) noexcept :
 
 	if (m_hWnd == nullptr)
 	{
-		//throw WINDOW_LAST_EXCEPT();
 		TERMINATE_ON_THROW(throw WINDOW_LAST_EXCEPT());
 	}
 

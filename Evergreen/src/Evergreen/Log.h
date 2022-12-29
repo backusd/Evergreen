@@ -17,8 +17,8 @@ class EVERGREEN_API Log
 public:
 	static void Init() noexcept;
 
-	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() noexcept { return m_coreLogger; }
-	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() noexcept { return m_clientLogger; }
+	ND inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() noexcept { return m_coreLogger; }
+	ND inline static std::shared_ptr<spdlog::logger>& GetClientLogger() noexcept { return m_clientLogger; }
 
 private:
 	static std::shared_ptr<spdlog::logger> m_coreLogger;
@@ -33,11 +33,9 @@ private:
 #define EG_CORE_WARN(fmt, ...)  ::Evergreen::Log::GetCoreLogger()->warn(std::format(fmt, __VA_ARGS__))
 #define EG_CORE_INFO(fmt, ...)  ::Evergreen::Log::GetCoreLogger()->info(std::format(fmt, __VA_ARGS__))
 #define EG_CORE_TRACE(fmt, ...) ::Evergreen::Log::GetCoreLogger()->trace(std::format(fmt, __VA_ARGS__))
-#define EG_CORE_FATAL(fmt, ...) ::Evergreen::Log::GetCoreLogger()->fatal(std::format(fmt, __VA_ARGS__))
 
 // Client Log Macros
 #define EG_ERROR(fmt, ...) ::Evergreen::Log::GetClientLogger()->error(std::format(fmt, __VA_ARGS__))
 #define EG_WARN(fmt, ...)  ::Evergreen::Log::GetClientLogger()->warn(std::format(fmt, __VA_ARGS__))
 #define EG_INFO(fmt, ...)  ::Evergreen::Log::GetClientLogger()->info(std::format(fmt, __VA_ARGS__))
 #define EG_TRACE(fmt, ...) ::Evergreen::Log::GetClientLogger()->trace(std::format(fmt, __VA_ARGS__))
-#define EG_FATAL(fmt, ...) ::Evergreen::Log::GetClientLogger()->fatal(std::format(fmt, __VA_ARGS__))
