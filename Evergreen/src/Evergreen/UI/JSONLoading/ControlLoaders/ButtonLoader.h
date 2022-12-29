@@ -39,6 +39,7 @@ private:
 
 	void ParseOnMouseEnter(Button* button, const json& data);
 	void ParseOnMouseLeave(Button* button, const json& data);
+	void ParseOnMouseMoved(Button* button, const json& data);
 	void ParseOnMouseLButtonDown(Button* button, const json& data);
 	void ParseOnMouseLButtonUp(Button* button, const json& data);
 	void ParseOnClick(Button* button, const json& data);

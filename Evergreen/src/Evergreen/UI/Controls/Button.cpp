@@ -18,6 +18,7 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_mouseLButtonIsDown(false),
 	m_OnMouseEnter([](Control*){}),
 	m_OnMouseLeave([](Control*) {}),
+	m_OnMouseMoved([](Control*) {}),
 	m_OnMouseLButtonDown([](Control*) {}),
 	m_OnMouseLButtonUp([](Control*) {}),
 	m_OnClick([](Control*) {})
@@ -114,6 +115,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 
 		// Nothing changed here, just make sure the event is handled and return
+		m_OnMouseMoved(this);
 		e.Handled(this);
 	}
 	else if (currentMouseIsOver) // Check if the mouse is newly over the button

@@ -194,20 +194,21 @@
 				"Type": "Button",
 				"Column": 4,
 				"Margin": [ 5, 5, 5, 5 ],
-				"BackgroundBrush": "Orange",
+				"BackgroundBrush": "Black",
 				"BorderBrush": "Yellow",
 				"BorderWidth": 3.0,
 
 				"Content": {
 					"Type": "Text",
 					"Text": "Test Button 1",
-					"Brush": "Black",
+					"Brush": "White",
 					"FontFamily": "Arial",
 					"FontSize": 12
 				},
 
 				"OnMouseEnter": "TestButtonOnMouseEnter",
 				"OnMouseLeave": "TestButtonOnMouseLeave",
+				"OnMouseMoved": "TestButtonOnMouseMoved",
 				"OnMouseLButtonDown": "TestButtonOnMouseLButtonDown",
 				"OnMouseLButtonUp": "TestButtonOnMouseLButtonUp",
 				"OnClick": "TestButtonOnClick"

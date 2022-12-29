@@ -175,7 +175,12 @@ public:
 	template<class T, class ... U>
 	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
 
-	void Brush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
+	void Brush(std::unique_ptr<ColorBrush> brush) noexcept 
+	{ 
+		EG_CORE_ASSERT(brush != nullptr, "brush cannot be nullptr");
+		m_colorBrush = std::move(brush); 
+		m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+	}
 	ColorBrush* Brush() const noexcept { return m_colorBrush.get(); }
 
 	Row* AddRow(RowColumnDefinition definition);

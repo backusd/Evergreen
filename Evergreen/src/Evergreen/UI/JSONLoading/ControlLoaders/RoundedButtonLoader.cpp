@@ -36,11 +36,11 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadiusX", "CornerRadiusY", "Content", "OnMouseEnter",
-	"OnMouseLeave", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick" };
+	"OnMouseMoved", "OnMouseLeave", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
-			EG_CORE_WARN("{}:{} - Text control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+			EG_CORE_WARN("{}:{} - RoundedButton control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
 	}
 
 	// Create the new Text control
@@ -206,6 +206,21 @@ void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, const json& d
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
 		button->OnMouseLeave(JSONLoaders::GetControlFunction(key));
+	}
+}
+void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, const json& data)
+{
+	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
+
+	if (data.contains("OnMouseMoved"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseMoved"].is_string(), "RoundedButton control with name '{}': 'OnMouseMoved' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
+
+		std::string key = data["OnMouseMoved"].get<std::string>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+
+		button->OnMouseMoved(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, const json& data)

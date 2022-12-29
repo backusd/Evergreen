@@ -21,8 +21,8 @@ public:
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
-	//Button(const Button& text) noexcept;
-	//void operator=(const Button&) noexcept;
+	Button(const Button& text) noexcept = delete;
+	void operator=(const Button&) noexcept = delete;
 	virtual ~Button() noexcept override {}
 
 	// Inherited from Control
@@ -44,6 +44,7 @@ public:
 
 	void OnMouseEnter(std::function<void(Control*)> func) noexcept { m_OnMouseEnter = func; }
 	void OnMouseLeave(std::function<void(Control*)> func) noexcept { m_OnMouseLeave = func; }
+	void OnMouseMoved(std::function<void(Control*)> func) noexcept { m_OnMouseMoved = func; }
 	void OnMouseLButtonDown(std::function<void(Control*)> func) noexcept { m_OnMouseLButtonDown = func; }
 	void OnMouseLButtonUp(std::function<void(Control*)> func) noexcept { m_OnMouseLButtonUp = func; }
 	void OnClick(std::function<void(Control*)> func) noexcept { m_OnClick = func; }
@@ -59,6 +60,7 @@ protected:
 
 	std::function<void(Control*)> m_OnMouseEnter;
 	std::function<void(Control*)> m_OnMouseLeave;
+	std::function<void(Control*)> m_OnMouseMoved;
 	std::function<void(Control*)> m_OnMouseLButtonDown;
 	std::function<void(Control*)> m_OnMouseLButtonUp;
 	std::function<void(Control*)> m_OnClick;
