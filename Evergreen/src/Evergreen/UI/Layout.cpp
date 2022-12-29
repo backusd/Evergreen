@@ -176,7 +176,7 @@ Column* Layout::AddColumn(RowColumnDefinition definition)
 	{
 	case RowColumnType::FIXED:
 		LAYOUT_EXCEPTION_IF_FALSE(definition.Value > 0.0f, "Layout (name: {}) called AddColumn, with an invalid FIXED value ({}). Must be between greater than 0", m_name, definition.Value);
-		LAYOUT_EXCEPTION_IF_FALSE(definition.Value <= m_height, "Layout (name: {}) called AddColumn, with a FIXED width ({}) greater than the layout's current width ({})", m_name, definition.Value, m_width);
+		LAYOUT_EXCEPTION_IF_FALSE(definition.Value <= m_width, "Layout (name: {}) called AddColumn, with a FIXED width ({}) greater than the layout's current width ({})", m_name, definition.Value, m_width);
 		break;
 
 	case RowColumnType::PERCENT:

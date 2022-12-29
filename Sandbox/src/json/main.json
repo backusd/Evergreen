@@ -15,11 +15,17 @@
 		"ColumnSpan": 3
 	},
 
-	"CustomTextStyle": {
+	"FileEditViewTextStyle": {
 		"Type": "TextStyle",
 		"Brush": "Green",
-		"FontFamily": "Arial",
-		"FontSize": 24
+		"FontFamily": "Calibri",
+		"FontSize": 18,
+		"FontWeight": "Normal",
+		"FontStyle": "Normal",
+		"FontStretch": "Normal",
+		"TextAlignment": "Center",
+		"ParagraphAlignment": "Center",
+		"WordWrapping": "None"
 	},
 
 
@@ -62,7 +68,6 @@
 	},
 
 
-
 	"RadialBrush1": {
 		"Brush": {
 			"Type": "RadialBrush",
@@ -81,8 +86,6 @@
 			"ExtendMode": "D2D1_EXTEND_MODE_CLAMP"
 		}
 	},
-
-
 
 
 	"BitmapBrush1": {
@@ -139,29 +142,40 @@
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": 50 },
+				{ "Width": 50 },
+				{ "Width": 100 },
+				{ "Width": 200 },
+				{ "Width": 100 },
 				{ "Width": "1*" }
 			],
 
 			"FileText": {
 				"Type": "Text",
 				"Text": "File",
-				"Style": "CustomTextStyle",
-				"Brush": "Purple"
+				"Style": "FileEditViewTextStyle",
+				"Brush": "White"
 			},
 
 			"EditText": {
 				"Type": "Text",
 				"Text": "Edit",
 				"Column": 1,
-				"Style": "CustomTextStyle",
-				"Brush": "Black",
-				"Margin": [ 5, 10 ]
+				"Style": "FileEditViewTextStyle",
+				"Brush": "White"
 			},
 
 			"ViewText": {
 				"Type": "Text",
-				"Text": "0xE10F",
+				"Text": "View",
 				"Column": 2,
+				"Style": "FileEditViewTextStyle",
+				"Brush": "White"
+			},
+
+			"HouseText": {
+				"Type": "Text",
+				"Text": "0xE10F",
+				"Column": 3,
 				"import": "BitmapBrush1",
 				"FontFamily": "Segoe MDL2 Assets",
 				"FontSize": 30,
@@ -171,30 +185,93 @@
 				"TextAlignment": "Center",
 				"ParagraphAlignment": "Center",
 				"WordWrapping": "None"
+			},
+
+
+
+
+			"TestButton1": {
+				"Type": "Button",
+				"Column": 4,
+				"Margin": [ 5, 5, 5, 5 ],
+				"BackgroundBrush": "Orange",
+				"BorderBrush": "Yellow",
+				"BorderWidth": 3.0,
+
+				"Content": {
+					"Type": "Text",
+					"Text": "Test Button 1",
+					"Brush": "Black",
+					"FontFamily": "Arial",
+					"FontSize": 12
+				},
+
+				"OnMouseEnter": "TestButtonOnMouseEnter",
+				"OnMouseLeave": "TestButtonOnMouseLeave",
+				"OnMouseLButtonDown": "TestButtonOnMouseLButtonDown",
+				"OnMouseLButtonUp": "TestButtonOnMouseLButtonUp",
+				"OnClick": "TestButtonOnClick"
+			},
+
+
+
+
+			"TestButton2": {
+				"Type": "Button",
+				"Column": 5,
+				"Margin": [ 5, 5, 5, 5 ],
+				"BackgroundBrush": "Blue",
+				"BorderBrush": "Red",
+				"BorderWidth": 3.0,
+
+				"Content": {
+					"Type": "Layout",
+					"RowDefinitions": [ { "Height": "1*" } ],
+					"ColumnDefinitions": [
+						{ "Width": "1*" },
+						{ "Width": "1*" }
+					],
+
+					"Button2Text": {
+						"Type": "Text",
+						"Text": "Test Button 2",
+						"Brush": "White",
+						"FontFamily": "Arial",
+						"FontSize": 10
+					}
+				},
+
+				"OnMouseEnter": "TestButton2OnMouseEnter",
+				"OnMouseLeave": "TestButton2OnMouseLeave",
+				"OnMouseLButtonDown": "TestButton2OnMouseLButtonDown",
+				"OnMouseLButtonUp": "TestButton2OnMouseLButtonUp",
+				"OnClick": "TestButton2OnClick"
+			},
+
+
+
+
+			"TestButton3": {
+				"Type": "RoundedButton",
+				"Column": 6,
+				"Margin": [ 5, 5, 5, 5 ],
+				"BackgroundBrush": "Blue",
+				"BorderBrush": "Red",
+				"BorderWidth": 3.0,
+				"CornerRadiusX": 15.0,
+				"CornerRadiusY": 25.0,
+
+				"Content": {
+					"Type": "Text",
+					"Text": "Test Button 3",
+					"Brush": "Black",
+					"FontFamily": "Arial",
+					"FontSize": 12
+				}
 			}
 
 
 
-		},
-
-
-		"TestButton": {
-			"Type": "Button",
-			"Content": "This is a test",
-			"Row": 0,
-			"Column": 0,
-			"import": "button_details.json",
-			"OnClick": "TestButtonOnClick"
-		},
-
-		"TestButton2": {
-			"Type": "Button",
-			"Content": "This is a second test",
-			"Row": 0,
-			"Column": 1,
-			"ColumnSpan": 2,
-			"import": "button2_details",
-			"OnClick": "TestButton2OnClick"
 		}
 	}
 }

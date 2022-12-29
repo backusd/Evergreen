@@ -26,11 +26,14 @@
     <ClInclude Include="src\Evergreen\Exceptions\JSONLoadersException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h" />
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Utils\ColorHelper.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\BitmapBrush.h" />
-    <ClInclude Include="src\Evergreen\UI\Brushes\Brushes.h" />
+    <ClInclude Include="src\Evergreen\UI\Brushes.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\ColorBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\GradientBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\RadialBrush.h" />
@@ -67,6 +70,8 @@
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp" />
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Utils\ColorHelper.cpp" />
     <ClCompile Include="src\Evergreen\UI\Brushes\BitmapBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\Brushes\ColorBrush.cpp" />

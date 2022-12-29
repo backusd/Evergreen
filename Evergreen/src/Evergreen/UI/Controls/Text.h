@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Control.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
-#include "Evergreen/UI/Brushes/Brushes.h"
+#include "Evergreen/UI/Brushes.h"
 
 
 namespace Evergreen
@@ -47,7 +47,6 @@ private:
 	// React to changes made when base-class methods are called
 	void OnMarginChanged() override;
 	void OnAllowedRegionChanged() override;
-	//void OnPositionChanged() noexcept override {}
 
 	void UpdateBrushDrawRegion() noexcept;
 

@@ -2,7 +2,7 @@
 #include "pch.h"
 #include "Control.h"
 #include "Evergreen/UI/Styles/TextStyle.h"
-#include "Evergreen/UI/Brushes/Brushes.h"
+#include "Evergreen/UI/Brushes.h"
 #include "Evergreen/UI/Layout.h"
 
 namespace Evergreen
@@ -42,11 +42,11 @@ public:
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
 	void BorderWidth(float width) noexcept { m_borderWidth = width; }
 
-	void OnMouseEnter(std::function<void(Button*)> func) noexcept { m_OnMouseEnter = func; }
-	void OnMouseLeave(std::function<void(Button*)> func) noexcept { m_OnMouseLeave = func; }
-	void OnMouseLButtonDown(std::function<void(Button*)> func) noexcept { m_OnMouseLButtonDown = func; }
-	void OnMouseLButtonUp(std::function<void(Button*)> func) noexcept { m_OnMouseLButtonUp = func; }
-	void OnClick(std::function<void(Button*)> func) noexcept { m_OnClick = func; }
+	void OnMouseEnter(std::function<void(Control*)> func) noexcept { m_OnMouseEnter = func; }
+	void OnMouseLeave(std::function<void(Control*)> func) noexcept { m_OnMouseLeave = func; }
+	void OnMouseLButtonDown(std::function<void(Control*)> func) noexcept { m_OnMouseLButtonDown = func; }
+	void OnMouseLButtonUp(std::function<void(Control*)> func) noexcept { m_OnMouseLButtonUp = func; }
+	void OnClick(std::function<void(Control*)> func) noexcept { m_OnClick = func; }
 
 	bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 
@@ -57,11 +57,11 @@ protected:
 	virtual void OnMarginChanged() override;
 	virtual void OnAllowedRegionChanged() override;
 
-	std::function<void(Button*)> m_OnMouseEnter;
-	std::function<void(Button*)> m_OnMouseLeave;
-	std::function<void(Button*)> m_OnMouseLButtonDown;
-	std::function<void(Button*)> m_OnMouseLButtonUp;
-	std::function<void(Button*)> m_OnClick;
+	std::function<void(Control*)> m_OnMouseEnter;
+	std::function<void(Control*)> m_OnMouseLeave;
+	std::function<void(Control*)> m_OnMouseLButtonDown;
+	std::function<void(Control*)> m_OnMouseLButtonUp;
+	std::function<void(Control*)> m_OnClick;
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;

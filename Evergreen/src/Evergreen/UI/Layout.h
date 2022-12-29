@@ -4,7 +4,7 @@
 #include "Evergreen/Log.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Evergreen/UI/Controls/Control.h"
-#include "Evergreen/UI/Brushes/Brushes.h"
+#include "Evergreen/UI/Brushes.h"
 #include "Evergreen/Exceptions/BaseException.h"
 
 

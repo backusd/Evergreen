@@ -16,11 +16,11 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
 	m_mouseIsOver(false), 
 	m_mouseLButtonIsDown(false),
-	m_OnMouseEnter([](Button*){}),
-	m_OnMouseLeave([](Button*) {}),
-	m_OnMouseLButtonDown([](Button*) {}),
-	m_OnMouseLButtonUp([](Button*) {}),
-	m_OnClick([](Button*) {})
+	m_OnMouseEnter([](Control*){}),
+	m_OnMouseLeave([](Control*) {}),
+	m_OnMouseLButtonDown([](Control*) {}),
+	m_OnMouseLButtonUp([](Control*) {}),
+	m_OnClick([](Control*) {})
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -53,7 +53,7 @@ void Button::Render() const noexcept
 
 	// Draw the border last so it appears on top
 	if (m_borderWidth > 0.0f)
-		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);	
+		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);
 }
 
 void Button::ButtonChanged()

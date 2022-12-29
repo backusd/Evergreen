@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "UI.h"
 #include "JSONLoading/ControlLoaders/TextLoader.h"
+#include "JSONLoading/ControlLoaders/ButtonLoader.h"
+#include "JSONLoading/ControlLoaders/RoundedButtonLoader.h"
 
 #include <fstream>
 
@@ -22,7 +24,9 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
-	
+	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
+
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
 
@@ -129,29 +133,33 @@ void UI::LoadDefaultUI() noexcept
 	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 	button->OnMouseEnter(
-		[](Button* b) 
+		[](Control* control) 
 		{
+			Button* b = static_cast<Button*>(control);
 			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
 	button->OnMouseLeave(
-		[](Button* b)
+		[](Control* control)
 		{
+			Button* b = static_cast<Button*>(control);
 			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
 	button->OnMouseLButtonDown(
-		[](Button* b)
+		[](Control* control)
 		{
+			Button* b = static_cast<Button*>(control);
 			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(b->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
 	button->OnMouseLButtonUp(
-		[](Button* b)
+		[](Control* control)
 		{
+			Button* b = static_cast<Button*>(control);
 			// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
 			// OnMouseLeave event will fire and set the background color anyways)
 			if (b->MouseIsOver())
@@ -204,7 +212,7 @@ void UI::LoadDefaultUI() noexcept
 	text3->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	
 	button2->OnMouseEnter(
-		[](Button* b)
+		[](Control* b)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -213,7 +221,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnMouseLeave(
-		[](Button* b)
+		[](Control* b)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -222,7 +230,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnMouseLButtonDown(
-		[](Button* b)
+		[](Control* b)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -231,7 +239,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnMouseLButtonUp(
-		[](Button* b)
+		[](Control* b)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
 
@@ -246,7 +254,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	button2->OnClick(
-		[](Button* b)
+		[](Control* b)
 		{
 			static int iii = 0;
 
