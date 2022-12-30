@@ -12,10 +12,10 @@ public:
 	void operator=(const FontFamilyException&) = delete;
 	virtual ~FontFamilyException() noexcept override {}
 
-	const char* what() const noexcept override;
+	ND const char* what() const noexcept override;
 
-	const char* GetType() const noexcept override;
-	std::string GetErrorInfo() const noexcept;
+	ND inline const char* GetType() const noexcept override;
+	ND inline std::string GetErrorInfo() const noexcept;
 
 private:
 	std::string m_message;
@@ -210,10 +210,10 @@ public:
 	FontFamily(const FontFamily&) noexcept;
 	void operator=(const FontFamily&) noexcept;
 
-	std::string Get() { return m_value; }
+	ND inline std::string Get() { return m_value; }
 
-	static bool IsValidFontFamily(std::string fontFamily) noexcept { return m_fontFamilyNameMap.find(fontFamily) != m_fontFamilyNameMap.end(); }
-	static const FontFamily& GetFontFamily(const std::string& name);
+	ND inline static bool IsValidFontFamily(std::string fontFamily) noexcept { return m_fontFamilyNameMap.find(fontFamily) != m_fontFamilyNameMap.end(); }
+	ND static const FontFamily& GetFontFamily(const std::string& name);
 	
 
 private:

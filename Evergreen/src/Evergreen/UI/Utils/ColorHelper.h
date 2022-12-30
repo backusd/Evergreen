@@ -16,10 +16,10 @@ public:
 	void operator=(const ColorException&) = delete;
 	virtual ~ColorException() noexcept override {}
 
-	const char* what() const noexcept override;
+	ND const char* what() const noexcept override;
 
-	const char* GetType() const noexcept override;
-	std::string GetErrorInfo() const noexcept;
+	ND inline const char* GetType() const noexcept override;
+	ND inline std::string GetErrorInfo() const noexcept;
 
 private:
 	std::string m_message;
