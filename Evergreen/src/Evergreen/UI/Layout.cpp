@@ -137,6 +137,8 @@ Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, float top, floa
 	m_adjustingLayout(false),
 	m_deviceResources(deviceResources)
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 	if (brush == nullptr)
 		m_colorBrush = std::make_unique<SolidColorBrush>(deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
 	else
@@ -168,6 +170,7 @@ Row* Layout::AddRow(RowColumnDefinition definition)
 
 	EG_CORE_ASSERT(m_rows.size() > 0, "Adding row failed. Should have thrown exception.");
 	EG_CORE_ASSERT(&m_rows.back() != nullptr, "Row entry should never be nullptr. Should have thrown exception.");
+	
 	return &m_rows.back();
 }
 Column* Layout::AddColumn(RowColumnDefinition definition)
@@ -193,18 +196,22 @@ Column* Layout::AddColumn(RowColumnDefinition definition)
 
 	EG_CORE_ASSERT(m_columns.size() > 0, "Adding column failed. Should have thrown exception.");
 	EG_CORE_ASSERT(&m_columns.back() != nullptr, "Column entry should never be nullptr. Should have thrown exception.");
+	
 	return &m_columns.back();
 }
 
 void Layout::Brush(std::unique_ptr<ColorBrush> brush) noexcept
 {
 	EG_CORE_ASSERT(brush != nullptr, "brush cannot be nullptr");
+
 	m_colorBrush = std::move(brush);
 	m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
 }
 
 void Layout::UpdateLayout() noexcept
 {
+	EG_CORE_ASSERT(m_colorBrush != nullptr, "No color brush");
+
 	UpdateRows();
 	UpdateColumns();
 	UpdateSubLayouts();
@@ -434,6 +441,8 @@ void Layout::Render() const noexcept
 }
 void Layout::DrawBorders() const noexcept
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 	for (const Row& row : m_rows)
 	{
 		m_deviceResources->DrawLine(row.Left(), row.Top(), row.Right(), row.Top(), D2D1::ColorF(D2D1::ColorF::Red));
@@ -729,6 +738,8 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name)
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 	LAYOUT_EXCEPTION_IF_FALSE(position.Row < m_rows.size(), "Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Row ({}) was greater than maximum row index ({})", name, m_name, position.Row, m_rows.size() - 1);
 	LAYOUT_EXCEPTION_IF_FALSE(position.Column < m_columns.size(), "Failed to add sub layout '{}' to layout '{}' because RowColumnPosition.Column ({}) was greater than maximum column index ({})", name, m_name, position.Column, m_columns.size() - 1);
 	LAYOUT_EXCEPTION_IF_FALSE(position.RowSpan > 0, "Failed to add sub layout '{}' to layout '{}'. RowColumnPosition.RowSpan must be greater than 0", name, m_name);
@@ -751,6 +762,7 @@ Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name
 	m_subLayoutPositions.push_back(position);
 
 	EG_CORE_ASSERT(m_subLayouts.back() != nullptr, "Something went wrong.");
+
 	return m_subLayouts.back().get();
 }
  

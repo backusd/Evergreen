@@ -140,8 +140,8 @@ public:
 	virtual ~LayoutException() noexcept override {}
 
 	ND const char* what() const noexcept override;
-	ND const char* GetType() const noexcept override;
-	ND std::string GetErrorInfo() const noexcept;
+	ND inline const char* GetType() const noexcept override;
+	ND inline std::string GetErrorInfo() const noexcept;
 
 private:
 	std::string m_message;
