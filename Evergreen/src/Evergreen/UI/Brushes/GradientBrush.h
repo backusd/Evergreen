@@ -39,19 +39,19 @@ public:
 	~GradientBrush() noexcept override {}
 
 	void Refresh() noexcept override;
-	std::unique_ptr<ColorBrush> Duplicate() noexcept override;
+	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
 	void Stops(const std::vector<D2D1_GRADIENT_STOP>& stops) noexcept;
 	void Gamma(D2D1_GAMMA gamma) noexcept;
 	void ExtendMode(D2D1_EXTEND_MODE mode) noexcept;
 	void GradientAxis(GRADIENT_AXIS axis) noexcept;
 
-	const std::vector<D2D1_GRADIENT_STOP>& Stops() const noexcept { return m_stops; }
-	D2D1_GAMMA Gamma() const noexcept { return m_gamma; }
-	D2D1_EXTEND_MODE ExtendMode() const noexcept { return m_extendMode; }
-	GRADIENT_AXIS GradientAxis() const noexcept { return m_axis; }
-	const D2D1_POINT_2F& GradientAxisStart() const noexcept { return m_gradientAxisStart; }
-	const D2D1_POINT_2F& GradientAxisEnd() const noexcept { return m_gradientAxisEnd; }
+	ND inline const std::vector<D2D1_GRADIENT_STOP>& Stops() const noexcept { return m_stops; }
+	ND inline D2D1_GAMMA Gamma() const noexcept { return m_gamma; }
+	ND inline D2D1_EXTEND_MODE ExtendMode() const noexcept { return m_extendMode; }
+	ND inline GRADIENT_AXIS GradientAxis() const noexcept { return m_axis; }
+	ND inline const D2D1_POINT_2F& GradientAxisStart() const noexcept { return m_gradientAxisStart; }
+	ND inline const D2D1_POINT_2F& GradientAxisEnd() const noexcept { return m_gradientAxisEnd; }
 
 protected:
 	void OnDrawRegionChanged() noexcept override { RefreshGradientAxis(); Refresh(); }

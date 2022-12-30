@@ -29,7 +29,7 @@ public:
 	~BitmapBrush() noexcept override {}
 
 	void Refresh() noexcept override;
-	std::unique_ptr<ColorBrush> Duplicate() noexcept override;
+	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
 	void LoadBitmapFile(const std::wstring& filename) noexcept;
 
@@ -42,9 +42,9 @@ public:
 	void ExtendModeY(D2D1_EXTEND_MODE mode) noexcept;
 	void InterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE mode) noexcept;
 
-	const std::wstring& BitmapFileName() const noexcept { return m_bitmapFileName; }
-	const D2D1_BITMAP_BRUSH_PROPERTIES& BitMapBrushProperties() const noexcept { return m_bitmapBrushProperties; }
-	Microsoft::WRL::ComPtr<ID2D1Bitmap1> BitMap() const noexcept { return m_bitmap; }
+	ND inline const std::wstring& BitmapFileName() const noexcept { return m_bitmapFileName; }
+	ND inline const D2D1_BITMAP_BRUSH_PROPERTIES& BitMapBrushProperties() const noexcept { return m_bitmapBrushProperties; }
+	ND inline Microsoft::WRL::ComPtr<ID2D1Bitmap1> BitMap() const noexcept { return m_bitmap; }
 
 private:
 	void TransformToRect() noexcept;

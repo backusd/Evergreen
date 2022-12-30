@@ -20,7 +20,10 @@ public:
 	void Refresh() noexcept override;
 	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
+	void Color(float r, float g, float b, float a = 1.0f) noexcept;
+	void Color(D2D1::ColorF::Enum colorEnum) noexcept;
 	void Color(const D2D1_COLOR_F& color) noexcept;
+
 	ND inline const D2D1_COLOR_F& Color() const noexcept { return m_color; }
 
 private:

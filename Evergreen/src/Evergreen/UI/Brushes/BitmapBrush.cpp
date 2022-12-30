@@ -15,6 +15,7 @@ BitmapBrush::BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const
 {
 	// Enforce the brush to be created with a file specified
 	EG_CORE_ASSERT(m_bitmapFileName.size() > 0, "File not specified");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	LoadBitmapFile();
 	TransformToRect();
@@ -33,7 +34,8 @@ BitmapBrush::BitmapBrush(const BitmapBrush& rhs) noexcept :
 }
 void BitmapBrush::operator=(const BitmapBrush& rhs) noexcept
 {
-	m_deviceResources = rhs.m_deviceResources;
+	ColorBrush::operator=(rhs);
+
 	m_bitmapBrushProperties = rhs.m_bitmapBrushProperties;
 	m_bitmapFileName = rhs.m_bitmapFileName;
 	m_transformMethod = rhs.m_transformMethod;
@@ -59,6 +61,7 @@ void BitmapBrush::LoadBitmapFile() noexcept
 {
 	// This method should never be called before a file has been specified
 	EG_CORE_ASSERT(m_bitmapFileName.size() > 0, "File not specified");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	ComPtr<IWICBitmapDecoder> pDecoder = nullptr;
 	ComPtr<IWICBitmapFrameDecode> pSource = nullptr;
@@ -106,6 +109,7 @@ void BitmapBrush::Refresh() noexcept
 {
 	// This method should never be called if we have not loaded the bitmap
 	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	ComPtr<ID2D1BitmapBrush> bitmapBrush = nullptr;
 
@@ -125,9 +129,6 @@ void BitmapBrush::Refresh() noexcept
 
 void BitmapBrush::TransformToRect(const D2D1_RECT_F& rect, TRANSFORM_TO_RECT_METHOD method) noexcept
 {
-	// This method should never be called if we have not loaded the bitmap
-	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
-
 	m_drawRegion = rect;
 	m_transformMethod = method;
 

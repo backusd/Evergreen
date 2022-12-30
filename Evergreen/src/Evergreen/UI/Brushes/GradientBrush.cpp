@@ -55,8 +55,8 @@ GradientBrush::GradientBrush(const GradientBrush& rhs) noexcept :
 }
 void GradientBrush::operator=(const GradientBrush& rhs) noexcept
 {
-	m_deviceResources = rhs.m_deviceResources;
-	m_brush = nullptr;
+	ColorBrush::operator=(rhs);
+
 	m_stops = rhs.m_stops;
 	m_axis = rhs.m_axis;
 	m_gradientAxisStart = rhs.m_gradientAxisStart;
@@ -114,6 +114,7 @@ void GradientBrush::RefreshGradientStops() noexcept
 {
 	// Something went wrong if there are not at least two stops
 	EG_CORE_ASSERT(m_stops.size() >= 2, "Not enough stops supplied");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	// Refresh() will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,
@@ -132,6 +133,7 @@ void GradientBrush::Refresh() noexcept
 {
 	// gradient stops collection should have been created by now 
 	EG_CORE_ASSERT(m_pGradientStops != nullptr, "gradient stops collection is nullptr");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	// Refresh will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,

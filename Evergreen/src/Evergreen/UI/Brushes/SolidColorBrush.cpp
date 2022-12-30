@@ -19,9 +19,9 @@ SolidColorBrush::SolidColorBrush(const SolidColorBrush& rhs) noexcept :
 }
 void SolidColorBrush::operator=(const SolidColorBrush& rhs) noexcept
 {
-	m_deviceResources = rhs.m_deviceResources;
+	ColorBrush::operator=(rhs);
+
 	m_color = rhs.m_color;
-	m_brush = nullptr;
 	Refresh();
 }
 
@@ -32,6 +32,8 @@ std::unique_ptr<ColorBrush> SolidColorBrush::Duplicate() noexcept
 
 void SolidColorBrush::Refresh() noexcept
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 	ComPtr<ID2D1SolidColorBrush> solidBrush;
 	GFX_THROW_INFO(
 		m_deviceResources->D2DDeviceContext()->CreateSolidColorBrush(
@@ -46,6 +48,16 @@ void SolidColorBrush::Refresh() noexcept
 	)
 }
 
+void SolidColorBrush::Color(float r, float g, float b, float a) noexcept
+{
+	m_color = D2D1::ColorF(r, g, b, a);
+	Refresh();
+}
+void SolidColorBrush::Color(D2D1::ColorF::Enum colorEnum) noexcept
+{
+	m_color = D2D1::ColorF(colorEnum);
+	Refresh();
+}
 void SolidColorBrush::Color(const D2D1_COLOR_F& color) noexcept
 {
 	m_color = color;

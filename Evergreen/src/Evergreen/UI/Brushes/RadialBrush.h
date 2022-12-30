@@ -29,20 +29,20 @@ public:
 	~RadialBrush() noexcept override {}
 
 	void Refresh() noexcept override;
-	std::unique_ptr<ColorBrush> Duplicate() noexcept override;
+	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
 
 	void Stops(const std::vector<D2D1_GRADIENT_STOP>& stops) noexcept;
 	void Gamma(D2D1_GAMMA gamma) noexcept;
 	void ExtendMode(D2D1_EXTEND_MODE mode) noexcept;
 	void GradientOriginOffset(const D2D1_POINT_2F& offset) noexcept;
 
-	float RadiusX() const noexcept { return (m_drawRegion.right - m_drawRegion.left) / 2.0f; }
-	float RadiusY() const noexcept { return (m_drawRegion.bottom - m_drawRegion.top) / 2.0f; }
-	D2D1_POINT_2F Center() const noexcept { return D2D1::Point2F(m_drawRegion.left + RadiusX(), m_drawRegion.top + RadiusY()); }
-	const std::vector<D2D1_GRADIENT_STOP>& Stops() const noexcept { return m_stops; }
-	D2D1_GAMMA Gamma() const noexcept { return m_gamma; }
-	D2D1_EXTEND_MODE ExtendMode() const noexcept { return m_extendMode; }
-	const D2D1_POINT_2F& GradientOriginOffset() const noexcept { return m_gradientOriginOffset; }
+	ND inline float RadiusX() const noexcept { return (m_drawRegion.right - m_drawRegion.left) / 2.0f; }
+	ND inline float RadiusY() const noexcept { return (m_drawRegion.bottom - m_drawRegion.top) / 2.0f; }
+	ND inline D2D1_POINT_2F Center() const noexcept { return D2D1::Point2F(m_drawRegion.left + RadiusX(), m_drawRegion.top + RadiusY()); }
+	ND inline const std::vector<D2D1_GRADIENT_STOP>& Stops() const noexcept { return m_stops; }
+	ND inline D2D1_GAMMA Gamma() const noexcept { return m_gamma; }
+	ND inline D2D1_EXTEND_MODE ExtendMode() const noexcept { return m_extendMode; }
+	ND inline const D2D1_POINT_2F& GradientOriginOffset() const noexcept { return m_gradientOriginOffset; }
 
 protected:
 	void OnDrawRegionChanged() noexcept override { Refresh(); }

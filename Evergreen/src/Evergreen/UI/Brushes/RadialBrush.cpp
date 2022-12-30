@@ -46,8 +46,8 @@ RadialBrush::RadialBrush(const RadialBrush& rhs) noexcept :
 }
 void RadialBrush::operator=(const RadialBrush& rhs) noexcept
 {
-	m_deviceResources = rhs.m_deviceResources;
-	m_brush = nullptr;
+	ColorBrush::operator=(rhs);
+
 	m_stops = rhs.m_stops;
 	m_gradientOriginOffset = rhs.m_gradientOriginOffset;
 	m_extendMode = rhs.m_extendMode;
@@ -65,6 +65,7 @@ void RadialBrush::RefreshGradientStops() noexcept
 {
 	// Something went wrong if there are not at least two stops
 	EG_CORE_ASSERT(m_stops.size() >= 2, "Not enough stops supplied");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	// Refresh() will be called when a layout/control changes size and will need to update
 	// the gradient start/end. To avoid the unnecessary cost of recreating the gradient stops,
@@ -83,11 +84,11 @@ void RadialBrush::Refresh() noexcept
 {
 	// gradient stops collection should have been created by now 
 	EG_CORE_ASSERT(m_pGradientStops != nullptr, "gradient stops collection is nullptr");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	// Refresh may need to be called when the mouse moves and will need to update
 	// the brush. To avoid the unnecessary cost of recreating the gradient stops,
 	// that functionality has been moved out of this function.
-
 	ComPtr<ID2D1RadialGradientBrush> radialBrush = nullptr;
 	GFX_THROW_INFO(
 		m_deviceResources->D2DDeviceContext()->CreateRadialGradientBrush(
