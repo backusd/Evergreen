@@ -22,8 +22,7 @@ TextStyle::TextStyle(
 	Style(deviceResources, name), 
 	m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), 
 	m_fontStretch(fontStretch), m_fontSize(fontSize), m_locale(locale), m_textAlignment(textAlignment),
-	m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming),
-	m_OnTextFormatChanged([]() {})
+	m_paragraphAlignment(paragraphAlignment), m_wordWrapping(wordWrapping), m_trimming(trimming)
 {
 	Initialize();
 }
@@ -38,15 +37,14 @@ TextStyle::TextStyle(const TextStyle& rhs) noexcept :
 	m_textAlignment(rhs.m_textAlignment),
 	m_paragraphAlignment(rhs.m_paragraphAlignment),
 	m_wordWrapping(rhs.m_wordWrapping), 
-	m_trimming(rhs.m_trimming),
-	m_OnTextFormatChanged([]() {})
+	m_trimming(rhs.m_trimming)
 {
 	Initialize();
 }
 void TextStyle::operator=(const TextStyle& rhs) noexcept
 {
-	m_deviceResources = rhs.m_deviceResources;
-	m_name = rhs.m_name + "_copy";
+	Style::operator=(rhs);
+
 	m_fontFamily = rhs.m_fontFamily;
 	m_fontWeight = rhs.m_fontWeight;
 	m_fontStyle = rhs.m_fontStyle;
@@ -57,8 +55,6 @@ void TextStyle::operator=(const TextStyle& rhs) noexcept
 	m_paragraphAlignment = rhs.m_paragraphAlignment;
 	m_wordWrapping = rhs.m_wordWrapping;
 	m_trimming = rhs.m_trimming;
-
-	m_OnTextFormatChanged = []() {};
 
 	Initialize();
 }
@@ -82,6 +78,8 @@ std::unique_ptr<Style> TextStyle::Duplicate() const noexcept
 
 void TextStyle::UpdateTextFormat() noexcept
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "Cannot initialize Text Style - DeviceResources is nullptr");
+
 	std::string ff = m_fontFamily.Get();
 	std::wstring fontFamily(ff.begin(), ff.end());
 		
@@ -100,6 +98,8 @@ void TextStyle::UpdateTextFormat() noexcept
 	);
 
 	GFX_THROW_INFO(textFormat.As(&m_textFormat));
+
+	EG_CORE_ASSERT(m_textFormat != nullptr, "No text format");
 
 	GFX_THROW_INFO(m_textFormat->SetTextAlignment(m_textAlignment));
 	GFX_THROW_INFO(m_textFormat->SetParagraphAlignment(m_paragraphAlignment));
@@ -169,6 +169,7 @@ void TextStyle::TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noe
 ComPtr<IDWriteTextLayout4> TextStyle::CreateTextLayout(std::wstring text, float maxWidth, float maxHeight) noexcept
 {
 	EG_CORE_ASSERT(m_textFormat != nullptr, "text format is nullptr");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "Cannot initialize Text Style - DeviceResources is nullptr");
 
 	ComPtr<IDWriteTextLayout> textLayout;
 	ComPtr<IDWriteTextLayout4> textLayout4;

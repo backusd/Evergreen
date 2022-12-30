@@ -36,9 +36,9 @@ public:
 	void operator=(const TextStyle&) noexcept;
 	~TextStyle() noexcept override {}
 
-	std::unique_ptr<Style> Duplicate() const noexcept override;
+	ND std::unique_ptr<Style> Duplicate() const noexcept override;
 
-	Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
+	ND Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
 
 	void SetOnTextFormatChanged(std::function<void()> func) noexcept { m_OnTextFormatChanged = func; }
 
@@ -54,22 +54,22 @@ public:
 	void Trimming(DWRITE_TRIMMING trimming) noexcept;
 	void TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noexcept;
 
-	Evergreen::FontFamily FontFamily() const noexcept { return m_fontFamily; }
-	DWRITE_FONT_WEIGHT FontWeight() const noexcept { return m_fontWeight; }
-	DWRITE_FONT_STYLE FontStyle() const noexcept { return m_fontStyle; }
-	DWRITE_FONT_STRETCH FontStretch() const noexcept { return m_fontStretch; }
-	float FontSize() const noexcept { return m_fontSize; }
-	std::wstring Locale() const noexcept { return m_locale; }
-	DWRITE_TEXT_ALIGNMENT TextAlignment() const noexcept { return m_textAlignment; }
-	DWRITE_PARAGRAPH_ALIGNMENT ParagraphAlignment() const noexcept { return m_paragraphAlignment; }
-	DWRITE_WORD_WRAPPING WordWrapping() const noexcept { return m_wordWrapping; }
-	DWRITE_TRIMMING Trimming() const noexcept { return m_trimming; }
+	ND inline Evergreen::FontFamily FontFamily() const noexcept { return m_fontFamily; }
+	ND inline DWRITE_FONT_WEIGHT FontWeight() const noexcept { return m_fontWeight; }
+	ND inline DWRITE_FONT_STYLE FontStyle() const noexcept { return m_fontStyle; }
+	ND inline DWRITE_FONT_STRETCH FontStretch() const noexcept { return m_fontStretch; }
+	ND inline float FontSize() const noexcept { return m_fontSize; }
+	ND inline std::wstring Locale() const noexcept { return m_locale; }
+	ND inline DWRITE_TEXT_ALIGNMENT TextAlignment() const noexcept { return m_textAlignment; }
+	ND inline DWRITE_PARAGRAPH_ALIGNMENT ParagraphAlignment() const noexcept { return m_paragraphAlignment; }
+	ND inline DWRITE_WORD_WRAPPING WordWrapping() const noexcept { return m_wordWrapping; }
+	ND inline DWRITE_TRIMMING Trimming() const noexcept { return m_trimming; }
 
 private:
 	void Initialize() noexcept;
 	void UpdateTextFormat() noexcept;
 
-	std::function<void()> m_OnTextFormatChanged;
+	std::function<void()> m_OnTextFormatChanged = []() {};
 
 	Evergreen::FontFamily							m_fontFamily;
 	Microsoft::WRL::ComPtr<IDWriteFontCollection>	m_fontCollection; // Not sure what to do with this. Okay to always be nullptr

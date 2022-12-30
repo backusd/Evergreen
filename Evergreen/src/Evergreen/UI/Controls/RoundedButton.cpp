@@ -66,6 +66,9 @@ bool RoundedButton::ContainsPoint(float x, float y) const noexcept
 
 void RoundedButton::ButtonChanged()
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// Update the button rect to fill the allowed region minus the margin
 	m_backgroundRect.left = m_allowedRegion.left + m_margin.Left;
 	m_backgroundRect.top = m_allowedRegion.top + m_margin.Top;

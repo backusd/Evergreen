@@ -33,16 +33,16 @@ public:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
 
 	// Text specific
-	const std::wstring& GetText() const noexcept { return m_text; }
-	TextStyle* GetTextStyle() const noexcept { return m_style.get(); }
-	ColorBrush* GetColorBrush() const noexcept { return m_colorBrush.get(); }
+	ND inline const std::wstring& GetText() const noexcept { return m_text; }
+	ND inline TextStyle* GetTextStyle() const noexcept { return m_style.get(); }
+	ND inline ColorBrush* GetColorBrush() const noexcept { return m_colorBrush.get(); }
 
 	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
 	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept;
 	void SetColorBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
 
 private:
-	void TextChanged();
+	void TextChanged() noexcept;
 
 	// React to changes made when base-class methods are called
 	void OnMarginChanged() override;

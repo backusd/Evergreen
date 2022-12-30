@@ -21,7 +21,7 @@ public:
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
-	Button(const Button& text) noexcept = delete;
+	Button(const Button& text) noexcept = delete; // Just delete for now until there is a good use case
 	void operator=(const Button&) noexcept = delete;
 	virtual ~Button() noexcept override {}
 
@@ -32,11 +32,12 @@ public:
 	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
 	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
 
-	ND virtual inline ColorBrush* BackgroundBrush() const noexcept { return m_layout->Brush(); }
-	ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
-	Layout* GetLayout() const noexcept { return m_layout.get(); }
-	ND float BorderWidth() const noexcept { return m_borderWidth; }
-	const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
+	// Button specific
+	ND inline virtual ColorBrush* BackgroundBrush() const noexcept { return m_layout->Brush(); }
+	ND inline ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
+	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
+	ND inline float BorderWidth() const noexcept { return m_borderWidth; }
+	ND inline const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
 
 	virtual void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_layout->Brush(std::move(brush)); } // Pass the brush to the layout
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
@@ -49,10 +50,10 @@ public:
 	void OnMouseLButtonUp(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonUp = func; }
 	void OnClick(std::function<void(Control*, Event& e)> func) noexcept { m_OnClick = func; }
 
-	bool MouseIsOver() const noexcept { return m_mouseIsOver; }
+	ND inline bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 
 protected:
-	virtual bool ContainsPoint(float x, float y) const noexcept;
+	ND virtual bool ContainsPoint(float x, float y) const noexcept;
 	virtual void ButtonChanged();
 
 	virtual void OnMarginChanged() override;
@@ -75,35 +76,5 @@ protected:
 	bool m_mouseLButtonIsDown;
 };
 #pragma warning( pop )
-
-
-
-/*
-// Drop this warning because the private members are not accessible by the client application, but 
-// the compiler will complain that they don't have a DLL interface
-// See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
-#pragma warning( push )
-#pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
-class EVERGREEN_API RoundedButton : public Button
-{
-public:
-	RoundedButton(std::shared_ptr<DeviceResources> deviceResources) noexcept;
-	//RoundedButton(const RoundedButton& text) noexcept;
-	//void operator=(const RoundedButton&) noexcept;
-	virtual ~RoundedButton() noexcept override {}
-
-	// Inherited from Control
-	void Render() const noexcept override;
-
-	const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
-
-
-protected:
-	float m_radiusX;
-	float m_radiusY;
-	D2D1_ROUNDED_RECT m_roundedRect;
-};
-#pragma warning( pop )
-*/
 
 }

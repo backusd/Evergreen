@@ -6,7 +6,7 @@
 
 namespace Evergreen
 {
-	// Drop this warning because the private members are not accessible by the client application, but 
+// Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
 #pragma warning( push )
@@ -19,9 +19,10 @@ public:
 	void operator=(const Style& rhs) noexcept;
 	virtual ~Style() noexcept {}
 
-	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+	
 	void Name(const std::string& name) noexcept { m_name = name; }
-	const std::string& Name() const noexcept { return m_name; }
+	ND inline const std::string& Name() const noexcept { return m_name; }
 
 	virtual std::unique_ptr<Style> Duplicate() const noexcept = 0;
 

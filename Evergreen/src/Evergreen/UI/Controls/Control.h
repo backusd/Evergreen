@@ -32,7 +32,7 @@ public:
 	virtual void Update() const noexcept = 0;
 	virtual void Render() const noexcept = 0;
 
-	std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 
 	virtual void OnMouseMove(MouseMoveEvent& e) noexcept {}
 	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
@@ -48,13 +48,13 @@ public:
 	void AllowedRegion(D2D1_RECT_F region) noexcept { m_allowedRegion = region; OnAllowedRegionChanged(); }
 	void AllowedRegion(float left, float top, float right, float bottom) noexcept;
 
-	const std::string& Name() const noexcept { return m_name; }
-	Evergreen::Margin Margin() const noexcept { return m_margin; }
-	float MarginLeft() const noexcept { return m_margin.Left; }
-	float MarginTop() const noexcept { return m_margin.Top; }
-	float MarginRight() const noexcept { return m_margin.Right; }
-	float MarginBottom() const noexcept { return m_margin.Bottom; }
-	D2D1_RECT_F AllowedRegion() const noexcept { return m_allowedRegion; }
+	ND inline const std::string& Name() const noexcept { return m_name; }
+	ND inline Evergreen::Margin Margin() const noexcept { return m_margin; }
+	ND inline float MarginLeft() const noexcept { return m_margin.Left; }
+	ND inline float MarginTop() const noexcept { return m_margin.Top; }
+	ND inline float MarginRight() const noexcept { return m_margin.Right; }
+	ND inline float MarginBottom() const noexcept { return m_margin.Bottom; }
+	ND inline D2D1_RECT_F AllowedRegion() const noexcept { return m_allowedRegion; }
 
 protected:
 	// On* functions allow derived controls to perform necessary additional actions when a base class method is called

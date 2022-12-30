@@ -48,11 +48,12 @@ Text::Text(const Text& rhs) noexcept :
 }
 void Text::operator=(const Text& rhs) noexcept
 {
+	Control::operator=(rhs);
+
 	m_text = rhs.m_text;
 	m_textLayout = nullptr;
 	m_style = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(rhs.m_style->Duplicate().release())));
 	m_colorBrush = std::move(std::unique_ptr<ColorBrush>(static_cast<ColorBrush*>(rhs.m_colorBrush->Duplicate().release())));
-	m_allowedRegion = rhs.m_allowedRegion;
 
 	m_style->SetOnTextFormatChanged([this]() { TextChanged(); });
 
@@ -70,9 +71,9 @@ void Text::SetTextStyle(std::unique_ptr<TextStyle> style) noexcept
 	TextChanged(); 
 }
 
-
 void Text::Render() const noexcept
 {
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_textLayout != nullptr, "TextLayout is nullptr");
 	EG_CORE_ASSERT(m_colorBrush != nullptr, "ColorBrush is nullptr");
 
@@ -95,7 +96,7 @@ void Text::Render() const noexcept
 	context->PopAxisAlignedClip();
 }
 
-void Text::TextChanged()
+void Text::TextChanged() noexcept
 {
 	EG_CORE_ASSERT(m_style != nullptr, "Style not created");
 	EG_CORE_ASSERT(m_colorBrush != nullptr, "ColorBrush is nullptr");
@@ -115,7 +116,8 @@ void Text::TextChanged()
 
 void Text::OnMarginChanged()
 {
-
+	// Just call TextChanged to completely recreate the TextLayout
+	TextChanged();
 }
 void Text::OnAllowedRegionChanged()
 {
