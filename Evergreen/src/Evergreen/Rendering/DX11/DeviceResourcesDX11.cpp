@@ -186,7 +186,7 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources()
 	RECT rect;
 	if (GetClientRect(m_hWnd, &rect) == 0)
 	{
-		TERMINATE_ON_THROW(throw WINDOW_LAST_EXCEPT());
+		throw WINDOW_LAST_EXCEPT();
 	}
 
 	float height = static_cast<float>(rect.bottom);

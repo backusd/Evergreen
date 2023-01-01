@@ -29,27 +29,6 @@
 #define STRINGIFY2(X) #X
 #define STRINGIFY(X) STRINGIFY2(X)
 
-#define TERMINATE_ON_THROW(fn)	\
-	try {																								\
-		fn;																								\
-	}																									\
-    catch (const BaseException& e)																		\
-	{																									\
-		ERROR_POPUP(e.what(), e.GetType());																\
-		std::terminate();																				\
-	}																									\
-	catch (const std::exception& e)																		\
-	{																									\
-		ERROR_POPUP(e.what(), "Standard Exception");													\
-		std::terminate();																				\
-	}																									\
-	catch (...)																							\
-	{																									\
-		ERROR_POPUP("No details available", "Unknown Exception");										\
-		std::terminate();																				\
-	}
-
-
 #ifdef EG_DX11
 
 	#define GFX_THROW_NOINFO(hrcall) { HRESULT hr; if( FAILED( hr = (hrcall) ) ) throw DeviceResourcesExceptionDX11( __LINE__,__FILE__,hr ); }

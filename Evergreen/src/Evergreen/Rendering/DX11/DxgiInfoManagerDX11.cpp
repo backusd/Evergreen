@@ -12,7 +12,7 @@
 
 namespace Evergreen
 {
-DxgiInfoManagerDX11::DxgiInfoManagerDX11() noexcept
+DxgiInfoManagerDX11::DxgiInfoManagerDX11()
 {
 	// define function signature of DXGIGetDebugInterface
 	typedef HRESULT(WINAPI* DXGIGetDebugInterface)(REFIID, void**);
@@ -21,7 +21,7 @@ DxgiInfoManagerDX11::DxgiInfoManagerDX11() noexcept
 	const auto hModDxgiDebug = LoadLibraryEx("dxgidebug.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
 	if (hModDxgiDebug == nullptr)
 	{
-		TERMINATE_ON_THROW(throw WINDOW_LAST_EXCEPT());
+		throw WINDOW_LAST_EXCEPT();
 	}
 
 	// get address of DXGIGetDebugInterface in dll
@@ -30,7 +30,7 @@ DxgiInfoManagerDX11::DxgiInfoManagerDX11() noexcept
 		);
 	if (DxgiGetDebugInterface == nullptr)
 	{
-		TERMINATE_ON_THROW(throw WINDOW_LAST_EXCEPT());
+		throw WINDOW_LAST_EXCEPT();
 	}
 
 	DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), reinterpret_cast<void**>(&pDxgiInfoQueue));
@@ -51,29 +51,28 @@ void DxgiInfoManagerDX11::Set() noexcept
 	next = pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
 }
 
-std::vector<std::string> DxgiInfoManagerDX11::GetMessages() const noexcept
+std::vector<std::string> DxgiInfoManagerDX11::GetMessages() const
 {
 	std::vector<std::string> messages;
 	const auto end = pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
 	for (auto i = next; i < end; i++)
 	{
 		SIZE_T messageLength{};
+
 		// get the size of message i in bytes
-		TERMINATE_ON_THROW(
-			GFX_THROW_NOINFO(
-				pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &messageLength)
-			)
-		);
+		GFX_THROW_NOINFO(
+			pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &messageLength)
+		)
+
 		// allocate memory for message
 		auto bytes = std::make_unique<byte[]>(messageLength);
 		auto pMessage = reinterpret_cast<DXGI_INFO_QUEUE_MESSAGE*>(bytes.get());
+		
 		// get the message and push its description into the vector
-		TERMINATE_ON_THROW(
-			GFX_THROW_NOINFO(
-				pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage, &messageLength)
-			)
-		);
-		//std::string s = pMessage->pDescription;
+		GFX_THROW_NOINFO(
+			pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage, &messageLength)
+		)
+
 		messages.emplace_back(pMessage->pDescription);
 	}
 	return messages;

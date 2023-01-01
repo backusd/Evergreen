@@ -11,7 +11,7 @@ template<typename T>
 class WindowTemplate
 {
 public:
-	WindowTemplate(const WindowProperties& props) noexcept;
+	WindowTemplate(const WindowProperties& props);
 	WindowTemplate(const WindowTemplate&) = delete;
 	void operator=(const WindowTemplate&) = delete;
 	~WindowTemplate() noexcept;
@@ -21,7 +21,7 @@ public:
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
 
-	ND HWND GetHWND() const noexcept { return m_hWnd; }
+	ND inline HWND GetHWND() const noexcept { return m_hWnd; }
 
 
 protected:
@@ -40,7 +40,7 @@ protected:
 };
 
 template<typename T>
-WindowTemplate<T>::WindowTemplate(const WindowProperties& props) noexcept :
+WindowTemplate<T>::WindowTemplate(const WindowProperties& props) :
 	m_height(props.height),
 	m_width(props.width),
 	m_title(props.title),
@@ -73,7 +73,7 @@ WindowTemplate<T>::WindowTemplate(const WindowProperties& props) noexcept :
 
 	if (AdjustWindowRect(&rect, WS_options, FALSE) == 0)
 	{
-		TERMINATE_ON_THROW(throw WINDOW_LAST_EXCEPT());
+		throw WINDOW_LAST_EXCEPT();
 	};
 
 	// create window & get hWnd
@@ -93,7 +93,7 @@ WindowTemplate<T>::WindowTemplate(const WindowProperties& props) noexcept :
 
 	if (m_hWnd == nullptr)
 	{
-		TERMINATE_ON_THROW(throw WINDOW_LAST_EXCEPT());
+		throw WINDOW_LAST_EXCEPT();
 	}
 
 	// show window
