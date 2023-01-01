@@ -1,0 +1,49 @@
+{
+	// Basics:	Declare a button control by specifying the name of the control and specify the Type as "Button"
+	//					See example below for available attributes
+	"ButtonName": {
+		"Type": "Button",
+		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 1,
+		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 2,
+		"Margin": [ 5, 5, 5, 5 ], // Specify margin in order: left/top/right/bottom
+		"BackgroundBrush": "Black", // Background color - See Brushes.json for details on using a color brush
+		"BorderBrush": "Yellow", // (optional) Border color - See Brushes.json for details on using a color brush
+		"BorderWidth": 3.0, // (optional) Border width - default will be 0
+
+		// Button Content: Must be a json object with the 'Type' key having a value of either 'Text' or 'Layout'
+		//                 If the value is 'Text', the button will contain a single Text control (See Text.json for how to specify Text attributes)
+		//                 If the value is 'Layout', the button will contain a single Layout that can house any number of different controls (See Layout.json for how to specify a Layout)
+		"Content": {
+			"Type": "Text",
+			"Text": "Test Button 1",
+			"Brush": "White",
+			"FontFamily": "Arial",
+			"FontSize": 12
+		},
+
+		// On* callbacks: Specify functions to execute when the button triggers certain events.
+		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
+		//                can be set by calling JSONLoaders::AddControlFunction()
+		"OnMouseEnter": "TestButtonOnMouseEnter",
+		"OnMouseLeave": "TestButtonOnMouseLeave",
+		"OnMouseMoved": "TestButtonOnMouseMoved",
+		"OnMouseLButtonDown": "TestButtonOnMouseLButtonDown",
+		"OnMouseLButtonUp": "TestButtonOnMouseLButtonUp",
+		"OnClick": "TestButtonOnClick"
+	},
+
+
+	// Example Content being a 'Layout'
+	"ButtonName2": {
+		"Type": "Button",
+		...
+
+		// Button Content: If the value is 'Layout', the button will contain a single Layout that can house any number of different controls (See Layout.json for how to specify a Layout)
+		"Content": {
+			"Type": "Layout",
+			...
+		}
+	}
+}

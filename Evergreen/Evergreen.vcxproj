@@ -108,6 +108,7 @@
     <None Include="src\Evergreen\UI\json-examples\import.json" />
     <None Include="src\Evergreen\UI\json-examples\Layout.json" />
     <None Include="src\Evergreen\UI\json-examples\Margin.json" />
+    <None Include="src\Evergreen\UI\json-examples\RoundedButton.json" />
     <None Include="src\Evergreen\UI\json-examples\Text.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

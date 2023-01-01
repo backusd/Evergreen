@@ -23,15 +23,11 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	if (m_borderBrush == nullptr)
 		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
-	// Move the background brush into the Button's layout. The button won't try to draw the background - will just allow the button's layout to draw the background
-	// Create it with a dummy size - will get adjusted later when ButtonChanged is called
 	m_layout = std::make_unique<Layout>(
 		m_deviceResources,
 		0.0f, 0.0f, 1000.0f, 1000.0f,
-		std::move(m_backgroundBrush),
+		nullptr, // Don't pass a brush to the layout - Button should draw the background, not the layout
 		"button layout");
-
-	m_backgroundBrush = nullptr;
 
 	ButtonChanged();
 }
@@ -40,8 +36,11 @@ void Button::Render() const noexcept
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
-	EG_CORE_ASSERT(m_backgroundBrush == nullptr, "Background brush is supposed to be nullptr");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+
+	// Draw the background
+	m_deviceResources->D2DDeviceContext()->FillRectangle(m_backgroundRect, m_backgroundBrush->Get());
 
 	// Have the layout draw the background and contents of the brush
 	m_layout->Render();

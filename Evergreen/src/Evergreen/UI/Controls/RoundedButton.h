@@ -27,13 +27,9 @@ public:
 	// Inherited from Control
 	void Render() const noexcept override;
 
-	ND inline ColorBrush* BackgroundBrush() const noexcept override { return m_backgroundBrush.get(); }
 	ND inline const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
 
 	ND bool ContainsPoint(float x, float y) const noexcept override;
-
-	void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); }
-
 
 protected:
 	void ButtonChanged() override;

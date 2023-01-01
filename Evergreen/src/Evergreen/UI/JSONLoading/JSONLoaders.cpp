@@ -645,10 +645,11 @@ void JSONLoaders::LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResourc
 {
 	EG_CORE_ASSERT(layout != nullptr, "Layout cannot be nullptr");
 
-	JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("Brush"), "Layout must contain key 'Brush'. Invalid Layout: {}", data.dump(4));
-
-	std::unique_ptr<ColorBrush> brush = JSONLoaders::LoadBrush(deviceResources, data["Brush"]);
-	layout->Brush(std::move(brush));
+	if (data.contains("Brush"))
+	{
+		std::unique_ptr<ColorBrush> brush = JSONLoaders::LoadBrush(deviceResources, data["Brush"]);
+		layout->Brush(std::move(brush));
+	}
 }
 void JSONLoaders::LoadLayoutRowDefinitions(Layout* layout, json& data)
 {

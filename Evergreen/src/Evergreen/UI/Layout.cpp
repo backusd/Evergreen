@@ -135,14 +135,10 @@ Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, float top, floa
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
 	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
 	m_adjustingLayout(false),
-	m_deviceResources(deviceResources)
+	m_deviceResources(deviceResources),
+	m_colorBrush(std::move(brush))
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-
-	if (brush == nullptr)
-		m_colorBrush = std::make_unique<SolidColorBrush>(deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
-	else
-		m_colorBrush = std::move(brush);
 
 	// Leave rows and columns empty for now
 }
@@ -210,14 +206,13 @@ void Layout::Brush(std::unique_ptr<ColorBrush> brush) noexcept
 
 void Layout::UpdateLayout() noexcept
 {
-	EG_CORE_ASSERT(m_colorBrush != nullptr, "No color brush");
-
 	UpdateRows();
 	UpdateColumns();
 	UpdateSubLayouts();
 	UpdateControls();
 
-	m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+	if (m_colorBrush != nullptr)
+		m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
 
 #ifdef _DEBUG
 	LayoutCheck();
@@ -424,12 +419,13 @@ void Layout::Update() noexcept
 void Layout::Render() const noexcept
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-	EG_CORE_ASSERT(m_colorBrush != nullptr, "No color brush");
 	EG_CORE_ASSERT(m_rows.size() > 0, "No rows added");
 	EG_CORE_ASSERT(m_columns.size() > 0, "No columns added");
 
 	auto context = m_deviceResources->D2DDeviceContext();
-	context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_colorBrush->Get());
+
+	if (m_colorBrush != nullptr)
+		context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_colorBrush->Get());
 
 	DrawBorders();
 

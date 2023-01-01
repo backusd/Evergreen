@@ -131,12 +131,6 @@ void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources
 	}
 	else if (contentType.compare("Layout") == 0)
 	{
-		// We require the the layout use the same brush as the button itself
-		if (content.contains("Brush"))
-		{
-			EG_CORE_WARN("{}:{} - Button control with name '{}': 'Content' layout object should not contain 'Brush' keyword. Ignoring 'Brush' value for json object: {}", __FILE__, __LINE__, m_name, data.dump(4));
-		}
-		content["Brush"] = data["BackgroundBrush"];
 		JSONLoaders::LoadLayout(deviceResources, layout, content);
 	}
 	else
