@@ -18,23 +18,23 @@ public:
 		const D2D1_COLOR_F& endColor,
 		const D2D1_POINT_2F& originOffset = D2D1::Point2F(),
 		D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP,
-		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2) noexcept;
+		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2);
 	RadialBrush(std::shared_ptr<DeviceResources> deviceResources,
 		const std::vector<D2D1_GRADIENT_STOP>& stops,
 		const D2D1_POINT_2F& originOffset = D2D1::Point2F(),
 		D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP,
-		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2) noexcept;
-	RadialBrush(const RadialBrush&) noexcept;
-	void operator=(const RadialBrush&) noexcept;
+		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2);
+	RadialBrush(const RadialBrush&);
+	void operator=(const RadialBrush&);
 	~RadialBrush() noexcept override {}
 
-	void Refresh() noexcept override;
-	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
+	void Refresh() override;
+	ND std::unique_ptr<ColorBrush> Duplicate() override;
 
-	void Stops(const std::vector<D2D1_GRADIENT_STOP>& stops) noexcept;
-	void Gamma(D2D1_GAMMA gamma) noexcept;
-	void ExtendMode(D2D1_EXTEND_MODE mode) noexcept;
-	void GradientOriginOffset(const D2D1_POINT_2F& offset) noexcept;
+	void Stops(const std::vector<D2D1_GRADIENT_STOP>& stops);
+	void Gamma(D2D1_GAMMA gamma);
+	void ExtendMode(D2D1_EXTEND_MODE mode);
+	void GradientOriginOffset(const D2D1_POINT_2F& offset);
 
 	ND inline float RadiusX() const noexcept { return (m_drawRegion.right - m_drawRegion.left) / 2.0f; }
 	ND inline float RadiusY() const noexcept { return (m_drawRegion.bottom - m_drawRegion.top) / 2.0f; }
@@ -45,10 +45,10 @@ public:
 	ND inline const D2D1_POINT_2F& GradientOriginOffset() const noexcept { return m_gradientOriginOffset; }
 
 protected:
-	void OnDrawRegionChanged() noexcept override { Refresh(); }
+	void OnDrawRegionChanged() override { Refresh(); }
 
 private:
-	void RefreshGradientStops() noexcept;
+	void RefreshGradientStops();
 
 	Microsoft::WRL::ComPtr<ID2D1GradientStopCollection> m_pGradientStops;
 

@@ -16,7 +16,7 @@ Evergreen::DxgiInfoManagerDX11 Evergreen::DeviceResourcesDX11::m_infoManager = E
 
 namespace Evergreen
 {
-DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept : 
+DeviceResourcesDX11::DeviceResourcesDX11(Window* window) : 
 	m_d2dFactory(nullptr),
 	m_d2dDevice(nullptr),
 	m_d2dDeviceContext(nullptr),
@@ -36,7 +36,7 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept :
 	m_hWnd = window->GetHWND();
 
 	// Must initialize COM library
-	GFX_THROW_INFO(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE));
+	GFX_THROW_INFO(CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE))
 
 	CreateDeviceIndependentResources();
 	CreateDeviceDependentResources();
@@ -49,7 +49,7 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) noexcept :
 	SetRenderTarget();
 }
 
-void DeviceResourcesDX11::CreateDeviceIndependentResources() noexcept
+void DeviceResourcesDX11::CreateDeviceIndependentResources()
 {
 	// Initialize Direct2D Resources
 	D2D1_FACTORY_OPTIONS options;
@@ -87,7 +87,7 @@ void DeviceResourcesDX11::CreateDeviceIndependentResources() noexcept
 	);
 }
 
-void DeviceResourcesDX11::CreateDeviceDependentResources() noexcept
+void DeviceResourcesDX11::CreateDeviceDependentResources()
 {
 	// This flag adds support for surfaces with a different color channel ordering
 	// than the API default. It is required for compatibility with Direct2D
@@ -180,7 +180,7 @@ void DeviceResourcesDX11::CreateDeviceDependentResources() noexcept
 	);
 }
 
-void DeviceResourcesDX11::CreateWindowSizeDependentResources() noexcept
+void DeviceResourcesDX11::CreateWindowSizeDependentResources()
 {
 	// Get height, width, and dpi for the window
 	RECT rect;
@@ -194,7 +194,7 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources() noexcept
 
 	CreateWindowSizeDependentResources(width, height);
 }
-void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float height) noexcept
+void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float height)
 {
 	float dpi = static_cast<float>(GetDpiForWindow(m_hWnd));
 	m_dpiScale = dpi / 96.0f;
@@ -390,7 +390,7 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 	m_d2dDeviceContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
 }
 
-void DeviceResourcesDX11::OnResize(float width, float height) noexcept
+void DeviceResourcesDX11::OnResize(float width, float height)
 {
 	CreateWindowSizeDependentResources(width, height);
 
@@ -399,7 +399,7 @@ void DeviceResourcesDX11::OnResize(float width, float height) noexcept
 }
 
 // Recreate all device resources and set them back to the current state
-void DeviceResourcesDX11::HandleDeviceLost() noexcept
+void DeviceResourcesDX11::HandleDeviceLost()
 {
 	m_dxgiSwapChain = nullptr;
 	CreateDeviceDependentResources();
@@ -409,7 +409,7 @@ void DeviceResourcesDX11::HandleDeviceLost() noexcept
 	SetRenderTarget();
 }
 
-void DeviceResourcesDX11::SetRenderTarget() noexcept
+void DeviceResourcesDX11::SetRenderTarget()
 {
 	ID3D11RenderTargetView* const targets[1] = { m_d3dRenderTargetView.Get() };
 	GFX_THROW_INFO_ONLY(
@@ -417,7 +417,7 @@ void DeviceResourcesDX11::SetRenderTarget() noexcept
 	)
 }
 
-void DeviceResourcesDX11::ClearBackground(const D2D1_COLOR_F& color) noexcept
+void DeviceResourcesDX11::ClearBackground(const D2D1_COLOR_F& color)
 {
 	GFX_THROW_INFO_ONLY(
 		m_d3dDeviceContext->ClearDepthStencilView(m_d3dDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0)
@@ -428,7 +428,7 @@ void DeviceResourcesDX11::ClearBackground(const D2D1_COLOR_F& color) noexcept
 	)
 }
 
-void DeviceResourcesDX11::Present() noexcept
+void DeviceResourcesDX11::Present()
 {
 	DXGI_PRESENT_PARAMETERS parameters = { 0 };
 	HRESULT hRESULT = m_dxgiSwapChain->Present1(1, 0, &parameters);
@@ -446,12 +446,12 @@ void DeviceResourcesDX11::Present() noexcept
 		GFX_THROW_INFO(hRESULT)
 }
 
-void DeviceResourcesDX11::BeginDraw() noexcept
+void DeviceResourcesDX11::BeginDraw()
 {
 	m_d2dDeviceContext->SaveDrawingState(m_drawingStateBlock.Get());
 	m_d2dDeviceContext->BeginDraw();
 }
-void DeviceResourcesDX11::EndDraw() noexcept
+void DeviceResourcesDX11::EndDraw()
 {
 	HRESULT hr = m_d2dDeviceContext->EndDraw();
 	if (FAILED(hr) || hr == D2DERR_RECREATE_TARGET)
@@ -462,7 +462,7 @@ void DeviceResourcesDX11::EndDraw() noexcept
 	m_d2dDeviceContext->RestoreDrawingState(m_drawingStateBlock.Get());
 }
 
-void DeviceResourcesDX11::DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth) noexcept
+void DeviceResourcesDX11::DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth)
 {
 	ComPtr<ID2D1SolidColorBrush> brush;
 	GFX_THROW_INFO(

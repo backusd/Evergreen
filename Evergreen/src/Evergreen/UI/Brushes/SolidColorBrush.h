@@ -13,16 +13,17 @@ class EVERGREEN_API SolidColorBrush : public ColorBrush
 {
 public:
 	// Add parameters after DeviceResources must have a default so that BrushLoader can create the brush
-	SolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const D2D1_COLOR_F& solidColor) noexcept;
-	SolidColorBrush(const SolidColorBrush&) noexcept;
-	void operator=(const SolidColorBrush&) noexcept;
+	SolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const D2D1_COLOR_F& solidColor);
+	SolidColorBrush(const SolidColorBrush&);
+	void operator=(const SolidColorBrush&);
+	~SolidColorBrush() noexcept override {}
 
-	void Refresh() noexcept override;
-	ND std::unique_ptr<ColorBrush> Duplicate() noexcept override;
+	void Refresh() override;
+	ND std::unique_ptr<ColorBrush> Duplicate() override;
 
-	void Color(float r, float g, float b, float a = 1.0f) noexcept;
-	void Color(D2D1::ColorF::Enum colorEnum) noexcept;
-	void Color(const D2D1_COLOR_F& color) noexcept;
+	void Color(float r, float g, float b, float a = 1.0f);
+	void Color(D2D1::ColorF::Enum colorEnum);
+	void Color(const D2D1_COLOR_F& color);
 
 	ND inline const D2D1_COLOR_F& Color() const noexcept { return m_color; }
 

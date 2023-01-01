@@ -4,6 +4,7 @@
 #include "pch.h"
 #include "DxgiInfoManagerDX11.h"
 #include "Evergreen/Window/Window.h"
+#include "Evergreen/Core.h"
 
 namespace Evergreen
 {
@@ -15,27 +16,27 @@ namespace Evergreen
 class EVERGREEN_API DeviceResourcesDX11
 {
 public:
-	DeviceResourcesDX11(Window* window) noexcept;
+	DeviceResourcesDX11(Window* window);
 	DeviceResourcesDX11(const DeviceResourcesDX11&) = delete;
 	void operator=(const DeviceResourcesDX11&) = delete;
 
-	void ClearBackground(const D2D1_COLOR_F& color) noexcept;
+	void ClearBackground(const D2D1_COLOR_F& color);
 
-	void Present() noexcept;
+	void Present();
 
-	void OnResize(float width, float height) noexcept;
+	void OnResize(float width, float height);
 
-	void DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth = 1.0f) noexcept;
+	void DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth = 1.0f);
 
-	void BeginDraw() noexcept;
-	void EndDraw() noexcept;
+	void BeginDraw();
+	void EndDraw();
 
-	IDWriteFactory7*	 DWriteFactory() const { return m_dwriteFactory.Get(); }
-	IWICImagingFactory2* WICImagingFactory() const { return m_wicImagingFactory.Get(); }
-	ID2D1Factory7*		 D2DFactory() const { return m_d2dFactory.Get(); }
-	ID2D1Device6*		 D2DDevice() const { return m_d2dDevice.Get(); }
-	ID2D1DeviceContext6* D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
-	ID2D1Bitmap1*		 D2DBitmap() const { return m_d2dBitmap.Get(); }
+	ND inline IDWriteFactory7*		DWriteFactory() const { return m_dwriteFactory.Get(); }
+	ND inline IWICImagingFactory2*	WICImagingFactory() const { return m_wicImagingFactory.Get(); }
+	ND inline ID2D1Factory7*		D2DFactory() const { return m_d2dFactory.Get(); }
+	ND inline ID2D1Device6*			D2DDevice() const { return m_d2dDevice.Get(); }
+	ND inline ID2D1DeviceContext6*	D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
+	ND inline ID2D1Bitmap1*			D2DBitmap() const { return m_d2dBitmap.Get(); }
 
 	/*
 	static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
@@ -47,24 +48,24 @@ public:
 	static ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return Get().m_d3dRenderTargetView.Get(); }
 	*/
 
-	float DIPSToPixels(float dips) { return dips * m_dpiScale; }
-	float PixelsToDIPS(float pixels) { return pixels / m_dpiScale; }
+	ND inline float DIPSToPixels(float dips) const noexcept { return dips * m_dpiScale; }
+	ND inline float PixelsToDIPS(float pixels) const noexcept { return pixels / m_dpiScale; }
 
 #if defined(_DEBUG)
 public:
-	static DxgiInfoManagerDX11& GetInfoManager() noexcept { return m_infoManager; }
+	ND inline static DxgiInfoManagerDX11& GetInfoManager() noexcept { return m_infoManager; }
 private:
 	static DxgiInfoManagerDX11 m_infoManager;
 #endif
 
 	
 private:
-	void CreateDeviceDependentResources() noexcept;
-	void CreateDeviceIndependentResources() noexcept;
-	void CreateWindowSizeDependentResources() noexcept;
-	void CreateWindowSizeDependentResources(float width, float height) noexcept;
-	void SetRenderTarget() noexcept;
-	void HandleDeviceLost() noexcept;
+	void CreateDeviceDependentResources();
+	void CreateDeviceIndependentResources();
+	void CreateWindowSizeDependentResources();
+	void CreateWindowSizeDependentResources(float width, float height);
+	void SetRenderTarget();
+	void HandleDeviceLost();
 
 
 	// Keep handle to window

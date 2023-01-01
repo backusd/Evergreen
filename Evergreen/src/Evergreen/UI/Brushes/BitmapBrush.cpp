@@ -6,7 +6,7 @@ using Microsoft::WRL::ComPtr;
 namespace Evergreen
 {
 BitmapBrush::BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& filename,
-	TRANSFORM_TO_RECT_METHOD method, const D2D1_BITMAP_BRUSH_PROPERTIES& properties) noexcept :
+	TRANSFORM_TO_RECT_METHOD method, const D2D1_BITMAP_BRUSH_PROPERTIES& properties) :
 	ColorBrush(deviceResources),
 	m_bitmapBrushProperties(properties),
 	m_bitmapFileName(filename),
@@ -21,7 +21,7 @@ BitmapBrush::BitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const
 	TransformToRect();
 	Refresh();
 }
-BitmapBrush::BitmapBrush(const BitmapBrush& rhs) noexcept :
+BitmapBrush::BitmapBrush(const BitmapBrush& rhs) :
 	ColorBrush(rhs.m_deviceResources),
 	m_bitmapBrushProperties(rhs.m_bitmapBrushProperties),
 	m_bitmapFileName(rhs.m_bitmapFileName),
@@ -32,7 +32,7 @@ BitmapBrush::BitmapBrush(const BitmapBrush& rhs) noexcept :
 	TransformToRect();
 	Refresh();
 }
-void BitmapBrush::operator=(const BitmapBrush& rhs) noexcept
+void BitmapBrush::operator=(const BitmapBrush& rhs)
 {
 	ColorBrush::operator=(rhs);
 
@@ -45,11 +45,11 @@ void BitmapBrush::operator=(const BitmapBrush& rhs) noexcept
 	TransformToRect();
 	Refresh();
 }
-std::unique_ptr<ColorBrush> BitmapBrush::Duplicate() noexcept
+std::unique_ptr<ColorBrush> BitmapBrush::Duplicate()
 {
 	return std::move(std::make_unique<BitmapBrush>(*this));
 }
-void BitmapBrush::LoadBitmapFile(const std::wstring& filename) noexcept
+void BitmapBrush::LoadBitmapFile(const std::wstring& filename)
 { 
 	m_bitmapFileName = filename; 
 	LoadBitmapFile();
@@ -57,7 +57,7 @@ void BitmapBrush::LoadBitmapFile(const std::wstring& filename) noexcept
 	Refresh();
 }
 
-void BitmapBrush::LoadBitmapFile() noexcept
+void BitmapBrush::LoadBitmapFile()
 {
 	// This method should never be called before a file has been specified
 	EG_CORE_ASSERT(m_bitmapFileName.size() > 0, "File not specified");
@@ -105,7 +105,7 @@ void BitmapBrush::LoadBitmapFile() noexcept
 	)
 }
 
-void BitmapBrush::Refresh() noexcept
+void BitmapBrush::Refresh()
 {
 	// This method should never be called if we have not loaded the bitmap
 	EG_CORE_ASSERT(m_bitmap != nullptr, "bitmap not loaded");
@@ -186,29 +186,29 @@ void BitmapBrush::TransformToRect() noexcept
 	);
 }
 
-void BitmapBrush::ExtendMode(D2D1_EXTEND_MODE modeXAndY) noexcept
+void BitmapBrush::ExtendMode(D2D1_EXTEND_MODE modeXAndY)
 {
 	m_bitmapBrushProperties.extendModeX = modeXAndY;
 	m_bitmapBrushProperties.extendModeY = modeXAndY;
 	Refresh();
 }
-void BitmapBrush::ExtendMode(D2D1_EXTEND_MODE modeX, D2D1_EXTEND_MODE modeY) noexcept
+void BitmapBrush::ExtendMode(D2D1_EXTEND_MODE modeX, D2D1_EXTEND_MODE modeY)
 {
 	m_bitmapBrushProperties.extendModeX = modeX;
 	m_bitmapBrushProperties.extendModeY = modeY;
 	Refresh();
 }
-void BitmapBrush::ExtendModeX(D2D1_EXTEND_MODE mode) noexcept
+void BitmapBrush::ExtendModeX(D2D1_EXTEND_MODE mode)
 {
 	m_bitmapBrushProperties.extendModeX = mode;
 	Refresh();
 }
-void BitmapBrush::ExtendModeY(D2D1_EXTEND_MODE mode) noexcept
+void BitmapBrush::ExtendModeY(D2D1_EXTEND_MODE mode)
 {
 	m_bitmapBrushProperties.extendModeY = mode;
 	Refresh();
 }
-void BitmapBrush::InterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE mode) noexcept
+void BitmapBrush::InterpolationMode(D2D1_BITMAP_INTERPOLATION_MODE mode)
 {
 	m_bitmapBrushProperties.interpolationMode = mode;
 	Refresh();

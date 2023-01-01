@@ -24,7 +24,7 @@ public:
 	void Name(const std::string& name) noexcept { m_name = name; }
 	ND inline const std::string& Name() const noexcept { return m_name; }
 
-	virtual std::unique_ptr<Style> Duplicate() const noexcept = 0;
+	virtual std::unique_ptr<Style> Duplicate() const = 0;
 
 protected:
 	std::shared_ptr<DeviceResources> m_deviceResources;

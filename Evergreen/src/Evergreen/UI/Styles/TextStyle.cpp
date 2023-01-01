@@ -5,20 +5,18 @@ using Microsoft::WRL::ComPtr;
 
 namespace Evergreen 
 {
-TextStyle::TextStyle(
-	std::shared_ptr<DeviceResources> deviceResources,
-	const std::string& name,
-	Evergreen::FontFamily fontFamily,
-	float fontSize,
-	DWRITE_FONT_WEIGHT fontWeight,
-	DWRITE_FONT_STYLE fontStyle,
-	DWRITE_FONT_STRETCH fontStretch,
-	DWRITE_TEXT_ALIGNMENT textAlignment,
-	DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment,
-	DWRITE_WORD_WRAPPING wordWrapping,
-	DWRITE_TRIMMING trimming,
-	const std::wstring& locale
-) noexcept :
+TextStyle::TextStyle(std::shared_ptr<DeviceResources> deviceResources,
+						const std::string& name,
+						Evergreen::FontFamily fontFamily,
+						float fontSize,
+						DWRITE_FONT_WEIGHT fontWeight,
+						DWRITE_FONT_STYLE fontStyle,
+						DWRITE_FONT_STRETCH fontStretch,
+						DWRITE_TEXT_ALIGNMENT textAlignment,
+						DWRITE_PARAGRAPH_ALIGNMENT paragraphAlignment,
+						DWRITE_WORD_WRAPPING wordWrapping,
+						DWRITE_TRIMMING trimming,
+						const std::wstring& locale) :
 	Style(deviceResources, name), 
 	m_fontFamily(fontFamily), m_fontWeight(fontWeight), m_fontStyle(fontStyle), 
 	m_fontStretch(fontStretch), m_fontSize(fontSize), m_locale(locale), m_textAlignment(textAlignment),
@@ -26,7 +24,7 @@ TextStyle::TextStyle(
 {
 	Initialize();
 }
-TextStyle::TextStyle(const TextStyle& rhs) noexcept : 
+TextStyle::TextStyle(const TextStyle& rhs) : 
 	Style(rhs.m_deviceResources, rhs.m_name + "_copy"),
 	m_fontFamily(rhs.m_fontFamily), 
 	m_fontWeight(rhs.m_fontWeight), 
@@ -41,7 +39,7 @@ TextStyle::TextStyle(const TextStyle& rhs) noexcept :
 {
 	Initialize();
 }
-void TextStyle::operator=(const TextStyle& rhs) noexcept
+void TextStyle::operator=(const TextStyle& rhs)
 {
 	Style::operator=(rhs);
 
@@ -59,7 +57,7 @@ void TextStyle::operator=(const TextStyle& rhs) noexcept
 	Initialize();
 }
 
-void TextStyle::Initialize() noexcept
+void TextStyle::Initialize()
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "Cannot initialize Text Style - DeviceResources is nullptr");
 
@@ -71,12 +69,12 @@ void TextStyle::Initialize() noexcept
 	UpdateTextFormat();
 }
 
-std::unique_ptr<Style> TextStyle::Duplicate() const noexcept
+std::unique_ptr<Style> TextStyle::Duplicate() const
 {
 	return std::move(std::make_unique<TextStyle>(*this));
 }
 
-void TextStyle::UpdateTextFormat() noexcept
+void TextStyle::UpdateTextFormat()
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "Cannot initialize Text Style - DeviceResources is nullptr");
 
@@ -110,63 +108,63 @@ void TextStyle::UpdateTextFormat() noexcept
 }
 
 
-void TextStyle::FontFamily(const Evergreen::FontFamily& fontFamily) noexcept 
+void TextStyle::FontFamily(const Evergreen::FontFamily& fontFamily) 
 { 
 	m_fontFamily = fontFamily;
 	UpdateTextFormat();
 }
-void TextStyle::FontWeight(DWRITE_FONT_WEIGHT weight) noexcept 
+void TextStyle::FontWeight(DWRITE_FONT_WEIGHT weight) 
 { 
 	m_fontWeight = weight; 
 	UpdateTextFormat();
 }
-void TextStyle::FontStyle(DWRITE_FONT_STYLE style) noexcept 
+void TextStyle::FontStyle(DWRITE_FONT_STYLE style) 
 { 
 	m_fontStyle = style; 
 	UpdateTextFormat();
 }
-void TextStyle::FontStretch(DWRITE_FONT_STRETCH stretch) noexcept 
+void TextStyle::FontStretch(DWRITE_FONT_STRETCH stretch) 
 { 
 	m_fontStretch = stretch; 
 	UpdateTextFormat();
 }
-void TextStyle::FontSize(float size) noexcept 
+void TextStyle::FontSize(float size) 
 { 
 	m_fontSize = size; 
 	UpdateTextFormat();
 }
-void TextStyle::Locale(const std::wstring& locale) noexcept 
+void TextStyle::Locale(const std::wstring& locale) 
 { 
 	m_locale = locale; 
 	UpdateTextFormat();
 }
-void TextStyle::TextAlignment(DWRITE_TEXT_ALIGNMENT alignment) noexcept 
+void TextStyle::TextAlignment(DWRITE_TEXT_ALIGNMENT alignment) 
 { 
 	m_textAlignment = alignment; 
 	UpdateTextFormat();
 }
-void TextStyle::ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment) noexcept 
+void TextStyle::ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment) 
 { 
 	m_paragraphAlignment = alignment; 
 	UpdateTextFormat();
 }
-void TextStyle::WordWrapping(DWRITE_WORD_WRAPPING wrapping) noexcept 
+void TextStyle::WordWrapping(DWRITE_WORD_WRAPPING wrapping) 
 { 
 	m_wordWrapping = wrapping; 
 	UpdateTextFormat();
 }
-void TextStyle::Trimming(DWRITE_TRIMMING trimming) noexcept 
+void TextStyle::Trimming(DWRITE_TRIMMING trimming) 
 { 
 	m_trimming = trimming; 
 	UpdateTextFormat();
 }
-void TextStyle::TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noexcept
+void TextStyle::TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity)
 {
 	m_trimming.granularity = granularity;
 	UpdateTextFormat();
 }
 
-ComPtr<IDWriteTextLayout4> TextStyle::CreateTextLayout(std::wstring text, float maxWidth, float maxHeight) noexcept
+ComPtr<IDWriteTextLayout4> TextStyle::CreateTextLayout(std::wstring text, float maxWidth, float maxHeight)
 {
 	EG_CORE_ASSERT(m_textFormat != nullptr, "text format is nullptr");
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "Cannot initialize Text Style - DeviceResources is nullptr");

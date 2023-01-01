@@ -34,10 +34,6 @@ DxgiInfoManagerDX11::DxgiInfoManagerDX11() noexcept
 	}
 
 	DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), reinterpret_cast<void**>(&pDxgiInfoQueue));
-
-	//TERMINATE_ON_THROW(GFX_THROW_NOINFO(
-//		DxgiGetDebugInterface(__uuidof(IDXGIInfoQueue), reinterpret_cast<void**>(&pDxgiInfoQueue))
-//	));
 }
 
 DxgiInfoManagerDX11::~DxgiInfoManagerDX11() noexcept
@@ -61,18 +57,22 @@ std::vector<std::string> DxgiInfoManagerDX11::GetMessages() const noexcept
 	const auto end = pDxgiInfoQueue->GetNumStoredMessages(DXGI_DEBUG_ALL);
 	for (auto i = next; i < end; i++)
 	{
-		SIZE_T messageLength;
+		SIZE_T messageLength{};
 		// get the size of message i in bytes
-		TERMINATE_ON_THROW(GFX_THROW_NOINFO(
-			pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &messageLength)
-		));
+		TERMINATE_ON_THROW(
+			GFX_THROW_NOINFO(
+				pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, nullptr, &messageLength)
+			)
+		);
 		// allocate memory for message
 		auto bytes = std::make_unique<byte[]>(messageLength);
 		auto pMessage = reinterpret_cast<DXGI_INFO_QUEUE_MESSAGE*>(bytes.get());
 		// get the message and push its description into the vector
-		TERMINATE_ON_THROW(GFX_THROW_NOINFO(
-			pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage, &messageLength)
-		));
+		TERMINATE_ON_THROW(
+			GFX_THROW_NOINFO(
+				pDxgiInfoQueue->GetMessage(DXGI_DEBUG_ALL, i, pMessage, &messageLength)
+			)
+		);
 		//std::string s = pMessage->pDescription;
 		messages.emplace_back(pMessage->pDescription);
 	}

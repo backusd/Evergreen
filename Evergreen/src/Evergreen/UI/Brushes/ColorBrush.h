@@ -23,8 +23,8 @@ public:
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 	ND inline ID2D1Brush* Get() const noexcept;
 
-	virtual void Refresh() noexcept = 0;
-	ND virtual std::unique_ptr<ColorBrush> Duplicate() noexcept = 0;
+	virtual void Refresh() = 0;
+	ND virtual std::unique_ptr<ColorBrush> Duplicate() = 0;
 
 	void SetOpacity(float opacity) noexcept;
 	void SetTransform(const D2D1_MATRIX_3X2_F& transform) noexcept;
@@ -34,7 +34,7 @@ public:
 	ND inline const D2D1_RECT_F& GetDrawingRect() const noexcept { return m_drawRegion; }
 
 protected:
-	virtual void OnDrawRegionChanged() noexcept {}
+	virtual void OnDrawRegionChanged() {}
 
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Microsoft::WRL::ComPtr<ID2D1Brush>	m_brush;

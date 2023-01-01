@@ -30,29 +30,29 @@ public:
 		DWRITE_WORD_WRAPPING wordWrapping = DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP,
 		DWRITE_TRIMMING trimming = DWRITE_TRIMMING(),
 		const std::wstring& locale = L"en-US"
-	) noexcept;
+	);
 
-	TextStyle(const TextStyle&) noexcept;
-	void operator=(const TextStyle&) noexcept;
-	~TextStyle() noexcept override {}
+	TextStyle(const TextStyle&);
+	void operator=(const TextStyle&);
+	~TextStyle() override {}
 
-	ND std::unique_ptr<Style> Duplicate() const noexcept override;
+	ND std::unique_ptr<Style> Duplicate() const override;
 
-	ND Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX) noexcept;
+	ND Microsoft::WRL::ComPtr<IDWriteTextLayout4> CreateTextLayout(std::wstring text, float maxWidth = FLT_MAX, float maxHeight = FLT_MAX);
 
-	void SetOnTextFormatChanged(std::function<void()> func) noexcept { m_OnTextFormatChanged = func; }
+	inline void SetOnTextFormatChanged(std::function<void()> func) noexcept { m_OnTextFormatChanged = func; }
 
-	void FontFamily(const Evergreen::FontFamily& fontFamily) noexcept;
-	void FontWeight(DWRITE_FONT_WEIGHT weight) noexcept;
-	void FontStyle(DWRITE_FONT_STYLE style) noexcept;
-	void FontStretch(DWRITE_FONT_STRETCH stretch) noexcept;
-	void FontSize(float size) noexcept;
-	void Locale(const std::wstring& locale) noexcept;
-	void TextAlignment(DWRITE_TEXT_ALIGNMENT alignment) noexcept;
-	void ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment) noexcept;
-	void WordWrapping(DWRITE_WORD_WRAPPING wrapping) noexcept;
-	void Trimming(DWRITE_TRIMMING trimming) noexcept;
-	void TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity) noexcept;
+	void FontFamily(const Evergreen::FontFamily& fontFamily);
+	void FontWeight(DWRITE_FONT_WEIGHT weight);
+	void FontStyle(DWRITE_FONT_STYLE style);
+	void FontStretch(DWRITE_FONT_STRETCH stretch);
+	void FontSize(float size);
+	void Locale(const std::wstring& locale);
+	void TextAlignment(DWRITE_TEXT_ALIGNMENT alignment);
+	void ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT alignment);
+	void WordWrapping(DWRITE_WORD_WRAPPING wrapping);
+	void Trimming(DWRITE_TRIMMING trimming);
+	void TrimmingGranularity(DWRITE_TRIMMING_GRANULARITY granularity);
 
 	ND inline Evergreen::FontFamily FontFamily() const noexcept { return m_fontFamily; }
 	ND inline DWRITE_FONT_WEIGHT FontWeight() const noexcept { return m_fontWeight; }
@@ -66,8 +66,8 @@ public:
 	ND inline DWRITE_TRIMMING Trimming() const noexcept { return m_trimming; }
 
 private:
-	void Initialize() noexcept;
-	void UpdateTextFormat() noexcept;
+	void Initialize();
+	void UpdateTextFormat();
 
 	std::function<void()> m_OnTextFormatChanged = []() {};
 
