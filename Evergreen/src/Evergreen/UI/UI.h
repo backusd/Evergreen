@@ -58,7 +58,7 @@ private:
 	Control* m_mouseHandlingControl;
 	Layout*  m_mouseHandlingLayout;
 
-	Control* m_kayboardHandlingControl;
+	Control* m_keyboardHandlingControl;
 	Layout*  m_keyboardHandlingLayout;
 };
 #pragma warning( pop )

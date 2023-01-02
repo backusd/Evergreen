@@ -84,6 +84,21 @@ bool Button::ContainsPoint(float x, float y) const noexcept
 	return m_layout->ContainsPoint(x, y);
 }
 
+void Button::OnChar(CharEvent& e) noexcept
+{
+	// Just let layout handle it
+	m_layout->OnChar(e);
+}
+void Button::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+	// Just let layout handle it
+	m_layout->OnKeyPressed(e);
+}
+void Button::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+	// Just let layout handle it
+	m_layout->OnKeyReleased(e);
+}
 void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	// First pass to layout, if the layout does not handle it, then the button can handle it
@@ -99,7 +114,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 		if (!currentMouseIsOver)
 		{
 			m_mouseIsOver = false;
-			m_OnMouseLeave(this, e);
+			m_OnMouseExitedButton(this, e);
 
 			// Only set handled=true if the mouse is down, making it so that another control can not process this event
 			// The button should continue to handle mouse events until the mouse button is released
@@ -116,7 +131,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 	else if (currentMouseIsOver) // Check if the mouse is newly over the button
 	{
 		m_mouseIsOver = true;
-		m_OnMouseEnter(this, e);
+		m_OnMouseEnteredButton(this, e);
 		e.Handled(this);
 	}
 	else if (m_mouseLButtonIsDown)
@@ -178,6 +193,20 @@ void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		m_mouseLButtonIsDown = false;
 	}
 }
-
+void Button::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+	// Just let layout handle it
+	m_layout->OnMouseButtonDoubleClick(e);
+}
+void Button::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+{
+	// Just let layout handle it
+	m_layout->OnMouseScrolledVertical(e);
+}
+void Button::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+{
+	// Just let layout handle it
+	m_layout->OnMouseScrolledHorizontal(e);
+}
 
 }

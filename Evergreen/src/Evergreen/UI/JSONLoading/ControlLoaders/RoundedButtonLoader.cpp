@@ -190,7 +190,7 @@ void RoundedButtonLoader::ParseOnMouseEnter(RoundedButton* button, const json& d
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseEnter' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseEnter(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseEnteredButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, const json& data)
@@ -205,7 +205,7 @@ void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, const json& d
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseLeave(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseExitedButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, const json& data)
@@ -220,7 +220,7 @@ void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, const json& d
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseMoved(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, const json& data)
@@ -235,7 +235,7 @@ void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, const j
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLButtonDown' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseLButtonDown(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, const json& data)
@@ -250,7 +250,7 @@ void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, const jso
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLButtonUp' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseLButtonUp(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnClick(RoundedButton* button, const json& data)
@@ -265,7 +265,7 @@ void RoundedButtonLoader::ParseOnClick(RoundedButton* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnClick' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->OnClick(JSONLoaders::GetControlFunction(key));
+		button->SetOnClickCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 

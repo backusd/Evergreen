@@ -29,16 +29,20 @@ public:
 	void operator=(const Control& control) noexcept;
 	virtual ~Control() noexcept {}
 
-	virtual void Update() const noexcept = 0;
+	virtual void Update() noexcept = 0;
 	virtual void Render() const = 0;
 
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 
+	virtual void OnChar(CharEvent& e) noexcept {}
+	virtual void OnKeyPressed(KeyPressedEvent& e) noexcept {}
+	virtual void OnKeyReleased(KeyReleasedEvent& e) noexcept {}
 	virtual void OnMouseMove(MouseMoveEvent& e) noexcept {}
-	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
-	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept {}
 	virtual void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept {}
 	virtual void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept {}
+	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
+	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept {}
+	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept {}
 
 	void Name(const std::string& name) noexcept { m_name = name; OnNameChanged(); }
 	void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; OnMarginChanged(); }

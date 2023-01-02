@@ -518,6 +518,54 @@ void Layout::Resize(float width, float height) noexcept
 	UpdateLayout();
 }
 
+void Layout::OnChar(CharEvent& e) noexcept
+{
+	// Layouts don't handle this event, so just pass off to child layouts/controls
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnChar(e);
+		if (e.Handled())
+			return;
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnChar(e);
+		if (e.Handled())
+			return;
+	}
+}
+void Layout::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+	// Layouts don't handle this event, so just pass off to child layouts/controls
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnKeyPressed(e);
+		if (e.Handled())
+			return;
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnKeyPressed(e);
+		if (e.Handled())
+			return;
+	}
+}
+void Layout::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+	// Layouts don't handle this event, so just pass off to child layouts/controls
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnKeyReleased(e);
+		if (e.Handled())
+			return;
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnKeyReleased(e);
+		if (e.Handled())
+			return;
+	}
+}
 void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	// If adjustingLayout is true, then mouse L button is down over either a row or column
@@ -762,6 +810,24 @@ void Layout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 			return;
 	}
 }
+void Layout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+	// Layouts don't handle this event, so just pass off to child layouts/controls
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnMouseButtonDoubleClick(e);
+		if (e.Handled())
+			return;
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnMouseButtonDoubleClick(e);
+		if (e.Handled())
+			return;
+	}
+}
+
+
 
 Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name)
 {

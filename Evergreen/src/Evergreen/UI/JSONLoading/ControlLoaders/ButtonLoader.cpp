@@ -151,7 +151,7 @@ void ButtonLoader::ParseOnMouseEnter(Button* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseEnter' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseEnter(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseEnteredButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void ButtonLoader::ParseOnMouseLeave(Button* button, const json& data)
@@ -166,7 +166,7 @@ void ButtonLoader::ParseOnMouseLeave(Button* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseLeave(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseExitedButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void ButtonLoader::ParseOnMouseMoved(Button* button, const json& data)
@@ -181,7 +181,7 @@ void ButtonLoader::ParseOnMouseMoved(Button* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseMoved(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void ButtonLoader::ParseOnMouseLButtonDown(Button* button, const json& data)
@@ -196,7 +196,7 @@ void ButtonLoader::ParseOnMouseLButtonDown(Button* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLButtonDown' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseLButtonDown(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void ButtonLoader::ParseOnMouseLButtonUp(Button* button, const json& data)
@@ -211,7 +211,7 @@ void ButtonLoader::ParseOnMouseLButtonUp(Button* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLButtonUp' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->OnMouseLButtonUp(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void ButtonLoader::ParseOnClick(Button* button, const json& data)
@@ -226,7 +226,7 @@ void ButtonLoader::ParseOnClick(Button* button, const json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnClick' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->OnClick(JSONLoaders::GetControlFunction(key));
+		button->SetOnClickCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 

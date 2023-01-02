@@ -5,7 +5,6 @@
 #include "Control.h"
 #include "Evergreen/UI/Layout.h"
 
-
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 
@@ -28,11 +27,19 @@ public:
 	void operator=(const ScrollableLayout&) noexcept = delete;
 	virtual ~ScrollableLayout() noexcept override {}
 
-	void Update() const noexcept override;
+	void Update() noexcept override;
 	void Render() const noexcept override;
 
+	// Event handling
+	void OnChar(CharEvent& e) noexcept override;
+	void OnKeyPressed(KeyPressedEvent& e) noexcept override;
+	void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
+	void OnMouseMove(MouseMoveEvent& e) noexcept override;
 	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override;
 	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
 
 	Row* AddRow(RowColumnDefinition definition);
 	Column* AddColumn(RowColumnDefinition definition);

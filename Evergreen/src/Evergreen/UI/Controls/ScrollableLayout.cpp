@@ -38,7 +38,7 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	ScrollableLayoutChanged();
 }
 
-void ScrollableLayout::Update() const noexcept
+void ScrollableLayout::Update() noexcept
 {
 
 }
@@ -132,6 +132,28 @@ void ScrollableLayout::OnAllowedRegionChanged()
 	ScrollableLayoutChanged();
 }
 
+
+
+void ScrollableLayout::OnChar(CharEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnChar(e);
+}
+void ScrollableLayout::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnKeyPressed(e);
+}
+void ScrollableLayout::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnKeyReleased(e);
+}
+void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnMouseMove(e);
+}
 void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
@@ -172,5 +194,19 @@ void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-
+void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnMouseButtonPressed(e);
+}
+void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnMouseButtonReleased(e);
+}
+void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	m_layout->OnMouseButtonDoubleClick(e);
+}
 }

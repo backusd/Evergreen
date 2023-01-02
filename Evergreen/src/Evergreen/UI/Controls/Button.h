@@ -26,11 +26,19 @@ public:
 	virtual ~Button() noexcept override {}
 
 	// Inherited from Control
-	void Update() const noexcept override {}
+	virtual void Update() noexcept override {}
 	virtual void Render() const noexcept override;
+
+	// Event handling
+	virtual void OnChar(CharEvent& e) noexcept override;
+	virtual void OnKeyPressed(KeyPressedEvent& e) noexcept override;
+	virtual void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
 	virtual void OnMouseMove(MouseMoveEvent& e) noexcept override;
+	virtual void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override;
+	virtual void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override;
 	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
 	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
+	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
 
 	// Button specific
 	ND inline ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
@@ -43,12 +51,12 @@ public:
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
 	void BorderWidth(float width) noexcept { m_borderWidth = width; }
 
-	void OnMouseEnter(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnter = func; }
-	void OnMouseLeave(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLeave = func; }
-	void OnMouseMoved(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
-	void OnMouseLButtonDown(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonDown = func; }
-	void OnMouseLButtonUp(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonUp = func; }
-	void OnClick(std::function<void(Control*, Event& e)> func) noexcept { m_OnClick = func; }
+	void SetOnMouseEnteredButtonCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredButton = func; }
+	void SetOnMouseExitedButtonCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedButton = func; }
+	void SetOnMouseMovedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
+	void SetOnMouseLButtonDownCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonDown = func; }
+	void SetOnMouseLButtonUpCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonUp = func; }
+	void SetOnClickCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnClick = func; }
 
 	ND inline bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 
@@ -59,8 +67,8 @@ protected:
 	virtual void OnMarginChanged() override;
 	virtual void OnAllowedRegionChanged() override;
 
-	std::function<void(Control*, Event&)> m_OnMouseEnter = [](Control*, Event&) {};
-	std::function<void(Control*, Event&)> m_OnMouseLeave = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseEnteredButton = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseExitedButton = [](Control*, Event&) {};
 	std::function<void(Control*, Event&)> m_OnMouseMoved = [](Control*, Event&) {};
 	std::function<void(Control*, Event&)> m_OnMouseLButtonDown = [](Control*, Event&) {};
 	std::function<void(Control*, Event&)> m_OnMouseLButtonUp = [](Control*, Event&) {};

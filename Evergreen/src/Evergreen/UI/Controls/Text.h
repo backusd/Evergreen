@@ -26,7 +26,7 @@ public:
 	virtual ~Text() noexcept override {}
 
 	// Inherited from Control
-	void Update() const noexcept override {}
+	void Update() noexcept override {}
 	void Render() const noexcept override;
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;

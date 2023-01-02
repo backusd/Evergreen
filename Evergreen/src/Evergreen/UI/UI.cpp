@@ -19,7 +19,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_rootLayout(nullptr),
 	m_mouseHandlingControl(nullptr),
 	m_mouseHandlingLayout(nullptr),
-	m_kayboardHandlingControl(nullptr),
+	m_keyboardHandlingControl(nullptr),
 	m_keyboardHandlingLayout(nullptr)
 {
 	// Add built-in control loaders
@@ -132,7 +132,7 @@ void UI::LoadDefaultUI() noexcept
 	buttonLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
-	button->OnMouseEnter(
+	button->SetOnMouseEnteredButtonCallback(
 		[](Control* control, Event& e) 
 		{
 			Button* b = static_cast<Button*>(control);
@@ -140,7 +140,7 @@ void UI::LoadDefaultUI() noexcept
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button->OnMouseLeave(
+	button->SetOnMouseExitedButtonCallback(
 		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
@@ -148,7 +148,7 @@ void UI::LoadDefaultUI() noexcept
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button->OnMouseLButtonDown(
+	button->SetOnMouseLButtonDownCallback(
 		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
@@ -156,7 +156,7 @@ void UI::LoadDefaultUI() noexcept
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button->OnMouseLButtonUp(
+	button->SetOnMouseLButtonUpCallback(
 		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
@@ -211,7 +211,7 @@ void UI::LoadDefaultUI() noexcept
 	text3->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	text3->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	
-	button2->OnMouseEnter(
+	button2->SetOnMouseEnteredButtonCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -220,7 +220,7 @@ void UI::LoadDefaultUI() noexcept
 			rb->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button2->OnMouseLeave(
+	button2->SetOnMouseExitedButtonCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -229,7 +229,7 @@ void UI::LoadDefaultUI() noexcept
 			rb->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button2->OnMouseLButtonDown(
+	button2->SetOnMouseLButtonDownCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -238,7 +238,7 @@ void UI::LoadDefaultUI() noexcept
 			rb->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button2->OnMouseLButtonUp(
+	button2->SetOnMouseLButtonUpCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -253,7 +253,7 @@ void UI::LoadDefaultUI() noexcept
 
 		}
 	);
-	button2->OnClick(
+	button2->SetOnClickCallback(
 		[](Control* b, Event& e)
 		{
 			static int iii = 0;
