@@ -162,6 +162,9 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -264,6 +267,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\ScrollableLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

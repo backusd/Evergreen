@@ -12,6 +12,7 @@
 #include "JSONLoading/JSONLoaders.h"
 #include "Controls/Button.h"
 #include "Controls/RoundedButton.h"
+#include "Controls/ScrollableLayout.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -40,6 +41,8 @@ public:
 	void OnMouseMove(MouseMoveEvent& e) noexcept;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
 
 private:
 	void LoadDefaultUI() noexcept;

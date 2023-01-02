@@ -24,7 +24,8 @@ Application::Application() noexcept
 	m_window->SetOnMouseMove(BIND_EVENT_FN(OnMouseMove, MouseMoveEvent));
 	m_window->SetOnMouseEnter(BIND_EVENT_FN(OnMouseEnter, MouseEnterEvent));
 	m_window->SetOnMouseLeave(BIND_EVENT_FN(OnMouseLeave, MouseLeaveEvent));
-	m_window->SetOnMouseScrolled(BIND_EVENT_FN(OnMouseScrolled, MouseScrolledEvent));
+	m_window->SetOnMouseScrolledVertical(BIND_EVENT_FN(OnMouseScrolledVertical, MouseScrolledEvent));
+	m_window->SetOnMouseScrolledHorizontal(BIND_EVENT_FN(OnMouseScrolledHorizontal, MouseScrolledEvent));
 	m_window->SetOnMouseButtonPressed(BIND_EVENT_FN(OnMouseButtonPressed, MouseButtonPressedEvent));
 	m_window->SetOnMouseButtonReleased(BIND_EVENT_FN(OnMouseButtonReleased, MouseButtonReleasedEvent));
 	m_window->SetOnMouseButtonDoubleClick(BIND_EVENT_FN(OnMouseButtonDoubleClick, MouseButtonDoubleClickEvent));
@@ -126,9 +127,13 @@ void Application::OnMouseLeave(MouseLeaveEvent& e) noexcept
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnMouseScrolled(MouseScrolledEvent& e) noexcept
+void Application::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
-	EG_CORE_INFO("{}", e);
+	m_ui->OnMouseScrolledVertical(e);
+}
+void Application::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+{
+	m_ui->OnMouseScrolledHorizontal(e);
 }
 void Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {

@@ -80,7 +80,7 @@ std::optional<int> Window::ProcessMessages() const noexcept
 LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	//static WindowsMessageMap mm;
-	//EG_CORE_TRACE(mm(msg, wParam, lParam));
+	//EG_CORE_TRACE("{}", mm(msg, wParam, lParam).c_str());
 
 	switch (msg)
 	{
@@ -99,6 +99,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_MOUSEMOVE:		return OnMouseMove(hWnd, msg, wParam, lParam);
 	case WM_MOUSELEAVE:		return OnMouseLeave(hWnd, msg, wParam, lParam);
 	case WM_MOUSEWHEEL:		return OnMouseWheel(hWnd, msg, wParam, lParam);
+	case WM_MOUSEHWHEEL:	return OnMouseHWheel(hWnd, msg, wParam, lParam);
 	case WM_CHAR:			return OnChar(hWnd, msg, wParam, lParam);
 	case WM_SYSKEYUP:		return OnSysKeyUp(hWnd, msg, wParam, lParam);
 	case WM_KEYUP:			return OnKeyUp(hWnd, msg, wParam, lParam);
@@ -331,9 +332,20 @@ LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 	const POINTS pt = MAKEPOINTS(lParam);
 	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 	MouseScrolledEvent e(pt.x, pt.y, delta);
-	OnMouseScrolledFn(e);
+	OnMouseScrolledVerticalFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel
+	// --> "An application should return zero if it processes this message."
+	return 0;
+}
+LRESULT Window::OnMouseHWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+{
+	const POINTS pt = MAKEPOINTS(lParam);
+	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+	MouseScrolledEvent e(pt.x, pt.y, delta);
+	OnMouseScrolledHorizontalFn(e);
+
+	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousehwheel
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }

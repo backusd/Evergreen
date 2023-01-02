@@ -46,7 +46,8 @@ private:
 	void OnMouseMove(MouseMoveEvent& e) noexcept;
 	void OnMouseEnter(MouseEnterEvent& e) noexcept;
 	void OnMouseLeave(MouseLeaveEvent& e) noexcept;
-	void OnMouseScrolled(MouseScrolledEvent& e) noexcept;
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;

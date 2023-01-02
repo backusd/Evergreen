@@ -730,7 +730,38 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		}
 	}
 }
-
+void Layout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+{
+	// Layouts don't handle this event, so just pass off to child layouts/controls
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnMouseScrolledVertical(e);
+		if (e.Handled())
+			return;
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnMouseScrolledVertical(e);
+		if (e.Handled())
+			return;
+	}
+}
+void Layout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+{
+	// Layouts don't handle this event, so just pass off to child layouts/controls
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		sublayout->OnMouseScrolledHorizontal(e);
+		if (e.Handled())
+			return;
+	}
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		control->OnMouseScrolledHorizontal(e);
+		if (e.Handled())
+			return;
+	}
+}
 
 Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name)
 {

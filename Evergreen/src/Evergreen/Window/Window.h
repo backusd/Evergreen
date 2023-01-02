@@ -57,12 +57,13 @@ public:
 	void SetOnMouseMove(const std::function<void(MouseMoveEvent& e)>& f) noexcept { OnMouseMoveFn = f; }
 	void SetOnMouseEnter(const std::function<void(MouseEnterEvent& e)>& f) noexcept { OnMouseEnterFn = f; }
 	void SetOnMouseLeave(const std::function<void(MouseLeaveEvent& e)>& f) noexcept { OnMouseLeaveFn = f; }
-	void SetOnMouseScrolled(const std::function<void(MouseScrolledEvent& e)>& f) noexcept { OnMouseScrolledFn = f; }
+	void SetOnMouseScrolledVertical(const std::function<void(MouseScrolledEvent& e)>& f) noexcept { OnMouseScrolledVerticalFn = f; }
+	void SetOnMouseScrolledHorizontal(const std::function<void(MouseScrolledEvent& e)>& f) noexcept { OnMouseScrolledHorizontalFn = f; }
 	void SetOnMouseButtonPressed(const std::function<void(MouseButtonPressedEvent& e)>& f) noexcept { OnMouseButtonPressedFn = f; }
 	void SetOnMouseButtonReleased(const std::function<void(MouseButtonReleasedEvent& e)>& f) noexcept { OnMouseButtonReleasedFn = f; }
 	void SetOnMouseButtonDoubleClick(const std::function<void(MouseButtonDoubleClickEvent& e)>& f) noexcept { OnMouseButtonDoubleClickFn = f; }
 
-private:
+private:	
 	bool m_mouseIsInWindow;
 
 	virtual void Init(const WindowProperties& props) noexcept;
@@ -85,6 +86,7 @@ private:
 	ND LRESULT OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept; // cannot be const because it modifies m_mouseIsInWindow
 	ND LRESULT OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	ND LRESULT OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
+	ND LRESULT OnMouseHWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	ND LRESULT OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	ND LRESULT OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
 	ND LRESULT OnSysKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;
@@ -110,7 +112,8 @@ protected:
 	std::function<void(MouseMoveEvent& e)> OnMouseMoveFn = [](MouseMoveEvent&) {};
 	std::function<void(MouseEnterEvent& e)> OnMouseEnterFn = [](MouseEnterEvent&) {};
 	std::function<void(MouseLeaveEvent& e)> OnMouseLeaveFn = [](MouseLeaveEvent&) {};
-	std::function<void(MouseScrolledEvent& e)> OnMouseScrolledFn = [](MouseScrolledEvent&) {};
+	std::function<void(MouseScrolledEvent& e)> OnMouseScrolledVerticalFn = [](MouseScrolledEvent&) {};
+	std::function<void(MouseScrolledEvent& e)> OnMouseScrolledHorizontalFn = [](MouseScrolledEvent&) {};
 	std::function<void(MouseButtonPressedEvent& e)> OnMouseButtonPressedFn = [](MouseButtonPressedEvent&) {};
 	std::function<void(MouseButtonReleasedEvent& e)> OnMouseButtonReleasedFn = [](MouseButtonReleasedEvent&) {};
 	std::function<void(MouseButtonDoubleClickEvent& e)> OnMouseButtonDoubleClickFn = [](MouseButtonDoubleClickEvent&) {};

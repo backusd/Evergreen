@@ -70,8 +70,10 @@ void Button::OnMarginChanged()
 void Button::OnAllowedRegionChanged()
 {
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 
 	// If using a non-SolidColorBrush, we need to update the draw region for the brushes
+	m_backgroundBrush->SetDrawRegion(m_allowedRegion);
 	m_borderBrush->SetDrawRegion(m_allowedRegion);
 
 	ButtonChanged();

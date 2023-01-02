@@ -270,6 +270,52 @@ void UI::LoadDefaultUI() noexcept
 	);
 
 
+	// --------------------------------------------------
+
+	RowColumnPosition scrollableLayoutPosition;
+	scrollableLayoutPosition.Row = 2;
+	scrollableLayoutPosition.Column = 0;
+
+	std::unique_ptr<SolidColorBrush> backgroundBrush3 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightSeaGreen));
+	std::unique_ptr<SolidColorBrush> borderBrush3 = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Red));
+
+	Evergreen::Margin margin3 = { 5.0f, 5.0f, 5.0f, 5.0f };
+
+	ScrollableLayout* scroll = sublayout->CreateControl<ScrollableLayout>(
+		scrollableLayoutPosition,
+		m_deviceResources,
+		true, 
+		true,
+		std::move(backgroundBrush3), 
+		std::move(borderBrush3), 
+		2.0f, 
+		margin3
+	);
+
+	scroll->AddColumn({ RowColumnType::FIXED, 50.0f });
+	scroll->AddColumn({ RowColumnType::FIXED, 100.0f });
+
+	for (int iii = 0; iii < 40; ++iii)
+		scroll->AddRow({ RowColumnType::FIXED, 20.0f });
+
+	for (int iii = 0; iii < 40; ++iii)
+	{
+		RowColumnPosition pos;
+		pos.Row = iii;
+		pos.Column = 0;
+
+		Text* t = scroll->CreateControl<Text>(pos, m_deviceResources);
+		t->SetText(std::format(L"Yes {}", iii));
+		t->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+		t->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+
+		pos.Column = 1;
+
+		Text* t2 = scroll->CreateControl<Text>(pos, m_deviceResources);
+		t2->SetText(std::format(L"No {}", iii));
+		t2->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+		t2->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	}
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
@@ -391,6 +437,15 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 	m_mouseHandlingControl = e.HandlingControl();
 	m_mouseHandlingLayout = e.HandlingLayout();
+}
+
+void UI::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+{
+	m_rootLayout->OnMouseScrolledVertical(e);
+}
+void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+{
+	m_rootLayout->OnMouseScrolledHorizontal(e);
 }
 
 

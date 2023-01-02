@@ -156,7 +156,7 @@ private:
 class EVERGREEN_API Layout
 {
 public:
-	Layout(std::shared_ptr<DeviceResources> m_deviceResources, float top, float left, float width, float height, 
+	Layout(std::shared_ptr<DeviceResources> deviceResources, float top, float left, float width, float height, 
 		std::unique_ptr<ColorBrush> brush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
@@ -196,12 +196,19 @@ public:
 	void OnMouseMove(MouseMoveEvent& e) noexcept;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
 
 	void Update() noexcept;
 	void Render() const noexcept;
 	void DrawBorders() const noexcept;
 
 	ND inline bool ContainsPoint(float x, float y) const noexcept { return m_left <= x && m_left + m_width >= x && m_top <= y && m_top + m_height >= y; }
+
+	ND inline float Top() const noexcept { return m_top; }
+	ND inline float Left() const noexcept { return m_left; }
+	ND inline float Width() const noexcept { return m_width; }
+	ND inline float Height() const noexcept { return m_height; }
 
 private:
 	void UpdateLayout() noexcept;
