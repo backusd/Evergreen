@@ -213,6 +213,8 @@ public:
 	ND inline float Left() const noexcept { return m_left; }
 	ND inline float Width() const noexcept { return m_width; }
 	ND inline float Height() const noexcept { return m_height; }
+	ND inline float Right() const noexcept { return m_left + m_width; }
+	ND inline float Bottom() const noexcept { return m_top + m_height; }
 
 private:
 	void UpdateLayout() noexcept;
