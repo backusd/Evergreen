@@ -99,8 +99,12 @@ public:
 
 private:
 	void ScrollableLayoutChanged();
+	void VerticalScrollBarChanged() noexcept;
+	void HorizontalScrollBarChanged() noexcept;
 	void OnMarginChanged() override;
 	void OnAllowedRegionChanged() override;
+	inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept; 
+	bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
 
 	std::unique_ptr<Layout>		m_layout;
 	std::unique_ptr<ColorBrush> m_backgroundBrush;

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ScrollableLayout.h"
 
-
+using Microsoft::WRL::ComPtr;
 
 namespace Evergreen
 {
@@ -188,6 +188,14 @@ void ScrollableLayout::ScrollableLayoutChanged()
 		);
 	}
 }
+void ScrollableLayout::VerticalScrollBarChanged() noexcept
+{
+
+}
+void ScrollableLayout::HorizontalScrollBarChanged() noexcept
+{
+
+}
 void ScrollableLayout::OnMarginChanged()
 {
 	ScrollableLayoutChanged();
@@ -204,6 +212,23 @@ void ScrollableLayout::OnAllowedRegionChanged()
 	ScrollableLayoutChanged();
 }
 
+bool ScrollableLayout::RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept
+{
+	return rect.left <= x && rect.right >= x && rect.top <= y && rect.bottom >= y;
+}
+bool ScrollableLayout::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y)
+{
+	ComPtr<ID2D1RoundedRectangleGeometry> m_roundedRect = nullptr;
+	GFX_THROW_INFO(
+		m_deviceResources->D2DFactory()->CreateRoundedRectangleGeometry(rect, m_roundedRect.ReleaseAndGetAddressOf())
+	)
+
+	EG_CORE_ASSERT(m_roundedRect != nullptr, "rounded rect geometry should not be nullptr");
+
+	BOOL b;
+	m_roundedRect->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
+	return static_cast<bool>(b);
+}
 
 
 void ScrollableLayout::OnChar(CharEvent& e) noexcept
@@ -223,7 +248,66 @@ void ScrollableLayout::OnKeyReleased(KeyReleasedEvent& e) noexcept
 }
 void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	// If mouse is not interacting with either scroll bar and also not over the background rect, just return
+	// NOTE: You can NOT just test to see if the Mouse-over-bar states are NOT_DRAGGING because there is the scenario
+	//       where the mouse is OVER a bar and then the next MouseMove event the mouse is off the bar and ALSO out of the entire
+	//       control. In which case, we need to set the state back to NOT_OVER, which is what some of the code does below
+	if (m_verticalScrollBarState == MouseOverBarState::NOT_OVER &&
+		m_horizontalScrollBarState == MouseOverBarState::NOT_OVER &&
+		!RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
+	{
+		return;
+	}
+
+	// We are going to let the scrollbars take precedence over the layout for handling the event
+	if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
+	{
+		return;
+	}
+
+	if (m_verticalScrollBarState == MouseOverBarState::OVER)
+	{
+		// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+		if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
+		{
+			// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+			if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
+				RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		m_verticalScrollBarState = MouseOverBarState::NOT_OVER;
+		return;
+	}
+
+	if (m_verticalScrollBarState == MouseOverBarState::NOT_OVER)
+	{
+		// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+		if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
+		{
+			// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+			if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
+				RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+			{
+				m_verticalScrollBarState = MouseOverBarState::OVER;
+				e.Handled(this);
+				return;
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+	// Finally, if the scrollbars have not handled the event, forward it to the layout
 	m_layout->OnMouseMove(e);
 }
 void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
