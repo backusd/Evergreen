@@ -25,18 +25,20 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	m_verticalScrollBarCornerXRadius(0.0f),
 	m_verticalScrollBarCornerYRadius(0.0f),
 	m_verticalScrollBarEnabled(scrollVertical),
-	m_verticalScrollBarHiddenWhenNotDragging(true),
+	m_verticalScrollBarHiddenWhenNotOver(true),
 	m_verticalScrollBarWidth(8.0f),
 	m_verticalScrollBarRegionWidth(12.0f),
 	m_verticalScrollBarState(MouseOverBarState::NOT_OVER),
+	m_mouseIsOverVerticalScrollBarRegion(false),
 
 	m_horizontalScrollBarCornerXRadius(0.0f),
 	m_horizontalScrollBarCornerYRadius(0.0f),
 	m_horizontalScrollBarEnabled(scrollHorizontal),
-	m_horizontalScrollBarHiddenWhenNotDragging(true),
+	m_horizontalScrollBarHiddenWhenNotOver(true),
 	m_horizontalScrollBarHeight(10.0f),
 	m_horizontalScrollBarRegionHeight(10.0f),
 	m_horizontalScrollBarState(MouseOverBarState::NOT_OVER),
+	m_mouseIsOverHorizontalScrollBarRegion(false),
 
 	m_dragStartPoint(D2D1::Point2F())
 {
@@ -90,7 +92,8 @@ void ScrollableLayout::Render() const noexcept
 	context->PopAxisAlignedClip();
 
 	// Vertical scroll bar
-	if (m_verticalScrollBarEnabled)
+	if (m_verticalScrollBarEnabled && 
+		(!m_verticalScrollBarHiddenWhenNotOver || m_mouseIsOverVerticalScrollBarRegion || m_verticalScrollBarState == MouseOverBarState::DRAGGING))
 	{
 		context->FillRectangle(m_verticalScrollBarRegion, m_verticalScrollBarRegionBrush->Get());
 
@@ -110,7 +113,8 @@ void ScrollableLayout::Render() const noexcept
 	}
 
 	// Horizontal scroll bar
-	if (m_horizontalScrollBarEnabled)
+	if (m_horizontalScrollBarEnabled &&
+		(!m_horizontalScrollBarHiddenWhenNotOver || m_mouseIsOverHorizontalScrollBarRegion || m_horizontalScrollBarState == MouseOverBarState::DRAGGING))
 	{
 		context->FillRectangle(m_horizontalScrollBarRegion, m_horizontalScrollBarRegionBrush->Get());
 
@@ -164,6 +168,47 @@ Layout* ScrollableLayout::AddSubLayout(RowColumnPosition position, const std::st
 	return m_layout->AddSubLayout(position, name);
 }
 
+void ScrollableLayout::VerticalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_verticalScrollBarBrush = std::move(brush); 
+	m_verticalScrollBarBrush->SetDrawRegion(m_verticalScrollBar); 
+}
+void ScrollableLayout::VerticalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_verticalScrollBarBrushHovered = std::move(brush); 
+	m_verticalScrollBarBrushHovered->SetDrawRegion(m_verticalScrollBar); 
+}
+void ScrollableLayout::VerticalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_verticalScrollBarBrushDragging = std::move(brush); 
+	m_verticalScrollBarBrushDragging->SetDrawRegion(m_verticalScrollBar); 
+}
+void ScrollableLayout::VerticalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_verticalScrollBarRegionBrush = std::move(brush); 
+	m_verticalScrollBarRegionBrush->SetDrawRegion(m_verticalScrollBarRegion); 
+}
+void ScrollableLayout::HorizontalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_horizontalScrollBarBrush = std::move(brush); 
+	m_horizontalScrollBarBrush->SetDrawRegion(m_horizontalScrollBar);
+}
+void ScrollableLayout::HorizontalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_horizontalScrollBarBrushHovered = std::move(brush);
+	m_horizontalScrollBarBrushHovered->SetDrawRegion(m_horizontalScrollBar);
+}
+void ScrollableLayout::HorizontalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_horizontalScrollBarBrushDragging = std::move(brush); 
+	m_horizontalScrollBarBrushDragging->SetDrawRegion(m_horizontalScrollBar);
+}
+void ScrollableLayout::HorizontalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	m_horizontalScrollBarRegionBrush = std::move(brush); 
+	m_horizontalScrollBarRegionBrush->SetDrawRegion(m_horizontalScrollBarRegion);
+}
+
 void ScrollableLayout::ScrollableLayoutChanged()
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
@@ -184,7 +229,6 @@ void ScrollableLayout::ScrollableLayoutChanged()
 		width, 
 		height
 	);
-
 
 	VerticalScrollBarChanged();
 	HorizontalScrollBarChanged();
@@ -216,6 +260,11 @@ void ScrollableLayout::VerticalScrollBarChanged() noexcept
 			barTop + barHeight
 		);
 	}
+
+	m_verticalScrollBarBrush->SetDrawRegion(m_verticalScrollBar);
+	m_verticalScrollBarBrushHovered->SetDrawRegion(m_verticalScrollBar);
+	m_verticalScrollBarBrushDragging->SetDrawRegion(m_verticalScrollBar);
+	m_verticalScrollBarRegionBrush->SetDrawRegion(m_verticalScrollBarRegion);
 }
 void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 {
@@ -244,7 +293,14 @@ void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 			barCenter + halfBarHeight
 		);
 	}
+
+	m_horizontalScrollBarBrush->SetDrawRegion(m_horizontalScrollBar);
+	m_horizontalScrollBarBrushHovered->SetDrawRegion(m_horizontalScrollBar);
+	m_horizontalScrollBarBrushDragging->SetDrawRegion(m_horizontalScrollBar);
+	m_horizontalScrollBarRegionBrush->SetDrawRegion(m_horizontalScrollBarRegion);
+
 }
+
 void ScrollableLayout::OnMarginChanged()
 {
 	ScrollableLayoutChanged();
@@ -278,6 +334,7 @@ bool ScrollableLayout::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x,
 	m_roundedRect->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
 	return static_cast<bool>(b);
 }
+
 void ScrollableLayout::IncrementVerticalScrollOffset(float delta)
 {
 	// This function is supposed to be called to make a change to m_verticalScrollOffset
@@ -326,12 +383,16 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 		m_horizontalScrollBarState == MouseOverBarState::NOT_OVER &&
 		!RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
 	{
+		m_mouseIsOverVerticalScrollBarRegion = false;
+		m_mouseIsOverHorizontalScrollBarRegion = false;
 		return;
 	}
 
 	// Vertical --------------------------------------------------------------------------------------------
 	if (m_canScrollVertical)
 	{
+		m_mouseIsOverVerticalScrollBarRegion = RectContainsPoint(m_verticalScrollBarRegion, e.GetX(), e.GetY());
+
 		// We are going to let the scrollbars take precedence over the layout for handling the event
 		if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
 		{
@@ -385,6 +446,8 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 	// Horizontal --------------------------------------------------------------------------------------------
 	if (m_canScrollHorizontal)
 	{
+		m_mouseIsOverHorizontalScrollBarRegion = RectContainsPoint(m_horizontalScrollBarRegion, e.GetX(), e.GetY());
+
 		// We are going to let the scrollbars take precedence over the layout for handling the event
 		if (m_horizontalScrollBarState == MouseOverBarState::DRAGGING)
 		{

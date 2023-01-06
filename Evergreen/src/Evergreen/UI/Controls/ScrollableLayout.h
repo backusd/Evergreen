@@ -70,32 +70,32 @@ public:
 	// Scroll Bar data
 	ND inline bool VerticalScrollBarEnabled() const noexcept { return m_verticalScrollBarEnabled; }
 	ND inline bool HorizontalScrollBarEnabled() const noexcept { return m_horizontalScrollBarEnabled; }
-	ND inline bool VerticalScrollBarHiddenWhenNotDraggin() const noexcept { return m_verticalScrollBarHiddenWhenNotDragging; }
-	ND inline bool HorizontalScrollBarHiddenWhenNotDragging() const noexcept { return m_horizontalScrollBarHiddenWhenNotDragging; }
+	ND inline bool VerticalScrollBarHiddenWhenNotOver() const noexcept { return m_verticalScrollBarHiddenWhenNotOver; }
+	ND inline bool HorizontalScrollBarHiddenWhenNotOver() const noexcept { return m_horizontalScrollBarHiddenWhenNotOver; }
 	ND inline float VerticalScrollBarWidth() const noexcept { return m_verticalScrollBarWidth; }
 	ND inline float HorizontalScrollBarHeight() const noexcept { return m_horizontalScrollBarHeight; }
 
 	void VerticalScrollBarCornerRadius(float x, float y) noexcept { m_verticalScrollBarCornerXRadius = x; m_verticalScrollBarCornerYRadius = y; }
 	void VerticalScrollBarCornerRadius(float xAndY) noexcept { m_verticalScrollBarCornerXRadius = xAndY; m_verticalScrollBarCornerYRadius = xAndY; }
-	void VerticalScrollBarEnabled(bool enabled) noexcept { m_verticalScrollBarEnabled = enabled; }
-	void VerticalScrollBarHiddenWhenNotDraggin(bool hidden) noexcept { m_verticalScrollBarHiddenWhenNotDragging = hidden; }
-	void VerticalScrollBarWidth(float width) noexcept { m_verticalScrollBarWidth = width; }
+	void VerticalScrollBarEnabled(bool enabled) noexcept { m_verticalScrollBarEnabled = enabled; VerticalScrollBarChanged(); }
+	void VerticalScrollBarHiddenWhenNotOver(bool hidden) noexcept { m_verticalScrollBarHiddenWhenNotOver = hidden; }
+	void VerticalScrollBarWidth(float width) noexcept { m_verticalScrollBarWidth = width; VerticalScrollBarChanged(); }
 
 	void HorizontalScrollBarCornerRadius(float x, float y) noexcept { m_horizontalScrollBarCornerXRadius = x; m_horizontalScrollBarCornerYRadius = y; }
 	void HorizontalScrollBarCornerRadius(float xAndY) noexcept { m_horizontalScrollBarCornerXRadius = xAndY; m_horizontalScrollBarCornerYRadius = xAndY; }
-	void HorizontalScrollBarEnabled(bool enabled) noexcept { m_horizontalScrollBarEnabled = enabled; }
-	void HorizontalScrollBarHiddenWhenNotDraggin(bool hidden) noexcept { m_horizontalScrollBarHiddenWhenNotDragging = hidden; }
-	void HorizontalScrollBarHeight(float height) noexcept { m_horizontalScrollBarHeight = height; }
+	void HorizontalScrollBarEnabled(bool enabled) noexcept { m_horizontalScrollBarEnabled = enabled; HorizontalScrollBarChanged(); }
+	void HorizontalScrollBarHiddenWhenNotOver(bool hidden) noexcept { m_horizontalScrollBarHiddenWhenNotOver = hidden; }
+	void HorizontalScrollBarHeight(float height) noexcept { m_horizontalScrollBarHeight = height; HorizontalScrollBarChanged(); }
 
-	void VerticalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_verticalScrollBarBrush = std::move(brush); }
-	void VerticalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_verticalScrollBarBrushHovered = std::move(brush); }
-	void VerticalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_verticalScrollBarBrushDragging = std::move(brush); }
-	void VerticalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_verticalScrollBarRegionBrush = std::move(brush); }
+	void VerticalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void VerticalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void VerticalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void VerticalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 
-	void HorizontalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_horizontalScrollBarBrush = std::move(brush); }
-	void HorizontalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_horizontalScrollBarBrushHovered = std::move(brush); }
-	void HorizontalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_horizontalScrollBarBrushDragging = std::move(brush); }
-	void HorizontalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_horizontalScrollBarRegionBrush = std::move(brush); }
+	void HorizontalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void HorizontalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void HorizontalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void HorizontalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 
 private:
 	void ScrollableLayoutChanged();
@@ -103,8 +103,8 @@ private:
 	void HorizontalScrollBarChanged() noexcept;
 	void OnMarginChanged() override;
 	void OnAllowedRegionChanged() override;
-	inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept; 
-	bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
+	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept; 
+	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
 	void IncrementVerticalScrollOffset(float delta);
 	void IncrementHorizontalScrollOffset(float delta);
 
@@ -134,6 +134,7 @@ private:
 	float				m_verticalScrollBarWidth;
 	float				m_verticalScrollBarRegionWidth;
 	MouseOverBarState	m_verticalScrollBarState;
+	bool				m_mouseIsOverVerticalScrollBarRegion;
 
 	D2D1_RECT_F			m_horizontalScrollBar;
 	float				m_horizontalScrollBarCornerXRadius;
@@ -142,13 +143,15 @@ private:
 	float				m_horizontalScrollBarHeight;
 	float				m_horizontalScrollBarRegionHeight;
 	MouseOverBarState	m_horizontalScrollBarState;
+	bool				m_mouseIsOverHorizontalScrollBarRegion;
+
 
 	D2D1_POINT_2F		m_dragStartPoint;
 
 	bool m_verticalScrollBarEnabled;
 	bool m_horizontalScrollBarEnabled;
-	bool m_verticalScrollBarHiddenWhenNotDragging;
-	bool m_horizontalScrollBarHiddenWhenNotDragging;
+	bool m_verticalScrollBarHiddenWhenNotOver;
+	bool m_horizontalScrollBarHiddenWhenNotOver;
 
 	std::unique_ptr<ColorBrush> m_verticalScrollBarBrush;
 	std::unique_ptr<ColorBrush> m_verticalScrollBarBrushHovered;
