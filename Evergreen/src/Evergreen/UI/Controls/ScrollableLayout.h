@@ -62,8 +62,8 @@ public:
 
 	ND inline const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
 	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
-	ND inline int VerticalScrollOffset() const noexcept { return m_verticalScrollOffset; }
-	ND inline int HoriztonalScrollOffset() const noexcept { return m_horizontalScrollOffset; }
+	ND inline float VerticalScrollOffset() const noexcept { return m_verticalScrollOffset; }
+	ND inline float HoriztonalScrollOffset() const noexcept { return m_horizontalScrollOffset; }
 	ND inline bool VerticallyScrollable() const noexcept { return m_canScrollHorizontal; }
 	ND inline bool HorizontallyScrollable() const noexcept { return m_canScrollHorizontal; }
 
@@ -105,6 +105,8 @@ private:
 	void OnAllowedRegionChanged() override;
 	inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept; 
 	bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
+	void IncrementVerticalScrollOffset(float delta);
+	void IncrementHorizontalScrollOffset(float delta);
 
 	std::unique_ptr<Layout>		m_layout;
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
@@ -112,8 +114,8 @@ private:
 	float						m_borderWidth;
 	D2D1_RECT_F					m_backgroundRect;
 
-	int m_horizontalScrollOffset;
-	int m_verticalScrollOffset;
+	float m_horizontalScrollOffset;
+	float m_verticalScrollOffset;
 	const bool m_canScrollHorizontal;
 	const bool m_canScrollVertical;
 
@@ -140,6 +142,8 @@ private:
 	float				m_horizontalScrollBarHeight;
 	float				m_horizontalScrollBarRegionHeight;
 	MouseOverBarState	m_horizontalScrollBarState;
+
+	D2D1_POINT_2F		m_dragStartPoint;
 
 	bool m_verticalScrollBarEnabled;
 	bool m_horizontalScrollBarEnabled;

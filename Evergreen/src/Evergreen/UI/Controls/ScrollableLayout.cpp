@@ -14,8 +14,8 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 									float borderWidth,
 									const Evergreen::Margin& margin) noexcept :
 	Control(deviceResources, allowedRegion, margin),
-	m_horizontalScrollOffset(0),
-	m_verticalScrollOffset(0),
+	m_horizontalScrollOffset(0.0f),
+	m_verticalScrollOffset(0.0f),
 	m_canScrollHorizontal(scrollHorizontal),
 	m_canScrollVertical(scrollVertical),
 	m_backgroundBrush(std::move(backgroundBrush)),
@@ -36,7 +36,9 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	m_horizontalScrollBarHiddenWhenNotDragging(true),
 	m_horizontalScrollBarHeight(10.0f),
 	m_horizontalScrollBarRegionHeight(10.0f),
-	m_horizontalScrollBarState(MouseOverBarState::NOT_OVER)
+	m_horizontalScrollBarState(MouseOverBarState::NOT_OVER),
+
+	m_dragStartPoint(D2D1::Point2F())
 {
 	// Brushes
 	if (m_backgroundBrush == nullptr)
@@ -107,6 +109,26 @@ void ScrollableLayout::Render() const noexcept
 			context->FillRoundedRectangle(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), brush->Get());
 	}
 
+	// Horizontal scroll bar
+	if (m_horizontalScrollBarEnabled)
+	{
+		context->FillRectangle(m_horizontalScrollBarRegion, m_horizontalScrollBarRegionBrush->Get());
+
+		ColorBrush* brush = nullptr;
+		switch (m_horizontalScrollBarState)
+		{
+		case MouseOverBarState::NOT_OVER:	brush = m_horizontalScrollBarBrush.get(); break;
+		case MouseOverBarState::OVER:		brush = m_horizontalScrollBarBrushHovered.get(); break;
+		case MouseOverBarState::DRAGGING:	brush = m_horizontalScrollBarBrushDragging.get(); break;
+		}
+		EG_CORE_ASSERT(brush != nullptr, "Something went wrong. brush should never be nullptr");
+
+		if (m_horizontalScrollBarCornerXRadius == 0.0f && m_horizontalScrollBarCornerYRadius == 0.0f)
+			context->FillRectangle(m_horizontalScrollBar, brush->Get());
+		else
+			context->FillRoundedRectangle(D2D1::RoundedRect(m_horizontalScrollBar, m_horizontalScrollBarCornerXRadius, m_horizontalScrollBarCornerYRadius), brush->Get());
+	}
+
 	// Draw the border last so it appears on top
 	if (m_borderWidth > 0.0f)
 		context->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);
@@ -163,23 +185,30 @@ void ScrollableLayout::ScrollableLayoutChanged()
 		height
 	);
 
-	// scroll bar data -------------------------------------------------
+
+	VerticalScrollBarChanged();
+	HorizontalScrollBarChanged();
+}
+void ScrollableLayout::VerticalScrollBarChanged() noexcept
+{
 	if (m_verticalScrollBarEnabled)
 	{
 		m_verticalScrollBarRegion = D2D1::RectF(m_backgroundRect.right - m_verticalScrollBarRegionWidth, m_backgroundRect.top, m_backgroundRect.right, m_backgroundRect.bottom);
 
 		float barHeight = 20.0f;
 
-		float barCenter		= m_verticalScrollBarRegion.left + ((m_verticalScrollBarRegion.right - m_verticalScrollBarRegion.left) / 2.0f);
-		float halfBarWidth	= m_verticalScrollBarWidth / 2.0f;
-		
+		float barCenter = m_verticalScrollBarRegion.left + ((m_verticalScrollBarRegion.right - m_verticalScrollBarRegion.left) / 2.0f);
+		float halfBarWidth = m_verticalScrollBarWidth / 2.0f;
+
 		float barTop = m_verticalScrollBarRegion.top; // Default barTop value will be the top of the scroll region
 		if (m_layout->Height() > m_backgroundRect.bottom - m_backgroundRect.top) // If the layout height exceeds the backgroundrect height, then scrolling is possible and we need to compute the top of the scroll rect
-			barTop = 
-					 (m_verticalScrollOffset / (m_layout->Height() - (m_backgroundRect.bottom - m_backgroundRect.top))) // This first part computes the percent the scroll offset is out of the total maximum scroll offsset
-					 * (m_verticalScrollBarRegion.bottom - m_verticalScrollBarRegion.top - barHeight) // We then multiply that percent by the total space the scroll bar is allowed to move (Note: we subtract barHeight because we are looking for the offset of the top of the scroll bar)
-					 + m_verticalScrollBarRegion.top; // Add the scroll region top to the computed offset
-		
+		{
+			barTop =
+				(m_verticalScrollOffset / (m_layout->Height() - (m_backgroundRect.bottom - m_backgroundRect.top))) // This first part computes the percent the scroll offset is out of the total maximum scroll offset
+				* (m_verticalScrollBarRegion.bottom - m_verticalScrollBarRegion.top - barHeight) // We then multiply that percent by the total space the scroll bar is allowed to move (Note: we subtract barHeight because we are looking for the offset of the top of the scroll bar)
+				+ m_verticalScrollBarRegion.top; // Add the scroll region top to the computed offset
+		}
+
 		m_verticalScrollBar = D2D1::RectF(
 			barCenter - halfBarWidth,
 			barTop,
@@ -188,13 +217,33 @@ void ScrollableLayout::ScrollableLayoutChanged()
 		);
 	}
 }
-void ScrollableLayout::VerticalScrollBarChanged() noexcept
-{
-
-}
 void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 {
+	if (m_horizontalScrollBarEnabled)
+	{
+		m_horizontalScrollBarRegion = D2D1::RectF(m_backgroundRect.left, m_backgroundRect.bottom - m_horizontalScrollBarRegionHeight, m_backgroundRect.right, m_backgroundRect.bottom);
 
+		float barWidth = 20.0f;
+
+		float barCenter = m_horizontalScrollBarRegion.top + ((m_horizontalScrollBarRegion.bottom - m_horizontalScrollBarRegion.top) / 2.0f);
+		float halfBarHeight = m_horizontalScrollBarHeight / 2.0f;
+
+		float barLeft = m_horizontalScrollBarRegion.left; // Default barLeft value will be the left of the scroll region
+		if (m_layout->Width() > m_backgroundRect.right - m_backgroundRect.left) // If the layout height exceeds the backgroundrect width, then scrolling is possible and we need to compute the left of the scroll rect
+		{
+			barLeft =
+				(-m_horizontalScrollOffset / (m_layout->Width() - (m_backgroundRect.right - m_backgroundRect.left))) // This first part computes the percent the scroll offset is out of the total maximum scroll offset
+				* (m_horizontalScrollBarRegion.right - m_horizontalScrollBarRegion.left - barWidth) // We then multiply that percent by the total space the scroll bar is allowed to move (Note: we subtract barWidth because we are looking for the offset of the left of the scroll bar)
+				+ m_horizontalScrollBarRegion.left; // Add the scroll region left to the computed offset
+		}
+
+		m_horizontalScrollBar = D2D1::RectF(
+			barLeft,
+			barCenter - halfBarHeight,
+			barLeft + barWidth,
+			barCenter + halfBarHeight
+		);
+	}
 }
 void ScrollableLayout::OnMarginChanged()
 {
@@ -229,7 +278,28 @@ bool ScrollableLayout::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x,
 	m_roundedRect->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
 	return static_cast<bool>(b);
 }
+void ScrollableLayout::IncrementVerticalScrollOffset(float delta)
+{
+	// This function is supposed to be called to make a change to m_verticalScrollOffset
+	// It will ensure that the offset is within the correct bounds and update the vertical scroll bar rect
 
+	float visibleHeight = m_backgroundRect.bottom - m_backgroundRect.top;
+
+	m_verticalScrollOffset += delta;
+	m_verticalScrollOffset = std::max(0.0f, m_verticalScrollOffset);
+	m_verticalScrollOffset = std::min(m_verticalScrollOffset, m_layout->Height() - visibleHeight);
+
+	ScrollableLayoutChanged();
+}
+void ScrollableLayout::IncrementHorizontalScrollOffset(float delta)
+{
+	float visibleWidth = m_backgroundRect.right - m_backgroundRect.left;
+
+	m_horizontalScrollOffset += delta;
+	m_horizontalScrollOffset = std::min(0.0f, m_horizontalScrollOffset);
+	m_horizontalScrollOffset = std::max(m_horizontalScrollOffset, visibleWidth - m_layout->Width());
+	ScrollableLayoutChanged();
+}
 
 void ScrollableLayout::OnChar(CharEvent& e) noexcept
 {
@@ -259,46 +329,108 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 		return;
 	}
 
-	// We are going to let the scrollbars take precedence over the layout for handling the event
-	if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
+	// Vertical --------------------------------------------------------------------------------------------
+	if (m_canScrollVertical)
 	{
-		return;
-	}
-
-	if (m_verticalScrollBarState == MouseOverBarState::OVER)
-	{
-		// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
-		if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
+		// We are going to let the scrollbars take precedence over the layout for handling the event
+		if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
 		{
-			// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
-			if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
-				RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
-			{
-				e.Handled(this);
-				return;
-			}
+			// NOTE: We are about to compute the vertical delta that the mouse moved and want to use that value to adjust m_verticalScrollOffset
+			// However we want the mouse to track with the scroll bar rect as it is being dragged. In order to do this, we must convert
+			// the vertical pixel delta to an appropriate offset delta. The way to think about this that we need compute "offset per pixel", which
+			// is just the maximum amount of allowed offset divided by the maximum change in pixels for the scroll bar rect itself
+			float offsetPerPixel = (m_layout->Height() - (m_verticalScrollBarRegion.bottom - m_verticalScrollBarRegion.top)) / (m_verticalScrollBarRegion.bottom - m_verticalScrollBarRegion.top - (m_verticalScrollBar.bottom - m_verticalScrollBar.top));
+			IncrementVerticalScrollOffset((e.GetY() - m_dragStartPoint.y) * offsetPerPixel);
+			m_dragStartPoint.y = e.GetY();
+
+			e.Handled(this);
+			return;
 		}
 
-		m_verticalScrollBarState = MouseOverBarState::NOT_OVER;
-		return;
-	}
-
-	if (m_verticalScrollBarState == MouseOverBarState::NOT_OVER)
-	{
-		// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
-		if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
+		if (m_verticalScrollBarState == MouseOverBarState::OVER)
 		{
-			// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
-			if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
-				RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+			if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
 			{
-				m_verticalScrollBarState = MouseOverBarState::OVER;
-				e.Handled(this);
-				return;
+				// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+				if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
+					RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+				{
+					e.Handled(this);
+					return;
+				}
+			}
+
+			m_verticalScrollBarState = MouseOverBarState::NOT_OVER;
+			return;
+		}
+
+		if (m_verticalScrollBarState == MouseOverBarState::NOT_OVER)
+		{
+			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+			if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
+			{
+				// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+				if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
+					RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+				{
+					m_verticalScrollBarState = MouseOverBarState::OVER;
+					e.Handled(this);
+					return;
+				}
 			}
 		}
 	}
 
+	// Horizontal --------------------------------------------------------------------------------------------
+	if (m_canScrollHorizontal)
+	{
+		// We are going to let the scrollbars take precedence over the layout for handling the event
+		if (m_horizontalScrollBarState == MouseOverBarState::DRAGGING)
+		{
+			// See the NOTE above in the vertical section 
+			float offsetPerPixel = (m_layout->Width() - (m_horizontalScrollBarRegion.right - m_horizontalScrollBarRegion.left)) / (m_horizontalScrollBarRegion.right - m_horizontalScrollBarRegion.left - (m_horizontalScrollBar.right - m_horizontalScrollBar.left));
+			IncrementHorizontalScrollOffset((m_dragStartPoint.x - e.GetX()) * offsetPerPixel);
+			m_dragStartPoint.x = e.GetX();
+
+			e.Handled(this);
+			return;
+		}
+
+		if (m_horizontalScrollBarState == MouseOverBarState::OVER)
+		{
+			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+			if (RectContainsPoint(m_horizontalScrollBar, e.GetX(), e.GetY()))
+			{
+				// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+				if ((m_horizontalScrollBarCornerXRadius == 0.0f && m_horizontalScrollBarCornerYRadius == 0.0f) ||
+					RectContainsPoint(D2D1::RoundedRect(m_horizontalScrollBar, m_horizontalScrollBarCornerXRadius, m_horizontalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+				{
+					e.Handled(this);
+					return;
+				}
+			}
+
+			m_horizontalScrollBarState = MouseOverBarState::NOT_OVER;
+			return;
+		}
+
+		if (m_horizontalScrollBarState == MouseOverBarState::NOT_OVER)
+		{
+			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+			if (RectContainsPoint(m_horizontalScrollBar, e.GetX(), e.GetY()))
+			{
+				// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+				if ((m_horizontalScrollBarCornerXRadius == 0.0f && m_horizontalScrollBarCornerYRadius == 0.0f) ||
+					RectContainsPoint(D2D1::RoundedRect(m_horizontalScrollBar, m_horizontalScrollBarCornerXRadius, m_horizontalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+				{
+					m_horizontalScrollBarState = MouseOverBarState::OVER;
+					e.Handled(this);
+					return;
+				}
+			}
+		}
+	}
 
 
 
@@ -321,14 +453,9 @@ void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 
 	if (m_canScrollVertical)
 	{
-		float visibleHeight = m_backgroundRect.bottom - m_backgroundRect.top;
-
 		// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
 		// are usually +/-120. So if we get a large value, just divide it by 10
-		m_verticalScrollOffset -= (std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10);
-		m_verticalScrollOffset = std::max(0, m_verticalScrollOffset);
-		m_verticalScrollOffset = std::min(m_verticalScrollOffset, static_cast<int>(m_layout->Height() - visibleHeight));
-		ScrollableLayoutChanged();
+		IncrementVerticalScrollOffset(-1.0f * static_cast<float>(std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10));
 		e.Handled(this);
 	}
 }
@@ -343,25 +470,90 @@ void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 
 	if (m_canScrollHorizontal)
 	{
-		float visibleWidth = m_backgroundRect.right - m_backgroundRect.left;
-
 		// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
 		// are usually +/-120. So if we get a large value, just divide it by 10
-		m_horizontalScrollOffset -= (std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10);
-		m_horizontalScrollOffset = std::min(0, m_horizontalScrollOffset);
-		m_horizontalScrollOffset = std::max(m_horizontalScrollOffset, -1 * static_cast<int>(m_layout->Width() - visibleWidth));
-		ScrollableLayoutChanged();
+		IncrementHorizontalScrollOffset(-1.0f * static_cast<float>(std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10));
 		e.Handled(this);
 	}
 }
 void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
-	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	// ScrollLayout should only handle/pass this event if the press event is over the control
+	if (!RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
+	{
+		return;
+	}
+
+	// NOTE: No need to check m_canScrollVertical/m_canScrollHorizontal because if they are false they can never get to the
+	//       MouseOverBarState::OVER state
+	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	{
+		if (m_verticalScrollBarState == MouseOverBarState::OVER)
+		{
+			m_verticalScrollBarState = MouseOverBarState::DRAGGING;
+			m_dragStartPoint = D2D1::Point2F(e.GetX(), e.GetY());
+			e.Handled(this);
+			return;
+		}
+
+		if (m_horizontalScrollBarState == MouseOverBarState::OVER)
+		{
+			m_horizontalScrollBarState = MouseOverBarState::DRAGGING;
+			m_dragStartPoint = D2D1::Point2F(e.GetX(), e.GetY());
+			e.Handled(this);
+			return;
+		}
+	}
+
+	// Not handled so pass to layout
 	m_layout->OnMouseButtonPressed(e);
 }
 void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
-	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
+	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	{
+		if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
+		{
+			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+			if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
+			{
+				// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+				if ((m_verticalScrollBarCornerXRadius == 0.0f && m_verticalScrollBarCornerYRadius == 0.0f) ||
+					RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+				{
+					m_verticalScrollBarState = MouseOverBarState::OVER;
+					e.Handled(this);
+					return;
+				}
+			}
+
+			m_verticalScrollBarState = MouseOverBarState::NOT_OVER;
+			e.Handled(this);
+			return;
+		}
+
+		if (m_horizontalScrollBarState == MouseOverBarState::DRAGGING)
+		{
+			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
+			if (RectContainsPoint(m_horizontalScrollBar, e.GetX(), e.GetY()))
+			{
+				// Next either confirm that there are no rounded corners or if there are, verify the mouse is over the rounded rect (slightly slower check)
+				if ((m_horizontalScrollBarCornerXRadius == 0.0f && m_horizontalScrollBarCornerYRadius == 0.0f) ||
+					RectContainsPoint(D2D1::RoundedRect(m_horizontalScrollBar, m_horizontalScrollBarCornerXRadius, m_horizontalScrollBarCornerYRadius), e.GetX(), e.GetY()))
+				{
+					m_horizontalScrollBarState = MouseOverBarState::OVER;
+					e.Handled(this);
+					return;
+				}
+			}
+
+			m_horizontalScrollBarState = MouseOverBarState::NOT_OVER;
+			e.Handled(this);
+			return;
+		}
+	}
+
+	// Not handled so pass to layout 
 	m_layout->OnMouseButtonReleased(e);
 }
 void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
