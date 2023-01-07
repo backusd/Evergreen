@@ -291,6 +291,8 @@ void UI::LoadDefaultUI() noexcept
 		2.0f, 
 		margin3
 	);
+	scroll->VerticalScrollBarHiddenWhenNotOver(false);
+	scroll->HorizontalScrollBarHiddenWhenNotOver(false);
 
 	scroll->AddColumn({ RowColumnType::FIXED, 50.0f });
 	scroll->AddColumn({ RowColumnType::FIXED, 100.0f });

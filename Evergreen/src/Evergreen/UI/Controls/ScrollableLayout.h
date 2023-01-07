@@ -145,7 +145,6 @@ private:
 	MouseOverBarState	m_horizontalScrollBarState;
 	bool				m_mouseIsOverHorizontalScrollBarRegion;
 
-
 	D2D1_POINT_2F		m_dragStartPoint;
 
 	bool m_verticalScrollBarEnabled;

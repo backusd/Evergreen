@@ -147,8 +147,12 @@ Row* ScrollableLayout::AddRow(RowColumnDefinition definition)
 		// If vertical scrolling, then increase the height of the layout then add the new row
 		m_layout->Resize(m_layout->Width(), m_layout->Height() + definition.Value);
 	}
+	Row* row = m_layout->AddRow(definition);
+	EG_CORE_ASSERT(row != nullptr, "Something went wrong. row should not be nullptr");
 
-	return m_layout->AddRow(definition);
+	ScrollableLayoutChanged();
+
+	return row;
 }
 Column* ScrollableLayout::AddColumn(RowColumnDefinition definition)
 {
@@ -160,7 +164,12 @@ Column* ScrollableLayout::AddColumn(RowColumnDefinition definition)
 		m_layout->Resize(m_layout->Width() + definition.Value, m_layout->Height());
 	}
 
-	return m_layout->AddColumn(definition);
+	Column* column = m_layout->AddColumn(definition);
+	EG_CORE_ASSERT(column != nullptr, "Something went wrong. column should not be nullptr");
+
+	ScrollableLayoutChanged();
+
+	return column;
 }
 Layout* ScrollableLayout::AddSubLayout(RowColumnPosition position, const std::string& name)
 {
@@ -239,17 +248,27 @@ void ScrollableLayout::VerticalScrollBarChanged() noexcept
 	{
 		m_verticalScrollBarRegion = D2D1::RectF(m_backgroundRect.right - m_verticalScrollBarRegionWidth, m_backgroundRect.top, m_backgroundRect.right, m_backgroundRect.bottom);
 
-		float barHeight = 20.0f;
+		// Let the height of the bar be dynamic in that it can be a different size depending on how actuall scrolling is allowed
+		// If the layout height does not exceed the control's visible region, just set the bar height to the height of the entire
+		// visible region. Otherwise the height of the bar is the region height multipled by the ratio of region height to layout 
+		// height, but should not ever be less than 10
+		float regionHeight = m_verticalScrollBarRegion.bottom - m_verticalScrollBarRegion.top;
+		float barHeight = regionHeight;
+		if (m_layout->Height() > barHeight)
+			barHeight = std::max(10.0f, regionHeight * regionHeight / m_layout->Height());		
 
 		float barCenter = m_verticalScrollBarRegion.left + ((m_verticalScrollBarRegion.right - m_verticalScrollBarRegion.left) / 2.0f);
-		float halfBarWidth = m_verticalScrollBarWidth / 2.0f;
+		float halfBarWidth = m_verticalScrollBarWidth / 2;
 
 		float barTop = m_verticalScrollBarRegion.top; // Default barTop value will be the top of the scroll region
-		if (m_layout->Height() > m_backgroundRect.bottom - m_backgroundRect.top) // If the layout height exceeds the backgroundrect height, then scrolling is possible and we need to compute the top of the scroll rect
+		
+		// if (m_layout->Height() > m_backgroundRect.bottom - m_backgroundRect.top) // NOTE: the next line could be this, but as of right now, the region height is the same as background height
+		if (m_layout->Height() > regionHeight) // If the layout height exceeds the backgroundrect height, then scrolling is possible and we need to compute the top of the scroll rect
 		{
 			barTop =
-				(m_verticalScrollOffset / (m_layout->Height() - (m_backgroundRect.bottom - m_backgroundRect.top))) // This first part computes the percent the scroll offset is out of the total maximum scroll offset
-				* (m_verticalScrollBarRegion.bottom - m_verticalScrollBarRegion.top - barHeight) // We then multiply that percent by the total space the scroll bar is allowed to move (Note: we subtract barHeight because we are looking for the offset of the top of the scroll bar)
+				// (m_verticalScrollOffset / (m_layout->Height() - (m_backgroundRect.bottom - m_backgroundRect.top))) // NOTE: same thing here as a few lines above, region height is same as background height
+				(m_verticalScrollOffset / (m_layout->Height() - regionHeight)) // This first part computes the percent the scroll offset is out of the total maximum scroll offset
+				* (regionHeight - barHeight) // We then multiply that percent by the total space the scroll bar is allowed to move (Note: we subtract barHeight because we are looking for the offset of the top of the scroll bar)
 				+ m_verticalScrollBarRegion.top; // Add the scroll region top to the computed offset
 		}
 
@@ -259,12 +278,12 @@ void ScrollableLayout::VerticalScrollBarChanged() noexcept
 			barCenter + halfBarWidth,
 			barTop + barHeight
 		);
-	}
 
-	m_verticalScrollBarBrush->SetDrawRegion(m_verticalScrollBar);
-	m_verticalScrollBarBrushHovered->SetDrawRegion(m_verticalScrollBar);
-	m_verticalScrollBarBrushDragging->SetDrawRegion(m_verticalScrollBar);
-	m_verticalScrollBarRegionBrush->SetDrawRegion(m_verticalScrollBarRegion);
+		m_verticalScrollBarBrush->SetDrawRegion(m_verticalScrollBar);
+		m_verticalScrollBarBrushHovered->SetDrawRegion(m_verticalScrollBar);
+		m_verticalScrollBarBrushDragging->SetDrawRegion(m_verticalScrollBar);
+		m_verticalScrollBarRegionBrush->SetDrawRegion(m_verticalScrollBarRegion);
+	}
 }
 void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 {
@@ -272,7 +291,14 @@ void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 	{
 		m_horizontalScrollBarRegion = D2D1::RectF(m_backgroundRect.left, m_backgroundRect.bottom - m_horizontalScrollBarRegionHeight, m_backgroundRect.right, m_backgroundRect.bottom);
 
-		float barWidth = 20.0f;
+		// Let the width of the bar be dynamic in that it can be a different size depending on how actuall scrolling is allowed
+		// If the layout width does not exceed the control's visible region, just set the bar width to the width of the entire
+		// visible region. Otherwise the width of the bar is the region width multipled by the ratio of width height to layout 
+		// width, but should not ever be less than 10
+		float regionWidth = m_horizontalScrollBarRegion.right - m_horizontalScrollBarRegion.left;
+		float barWidth = regionWidth;
+		if (m_layout->Width() > barWidth)
+			barWidth = std::max(10.0f, regionWidth * regionWidth / m_layout->Width());
 
 		float barCenter = m_horizontalScrollBarRegion.top + ((m_horizontalScrollBarRegion.bottom - m_horizontalScrollBarRegion.top) / 2.0f);
 		float halfBarHeight = m_horizontalScrollBarHeight / 2.0f;
@@ -292,13 +318,12 @@ void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 			barLeft + barWidth,
 			barCenter + halfBarHeight
 		);
+
+		m_horizontalScrollBarBrush->SetDrawRegion(m_horizontalScrollBar);
+		m_horizontalScrollBarBrushHovered->SetDrawRegion(m_horizontalScrollBar);
+		m_horizontalScrollBarBrushDragging->SetDrawRegion(m_horizontalScrollBar);
+		m_horizontalScrollBarRegionBrush->SetDrawRegion(m_horizontalScrollBarRegion);
 	}
-
-	m_horizontalScrollBarBrush->SetDrawRegion(m_horizontalScrollBar);
-	m_horizontalScrollBarBrushHovered->SetDrawRegion(m_horizontalScrollBar);
-	m_horizontalScrollBarBrushDragging->SetDrawRegion(m_horizontalScrollBar);
-	m_horizontalScrollBarRegionBrush->SetDrawRegion(m_horizontalScrollBarRegion);
-
 }
 
 void ScrollableLayout::OnMarginChanged()
