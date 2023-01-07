@@ -293,14 +293,18 @@ void UI::LoadDefaultUI() noexcept
 	);
 	scroll->VerticalScrollBarHiddenWhenNotOver(false);
 	scroll->HorizontalScrollBarHiddenWhenNotOver(false);
+	scroll->VerticalScrollBarCornerRadius(4.0f);
+	scroll->HorizontalScrollBarCornerRadius(4.0f);
 
 	scroll->AddColumn({ RowColumnType::FIXED, 50.0f });
 	scroll->AddColumn({ RowColumnType::FIXED, 100.0f });
 
-	for (int iii = 0; iii < 40; ++iii)
+	const int rows = 106;
+
+	for (int iii = 0; iii < rows; ++iii)
 		scroll->AddRow({ RowColumnType::FIXED, 20.0f });
 
-	for (int iii = 0; iii < 40; ++iii)
+	for (int iii = 0; iii < rows; ++iii)
 	{
 		RowColumnPosition pos;
 		pos.Row = iii;

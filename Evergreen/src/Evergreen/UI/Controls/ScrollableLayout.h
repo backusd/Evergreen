@@ -107,6 +107,8 @@ private:
 	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
 	void IncrementVerticalScrollOffset(float delta);
 	void IncrementHorizontalScrollOffset(float delta);
+	ND inline bool LayoutHeightExceedsBackgroundHeight() const noexcept { return m_layout->Height() > (m_backgroundRect.bottom - m_backgroundRect.top); }
+	ND inline bool LayoutWidthExceedsBackgroundWidth() const noexcept { return m_layout->Width() > (m_backgroundRect.right - m_backgroundRect.left); }
 
 	std::unique_ptr<Layout>		m_layout;
 	std::unique_ptr<ColorBrush> m_backgroundBrush;

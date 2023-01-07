@@ -91,9 +91,9 @@ void ScrollableLayout::Render() const noexcept
 
 	context->PopAxisAlignedClip();
 
-	// Vertical scroll bar
-	if (m_verticalScrollBarEnabled && 
-		(!m_verticalScrollBarHiddenWhenNotOver || m_mouseIsOverVerticalScrollBarRegion || m_verticalScrollBarState == MouseOverBarState::DRAGGING))
+	// Vertical scroll bar ----------------------------------------------------------------------------------------------
+	bool verticalScrollBarIsVisible = !m_verticalScrollBarHiddenWhenNotOver || m_mouseIsOverVerticalScrollBarRegion || m_verticalScrollBarState == MouseOverBarState::DRAGGING;
+	if (m_verticalScrollBarEnabled && LayoutHeightExceedsBackgroundHeight() && verticalScrollBarIsVisible)
 	{
 		context->FillRectangle(m_verticalScrollBarRegion, m_verticalScrollBarRegionBrush->Get());
 
@@ -113,8 +113,8 @@ void ScrollableLayout::Render() const noexcept
 	}
 
 	// Horizontal scroll bar
-	if (m_horizontalScrollBarEnabled &&
-		(!m_horizontalScrollBarHiddenWhenNotOver || m_mouseIsOverHorizontalScrollBarRegion || m_horizontalScrollBarState == MouseOverBarState::DRAGGING))
+	bool horizontalScrollBarIsVisible = !m_horizontalScrollBarHiddenWhenNotOver || m_mouseIsOverHorizontalScrollBarRegion || m_horizontalScrollBarState == MouseOverBarState::DRAGGING;
+	if (m_horizontalScrollBarEnabled && LayoutWidthExceedsBackgroundWidth() && horizontalScrollBarIsVisible)
 	{
 		context->FillRectangle(m_horizontalScrollBarRegion, m_horizontalScrollBarRegionBrush->Get());
 
@@ -385,21 +385,29 @@ void ScrollableLayout::IncrementHorizontalScrollOffset(float delta)
 
 void ScrollableLayout::OnChar(CharEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnChar(e);
 }
 void ScrollableLayout::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnKeyPressed(e);
 }
 void ScrollableLayout::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnKeyReleased(e);
 }
 void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// If mouse is not interacting with either scroll bar and also not over the background rect, just return
 	// NOTE: You can NOT just test to see if the Mouse-over-bar states are NOT_DRAGGING because there is the scenario
 	//       where the mouse is OVER a bar and then the next MouseMove event the mouse is off the bar and ALSO out of the entire
@@ -408,18 +416,24 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 		m_horizontalScrollBarState == MouseOverBarState::NOT_OVER &&
 		!RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
 	{
+		// make sure these values are false because the mouse is not over the control
 		m_mouseIsOverVerticalScrollBarRegion = false;
 		m_mouseIsOverHorizontalScrollBarRegion = false;
 		return;
 	}
 
-	// Vertical --------------------------------------------------------------------------------------------
-	if (m_canScrollVertical)
-	{
-		m_mouseIsOverVerticalScrollBarRegion = RectContainsPoint(m_verticalScrollBarRegion, e.GetX(), e.GetY());
+	// We are going to let the scrollbars take precedence over the layout for handling the event
 
-		// We are going to let the scrollbars take precedence over the layout for handling the event
-		if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
+	// Vertical --------------------------------------------------------------------------------------------
+	if (m_canScrollVertical && LayoutHeightExceedsBackgroundHeight())
+	{
+		// Determine if mouse is over the scroll bar region. This is important for whether or not to make the scroll bar visible if
+		// m_verticalScrollBarHiddenWhenNotOver is true
+		m_mouseIsOverVerticalScrollBarRegion = RectContainsPoint(m_verticalScrollBarRegion, e.GetX(), e.GetY());
+		
+		switch (m_verticalScrollBarState)
+		{
+		case MouseOverBarState::DRAGGING:
 		{
 			// NOTE: We are about to compute the vertical delta that the mouse moved and want to use that value to adjust m_verticalScrollOffset
 			// However we want the mouse to track with the scroll bar rect as it is being dragged. In order to do this, we must convert
@@ -432,8 +446,7 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 			e.Handled(this);
 			return;
 		}
-
-		if (m_verticalScrollBarState == MouseOverBarState::OVER)
+		case MouseOverBarState::OVER:
 		{
 			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
 			if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
@@ -447,11 +460,12 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 				}
 			}
 
+			// Mouse is no longer over, so set the state to NOT_OVER and don't set the event as handled
+			// Therefore, we want to break instead of return so the event can continue to be passed to layout
 			m_verticalScrollBarState = MouseOverBarState::NOT_OVER;
-			return;
+			break;
 		}
-
-		if (m_verticalScrollBarState == MouseOverBarState::NOT_OVER)
+		case MouseOverBarState::NOT_OVER:
 		{
 			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
 			if (RectContainsPoint(m_verticalScrollBar, e.GetX(), e.GetY()))
@@ -465,16 +479,22 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 					return;
 				}
 			}
+
+			break;
+		}
 		}
 	}
 
 	// Horizontal --------------------------------------------------------------------------------------------
-	if (m_canScrollHorizontal)
+	if (m_canScrollHorizontal && LayoutWidthExceedsBackgroundWidth())
 	{
+		// Determine if mouse is over the scroll bar region. This is important for whether or not to make the scroll bar visible if
+		// m_horizontalScrollBarHiddenWhenNotOver is true
 		m_mouseIsOverHorizontalScrollBarRegion = RectContainsPoint(m_horizontalScrollBarRegion, e.GetX(), e.GetY());
 
-		// We are going to let the scrollbars take precedence over the layout for handling the event
-		if (m_horizontalScrollBarState == MouseOverBarState::DRAGGING)
+		switch (m_horizontalScrollBarState)
+		{
+		case MouseOverBarState::DRAGGING:
 		{
 			// See the NOTE above in the vertical section 
 			float offsetPerPixel = (m_layout->Width() - (m_horizontalScrollBarRegion.right - m_horizontalScrollBarRegion.left)) / (m_horizontalScrollBarRegion.right - m_horizontalScrollBarRegion.left - (m_horizontalScrollBar.right - m_horizontalScrollBar.left));
@@ -484,8 +504,7 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 			e.Handled(this);
 			return;
 		}
-
-		if (m_horizontalScrollBarState == MouseOverBarState::OVER)
+		case MouseOverBarState::OVER:
 		{
 			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
 			if (RectContainsPoint(m_horizontalScrollBar, e.GetX(), e.GetY()))
@@ -499,11 +518,12 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 				}
 			}
 
+			// Mouse is no longer over, so set the state to NOT_OVER and don't set the event as handled
+			// Therefore, we want to break instead of return so the event can continue to be passed to layout
 			m_horizontalScrollBarState = MouseOverBarState::NOT_OVER;
-			return;
+			break;
 		}
-
-		if (m_horizontalScrollBarState == MouseOverBarState::NOT_OVER)
+		case MouseOverBarState::NOT_OVER:
 		{
 			// First do a check to see if the mouse is over scrollbar rect assuming no rounded corners (this check is fast)
 			if (RectContainsPoint(m_horizontalScrollBar, e.GetX(), e.GetY()))
@@ -517,15 +537,11 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 					return;
 				}
 			}
+
+			break;
+		}
 		}
 	}
-
-
-
-
-
-
-
 
 	// Finally, if the scrollbars have not handled the event, forward it to the layout
 	m_layout->OnMouseMove(e);
@@ -539,7 +555,7 @@ void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 	if (e.Handled())
 		return;
 
-	if (m_canScrollVertical)
+	if (m_canScrollVertical && LayoutHeightExceedsBackgroundHeight())
 	{
 		// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
 		// are usually +/-120. So if we get a large value, just divide it by 10
@@ -556,7 +572,7 @@ void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 	if (e.Handled())
 		return;
 
-	if (m_canScrollHorizontal)
+	if (m_canScrollHorizontal && LayoutWidthExceedsBackgroundWidth())
 	{
 		// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
 		// are usually +/-120. So if we get a large value, just divide it by 10
@@ -566,6 +582,8 @@ void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 }
 void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// ScrollLayout should only handle/pass this event if the press event is over the control
 	if (!RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
 	{
@@ -598,6 +616,8 @@ void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 }
 void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
 		if (m_verticalScrollBarState == MouseOverBarState::DRAGGING)
@@ -610,8 +630,6 @@ void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexce
 					RectContainsPoint(D2D1::RoundedRect(m_verticalScrollBar, m_verticalScrollBarCornerXRadius, m_verticalScrollBarCornerYRadius), e.GetX(), e.GetY()))
 				{
 					m_verticalScrollBarState = MouseOverBarState::OVER;
-					e.Handled(this);
-					return;
 				}
 			}
 
@@ -630,8 +648,6 @@ void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexce
 					RectContainsPoint(D2D1::RoundedRect(m_horizontalScrollBar, m_horizontalScrollBarCornerXRadius, m_horizontalScrollBarCornerYRadius), e.GetX(), e.GetY()))
 				{
 					m_horizontalScrollBarState = MouseOverBarState::OVER;
-					e.Handled(this);
-					return;
 				}
 			}
 
@@ -646,6 +662,8 @@ void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexce
 }
 void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnMouseButtonDoubleClick(e);
 }
