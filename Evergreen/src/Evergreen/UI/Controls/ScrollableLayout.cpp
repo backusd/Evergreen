@@ -326,6 +326,15 @@ void ScrollableLayout::HorizontalScrollBarChanged() noexcept
 	}
 }
 
+float ScrollableLayout::MaxVerticalScrollOffset() const noexcept
+{
+	return std::max(0.0f, m_layout->Height() - (m_backgroundRect.bottom - m_backgroundRect.top));
+}
+float ScrollableLayout::MaxHorizontalScrollOffset() const noexcept
+{
+	return std::min(0.0f, (m_backgroundRect.right - m_backgroundRect.left) - m_layout->Width());
+}
+
 void ScrollableLayout::OnMarginChanged()
 {
 	ScrollableLayoutChanged();
@@ -334,6 +343,17 @@ void ScrollableLayout::OnAllowedRegionChanged()
 {
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+
+	// There is a scenario when are at the max vertical scroll offset and the parent layout has an adjustable row and the user decides
+	// to expand the adjustable row. In this case, the underlying layout will stay where it is, but the background rect will grow downward,
+	// which will lead to dead space between the bottom of the underlying layout and the background rect. Instead, we want the bottom of the
+	// underlying layout to track with the bottom of the background rect. To do this, we simply need to test to see if this is the case and
+	// update the scroll offset accordingly (same idea holds true in the horizontal direction)
+	if (m_backgroundRect.bottom > m_layout->Bottom())
+		m_verticalScrollOffset = MaxVerticalScrollOffset();
+
+	if (m_backgroundRect.right > m_layout->Right())
+		m_horizontalScrollOffset = MaxHorizontalScrollOffset();
 
 	// If using a non-SolidColorBrush, we need to update the draw region for the brushes
 	m_backgroundBrush->SetDrawRegion(m_allowedRegion);
@@ -365,21 +385,17 @@ void ScrollableLayout::IncrementVerticalScrollOffset(float delta)
 	// This function is supposed to be called to make a change to m_verticalScrollOffset
 	// It will ensure that the offset is within the correct bounds and update the vertical scroll bar rect
 
-	float visibleHeight = m_backgroundRect.bottom - m_backgroundRect.top;
-
 	m_verticalScrollOffset += delta;
 	m_verticalScrollOffset = std::max(0.0f, m_verticalScrollOffset);
-	m_verticalScrollOffset = std::min(m_verticalScrollOffset, m_layout->Height() - visibleHeight);
+	m_verticalScrollOffset = std::min(m_verticalScrollOffset, MaxVerticalScrollOffset());
 
 	ScrollableLayoutChanged();
 }
 void ScrollableLayout::IncrementHorizontalScrollOffset(float delta)
 {
-	float visibleWidth = m_backgroundRect.right - m_backgroundRect.left;
-
 	m_horizontalScrollOffset += delta;
 	m_horizontalScrollOffset = std::min(0.0f, m_horizontalScrollOffset);
-	m_horizontalScrollOffset = std::max(m_horizontalScrollOffset, visibleWidth - m_layout->Width());
+	m_horizontalScrollOffset = std::max(m_horizontalScrollOffset, MaxHorizontalScrollOffset());
 	ScrollableLayoutChanged();
 }
 

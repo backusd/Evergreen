@@ -109,6 +109,8 @@ private:
 	void IncrementHorizontalScrollOffset(float delta);
 	ND inline bool LayoutHeightExceedsBackgroundHeight() const noexcept { return m_layout->Height() > (m_backgroundRect.bottom - m_backgroundRect.top); }
 	ND inline bool LayoutWidthExceedsBackgroundWidth() const noexcept { return m_layout->Width() > (m_backgroundRect.right - m_backgroundRect.left); }
+	ND inline float MaxVerticalScrollOffset() const noexcept;
+	ND inline float MaxHorizontalScrollOffset() const noexcept;
 
 	std::unique_ptr<Layout>		m_layout;
 	std::unique_ptr<ColorBrush> m_backgroundBrush;

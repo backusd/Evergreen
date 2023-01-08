@@ -100,10 +100,18 @@ void UI::LoadDefaultUI() noexcept
 
 	Layout* sublayout = m_rootLayout->AddSubLayout(sublayoutPosition);
 	sublayout->AddRow({ RowColumnType::FIXED, 50.0f });
-	sublayout->AddRow({ RowColumnType::FIXED, 50.0f });
-	sublayout->AddRow({ RowColumnType::STAR, 1.0f });
-	sublayout->AddColumn({ RowColumnType::FIXED, 100.0f });
-	sublayout->AddColumn({ RowColumnType::STAR, 1.0f });
+	Row* row = sublayout->AddRow({ RowColumnType::FIXED, 50.0f });
+	row->BottomIsAdjustable(true);
+	row->MinHeight(30.0f);
+	row = sublayout->AddRow({ RowColumnType::STAR, 1.0f });
+	row->TopIsAdjustable(true);
+	row->MinHeight(100.0f);
+	Column* column = sublayout->AddColumn({ RowColumnType::FIXED, 100.0f });
+	column->RightIsAdjustable(true);
+	column->MinWidth(75.0f);
+	column = sublayout->AddColumn({ RowColumnType::STAR, 1.0f });
+	column->LeftIsAdjustable(true);
+	column->MinWidth(200.0f);
 
 
 
@@ -199,7 +207,7 @@ void UI::LoadDefaultUI() noexcept
 
 	Layout* buttonLayout2 = button2->GetLayout();
 	buttonLayout2->AddRow({ RowColumnType::STAR, 1.0f });
-	Column* column = buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
+	column = buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
 	column->RightIsAdjustable(true);
 	column->MinWidth(10.0f);
 	column = buttonLayout2->AddColumn({ RowColumnType::STAR, 1.0f });
@@ -299,12 +307,96 @@ void UI::LoadDefaultUI() noexcept
 	scroll->AddColumn({ RowColumnType::FIXED, 50.0f });
 	scroll->AddColumn({ RowColumnType::FIXED, 100.0f });
 
-	const int rows = 106;
+
+	std::unique_ptr<SolidColorBrush> scrollButtonBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Yellow));
+	std::unique_ptr<SolidColorBrush> scrollButtonBorderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Red));
+
+	Evergreen::Margin scrollButtonMargin = { 2.0f, 2.0f, 2.0f, 2.0f };
+
+
+	const int rows = 20;
 
 	for (int iii = 0; iii < rows; ++iii)
 		scroll->AddRow({ RowColumnType::FIXED, 20.0f });
 
-	for (int iii = 0; iii < rows; ++iii)
+	RoundedButton* scrollButton = scroll->CreateControl<RoundedButton>(
+		m_deviceResources,
+		std::move(scrollButtonBackgroundBrush),
+		std::move(scrollButtonBorderBrush),
+		0.0f,
+		0.0f,
+		1.0f,
+		scrollButtonMargin
+		);
+
+	Layout* scrollButtonLayout = scrollButton->GetLayout();
+	scrollButtonLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	scrollButtonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	Text* scrollButtonText = scrollButtonLayout->CreateControl<Text>(m_deviceResources);
+	scrollButtonText->SetText(L"nooooo...");
+	scrollButtonText->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	scrollButtonText->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+
+	scrollButton->SetOnMouseEnteredButtonCallback(
+		[](Control* b, Event& e)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::AliceBlue));
+			rb->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	scrollButton->SetOnMouseExitedButtonCallback(
+		[](Control* b, Event& e)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Yellow));
+			rb->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	scrollButton->SetOnMouseLButtonDownCallback(
+		[](Control* b, Event& e)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightBlue));
+			rb->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	scrollButton->SetOnMouseLButtonUpCallback(
+		[](Control* b, Event& e)
+		{
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
+			// OnMouseLeave event will fire and set the background color anyways)
+			if (rb->MouseIsOver())
+			{
+				std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(rb->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::AliceBlue));
+				rb->BackgroundBrush(std::move(backgroundBrush));
+			}
+
+		}
+	);
+	scrollButton->SetOnClickCallback(
+		[](Control* b, Event& e)
+		{
+			static int iii = 0;
+
+			RoundedButton* rb = static_cast<RoundedButton*>(b);
+
+			Layout* layout = rb->GetLayout();
+
+			Text* text = static_cast<Text*>(layout->GetControl(0));
+			text->SetText(std::format(L"{}", iii));
+
+			++iii;
+		}
+	);
+
+	for (int iii = 1; iii < rows; ++iii)
 	{
 		RowColumnPosition pos;
 		pos.Row = iii;
