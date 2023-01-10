@@ -870,6 +870,13 @@ Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name
 #ifdef _DEBUG
 void Layout::LayoutCheck() const noexcept
 {
+	// We allow for enabling/disabling the layout check because there are times where the layout check is performed
+	// before the layout is actually finalized and will produce unnecessary error messages. For example, in the ScrollableLayout,
+	// a layout check will be performed after each addition. Therefore, when adding a row/column that is adjustable, you will get
+	// an error saying that last row/column is adjustable which is an error.
+	if (!m_layoutCheckEnabled)
+		return;
+
 	float errorMargin = 0.01f;
 
 	// 1. Make sure any individual row width is not greater than the layout width

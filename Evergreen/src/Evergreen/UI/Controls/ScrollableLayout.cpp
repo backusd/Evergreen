@@ -143,6 +143,9 @@ void ScrollableLayout::Render() const noexcept
 
 Row* ScrollableLayout::AddRow(RowColumnDefinition definition)
 {
+	// Disable the layout check because adding an intermediate row that is adjustable will cause unnecessary errors
+	m_layout->DisableLayoutCheck();
+
 	if (m_canScrollVertical)
 	{
 		EG_CORE_ASSERT(definition.Type == RowColumnType::FIXED, "Row must be fixed if adding to layout that is vertically scrollable");
@@ -150,15 +153,21 @@ Row* ScrollableLayout::AddRow(RowColumnDefinition definition)
 		// If vertical scrolling, then increase the height of the layout then add the new row
 		m_layout->Resize(m_layout->Width(), m_layout->Height() + definition.Value);
 	}
+
 	Row* row = m_layout->AddRow(definition);
 	EG_CORE_ASSERT(row != nullptr, "Something went wrong. row should not be nullptr");
 
 	ScrollableLayoutChanged();
 
+	m_layout->EnableLayoutCheck(); // Layout check must be re-enabled
+
 	return row;
 }
 Column* ScrollableLayout::AddColumn(RowColumnDefinition definition)
 {
+	// Disable the layout check because adding an intermediate column that is adjustable will cause unnecessary errors
+	m_layout->DisableLayoutCheck();
+
 	if (m_canScrollHorizontal)
 	{
 		EG_CORE_ASSERT(definition.Type == RowColumnType::FIXED, "Column must be fixed if adding to layout that is horizontally scrollable");
@@ -171,6 +180,8 @@ Column* ScrollableLayout::AddColumn(RowColumnDefinition definition)
 	EG_CORE_ASSERT(column != nullptr, "Something went wrong. column should not be nullptr");
 
 	ScrollableLayoutChanged();
+
+	m_layout->EnableLayoutCheck(); // Layout check must be re-enabled
 
 	return column;
 }

@@ -282,8 +282,16 @@
 			"Column": 0,
 			"RowSpan": 2,
 			"RowDefinitions": [
-				{ "Height": "150" },
-				{ "Height": "150" },
+				{
+					"Height": "150",
+					"BottomAdjustable": true,
+					"MinHeight": "40"
+				},
+				{
+					"Height": "150",
+					"TopAdjustable": true,
+					"MaxHeight": 200
+				},
 				{ "Height": "150" },
 				{ "Height": "150" },
 				{ "Height": "150" },

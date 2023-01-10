@@ -69,6 +69,9 @@ Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> devic
 	ParseRowDefinitions(scrollableLayout, data, scrollVertical);
 	ParseColumnDefinitions(scrollableLayout, data, scrollhorizontal);
 
+	// This is a good time to do the layout check because ScrollableLayout will disable the layout check when rows/columns are added
+	scrollableLayout->GetLayout()->LayoutCheck();
+
 	ParseVerticalScrollBarCornerRadius(scrollableLayout, data);
 	ParseVerticalScrollBarEnabled(scrollableLayout, data);
 	ParseVerticalScrollBarHiddenWhenNotOver(scrollableLayout, data);

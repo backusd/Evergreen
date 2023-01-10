@@ -260,6 +260,13 @@ private:
 public:
 	void LayoutCheck() const noexcept; // Don't need ifdef statment - in a Release build, the function is just empty
 
+#ifdef _DEBUG
+	void EnableLayoutCheck() noexcept { m_layoutCheckEnabled = true; }
+	void DisableLayoutCheck() noexcept { m_layoutCheckEnabled = false; }
+private:
+	bool m_layoutCheckEnabled = true;
+#endif
+
 };
 #pragma warning( pop )
 
