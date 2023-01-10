@@ -13,6 +13,7 @@
 #include "Controls/Button.h"
 #include "Controls/RoundedButton.h"
 #include "Controls/ScrollableLayout.h"
+#include "Controls/TextInput.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;

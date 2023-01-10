@@ -30,6 +30,7 @@
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\TextInput.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.h" />
@@ -73,6 +74,7 @@
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\ScrollableLayout.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Controls\TextInput.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.cpp" />

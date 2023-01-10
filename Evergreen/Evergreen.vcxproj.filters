@@ -168,6 +168,9 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Controls\TextInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -276,6 +279,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\TextInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

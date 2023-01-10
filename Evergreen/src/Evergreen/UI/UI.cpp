@@ -415,6 +415,60 @@ void UI::LoadDefaultUI() noexcept
 		t2->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 		t2->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	}
+
+
+
+	// Text Input -------------------------------------------------------------------------
+	RowColumnPosition tiPosition;
+	tiPosition.Row = 0;
+	tiPosition.Column = 1;
+
+	std::unique_ptr<SolidColorBrush> tiPlaceholderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
+	std::unique_ptr<SolidColorBrush> tiInputBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
+
+	std::unique_ptr<TextStyle> tiPlaceholderStyle = std::make_unique<TextStyle>(
+		m_deviceResources,
+		"TextInput Placeholder Style",
+		Evergreen::FontFamily::Arial,
+		18.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD
+	);
+	std::unique_ptr<TextStyle> tiInputStyle = std::make_unique<TextStyle>(
+		m_deviceResources,
+		"TextInput Input Style",
+		Evergreen::FontFamily::Arial,
+		18.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_NORMAL,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_WHOLE_WORD
+	);
+
+	std::unique_ptr<SolidColorBrush> tiBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
+	std::unique_ptr<SolidColorBrush> tiBorderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Purple));
+
+	Evergreen::Margin tiMargin = { 5.0f, 5.0f, 15.0f, 5.0f };
+
+	TextInput* ti = sublayout->CreateControl<TextInput>(
+		tiPosition,
+		m_deviceResources,
+		L"placeholder text",
+		std::move(tiPlaceholderBrush),
+		std::move(tiPlaceholderStyle),
+		std::move(tiInputBrush),
+		std::move(tiInputStyle),
+		std::move(tiBackgroundBrush),
+		std::move(tiBorderBrush),
+		2.0f,
+		tiMargin
+	);
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

@@ -7,9 +7,9 @@ class Sandbox : public Evergreen::Application
 public:
 	Sandbox() noexcept
 	{
-		SetCallbacks();
-		m_ui->SetUIRoot("src/json/");
-		m_ui->LoadUI("main.json");
+		//SetCallbacks();
+		//m_ui->SetUIRoot("src/json/");
+		//m_ui->LoadUI("main.json");
 	}
 	~Sandbox() noexcept override
 	{
