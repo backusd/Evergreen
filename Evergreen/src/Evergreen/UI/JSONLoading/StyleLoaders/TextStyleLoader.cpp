@@ -4,7 +4,7 @@
 namespace Evergreen
 {
 
-std::unique_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name)
+std::unique_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -64,7 +64,7 @@ std::unique_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources
 		fontStyle, fontStretch,	textAlignment, paragraphAlignment, wordWrapping);
 }
 
-Evergreen::FontFamily TextStyleLoader::ParseFontFamily(const json& data)
+Evergreen::FontFamily TextStyleLoader::ParseFontFamily(json& data)
 {
 	if (data.contains("FontFamily"))
 	{
@@ -76,7 +76,7 @@ Evergreen::FontFamily TextStyleLoader::ParseFontFamily(const json& data)
 	// Default value
 	return Evergreen::FontFamily::Calibri;
 }
-float TextStyleLoader::ParseFontSize(const json& data)
+float TextStyleLoader::ParseFontSize(json& data)
 {
 	if (data.contains("FontSize"))
 	{
@@ -92,7 +92,7 @@ float TextStyleLoader::ParseFontSize(const json& data)
 	// Default value
 	return 12.0f;
 }
-DWRITE_FONT_WEIGHT TextStyleLoader::ParseFontWeight(const json& data)
+DWRITE_FONT_WEIGHT TextStyleLoader::ParseFontWeight(json& data)
 {
 	if (data.contains("FontWeight"))
 	{
@@ -128,7 +128,7 @@ DWRITE_FONT_WEIGHT TextStyleLoader::ParseFontWeight(const json& data)
 	// Default value
 	return DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR;
 }
-DWRITE_FONT_STYLE TextStyleLoader::ParseFontStyle(const json& data)
+DWRITE_FONT_STYLE TextStyleLoader::ParseFontStyle(json& data)
 {
 	if (data.contains("FontStyle"))
 	{
@@ -150,7 +150,7 @@ DWRITE_FONT_STYLE TextStyleLoader::ParseFontStyle(const json& data)
 	// Default value
 	return DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL;
 }
-DWRITE_FONT_STRETCH TextStyleLoader::ParseFontStretch(const json& data)
+DWRITE_FONT_STRETCH TextStyleLoader::ParseFontStretch(json& data)
 {
 	if (data.contains("FontStretch"))
 	{
@@ -180,7 +180,7 @@ DWRITE_FONT_STRETCH TextStyleLoader::ParseFontStretch(const json& data)
 	// Default value
 	return DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL;
 }
-DWRITE_TEXT_ALIGNMENT TextStyleLoader::ParseTextAlignment(const json& data)
+DWRITE_TEXT_ALIGNMENT TextStyleLoader::ParseTextAlignment(json& data)
 {
 	if (data.contains("TextAlignment"))
 	{
@@ -203,7 +203,7 @@ DWRITE_TEXT_ALIGNMENT TextStyleLoader::ParseTextAlignment(const json& data)
 	// Default value
 	return DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING;
 }
-DWRITE_PARAGRAPH_ALIGNMENT TextStyleLoader::ParseParagraphAlignment(const json& data)
+DWRITE_PARAGRAPH_ALIGNMENT TextStyleLoader::ParseParagraphAlignment(json& data)
 {
 	if (data.contains("ParagraphAlignment"))
 	{
@@ -225,7 +225,7 @@ DWRITE_PARAGRAPH_ALIGNMENT TextStyleLoader::ParseParagraphAlignment(const json& 
 	// Default value
 	return DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
 }
-DWRITE_WORD_WRAPPING TextStyleLoader::ParseWordWrapping(const json& data)
+DWRITE_WORD_WRAPPING TextStyleLoader::ParseWordWrapping(json& data)
 {
 	if (data.contains("WordWrapping"))
 	{

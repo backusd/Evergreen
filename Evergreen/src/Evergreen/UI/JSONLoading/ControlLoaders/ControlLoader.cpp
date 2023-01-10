@@ -4,7 +4,7 @@
 
 namespace Evergreen
 {
-RowColumnPosition ControlLoader::ParseRowColumnPosition(const json& data)
+RowColumnPosition ControlLoader::ParseRowColumnPosition(json& data)
 {
 	RowColumnPosition position;
 	position.Row = 0;
@@ -53,13 +53,13 @@ RowColumnPosition ControlLoader::ParseRowColumnPosition(const json& data)
 	return position;
 }
 
-Margin ControlLoader::ParseMargin(const json& data)
+Margin ControlLoader::ParseMargin(json& data)
 {
 	Margin margin{ 0 };
 
 	if (data.contains("Margin"))
 	{
-		const json& marginData = data["Margin"];
+		json& marginData = data["Margin"];
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(marginData.is_array(), "Control with name: '{}'. 'Margin' value must be an array. Invalid data: {}", m_name, data.dump(4));
 

@@ -55,6 +55,8 @@ public:
 	template<class T, class ... U>
 	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
 
+	ND inline Control* GetControl(unsigned int index) const noexcept { return m_layout->GetControl(index); }
+	ND inline Layout* GetSublayout(unsigned int index) const noexcept { return m_layout->GetSublayout(index); }
 
 	void BackgroundBrush(std::unique_ptr<ColorBrush> backgroundBrush) noexcept { m_backgroundBrush = std::move(backgroundBrush); }
 	void BorderBrush(std::unique_ptr<ColorBrush> borderBrush) noexcept { m_borderBrush = std::move(borderBrush); }
@@ -80,12 +82,14 @@ public:
 	void VerticalScrollBarEnabled(bool enabled) noexcept { m_verticalScrollBarEnabled = enabled; VerticalScrollBarChanged(); }
 	void VerticalScrollBarHiddenWhenNotOver(bool hidden) noexcept { m_verticalScrollBarHiddenWhenNotOver = hidden; }
 	void VerticalScrollBarWidth(float width) noexcept { m_verticalScrollBarWidth = width; VerticalScrollBarChanged(); }
+	void VerticalScrollBarRegionWidth(float width) noexcept { m_verticalScrollBarRegionWidth = width; VerticalScrollBarChanged(); }
 
 	void HorizontalScrollBarCornerRadius(float x, float y) noexcept { m_horizontalScrollBarCornerXRadius = x; m_horizontalScrollBarCornerYRadius = y; }
 	void HorizontalScrollBarCornerRadius(float xAndY) noexcept { m_horizontalScrollBarCornerXRadius = xAndY; m_horizontalScrollBarCornerYRadius = xAndY; }
 	void HorizontalScrollBarEnabled(bool enabled) noexcept { m_horizontalScrollBarEnabled = enabled; HorizontalScrollBarChanged(); }
 	void HorizontalScrollBarHiddenWhenNotOver(bool hidden) noexcept { m_horizontalScrollBarHiddenWhenNotOver = hidden; }
 	void HorizontalScrollBarHeight(float height) noexcept { m_horizontalScrollBarHeight = height; HorizontalScrollBarChanged(); }
+	void HorizontalScrollBarRegionHeight(float height) noexcept { m_horizontalScrollBarRegionHeight = height; HorizontalScrollBarChanged(); }
 
 	void VerticalScrollBarBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	void VerticalScrollBarHoveredBrush(std::unique_ptr<ColorBrush> brush) noexcept;

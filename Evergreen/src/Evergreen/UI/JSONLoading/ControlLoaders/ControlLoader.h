@@ -26,8 +26,8 @@ public:
 protected:
 	ControlLoader() noexcept = default;
 
-	RowColumnPosition ParseRowColumnPosition(const json& data);
-	Margin ParseMargin(const json& data);
+	RowColumnPosition ParseRowColumnPosition(json& data);
+	Margin ParseMargin(json& data);
 
 	std::string m_name;
 

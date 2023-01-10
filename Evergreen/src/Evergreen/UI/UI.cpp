@@ -3,6 +3,7 @@
 #include "JSONLoading/ControlLoaders/TextLoader.h"
 #include "JSONLoading/ControlLoaders/ButtonLoader.h"
 #include "JSONLoading/ControlLoaders/RoundedButtonLoader.h"
+#include "JSONLoading/ControlLoaders/ScrollableLayoutLoader.h"
 
 #include <fstream>
 
@@ -23,12 +24,13 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_keyboardHandlingLayout(nullptr)
 {
 	// Add built-in control loaders
-	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, const json& data, const std::string& controlName) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName); });
 
 	// Add built-in style loaders
-	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
+	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
 
 	LoadDefaultUI();
 }
@@ -313,7 +315,6 @@ void UI::LoadDefaultUI() noexcept
 
 	Evergreen::Margin scrollButtonMargin = { 2.0f, 2.0f, 2.0f, 2.0f };
 
-
 	const int rows = 20;
 
 	for (int iii = 0; iii < rows; ++iii)
@@ -334,7 +335,7 @@ void UI::LoadDefaultUI() noexcept
 	scrollButtonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 	Text* scrollButtonText = scrollButtonLayout->CreateControl<Text>(m_deviceResources);
-	scrollButtonText->SetText(L"nooooo...");
+	scrollButtonText->SetText(L"nooooo123456789");
 	scrollButtonText->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	scrollButtonText->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 

@@ -1,0 +1,57 @@
+{
+	// Basics:	Declare a ScrollableLayout control by specifying the name of the control and specify the Type as "ScrollableLayout"
+	//					See example below for available attributes
+	"ScrollableLayoutName": {
+		"Type": "ScrollableLayout",
+		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 1,
+		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 2,
+		"Margin": [ 5, 5, 5, 5 ], // Specify margin in order: left/top/right/bottom
+		"RowDefinitions": [ // See Layout.json for rules on specifying Row/ColumnDefinitions
+			{ "Height": "150" }, // ** NOTE: If 'ScrollVertical' is true, each Row type must be FIXED
+			{ "Height": "150" }, // ** NOTE: If 'ScrollVertical' is false, specifying 'RowDefinitions' is optional and will default to a single star row
+			{ "Height": "150" }
+		],
+		"ColumnDefinitions": [ // ** NOTE: If 'ScrollHorizontal' is true, each Column type must be FIXED
+			{ "Width": "450" } // ** NOTE: If 'ScrollHorizontal' is false, specifying 'ColumnDefinitions' is optional and will default to a single star column
+		],
+
+
+		"BackgroundBrush": "Black", // Background color - See Brushes.json for details on using a color brush
+		"BorderBrush": "Yellow", // (optional) Border color - See Brushes.json for details on using a color brush
+		"BorderWidth": 3.0, // (optional) Border width - default will be 0
+
+		"ScrollVertical": true, // Set to 'true' if you want to be able to scroll vertically (NOTE: If set to 'true', each RowDefinition MUST be FIXED in size
+		"ScrollHorizontal": true, // Set to 'true' if you want to be able to scroll horizontally (NOTE: If set to 'true', each ColumnDefinition MUST be FIXED in size
+
+		"VerticalScrollBarCornerRadiusX": 3.0, // You can either specify just 'VerticalScrollBarCornerRadius' OR 'VerticalScrollBarCornerRadiusX' and 'VerticalScrollBarCornerRadiusY'
+		"VerticalScrollBarCornerRadiusY": 3.0,
+		"VerticalScrollBarEnabled": true, // False will still allow scrolling but the scroll bar will never be visible
+		"VerticalScrollBarHiddenWhenNotOver": true, // True means the vertical scroll bar will not be visible unless the mouse is over the vertical scroll bar region
+		"VerticalScrollBarWidth": 10.0, // The width of the actual scroll bar rect
+		"VerticalScrollBarRegionWidth": 12.0, // The width of the vertical scroll bar region (should be equal or greater than the vertical scroll bar width)
+		"VerticalScrollBarBrush": "White", // Vertical scroll bar color when mouse is not interacting with it - See Brushes.json for details on using a color brush
+		"VerticalScrollBarHoveredBrush": "Gray", // Vertical scroll bar color when the mouse is hovering over it but has not been clicked - See Brushes.json for details on using a color brush
+		"VerticalScrollBarDraggingBrush": "Green", // Vertical scroll bar color when mouse is dragging it - See Brushes.json for details on using a color brush
+
+		"HorizontalScrollBarCornerRadius": 3.0,
+		"HorizontalScrollBarEnabled": true,
+		"HorizontalScrollBarHiddenWhenNotOver": true,
+		"HorizontalScrollBarHeight": 10.0,
+		"HorizontalScrollBarRegionHeight": 12.0,
+		"HorizontalScrollBarBrush": "White",
+		"HorizontalScrollBarHoveredBrush": "Gray",
+		"HorizontalScrollBarDraggingBrush": "Green",
+
+
+		"ExampleControl1": {	// Specify the controls you want added to the layout
+			"Type": "Text",
+			...
+		},
+
+		...
+	},
+
+
+}

@@ -19,7 +19,7 @@ public:
 	void operator=(const TextLoader&) = delete;
 	~TextLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name) { return std::move(Get().LoadImpl(deviceResources, parent, data, name)); }
+	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) { return Get().LoadImpl(deviceResources, parent, data, name); }
 
 private:
 	TextLoader() noexcept = default;
@@ -30,13 +30,13 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name);
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
 
-	void ValidateJSONData(const json& data);
+	void ValidateJSONData(json& data);
 
-	std::wstring ParseText(const json& data);
-	std::unique_ptr<ColorBrush> ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
-	std::unique_ptr<TextStyle> ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data);
+	std::wstring ParseText(json& data);
+	std::unique_ptr<ColorBrush> ParseBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
+	std::unique_ptr<TextStyle> ParseStyle(std::shared_ptr<DeviceResources> deviceResources, json& data);
 
 
 };

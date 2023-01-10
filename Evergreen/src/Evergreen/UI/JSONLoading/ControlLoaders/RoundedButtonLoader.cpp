@@ -5,7 +5,7 @@
 
 namespace Evergreen
 {
-Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name)
+Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
@@ -58,7 +58,7 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	return button;
 }
 
-std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -66,7 +66,7 @@ std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBackgroundBrush(std::share
 
 	return std::move(JSONLoaders::LoadBrush(deviceResources, data["BackgroundBrush"]));
 }
-std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -88,7 +88,7 @@ std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBorderBrush(std::shared_pt
 	// Note: we are allowed to return nullptr here because the Button class will just create a default border brush
 	return nullptr;
 }
-float RoundedButtonLoader::ParseBorderWidth(const json& data)
+float RoundedButtonLoader::ParseBorderWidth(json& data)
 {
 	if (data.contains("BorderWidth"))
 	{
@@ -103,7 +103,7 @@ float RoundedButtonLoader::ParseBorderWidth(const json& data)
 
 	return 0.0f;
 }
-float RoundedButtonLoader::ParseRadiusX(const json& data)
+float RoundedButtonLoader::ParseRadiusX(json& data)
 {
 	if (data.contains("CornerRadiusX"))
 	{
@@ -118,7 +118,7 @@ float RoundedButtonLoader::ParseRadiusX(const json& data)
 
 	return 0.0f;
 }
-float RoundedButtonLoader::ParseRadiusY(const json& data)
+float RoundedButtonLoader::ParseRadiusY(json& data)
 {
 	if (data.contains("CornerRadiusY"))
 	{
@@ -133,7 +133,7 @@ float RoundedButtonLoader::ParseRadiusY(const json& data)
 
 	return 0.0f;
 }
-void RoundedButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, const json& data)
+void RoundedButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
 	EG_CORE_ASSERT(layout != nullptr, "layout is nullptr");
 
@@ -178,7 +178,7 @@ void RoundedButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceRe
 	}
 }
 
-void RoundedButtonLoader::ParseOnMouseEnter(RoundedButton* button, const json& data)
+void RoundedButtonLoader::ParseOnMouseEnter(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -193,7 +193,7 @@ void RoundedButtonLoader::ParseOnMouseEnter(RoundedButton* button, const json& d
 		button->SetOnMouseEnteredButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, const json& data)
+void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -208,7 +208,7 @@ void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, const json& d
 		button->SetOnMouseExitedButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, const json& data)
+void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -223,7 +223,7 @@ void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, const json& d
 		button->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, const json& data)
+void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -238,7 +238,7 @@ void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, const j
 		button->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, const json& data)
+void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -253,7 +253,7 @@ void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, const jso
 		button->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void RoundedButtonLoader::ParseOnClick(RoundedButton* button, const json& data)
+void RoundedButtonLoader::ParseOnClick(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 

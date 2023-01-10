@@ -22,7 +22,7 @@ public:
 	void operator=(const TextStyleLoader&) = delete;
 	~TextStyleLoader() noexcept {}
 
-	static std::unique_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "") { return std::move(Get().LoadImpl(deviceResources, data, name)); }
+	static std::unique_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name = "") { return std::move(Get().LoadImpl(deviceResources, data, name)); }
 
 private:
 	TextStyleLoader() noexcept = default;
@@ -33,16 +33,16 @@ private:
 		return loader;
 	}
 
-	std::unique_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, const json& data, const std::string& name = "");
+	std::unique_ptr<Style> LoadImpl(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name = "");
 
-	Evergreen::FontFamily ParseFontFamily(const json& data);
-	float ParseFontSize(const json& data);
-	DWRITE_FONT_WEIGHT ParseFontWeight(const json& data);
-	DWRITE_FONT_STYLE ParseFontStyle(const json& data);
-	DWRITE_FONT_STRETCH ParseFontStretch(const json& data);
-	DWRITE_TEXT_ALIGNMENT ParseTextAlignment(const json& data);
-	DWRITE_PARAGRAPH_ALIGNMENT ParseParagraphAlignment(const json& data);
-	DWRITE_WORD_WRAPPING ParseWordWrapping(const json& data);
+	Evergreen::FontFamily ParseFontFamily(json& data);
+	float ParseFontSize(json& data);
+	DWRITE_FONT_WEIGHT ParseFontWeight(json& data);
+	DWRITE_FONT_STYLE ParseFontStyle(json& data);
+	DWRITE_FONT_STRETCH ParseFontStretch(json& data);
+	DWRITE_TEXT_ALIGNMENT ParseTextAlignment(json& data);
+	DWRITE_PARAGRAPH_ALIGNMENT ParseParagraphAlignment(json& data);
+	DWRITE_WORD_WRAPPING ParseWordWrapping(json& data);
 
 	std::string m_name;
 };

@@ -494,6 +494,11 @@ Control* Layout::GetControl(unsigned int index) const noexcept
 	EG_CORE_ASSERT(index < m_controls.size(), "Index is too large/not enough controls");
 	return m_controls[index].get();
 }
+Layout* Layout::GetSublayout(unsigned int index) const noexcept
+{
+	EG_CORE_ASSERT(index < m_subLayouts.size(), "Index is too large/not enough sublayouts");
+	return m_subLayouts[index].get();
+}
 
 void Layout::Resize(const D2D1_RECT_F& rect) noexcept
 {

@@ -5,7 +5,7 @@
 
 namespace Evergreen
 {
-Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name)
+Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
@@ -49,7 +49,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	return parent->CreateControl<Text>(rowCol, deviceResources, text, std::move(brush), std::move(style), margin);
 }
 
-void TextLoader::ValidateJSONData(const json& data)
+void TextLoader::ValidateJSONData(json& data)
 {
 	// Because Text may contain TextStyle fields, make sure that if 'Style' is specified,
 	// no other TextStyle fields are present
@@ -67,7 +67,7 @@ void TextLoader::ValidateJSONData(const json& data)
 	}
 }
 
-std::wstring TextLoader::ParseText(const json& data)
+std::wstring TextLoader::ParseText(json& data)
 {
 	std::wstring text = L"";
 
@@ -102,7 +102,7 @@ std::wstring TextLoader::ParseText(const json& data)
 
 	return text;
 }
-std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -110,7 +110,7 @@ std::unique_ptr<ColorBrush> TextLoader::ParseBrush(std::shared_ptr<DeviceResourc
 
 	return std::move(JSONLoaders::LoadBrush(deviceResources, data["Brush"]));
 }
-std::unique_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<TextStyle> TextLoader::ParseStyle(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 

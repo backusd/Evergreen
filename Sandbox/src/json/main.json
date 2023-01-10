@@ -121,9 +121,9 @@
 		],
 		"ColumnDefinitions": [
 			{
-				"Width": "50%",
+				"Width": "20%",
 				"RightAdjustable": true,
-				"MinWidth": "20%"
+				"MinWidth": "10%"
 			},
 			{
 				"Width": "30",
@@ -272,6 +272,128 @@
 				}
 			}
 
+
+
+		},
+
+		"ScrollableLayoutExample": {
+			"Type": "ScrollableLayout",
+			"Row": 1,
+			"Column": 0,
+			"RowSpan": 2,
+			"RowDefinitions": [
+				{ "Height": "150" },
+				{ "Height": "150" },
+				{ "Height": "150" },
+				{ "Height": "150" },
+				{ "Height": "150" },
+				{ "Height": "150" },
+				{ "Height": "150" }
+			],
+			"ColumnDefinitions": [
+				{ "Width": "450" }
+			],
+			"ScrollVertical": true,
+			"ScrollHorizontal": true,
+			"BackgroundBrush": "Pink",
+			"BorderBrush": "Purple",
+			"BorderWidth": 2.0,
+
+			"VerticalScrollBarCornerRadiusX": 3.0,
+			"VerticalScrollBarCornerRadiusY": 3.0,
+			"VerticalScrollBarEnabled": true,
+			"VerticalScrollBarHiddenWhenNotOver": true,
+			"VerticalScrollBarWidth": 10.0,
+			"VerticalScrollBarRegionWidth": 12.0,
+			"VerticalScrollBarBrush": "White",
+			"VerticalScrollBarHoveredBrush": "Gray",
+			"VerticalScrollBarDraggingBrush": "Green",
+
+			"HorizontalScrollBarCornerRadius": 3.0,
+			"HorizontalScrollBarEnabled": true,
+			"HorizontalScrollBarHiddenWhenNotOver": true,
+			"HorizontalScrollBarHeight": 10.0,
+			"HorizontalScrollBarRegionHeight": 12.0,
+			"HorizontalScrollBarBrush": "White",
+			"HorizontalScrollBarHoveredBrush": "Gray",
+			"HorizontalScrollBarDraggingBrush": "Green",
+
+			"TextControl1": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 0,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			},
+
+			"TextControl2": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 1,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			},
+
+			"TextControl3": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 2,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			},
+
+			"TextControl4": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 3,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			},
+
+			"TextControl5": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 4,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			},
+
+			"TextControl6": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 5,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			},
+
+			"TextControl7": {
+				"Type": "Text",
+				"Text": "Some long text string",
+				"Row": 6,
+				"Brush": "Black",
+				"FontFamily": "Calibri",
+				"FontSize": 20,
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center"
+			}
 
 
 		}

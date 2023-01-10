@@ -5,7 +5,7 @@
 
 namespace Evergreen
 {
-Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name)
+Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
@@ -55,7 +55,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	return button;
 }
 
-std::unique_ptr<ColorBrush> ButtonLoader::ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> ButtonLoader::ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -63,7 +63,7 @@ std::unique_ptr<ColorBrush> ButtonLoader::ParseBackgroundBrush(std::shared_ptr<D
 
 	return std::move(JSONLoaders::LoadBrush(deviceResources, data["BackgroundBrush"]));
 }
-std::unique_ptr<ColorBrush> ButtonLoader::ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> ButtonLoader::ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -85,7 +85,7 @@ std::unique_ptr<ColorBrush> ButtonLoader::ParseBorderBrush(std::shared_ptr<Devic
 	// Note: we are allowed to return nullptr here because the Button class will just create a default border brush
 	return nullptr;
 }
-float ButtonLoader::ParseBorderWidth(const json& data)
+float ButtonLoader::ParseBorderWidth(json& data)
 {
 	if (data.contains("BorderWidth"))
 	{
@@ -93,14 +93,14 @@ float ButtonLoader::ParseBorderWidth(const json& data)
 
 		float borderWidth = data["BorderWidth"].get<float>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(borderWidth >= 0, "Button control with name '{}': 'BorderWidth' is not allowed to be less than 0. Incomplete Button object: {}", m_name, data.dump(4));
+		JSON_LOADER_EXCEPTION_IF_FALSE(borderWidth >= 0.0f, "Button control with name '{}': 'BorderWidth' is not allowed to be less than 0. Incomplete Button object: {}", m_name, data.dump(4));
 		
 		return borderWidth;
 	}
 
 	return 0.0f;
 }
-void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, const json& data)
+void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
 	EG_CORE_ASSERT(layout != nullptr, "layout is nullptr");
 
@@ -139,7 +139,7 @@ void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources
 	}
 }
 
-void ButtonLoader::ParseOnMouseEnter(Button* button, const json& data)
+void ButtonLoader::ParseOnMouseEnter(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -154,7 +154,7 @@ void ButtonLoader::ParseOnMouseEnter(Button* button, const json& data)
 		button->SetOnMouseEnteredButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void ButtonLoader::ParseOnMouseLeave(Button* button, const json& data)
+void ButtonLoader::ParseOnMouseLeave(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -169,7 +169,7 @@ void ButtonLoader::ParseOnMouseLeave(Button* button, const json& data)
 		button->SetOnMouseExitedButtonCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void ButtonLoader::ParseOnMouseMoved(Button* button, const json& data)
+void ButtonLoader::ParseOnMouseMoved(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -184,7 +184,7 @@ void ButtonLoader::ParseOnMouseMoved(Button* button, const json& data)
 		button->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void ButtonLoader::ParseOnMouseLButtonDown(Button* button, const json& data)
+void ButtonLoader::ParseOnMouseLButtonDown(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -199,7 +199,7 @@ void ButtonLoader::ParseOnMouseLButtonDown(Button* button, const json& data)
 		button->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void ButtonLoader::ParseOnMouseLButtonUp(Button* button, const json& data)
+void ButtonLoader::ParseOnMouseLButtonUp(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -214,7 +214,7 @@ void ButtonLoader::ParseOnMouseLButtonUp(Button* button, const json& data)
 		button->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void ButtonLoader::ParseOnClick(Button* button, const json& data)
+void ButtonLoader::ParseOnClick(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 

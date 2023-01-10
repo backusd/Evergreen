@@ -188,6 +188,7 @@ public:
 	ND inline const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
 	ND inline Control* GetControl(unsigned int index) const noexcept;
+	ND inline Layout* GetSublayout(unsigned int index) const noexcept;
 
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;

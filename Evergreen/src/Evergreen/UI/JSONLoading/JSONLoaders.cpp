@@ -8,7 +8,7 @@ namespace Evergreen
 // This method assumes it has been passed the value associated with the key 'Color'.
 // Example: ... = JSONLoaders::LoadColor(data["Color"]);
 // Color value in json can either be a string matching a D2D1::ColorF Enum value, or a list of 3 or 4 floats for RGB[A] values
-D2D1_COLOR_F JSONLoaders::LoadColor(const json& data)
+D2D1_COLOR_F JSONLoaders::LoadColor(json& data)
 {
 	if (data.is_string())
 	{
@@ -39,7 +39,7 @@ D2D1_COLOR_F JSONLoaders::LoadColor(const json& data)
 
 // This method assumes it has been passed the value associated with the key 'Brush'.
 // Example: ... = JSONLoaders::LoadBrush(data["Brush"]);
-std::unique_ptr<ColorBrush> JSONLoaders::LoadBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> JSONLoaders::LoadBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	
@@ -73,7 +73,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadBrush(std::shared_ptr<DeviceResourc
 	
 	JSON_LOADER_EXCEPTION("'Brush' value must either be a string, array of floats, or an object that specifies the Brush type. Invalid value: {}", data.dump(4));
 }
-std::unique_ptr<ColorBrush> JSONLoaders::LoadSolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> JSONLoaders::LoadSolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -89,7 +89,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadSolidColorBrush(std::shared_ptr<Dev
 
 	return std::move(std::make_unique<SolidColorBrush>(deviceResources, JSONLoaders::LoadColor(data["Color"])));
 }
-std::unique_ptr<ColorBrush> JSONLoaders::LoadGradientBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> JSONLoaders::LoadGradientBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -198,7 +198,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadGradientBrush(std::shared_ptr<Devic
 
 	return std::move(std::make_unique<GradientBrush>(deviceResources, stops, axis, extendMode, gamma));
 }
-std::unique_ptr<ColorBrush> JSONLoaders::LoadRadialBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> JSONLoaders::LoadRadialBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -298,7 +298,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadRadialBrush(std::shared_ptr<DeviceR
 
 	return std::move(std::make_unique<RadialBrush>(deviceResources, stops, originOffset, extendMode, gamma));
 }
-std::unique_ptr<ColorBrush> JSONLoaders::LoadBitmapBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data)
+std::unique_ptr<ColorBrush> JSONLoaders::LoadBitmapBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -401,7 +401,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadBitmapBrush(std::shared_ptr<DeviceR
 	return std::move(std::make_unique<BitmapBrush>(deviceResources, file, method, props));
 }
 
-std::unique_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, const json& data, const std::string& stylename)
+std::unique_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, json& data, const std::string& stylename)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 
@@ -416,7 +416,7 @@ std::unique_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResource
 
 	return style;
 }
-Control* JSONLoaders::LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, const json& data, const std::string& name)
+Control* JSONLoaders::LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, json& data, const std::string& name)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(parent != nullptr, "Parent layout should never be nullptr");
@@ -478,7 +478,7 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 		m_jsonRoot = {};
 		return false;
 	}
-	catch (const json::parse_error& e)
+	catch (json::parse_error& e)
 	{
 		EG_CORE_ERROR("Failed to load UI file '{}'", rootFile);
 		EG_CORE_ERROR("Caught json::parse_error:\n{}", e.what());
@@ -668,7 +668,7 @@ void JSONLoaders::LoadLayoutRowDefinitions(Layout* layout, json& data)
 			JSON_LOADER_EXCEPTION_IF_FALSE(rowDefinition.contains("Height"), "RowDefinition for layout '{}' does not contain 'Height' key: {}", layout->Name(), rowDefinition.dump(4));
 
 			// Get the Row type and size
-			auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(rowDefinition["Height"], layout);
+			auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(rowDefinition["Height"], layout->Name());
 
 			// Create the row and get a pointer to it so we can edit it further
 			Row* row = layout->AddRow({ rowColType, rowColSize });
@@ -693,12 +693,12 @@ void JSONLoaders::LoadLayoutRowDefinitions(Layout* layout, json& data)
 				}
 				else if (key.compare("MaxHeight") == 0)
 				{
-					auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout);
+					auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout->Name());
 					row->MaxHeight({ type, size });
 				}
 				else if (key.compare("MinHeight") == 0)
 				{
-					auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout);
+					auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key], layout->Name());
 					row->MinHeight({ type, size });
 				}
 				else
@@ -731,7 +731,7 @@ void JSONLoaders::LoadLayoutColumnDefinitions(Layout* layout, json& data)
 			JSON_LOADER_EXCEPTION_IF_FALSE(columnDefinition.contains("Width"), "ColumnDefinition for layout '{}' does not contain 'Width' key: {}", layout->Name(), columnDefinition.dump(4));
 
 			// Get the Row type and size
-			auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(columnDefinition["Width"], layout);
+			auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(columnDefinition["Width"], layout->Name());
 
 			// Create the column and get a pointer to it so we can edit it further
 			Column* column = layout->AddColumn({ rowColType, rowColSize });
@@ -756,12 +756,12 @@ void JSONLoaders::LoadLayoutColumnDefinitions(Layout* layout, json& data)
 				}
 				else if (key.compare("MaxWidth") == 0)
 				{
-					auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout);
+					auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout->Name());
 					column->MaxWidth({ type, size });
 				}
 				else if (key.compare("MinWidth") == 0)
 				{
-					auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout);
+					auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key], layout->Name());
 					column->MinWidth({ type, size });
 				}
 				else
@@ -838,7 +838,7 @@ RowColumnPosition JSONLoaders::ParseRowColumnPosition(json& data)
 
 	return position;
 }
-std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& data, Layout* layout)
+std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSizeImpl(json& data, const std::string& layoutName)
 {
 	// The data must be an int, float, or string
 	// If int or float, the type is automatically FIXED
@@ -854,7 +854,7 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& da
 		type = RowColumnType::FIXED;
 		size = data.get<float>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layout->Name(), size);
+		JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layoutName, size);
 
 		return std::make_tuple(type, size);
 	}
@@ -862,7 +862,7 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& da
 	{
 		std::string dataString = data.get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(dataString.size() > 0, "RowDefinition Height/Width value for layout '{}' must not be empty.", layout->Name());
+		JSON_LOADER_EXCEPTION_IF_FALSE(dataString.size() > 0, "RowDefinition Height/Width value for layout '{}' must not be empty.", layoutName);
 
 		try {
 			// Don't need to take a substring of datastring to remove '%' or '*' because stof will read all valid
@@ -871,11 +871,11 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& da
 		}
 		catch (const std::invalid_argument& e)
 		{
-			JSON_LOADER_EXCEPTION("Invalid Height/Width value for layout ({}) could not be parsed to a float: {}.\nException Message: {}", layout->Name(), dataString, e.what());
+			JSON_LOADER_EXCEPTION("Invalid Height/Width value for layout ({}) could not be parsed to a float: {}.\nException Message: {}", layoutName, dataString, e.what());
 		}
 		catch (const std::out_of_range& e)
 		{
-			JSON_LOADER_EXCEPTION("Invalid Height/Width value for layout ({}). Caught out of range exception for value '{}'.\nException Message: {}", layout->Name(), dataString, e.what());
+			JSON_LOADER_EXCEPTION("Invalid Height/Width value for layout ({}). Caught out of range exception for value '{}'.\nException Message: {}", layoutName, dataString, e.what());
 		}
 
 		// Get the type and perform some bounds checking
@@ -884,7 +884,7 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& da
 		case '%':
 			type = RowColumnType::PERCENT;
 
-			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f && size <= 100.0f, "Percent Height/Width value for layout '{}' must be in the range (0, 100].\nInvalid value: {}", layout->Name(), size);
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f && size <= 100.0f, "Percent Height/Width value for layout '{}' must be in the range (0, 100].\nInvalid value: {}", layoutName, size);
 
 			size /= 100.0f; // Must divide by 100 to stay within the range [0, 1]
 
@@ -892,13 +892,13 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& da
 		case '*':
 			type = RowColumnType::STAR;
 
-			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Star Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layout->Name(), size);
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Star Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layoutName, size);
 
 			break;
 		default:
 			type = RowColumnType::FIXED;
 
-			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layout->Name(), size);
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for layout '{}' must be greater than 0.\nInvalid value: {}", layoutName, size);
 
 			break;
 		}
@@ -906,7 +906,7 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSize(json& da
 		return std::make_tuple(type, size);
 	}
 
-	JSON_LOADER_EXCEPTION("Height/Width value must be either a number or a string.\nLayout Name: {}\nInvalid value: {}", layout->Name(), data.dump(4));
+	JSON_LOADER_EXCEPTION("Height/Width value must be either a number or a string.\nLayout Name: {}\nInvalid value: {}", layoutName, data.dump(4));
 }
 
 }

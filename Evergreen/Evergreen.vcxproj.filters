@@ -165,6 +165,9 @@
     <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -272,6 +275,9 @@
     <ClCompile Include="src\Evergreen\UI\Controls\ScrollableLayout.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Evergreen\UI\json-examples\Brushes.json" />
@@ -281,5 +287,6 @@
     <None Include="src\Evergreen\UI\json-examples\import.json" />
     <None Include="src\Evergreen\UI\json-examples\Margin.json" />
     <None Include="src\Evergreen\UI\json-examples\RoundedButton.json" />
+    <None Include="src\Evergreen\UI\json-examples\ScrollableLayout.json" />
   </ItemGroup>
 </Project>

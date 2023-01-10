@@ -9,6 +9,7 @@
 #include <exception>
 #include <optional>
 #include <filesystem>
+#include <algorithm>
 
 
 #define WIN32_LEAN_AND_MEAN

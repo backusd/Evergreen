@@ -43,8 +43,8 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	m_dragStartPoint(D2D1::Point2F())
 {
 	// Brushes
-	if (m_backgroundBrush == nullptr)
-		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
+	if (m_backgroundBrush == nullptr) // If not specified, just make them transparent
+		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
 	if (m_borderBrush == nullptr)
 		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
@@ -59,7 +59,7 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	m_horizontalScrollBarBrushDragging	= std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray));
 	m_horizontalScrollBarRegionBrush	= std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::DimGray, 0.5f));
 
-	// In the scrolling direction, set the height/width to 0. It will be adjusted when rows/columns are added
+	// In the scrolling direction, set the height/width to 0. It will be incremented when rows/columns are added
 	float width  = m_canScrollHorizontal ? 0.0f : m_allowedRegion.right  - m_allowedRegion.left;
 	float height = m_canScrollVertical   ? 0.0f : m_allowedRegion.bottom - m_allowedRegion.top;
 	m_layout = std::make_unique<Layout>(deviceResources, m_allowedRegion.top, m_allowedRegion.left, width, height, nullptr, "ScrollableLayoutLayout");
@@ -81,6 +81,8 @@ void ScrollableLayout::Render() const noexcept
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 
 	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+
+	// Only allow drawing within the background rect.
 	context->PushAxisAlignedClip(m_backgroundRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
 
 	// Draw the background
@@ -89,6 +91,7 @@ void ScrollableLayout::Render() const noexcept
 	// Have the layout draw the background and contents of the brush
 	m_layout->Render();
 
+	// Must remove the clipping area
 	context->PopAxisAlignedClip();
 
 	// Vertical scroll bar ----------------------------------------------------------------------------------------------

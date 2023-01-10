@@ -19,7 +19,7 @@ public:
 	void operator=(const ButtonLoader&) = delete;
 	~ButtonLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name) { return std::move(Get().LoadImpl(deviceResources, parent, data, name)); }
+	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) { return Get().LoadImpl(deviceResources, parent, data, name); }
 
 private:
 	ButtonLoader() noexcept = default;
@@ -30,19 +30,19 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, const json& data, const std::string& name);
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
 
-	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
-	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, const json& data);
-	float ParseBorderWidth(const json& data);
-	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, const json& data);
+	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
+	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
+	float ParseBorderWidth(json& data);
+	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
-	void ParseOnMouseEnter(Button* button, const json& data);
-	void ParseOnMouseLeave(Button* button, const json& data);
-	void ParseOnMouseMoved(Button* button, const json& data);
-	void ParseOnMouseLButtonDown(Button* button, const json& data);
-	void ParseOnMouseLButtonUp(Button* button, const json& data);
-	void ParseOnClick(Button* button, const json& data);
+	void ParseOnMouseEnter(Button* button, json& data);
+	void ParseOnMouseLeave(Button* button, json& data);
+	void ParseOnMouseMoved(Button* button, json& data);
+	void ParseOnMouseLButtonDown(Button* button, json& data);
+	void ParseOnMouseLButtonUp(Button* button, json& data);
+	void ParseOnClick(Button* button, json& data);
 
 };
 #pragma warning( pop )
