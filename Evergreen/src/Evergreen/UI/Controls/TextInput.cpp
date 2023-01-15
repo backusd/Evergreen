@@ -238,10 +238,19 @@ void TextInput::OnChar(CharEvent& e) noexcept
 						m_marginLeft = std::min(m_originalMarginLeft, m_marginLeft + (halfTextRegionWidth / 2.0f)); // Add back one quarter of the available space
 						m_text->MarginLeft(m_marginLeft);
 					}
-				}
+				}			
 
-
+				// Update the vertical bar location
 				UpdateVerticalBar();
+
+				// If the vertical bar is left of the text region, adjust the margin
+				if (m_verticalBarX < m_textRegionRect.left)
+				{
+					const float quarterTextRegionWidth = ((m_textRegionRect.right - m_textRegionRect.left) / 4.0f);
+					m_marginLeft = std::min(m_originalMarginLeft, m_marginLeft + quarterTextRegionWidth); // Add back one quarter of the available space
+					m_text->MarginLeft(m_marginLeft);
+					UpdateVerticalBar();
+				}
 			}
 			return;
 		}
@@ -270,10 +279,56 @@ void TextInput::OnChar(CharEvent& e) noexcept
 }
 void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
-	// Not currently handling key pressed events...
+	// Going to process the arrow keys here because when an arrow is held down, only the OnKeyPressed event is
+	// repeated. OnKeyReleased only occurs once when the key is actually released
+
+	// Only edit the text if this control has been clicked into
+	if (m_textInputControlIsSelected)
+	{
+		switch (e.GetKeyCode())
+		{
+		case KEY_CODE::EG_LEFT_ARROW:
+		{
+			if (m_nextCharIndex > 0)
+			{
+				--m_nextCharIndex;
+				UpdateVerticalBar();
+
+				// If the vertical bar is left of the text region, adjust the margin
+				if (m_verticalBarX < m_textRegionRect.left)
+				{
+					const float quarterTextRegionWidth = ((m_textRegionRect.right - m_textRegionRect.left) / 4.0f);
+					m_marginLeft = std::min(m_originalMarginLeft, m_marginLeft + quarterTextRegionWidth); // Add back one quarter of the available space
+					m_text->MarginLeft(m_marginLeft);
+					UpdateVerticalBar();
+				}
+			}
+			break;
+		}
+		case KEY_CODE::EG_RIGHT_ARROW:
+		{
+			if (m_nextCharIndex < m_text->Size())
+			{
+				++m_nextCharIndex;
+				UpdateVerticalBar();
+
+				// If the vertical bar is right of the text region, adjust the margin
+				if (m_verticalBarX > m_textRegionRect.right)
+				{
+					const float quarterTextRegionWidth = ((m_textRegionRect.right - m_textRegionRect.left) / 4.0f);
+					m_marginLeft = std::max(m_marginLeft - quarterTextRegionWidth, -1.0f * (m_text->Width() - (m_textRegionRect.right - m_textRegionRect.left - 4.0f))); // Add back one quarter of the available space
+					m_text->MarginLeft(m_marginLeft);
+					UpdateVerticalBar();
+				}
+			}
+			break;
+		}
+		}
+	}
 }
 void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
+	/*
 	// Only edit the text if this control has been clicked into
 	if (m_textInputControlIsSelected)
 	{
@@ -285,6 +340,15 @@ void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 			{
 				--m_nextCharIndex;
 				UpdateVerticalBar();
+
+				// If the vertical bar is left of the text region, adjust the margin
+				if (m_verticalBarX < m_textRegionRect.left)
+				{
+					const float quarterTextRegionWidth = ((m_textRegionRect.right - m_textRegionRect.left) / 4.0f);
+					m_marginLeft = std::min(m_originalMarginLeft, m_marginLeft + quarterTextRegionWidth); // Add back one quarter of the available space
+					m_text->MarginLeft(m_marginLeft);
+					UpdateVerticalBar();
+				}
 			}
 			break;
 		}
@@ -299,6 +363,7 @@ void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 		}
 		}
 	}
+	*/
 }
 void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 {
@@ -409,6 +474,24 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 				if (m_inputText.size() == 0)
 					SetTextToInput();
 			}
+
+			// Update the location of the vertical bar based on where the user clicked
+			float x = e.GetX();
+			if (m_text->Right() < x) // If the user clicks right all the text, just set m_nextCharIndex to the end
+				m_nextCharIndex = m_text->Size();
+			else
+			{
+				for (unsigned int iii = 0; iii < m_text->Size(); ++iii)
+				{
+					if (m_text->RightSideOfCharacterAtIndex(iii) - 2.0f > x)
+					{
+						m_nextCharIndex = iii;
+						break;
+					}
+				}
+			}
+
+			UpdateVerticalBar();
 			
 			e.Handled(this);
 			return;
