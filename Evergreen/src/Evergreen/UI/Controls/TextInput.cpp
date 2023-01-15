@@ -25,10 +25,12 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidth(borderWidth),
-	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }) // dummy values that will be written over when allowed region is updated
+	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
+	m_textInputControlIsSelected(false),
+	m_nextCharIndex(0),
+	m_mouseState(MouseOverState::NOT_OVER),
+	m_drawVerticalBar(false)
 {
-	ZeroMemory(&m_textMetrics, sizeof(DWRITE_TEXT_METRICS));
-
 	// Brushes
 	if (m_placeholderTextBrush == nullptr)
 		m_placeholderTextBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
@@ -41,6 +43,8 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 
 	if (m_borderBrush == nullptr)
 		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
+
+	m_verticalBarBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
 	// Text Styles
 	if (m_placeholderTextStyle == nullptr)
@@ -119,6 +123,16 @@ void TextInput::Render() const noexcept
 	// Have the layout draw the background and text
 	m_layout->Render();
 
+	// Draw vertical bar
+	if (m_drawVerticalBar)
+	{
+		m_deviceResources->D2DDeviceContext()->DrawLine(
+			D2D1::Point2F(m_verticalBarX, m_verticalBarTop),
+			D2D1::Point2F(m_verticalBarX, m_verticalBarBottom),
+			m_verticalBarBrush->Get()
+		);
+	}
+
 	// Draw the border last so it appears on top
 	if (m_borderWidth > 0.0f)
 		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);
@@ -127,6 +141,7 @@ void TextInput::Render() const noexcept
 void TextInput::TextInputChanged() noexcept
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	EG_CORE_ASSERT(m_text != nullptr, "No Text control");
 
 	// Update the background rect to fill the allowed region minus the margin
 	m_backgroundRect.left = m_allowedRegion.left + m_margin.Left;
@@ -135,6 +150,22 @@ void TextInput::TextInputChanged() noexcept
 	m_backgroundRect.bottom = m_allowedRegion.bottom - m_margin.Bottom;
 
 	m_layout->Resize(m_backgroundRect);
+
+	// Update the location of the vertical bar
+	UpdateVerticalBar();
+}
+
+void TextInput::UpdateVerticalBar() noexcept
+{
+	EG_CORE_ASSERT(m_text != nullptr, "No Text control");
+
+	m_verticalBarTop = m_text->Top();
+	m_verticalBarBottom = m_text->Bottom();
+
+	if (m_nextCharIndex == m_text->Size())
+		m_verticalBarX = m_text->Right();
+	else
+		m_verticalBarX = m_text->RightSideOfCharacterAtIndex(m_nextCharIndex) + 1.0f;
 }
 
 void TextInput::OnMarginChanged()
@@ -155,6 +186,8 @@ void TextInput::SetTextToPlaceholder() noexcept
 	m_text->SetText(m_placeholderText);
 	m_text->SetColorBrush(std::move(m_placeholderTextBrush->Duplicate()));
 	m_text->SetTextStyle(std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(m_placeholderTextStyle->Duplicate().release()))));
+
+	m_drawVerticalBar = false;
 }
 void TextInput::SetTextToInput() noexcept
 {
@@ -165,8 +198,182 @@ void TextInput::SetTextToInput() noexcept
 	m_text->SetText(m_inputText);
 	m_text->SetColorBrush(std::move(m_inputTextBrush->Duplicate()));
 	m_text->SetTextStyle(std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(m_inputTextStyle->Duplicate().release()))));
+
+	m_drawVerticalBar = true;
+	UpdateVerticalBar();
 }
 
+
+void TextInput::OnChar(CharEvent& e) noexcept
+{
+	// Only edit the text if this control has been clicked into
+	if (m_textInputControlIsSelected)
+	{
+		const char key = e.GetKeyCode();
+		// First, handle the backspace character
+		if (key == '\b')
+		{
+			if (m_nextCharIndex > 0)
+			{
+				m_inputText.erase(--m_nextCharIndex, 1);
+				m_text->RemoveChar(m_nextCharIndex);
+				UpdateVerticalBar();
+			}
+			return;
+		}
+
+		// Update the input text string that is held locally (we need this to be able to swap back and
+		// forth between the input text and placeholder text)
+		if (m_nextCharIndex == m_inputText.size())
+			m_inputText.push_back(key);
+		else
+			m_inputText.insert(m_nextCharIndex, 1, key);
+
+		// Next, update Text control (Faster than calling SetText)
+		m_text->AddChar(key, m_nextCharIndex);
+		UpdateVerticalBar();
+
+		++m_nextCharIndex;
+	}
+}
+void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+	// Not currently handling key pressed events...
+}
+void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+	// Only edit the text if this control has been clicked into
+	if (m_textInputControlIsSelected)
+	{
+		switch (e.GetKeyCode())
+		{
+		case KEY_CODE::EG_LEFT_ARROW: break;
+		case KEY_CODE::EG_RIGHT_ARROW: break;
+		}
+	}
+}
+void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+	// First pass to layout, if the layout does not handle it, then the control can handle it
+	m_layout->OnMouseMove(e);
+	if (e.Handled())
+		return;
+
+	bool mouseIsOver = ContainsPoint(e.GetX(), e.GetY());
+
+	switch (m_mouseState)
+	{
+	case MouseOverState::NOT_OVER:
+		if (mouseIsOver)
+		{
+			m_mouseState = MouseOverState::OVER;
+			e.Handled(this);
+		}
+
+		break;
+	case MouseOverState::OVER:
+		if (!mouseIsOver)
+		{
+			m_mouseState = MouseOverState::NOT_OVER;
+			return;
+		}
+
+		e.Handled(this);
+		break;
+	case MouseOverState::OVER_AND_LBUTTON_DOWN:
+		if (!mouseIsOver)
+		{
+			m_mouseState = MouseOverState::NOT_OVER_AND_LBUTTON_DOWN;
+		}
+
+		e.Handled(this);
+		break;
+	case MouseOverState::NOT_OVER_AND_LBUTTON_DOWN:
+		if (mouseIsOver)
+		{
+			m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;
+		}
+		e.Handled(this);
+		break;
+	}
+}
+void TextInput::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+{
+
+}
+void TextInput::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+{
+
+}
+void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+	// First, handle the scenario when a user clicks out of the control
+	if (m_textInputControlIsSelected && m_mouseState == MouseOverState::NOT_OVER)
+	{
+		// Don't care about what button was pressed - We will just say that all buttons are allowed to click out of a TextInput
+		m_textInputControlIsSelected = false;
+
+		// if the input text size is 0, reload the placeholder text
+		if (m_inputText.size() == 0)
+			SetTextToPlaceholder();
+
+		return;
+	}
+
+	// Next pass to layout, if the layout does not handle it, then the control can handle it
+	m_layout->OnMouseButtonPressed(e);
+	if (e.Handled())
+		return;
+
+	// Only process the event if the mouse is over the control and if its the LButton
+	if (m_mouseState == MouseOverState::OVER)
+	{
+		// As long as the mouse is still over the control, we want to consider the event to be handled,
+		// even if we don't actually do anything
+		e.Handled(this);
+
+		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+		{
+			m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;			
+		}
+	}
+}
+void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+	// Before passing to layout, first handle this event if in the state OVER_AND_LBUTTON_DOWN
+
+	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
+	{
+		if (m_mouseState == MouseOverState::OVER_AND_LBUTTON_DOWN)
+		{
+			m_mouseState = MouseOverState::OVER;
+			if (!m_textInputControlIsSelected)
+			{
+				m_textInputControlIsSelected = true;
+
+				if (m_inputText.size() == 0)
+					SetTextToInput();
+			}
+			
+			e.Handled(this);
+			return;
+		}
+		else if (m_mouseState == MouseOverState::NOT_OVER_AND_LBUTTON_DOWN)
+		{
+			m_mouseState = MouseOverState::NOT_OVER;
+			return;
+		}
+	}
+}
+void TextInput::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+
+}
+
+bool TextInput::ContainsPoint(float x, float y) const noexcept
+{
+	return m_layout->ContainsPoint(x, y);
+}
 
 
 

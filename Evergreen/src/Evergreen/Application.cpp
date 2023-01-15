@@ -105,14 +105,17 @@ void Application::OnAppRender(AppRenderEvent& e) noexcept
 void Application::OnChar(CharEvent& e) noexcept
 {
 	EG_CORE_INFO("{}", e);
+	m_ui->OnChar(e);
 }
 void Application::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
 	EG_CORE_INFO("{}", e);
+	m_ui->OnKeyPressed(e);
 }
 void Application::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
 	EG_CORE_INFO("{}", e);
+	m_ui->OnKeyReleased(e);
 }
 void Application::OnMouseMove(MouseMoveEvent& e) noexcept
 {

@@ -535,11 +535,35 @@ void UI::Render() const noexcept
 	m_deviceResources->EndDraw();
 }
 
+void UI::OnChar(CharEvent& e) noexcept
+{
+	if (m_keyboardHandlingControl != nullptr)
+	{
+		m_keyboardHandlingControl->OnChar(e);
+	}
+	else if (m_keyboardHandlingLayout != nullptr)
+	{
+		m_keyboardHandlingLayout->OnChar(e);
+	}
+
+	if (!e.Handled())
+		m_rootLayout->OnChar(e);
+
+	m_keyboardHandlingControl = e.HandlingControl();
+	m_keyboardHandlingLayout = e.HandlingLayout();
+}
+void UI::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+
+}
+void UI::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+
+}
 void UI::OnWindowResize(WindowResizeEvent& e) noexcept
 {
 	m_rootLayout->Resize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 }
-
 void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	if (m_mouseHandlingControl != nullptr)

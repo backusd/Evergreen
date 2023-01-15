@@ -31,11 +31,20 @@ public:
 	// Inherited from Control
 	void Update() noexcept override {}
 	void Render() const noexcept override;
-	/*
+
+	// Event handling
+	void OnChar(CharEvent& e) noexcept override;
+	void OnKeyPressed(KeyPressedEvent& e) noexcept override;
+	void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
+	
+	
+	/*
 	// Text specific
 	ND inline const std::wstring& GetText() const noexcept { return m_text; }
 	ND inline TextStyle* GetTextStyle() const noexcept { return m_style.get(); }
@@ -47,6 +56,14 @@ public:
 	*/
 
 private:
+	enum class MouseOverState
+	{
+		NOT_OVER,
+		OVER,
+		OVER_AND_LBUTTON_DOWN,
+		NOT_OVER_AND_LBUTTON_DOWN
+	};
+
 	void TextInputChanged() noexcept;
 
 	// React to changes made when base-class methods are called
@@ -56,6 +73,9 @@ private:
 	void SetTextToPlaceholder() noexcept;
 	void SetTextToInput() noexcept;
 
+	ND inline bool ContainsPoint(float x, float y) const noexcept;
+
+	void UpdateVerticalBar() noexcept;
 
 	std::unique_ptr<Layout> m_layout;
 
@@ -69,15 +89,26 @@ private:
 	std::unique_ptr<ColorBrush>	m_inputTextBrush;
 	std::unique_ptr<TextStyle>	m_placeholderTextStyle;
 	std::unique_ptr<TextStyle>	m_inputTextStyle;
+	bool m_textInputControlIsSelected;
+	unsigned int m_nextCharIndex;
 
 	// Other
-	DWRITE_TEXT_METRICS			m_textMetrics;
+	MouseOverState				m_mouseState;
 
 	// Data for drawing the background rect
 	std::unique_ptr<ColorBrush>	m_backgroundBrush;
 	std::unique_ptr<ColorBrush>	m_borderBrush;
 	float						m_borderWidth;
 	D2D1_RECT_F					m_backgroundRect;
+
+	// Data for vertical bar
+	float m_verticalBarTop;
+	float m_verticalBarBottom;
+	float m_verticalBarX;
+	bool m_drawVerticalBar;
+	std::unique_ptr<ColorBrush>	m_verticalBarBrush;
+
+
 };
 #pragma warning( pop )
 

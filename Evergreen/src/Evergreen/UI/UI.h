@@ -38,6 +38,9 @@ public:
 	void Update() noexcept;
 	void Render() const noexcept;
 
+	void OnChar(CharEvent& e) noexcept;
+	void OnKeyPressed(KeyPressedEvent& e) noexcept;
+	void OnKeyReleased(KeyReleasedEvent& e) noexcept;
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
 	void OnMouseMove(MouseMoveEvent& e) noexcept;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;

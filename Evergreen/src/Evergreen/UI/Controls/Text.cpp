@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Text.h"
 
-
+using Microsoft::WRL::ComPtr;
 
 namespace Evergreen
 {
@@ -112,6 +112,26 @@ void Text::TextChanged() noexcept
 	UpdateBrushDrawRegion();
 }
 
+float Text::RightSideOfCharacterAtIndex(unsigned int index) const noexcept
+{
+	EG_CORE_ASSERT(index < m_text.size(), "Index is too large");
+	EG_CORE_ASSERT(m_style != nullptr, "No TextStyle");
+
+	std::wstring substring = m_text.substr(0, index + 1);
+
+	DWRITE_TEXT_METRICS metrics;
+	ZeroMemory(&metrics, sizeof(DWRITE_TEXT_METRICS));
+
+	ComPtr<IDWriteTextLayout4> layout;
+	layout = m_style->CreateTextLayout(
+		substring,
+		(m_allowedRegion.right - m_margin.Right) - (m_allowedRegion.left + m_margin.Left),
+		(m_allowedRegion.bottom - m_margin.Bottom) - (m_allowedRegion.top + m_margin.Top)
+	);
+	layout->GetMetrics(&metrics);
+	return Left() + metrics.widthIncludingTrailingWhitespace;
+}
+
 
 
 void Text::OnMarginChanged()
@@ -129,6 +149,26 @@ void Text::UpdateBrushDrawRegion() noexcept
 {
 	// If using a non-SolidColorBrush, we need to update the draw region for the brush
 	m_colorBrush->SetDrawRegion(m_allowedRegion);
+}
+
+void Text::AddChar(char c, unsigned int index) noexcept
+{
+	EG_CORE_ASSERT(index <= m_text.size(), "Insert index is too large");
+
+	if (index == m_text.size())
+		m_text.push_back(c);
+	else
+		m_text.insert(index, 1, c);
+
+	TextChanged();
+}
+void Text::RemoveChar(unsigned int index) noexcept
+{
+	EG_CORE_ASSERT(m_text.size() > 0, "No characters to remove");
+	EG_CORE_ASSERT(index < m_text.size(), "Index is too large");
+
+	m_text.erase(index, 1);
+	TextChanged();
 }
 
 

@@ -36,10 +36,21 @@ public:
 	ND inline const std::wstring& GetText() const noexcept { return m_text; }
 	ND inline TextStyle* GetTextStyle() const noexcept { return m_style.get(); }
 	ND inline ColorBrush* GetColorBrush() const noexcept { return m_colorBrush.get(); }
+	ND inline const DWRITE_TEXT_METRICS& GetTextMetrics() const noexcept { return m_textMetrics; }
+
+	ND inline float Top() const noexcept { return m_allowedRegion.top + m_margin.Top + m_textMetrics.top; }
+	ND inline float Bottom() const noexcept { return Top() + m_textMetrics.height; }
+	ND inline float Left() const noexcept { return m_allowedRegion.left + m_margin.Left; }
+	ND inline float Right() const noexcept { return Left() + m_textMetrics.widthIncludingTrailingWhitespace; }
+	ND float RightSideOfCharacterAtIndex(unsigned int index) const noexcept;
+	ND unsigned int Size() const noexcept { return static_cast<unsigned int>(m_text.size()); }
 
 	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
 	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept;
 	void SetColorBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
+
+	void AddChar(char c, unsigned int index) noexcept;
+	void RemoveChar(unsigned int index) noexcept;
 
 private:
 	void TextChanged() noexcept;
@@ -47,7 +58,6 @@ private:
 	// React to changes made when base-class methods are called
 	void OnMarginChanged() override;
 	void OnAllowedRegionChanged() override;
-
 	void UpdateBrushDrawRegion() noexcept;
 
 	std::wstring				m_text;
