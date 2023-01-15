@@ -7,32 +7,32 @@ namespace Evergreen
 const float TextInput::m_originalMarginLeft = 4.0f;
 
 TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
-							const D2D1_RECT_F& allowedRegion,
-							const std::wstring& placeholderText,
-							std::unique_ptr<ColorBrush> placeholderBrush,
-							std::unique_ptr<TextStyle> placeholderStyle,
-							std::unique_ptr<ColorBrush> inputTextBrush,
-							std::unique_ptr<TextStyle> inputTextStyle,
-							std::unique_ptr<ColorBrush> backgroundBrush,
-							std::unique_ptr<ColorBrush> borderBrush,
-							float borderWidth,
-							const Evergreen::Margin& margin) noexcept :
-		Control(deviceResources, allowedRegion, margin),
-		m_placeholderText(placeholderText),
-		m_placeholderTextBrush(std::move(placeholderBrush)),
-		m_placeholderTextStyle(std::move(placeholderStyle)),
-		m_inputText(L""),
-		m_inputTextBrush(std::move(inputTextBrush)),
-		m_inputTextStyle(std::move(inputTextStyle)),
-		m_backgroundBrush(std::move(backgroundBrush)),
-		m_borderBrush(std::move(borderBrush)),
-		m_borderWidth(borderWidth),
-		m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
-		m_textInputControlIsSelected(false),
-		m_nextCharIndex(0),
-		m_mouseState(MouseOverState::NOT_OVER),
-		m_drawVerticalBar(false),
-		m_marginLeft(m_originalMarginLeft)
+	const D2D1_RECT_F& allowedRegion,
+	const std::wstring& placeholderText,
+	std::unique_ptr<ColorBrush> placeholderBrush,
+	std::unique_ptr<TextStyle> placeholderStyle,
+	std::unique_ptr<ColorBrush> inputTextBrush,
+	std::unique_ptr<TextStyle> inputTextStyle,
+	std::unique_ptr<ColorBrush> backgroundBrush,
+	std::unique_ptr<ColorBrush> borderBrush,
+	float borderWidth,
+	const Evergreen::Margin& margin) noexcept :
+	Control(deviceResources, allowedRegion, margin),
+	m_placeholderText(placeholderText),
+	m_placeholderTextBrush(std::move(placeholderBrush)),
+	m_placeholderTextStyle(std::move(placeholderStyle)),
+	m_inputText(L""),
+	m_inputTextBrush(std::move(inputTextBrush)),
+	m_inputTextStyle(std::move(inputTextStyle)),
+	m_backgroundBrush(std::move(backgroundBrush)),
+	m_borderBrush(std::move(borderBrush)),
+	m_borderWidth(borderWidth),
+	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
+	m_textInputControlIsSelected(false),
+	m_nextCharIndex(0),
+	m_mouseState(MouseOverState::NOT_OVER),
+	m_drawVerticalBar(false),
+	m_marginLeft(m_originalMarginLeft)
 {
 	// Brushes
 	if (m_placeholderTextBrush == nullptr)
@@ -63,7 +63,12 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 			DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
 			DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER, // Vertically align to the center of the layout
 			DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-		);
+			);
+	}
+	else
+	{
+		// We must enforce the text style to be no wrap
+		m_placeholderTextStyle->WordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	}
 
 	if (m_inputTextStyle == nullptr)
@@ -80,6 +85,11 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 			DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER, // Vertically align to the center of the layout
 			DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
 			);
+	}
+	else
+	{
+		// We must enforce the text style to be no wrap
+		m_inputTextStyle->WordWrapping(DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP);
 	}
 
 	// Create the layout with a dummy size - will be updated when TextInputChanged() is called
@@ -185,6 +195,14 @@ void TextInput::OnMarginChanged()
 void TextInput::OnAllowedRegionChanged()
 {
 	TextInputChanged();
+
+	// Reset the text margin and vertical bar
+	m_marginLeft = m_originalMarginLeft;
+	m_text->MarginLeft(m_marginLeft);
+	m_nextCharIndex = 0;
+
+	// Update the location of the vertical bar
+	UpdateVerticalBar();
 }
 
 void TextInput::SetTextToPlaceholder() noexcept
@@ -268,13 +286,20 @@ void TextInput::OnChar(CharEvent& e) noexcept
 
 		// If the text has surpassed the right side of the input control, move the left margin to keep the right side
 		// of the text aligned with the right side of the control area
-		if (m_text->Right() + m_text->MarginRight() > m_textRegionRect.right)
+		//float r1 = m_text->Right();
+		//float r2 = m_text->MarginRight();
+		//float r3 = m_textRegionRect.right;
+		//float r4 = m_text->RightSideOfCharacterAtIndex(m_nextCharIndex - 1);
+
+		//if (m_text->Right() + m_text->MarginRight() > m_textRegionRect.right)
+		UpdateVerticalBar();
+
+		if (m_verticalBarX > m_textRegionRect.right)
 		{
 			m_marginLeft = -1.0f * (m_text->Width() - (m_textRegionRect.right - m_textRegionRect.left - 4.0f));
 			m_text->MarginLeft(m_marginLeft);
-		}
-
-		UpdateVerticalBar();
+			UpdateVerticalBar();
+		}		
 	}
 }
 void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
