@@ -108,7 +108,10 @@ private:
 	bool m_drawVerticalBar;
 	std::unique_ptr<ColorBrush>	m_verticalBarBrush;
 
-
+	// Data for when the text string exceeds the available width
+	static const float m_originalMarginLeft;
+	float m_marginLeft;
+	D2D1_RECT_F m_textRegionRect;
 };
 #pragma warning( pop )
 

@@ -43,7 +43,10 @@ public:
 	ND inline float Left() const noexcept { return m_allowedRegion.left + m_margin.Left; }
 	ND inline float Right() const noexcept { return Left() + m_textMetrics.widthIncludingTrailingWhitespace; }
 	ND float RightSideOfCharacterAtIndex(unsigned int index) const noexcept;
+	ND inline float Width() const noexcept { return m_textMetrics.widthIncludingTrailingWhitespace; }
+	ND inline float Height() const noexcept { return m_textMetrics.height; }
 	ND unsigned int Size() const noexcept { return static_cast<unsigned int>(m_text.size()); }
+
 
 	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
 	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept;

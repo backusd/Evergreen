@@ -4,32 +4,35 @@
 
 namespace Evergreen
 {
+const float TextInput::m_originalMarginLeft = 4.0f;
+
 TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
-						const D2D1_RECT_F& allowedRegion,
-						const std::wstring& placeholderText,
-						std::unique_ptr<ColorBrush> placeholderBrush,
-						std::unique_ptr<TextStyle> placeholderStyle,
-						std::unique_ptr<ColorBrush> inputTextBrush,
-						std::unique_ptr<TextStyle> inputTextStyle,
-						std::unique_ptr<ColorBrush> backgroundBrush,
-						std::unique_ptr<ColorBrush> borderBrush,
-						float borderWidth,
-						const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, allowedRegion, margin),
-	m_placeholderText(placeholderText),
-	m_placeholderTextBrush(std::move(placeholderBrush)),
-	m_placeholderTextStyle(std::move(placeholderStyle)),
-	m_inputText(L""),
-	m_inputTextBrush(std::move(inputTextBrush)),
-	m_inputTextStyle(std::move(inputTextStyle)),
-	m_backgroundBrush(std::move(backgroundBrush)),
-	m_borderBrush(std::move(borderBrush)),
-	m_borderWidth(borderWidth),
-	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
-	m_textInputControlIsSelected(false),
-	m_nextCharIndex(0),
-	m_mouseState(MouseOverState::NOT_OVER),
-	m_drawVerticalBar(false)
+							const D2D1_RECT_F& allowedRegion,
+							const std::wstring& placeholderText,
+							std::unique_ptr<ColorBrush> placeholderBrush,
+							std::unique_ptr<TextStyle> placeholderStyle,
+							std::unique_ptr<ColorBrush> inputTextBrush,
+							std::unique_ptr<TextStyle> inputTextStyle,
+							std::unique_ptr<ColorBrush> backgroundBrush,
+							std::unique_ptr<ColorBrush> borderBrush,
+							float borderWidth,
+							const Evergreen::Margin& margin) noexcept :
+		Control(deviceResources, allowedRegion, margin),
+		m_placeholderText(placeholderText),
+		m_placeholderTextBrush(std::move(placeholderBrush)),
+		m_placeholderTextStyle(std::move(placeholderStyle)),
+		m_inputText(L""),
+		m_inputTextBrush(std::move(inputTextBrush)),
+		m_inputTextStyle(std::move(inputTextStyle)),
+		m_backgroundBrush(std::move(backgroundBrush)),
+		m_borderBrush(std::move(borderBrush)),
+		m_borderWidth(borderWidth),
+		m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
+		m_textInputControlIsSelected(false),
+		m_nextCharIndex(0),
+		m_mouseState(MouseOverState::NOT_OVER),
+		m_drawVerticalBar(false),
+		m_marginLeft(m_originalMarginLeft)
 {
 	// Brushes
 	if (m_placeholderTextBrush == nullptr)
@@ -101,7 +104,8 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 		std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(m_placeholderTextStyle->Duplicate().release())))
 	);
 
-	m_text->MarginLeft(4.0f);
+	m_text->MarginLeft(m_marginLeft); 
+	m_text->MarginRight(4.0f);
 
 	// Call TextInputChanged to update the layout
 	TextInputChanged();
@@ -141,7 +145,6 @@ void TextInput::Render() const noexcept
 void TextInput::TextInputChanged() noexcept
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
-	EG_CORE_ASSERT(m_text != nullptr, "No Text control");
 
 	// Update the background rect to fill the allowed region minus the margin
 	m_backgroundRect.left = m_allowedRegion.left + m_margin.Left;
@@ -150,6 +153,11 @@ void TextInput::TextInputChanged() noexcept
 	m_backgroundRect.bottom = m_allowedRegion.bottom - m_margin.Bottom;
 
 	m_layout->Resize(m_backgroundRect);
+
+	m_textRegionRect.left = m_backgroundRect.left;
+	m_textRegionRect.top = m_backgroundRect.top;
+	m_textRegionRect.bottom = m_backgroundRect.bottom;
+	m_textRegionRect.right = m_layout->Columns()[0].Right(); // The text region is always row 0/column 0 of the TextInput control
 
 	// Update the location of the vertical bar
 	UpdateVerticalBar();
@@ -163,9 +171,11 @@ void TextInput::UpdateVerticalBar() noexcept
 	m_verticalBarBottom = m_text->Bottom();
 
 	if (m_nextCharIndex == m_text->Size())
-		m_verticalBarX = m_text->Right();
+		m_verticalBarX = m_text->Right() + 1.0f;
+	else if (m_nextCharIndex == 0)
+		m_verticalBarX = m_text->Left();
 	else
-		m_verticalBarX = m_text->RightSideOfCharacterAtIndex(m_nextCharIndex) + 1.0f;
+		m_verticalBarX = m_text->RightSideOfCharacterAtIndex(m_nextCharIndex - 1);
 }
 
 void TextInput::OnMarginChanged()
@@ -203,7 +213,6 @@ void TextInput::SetTextToInput() noexcept
 	UpdateVerticalBar();
 }
 
-
 void TextInput::OnChar(CharEvent& e) noexcept
 {
 	// Only edit the text if this control has been clicked into
@@ -217,6 +226,21 @@ void TextInput::OnChar(CharEvent& e) noexcept
 			{
 				m_inputText.erase(--m_nextCharIndex, 1);
 				m_text->RemoveChar(m_nextCharIndex);
+
+				// If we have updated the left margin, we may need to update it again to shift the text back towards the right
+				if (m_marginLeft != m_originalMarginLeft)
+				{
+					// If the text takes up less than half of the available space, adjust the margin
+					const float halfTextRegionWidth = ((m_textRegionRect.right - m_textRegionRect.left) / 2.0f);
+					const float middleOfTextRegion = m_textRegionRect.left + halfTextRegionWidth;
+					if (m_text->Right() < middleOfTextRegion)
+					{
+						m_marginLeft = std::min(m_originalMarginLeft, m_marginLeft + (halfTextRegionWidth / 2.0f)); // Add back one quarter of the available space
+						m_text->MarginLeft(m_marginLeft);
+					}
+				}
+
+
 				UpdateVerticalBar();
 			}
 			return;
@@ -231,9 +255,17 @@ void TextInput::OnChar(CharEvent& e) noexcept
 
 		// Next, update Text control (Faster than calling SetText)
 		m_text->AddChar(key, m_nextCharIndex);
-		UpdateVerticalBar();
-
 		++m_nextCharIndex;
+
+		// If the text has surpassed the right side of the input control, move the left margin to keep the right side
+		// of the text aligned with the right side of the control area
+		if (m_text->Right() + m_text->MarginRight() > m_textRegionRect.right)
+		{
+			m_marginLeft = -1.0f * (m_text->Width() - (m_textRegionRect.right - m_textRegionRect.left - 4.0f));
+			m_text->MarginLeft(m_marginLeft);
+		}
+
+		UpdateVerticalBar();
 	}
 }
 void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
@@ -247,8 +279,24 @@ void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 	{
 		switch (e.GetKeyCode())
 		{
-		case KEY_CODE::EG_LEFT_ARROW: break;
-		case KEY_CODE::EG_RIGHT_ARROW: break;
+		case KEY_CODE::EG_LEFT_ARROW: 
+		{
+			if (m_nextCharIndex > 0)
+			{
+				--m_nextCharIndex;
+				UpdateVerticalBar();
+			}
+			break;
+		}
+		case KEY_CODE::EG_RIGHT_ARROW: 
+		{
+			if (m_nextCharIndex < m_text->Size())
+			{
+				++m_nextCharIndex;
+				UpdateVerticalBar();
+			}
+			break;
+		}
 		}
 	}
 }
@@ -313,6 +361,9 @@ void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		// Don't care about what button was pressed - We will just say that all buttons are allowed to click out of a TextInput
 		m_textInputControlIsSelected = false;
 
+		// Hide the vertical bar
+		m_drawVerticalBar = false;
+
 		// if the input text size is 0, reload the placeholder text
 		if (m_inputText.size() == 0)
 			SetTextToPlaceholder();
@@ -351,6 +402,10 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 			{
 				m_textInputControlIsSelected = true;
 
+				// Show the vertical bar
+				m_drawVerticalBar = true;
+
+				// Only need to call SetTextToInput if we are switching back from placeholder which is only true if there is no input text
 				if (m_inputText.size() == 0)
 					SetTextToInput();
 			}

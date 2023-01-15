@@ -554,11 +554,37 @@ void UI::OnChar(CharEvent& e) noexcept
 }
 void UI::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
+	if (m_keyboardHandlingControl != nullptr)
+	{
+		m_keyboardHandlingControl->OnKeyPressed(e);
+	}
+	else if (m_keyboardHandlingLayout != nullptr)
+	{
+		m_keyboardHandlingLayout->OnKeyPressed(e);
+	}
 
+	if (!e.Handled())
+		m_rootLayout->OnKeyPressed(e);
+
+	m_keyboardHandlingControl = e.HandlingControl();
+	m_keyboardHandlingLayout = e.HandlingLayout();
 }
 void UI::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
+	if (m_keyboardHandlingControl != nullptr)
+	{
+		m_keyboardHandlingControl->OnKeyReleased(e);
+	}
+	else if (m_keyboardHandlingLayout != nullptr)
+	{
+		m_keyboardHandlingLayout->OnKeyReleased(e);
+	}
 
+	if (!e.Handled())
+		m_rootLayout->OnKeyReleased(e);
+
+	m_keyboardHandlingControl = e.HandlingControl();
+	m_keyboardHandlingLayout = e.HandlingLayout();
 }
 void UI::OnWindowResize(WindowResizeEvent& e) noexcept
 {
