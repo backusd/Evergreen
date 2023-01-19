@@ -12,7 +12,8 @@ Control::Control(std::shared_ptr<DeviceResources> deviceResources,
 	m_name(""),
 	m_deviceResources(deviceResources),
 	m_margin(margin),
-	m_allowedRegion(allowedRegion)
+	m_allowedRegion(allowedRegion),
+	m_id(0)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
@@ -20,7 +21,8 @@ Control::Control(const Control& control) noexcept :
 	m_name(control.m_name + "_copy"),
 	m_deviceResources(control.m_deviceResources),
 	m_margin(control.m_margin),
-	m_allowedRegion(control.m_allowedRegion)
+	m_allowedRegion(control.m_allowedRegion),
+	m_id(0)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
@@ -30,6 +32,7 @@ void Control::operator=(const Control& control) noexcept
 	m_deviceResources = control.m_deviceResources; 
 	m_margin = control.m_margin;
 	m_allowedRegion = control.m_allowedRegion;
+	m_id = 0;
 
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
@@ -53,8 +56,6 @@ void Control::AllowedRegion(float left, float top, float right, float bottom) no
 
 	OnAllowedRegionChanged();
 }
-
-
 
 
 }

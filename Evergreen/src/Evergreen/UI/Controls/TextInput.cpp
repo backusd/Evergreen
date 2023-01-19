@@ -7,17 +7,18 @@ namespace Evergreen
 const float TextInput::m_originalMarginLeft = 4.0f;
 
 TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
-	const D2D1_RECT_F& allowedRegion,
-	const std::wstring& placeholderText,
-	std::unique_ptr<ColorBrush> placeholderBrush,
-	std::unique_ptr<TextStyle> placeholderStyle,
-	std::unique_ptr<ColorBrush> inputTextBrush,
-	std::unique_ptr<TextStyle> inputTextStyle,
-	std::unique_ptr<ColorBrush> backgroundBrush,
-	std::unique_ptr<ColorBrush> borderBrush,
-	float borderWidth,
-	const Evergreen::Margin& margin) noexcept :
+					const D2D1_RECT_F& allowedRegion,
+					const std::wstring& placeholderText,
+					std::unique_ptr<ColorBrush> placeholderBrush,
+					std::unique_ptr<TextStyle> placeholderStyle,
+					std::unique_ptr<ColorBrush> inputTextBrush,
+					std::unique_ptr<TextStyle> inputTextStyle,
+					std::unique_ptr<ColorBrush> backgroundBrush,
+					std::unique_ptr<ColorBrush> borderBrush,
+					float borderWidth,
+					const Evergreen::Margin& margin) noexcept :
 	Control(deviceResources, allowedRegion, margin),
+	m_rightSublayout(nullptr),
 	m_placeholderText(placeholderText),
 	m_placeholderTextBrush(std::move(placeholderBrush)),
 	m_placeholderTextStyle(std::move(placeholderStyle)),
@@ -32,7 +33,8 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 	m_nextCharIndex(0),
 	m_mouseState(MouseOverState::NOT_OVER),
 	m_drawVerticalBar(false),
-	m_marginLeft(m_originalMarginLeft)
+	m_marginLeft(m_originalMarginLeft),
+	m_verticalBarWidth(2.0f)
 {
 	// Brushes
 	if (m_placeholderTextBrush == nullptr)
@@ -143,13 +145,46 @@ void TextInput::Render() const noexcept
 		m_deviceResources->D2DDeviceContext()->DrawLine(
 			D2D1::Point2F(m_verticalBarX, m_verticalBarTop),
 			D2D1::Point2F(m_verticalBarX, m_verticalBarBottom),
-			m_verticalBarBrush->Get()
+			m_verticalBarBrush->Get(),
+			m_verticalBarWidth
 		);
 	}
 
 	// Draw the border last so it appears on top
 	if (m_borderWidth > 0.0f)
 		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);
+}
+
+Layout* TextInput::AddRightColumnLayout(RowColumnDefinition rightColumnDefinition)
+{
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
+	if (m_rightSublayout == nullptr)
+	{
+		m_layout->AddColumn(rightColumnDefinition);
+
+		RowColumnPosition pos;
+		pos.Row = 0;
+		pos.Column = 1;
+		pos.RowSpan = 1;
+		pos.ColumnSpan = 1;
+
+		m_rightSublayout = m_layout->AddSubLayout(pos);
+
+		// Need to adjust the right side of the text region so it doesn't bleed into the right column
+		m_textRegionRect.right = m_layout->Columns()[0].Right();
+	}
+	else
+	{
+		EG_CORE_WARN("{}:{} - AddRightColumnLayout(): A right column layout has already been added to this TextInput", __FILE__, __LINE__);
+	}
+	
+	return m_rightSublayout;
+}
+Layout* TextInput::GetRightColumnLayout() const noexcept
+{
+	EG_CORE_ASSERT(m_rightSublayout != nullptr, "Right column layout has not been added");
+	return m_rightSublayout;
 }
 
 void TextInput::TextInputChanged() noexcept
@@ -164,10 +199,12 @@ void TextInput::TextInputChanged() noexcept
 
 	m_layout->Resize(m_backgroundRect);
 
+	// The text region is always row 0/column 0 of the TextInput control (and we only allow there to be a single row. If content,
+	// is added to the TextInput, it will be added as a sublayout at row 0 column 1)
 	m_textRegionRect.left = m_backgroundRect.left;
 	m_textRegionRect.top = m_backgroundRect.top;
 	m_textRegionRect.bottom = m_backgroundRect.bottom;
-	m_textRegionRect.right = m_layout->Columns()[0].Right(); // The text region is always row 0/column 0 of the TextInput control
+	m_textRegionRect.right = m_layout->Columns()[0].Right();
 
 	// Update the location of the vertical bar
 	UpdateVerticalBar();
@@ -538,6 +575,69 @@ bool TextInput::ContainsPoint(float x, float y) const noexcept
 	return m_layout->ContainsPoint(x, y);
 }
 
+void TextInput::SetPlaceholderText(const std::wstring& placeholderText) noexcept
+{
 
+}
+void TextInput::SetPlaceholderTextStyle(std::unique_ptr<TextStyle> style) noexcept
+{
+
+}
+void TextInput::SetPlaceholderTextBrush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+
+}
+void TextInput::SetInputText(const std::wstring& inputText) noexcept
+{
+	if (inputText.size() > 0)
+	{
+		m_inputText = inputText;
+		m_nextCharIndex = 0;
+		SetTextToInput();
+	}
+}
+void TextInput::SetInputTextStyle(std::unique_ptr<TextStyle> style) noexcept
+{
+
+}
+void TextInput::SetInputTextBrush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+
+}
+void TextInput::SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+
+}
+void TextInput::SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+
+}
+void TextInput::SetBorderWidth(float width) noexcept
+{
+
+}
+void TextInput::SetVerticalBarBrush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+
+}
+void TextInput::SetVerticalBarWidth(float width) noexcept
+{
+
+}
+
+Control* TextInput::GetControlByName(const std::string& name) noexcept
+{
+	if (m_name.contains(name))
+		return this;
+
+	return m_layout->GetControlByName(name);
+}
+Control* TextInput::GetControlByID(unsigned int id) noexcept
+{
+	if (m_id == id)
+		return this;
+
+	return m_layout->GetControlByID(id);
+}
 
 }

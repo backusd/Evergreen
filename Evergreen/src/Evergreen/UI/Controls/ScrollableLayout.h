@@ -30,6 +30,9 @@ public:
 	void Update() noexcept override;
 	void Render() const noexcept override;
 
+	ND virtual Control* GetControlByName(const std::string& name) noexcept override;
+	ND virtual Control* GetControlByID(unsigned int id) noexcept override;
+
 	// Event handling
 	void OnChar(CharEvent& e) noexcept override;
 	void OnKeyPressed(KeyPressedEvent& e) noexcept override;

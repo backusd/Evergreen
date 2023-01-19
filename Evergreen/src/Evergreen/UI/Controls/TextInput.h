@@ -28,9 +28,15 @@ public:
 	void operator=(const TextInput&) noexcept = delete;
 	virtual ~TextInput() noexcept override {}
 
+	ND Layout* AddRightColumnLayout(RowColumnDefinition rightColumnDefinition);
+	ND inline Layout* GetRightColumnLayout() const noexcept;
+
 	// Inherited from Control
 	void Update() noexcept override {}
 	void Render() const noexcept override;
+
+	ND virtual Control* GetControlByName(const std::string& name) noexcept override;
+	ND virtual Control* GetControlByID(unsigned int id) noexcept override;
 
 	// Event handling
 	void OnChar(CharEvent& e) noexcept override;
@@ -43,7 +49,31 @@ public:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
 	
-	
+	// Get/Set Methods
+	void SetPlaceholderText(const std::wstring& placeholderText) noexcept;
+	void SetPlaceholderTextStyle(std::unique_ptr<TextStyle> style) noexcept;
+	void SetPlaceholderTextBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetInputText(const std::wstring& inputText) noexcept;
+	void SetInputTextStyle(std::unique_ptr<TextStyle> style) noexcept;
+	void SetInputTextBrush(std::unique_ptr<ColorBrush> brush) noexcept; 
+	void SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetBorderWidth(float width) noexcept;
+	void SetVerticalBarBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetVerticalBarWidth(float width) noexcept;
+
+	ND inline const std::wstring& GetPlaceholderText() const noexcept { return m_placeholderText; }
+	ND inline const TextStyle* GetPlaceholderTextStyle() const noexcept { return m_placeholderTextStyle.get(); }
+	ND inline const ColorBrush* GetPlaceholderTextBrush() const noexcept { return m_placeholderTextBrush.get(); }
+	ND inline const std::wstring& GetInputText() const noexcept { return m_inputText; }
+	ND inline const TextStyle* GetInputTextStyle() const noexcept { return m_inputTextStyle.get(); }
+	ND inline const ColorBrush* GetInputTextBrush() const noexcept { return m_inputTextBrush.get(); }
+	ND inline const ColorBrush* GetBackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
+	ND inline const ColorBrush* GetBorderBrush() const noexcept { return m_borderBrush.get(); }
+	ND inline float GetBorderWidth() const noexcept { return m_borderWidth; }
+	ND inline const ColorBrush* GetVerticalBarBrush() const noexcept { return m_verticalBarBrush.get(); }
+	ND inline float GetVerticalBarWidth() const noexcept { return m_verticalBarWidth; }
+
 	/*
 	// Text specific
 	ND inline const std::wstring& GetText() const noexcept { return m_text; }
@@ -70,6 +100,7 @@ private:
 	void OnMarginChanged() override;
 	void OnAllowedRegionChanged() override;
 
+	// Functions to replace the text string in the Text control
 	void SetTextToPlaceholder() noexcept;
 	void SetTextToInput() noexcept;
 
@@ -78,6 +109,7 @@ private:
 	void UpdateVerticalBar() noexcept;
 
 	std::unique_ptr<Layout> m_layout;
+	Layout* m_rightSublayout;
 
 	// We can only have a single Text control, which we will just modify in place to switch between the placeholder text and input text
 	Text* m_text;
@@ -105,6 +137,7 @@ private:
 	float m_verticalBarTop;
 	float m_verticalBarBottom;
 	float m_verticalBarX;
+	float m_verticalBarWidth;
 	bool m_drawVerticalBar;
 	std::unique_ptr<ColorBrush>	m_verticalBarBrush;
 

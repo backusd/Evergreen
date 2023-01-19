@@ -45,6 +45,7 @@ public:
 	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept {}
 
 	void Name(const std::string& name) noexcept { m_name = name; OnNameChanged(); }
+	void ID(unsigned int id) noexcept { m_id = id; }
 	void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; OnMarginChanged(); }
 	void Margin(float left, float top, float right, float bottom) noexcept;
 	void MarginLeft(float left) noexcept { m_margin.Left = left; OnMarginChanged(); }
@@ -55,12 +56,20 @@ public:
 	void AllowedRegion(float left, float top, float right, float bottom) noexcept;
 
 	ND inline const std::string& Name() const noexcept { return m_name; }
+	ND inline unsigned int ID() const noexcept { return m_id; }
 	ND inline Evergreen::Margin Margin() const noexcept { return m_margin; }
 	ND inline float MarginLeft() const noexcept { return m_margin.Left; }
 	ND inline float MarginTop() const noexcept { return m_margin.Top; }
 	ND inline float MarginRight() const noexcept { return m_margin.Right; }
 	ND inline float MarginBottom() const noexcept { return m_margin.Bottom; }
 	ND inline D2D1_RECT_F AllowedRegion() const noexcept { return m_allowedRegion; }
+
+	// Virtual functions to retrieve a control by either name or ID. By default, they will simply only
+	// check whether their name/ID matches and either return 'this' or nullptr. However, other controls (such
+	// as Button) which may contain sub-controls, will want to forward this function call to test its sub-layouts/controls
+	ND inline virtual Control* GetControlByName(const std::string& name) noexcept { return m_name.contains(name) ? this : nullptr; }
+	ND inline virtual Control* GetControlByID(unsigned int id) noexcept { return m_id == id ? this : nullptr; }
+
 
 protected:
 	// On* functions allow derived controls to perform necessary additional actions when a base class method is called
@@ -69,6 +78,7 @@ protected:
 	virtual void OnAllowedRegionChanged() {}
 
 	std::string							m_name;
+	unsigned int						m_id;
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;	
 

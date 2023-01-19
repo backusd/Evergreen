@@ -499,6 +499,44 @@ Layout* Layout::GetSublayout(unsigned int index) const noexcept
 	EG_CORE_ASSERT(index < m_subLayouts.size(), "Index is too large/not enough sublayouts");
 	return m_subLayouts[index].get();
 }
+Control* Layout::GetControlByName(const std::string& name) const noexcept
+{
+	Control* found = nullptr;
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		found = control->GetControlByName(name);
+		if (found != nullptr)
+			return found;
+	}
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		found = sublayout->GetControlByName(name);
+		if (found != nullptr)
+			return found;
+	}
+
+	return nullptr;
+}
+Control* Layout::GetControlByID(unsigned int id) const noexcept
+{
+	Control* found = nullptr;
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		found = control->GetControlByID(id);
+		if (found != nullptr)
+			return found;
+	}
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		found = sublayout->GetControlByID(id);
+		if (found != nullptr)
+			return found;
+	}
+
+	return nullptr;
+}
 
 void Layout::Resize(const D2D1_RECT_F& rect) noexcept
 {

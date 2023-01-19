@@ -697,4 +697,19 @@ void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) 
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnMouseButtonDoubleClick(e);
 }
+
+Control* ScrollableLayout::GetControlByName(const std::string& name) noexcept
+{
+	if (m_name.contains(name))
+		return this;
+
+	return m_layout->GetControlByName(name);
+}
+Control* ScrollableLayout::GetControlByID(unsigned int id) noexcept
+{
+	if (m_id == id)
+		return this;
+
+	return m_layout->GetControlByID(id);
+}
 }

@@ -189,6 +189,8 @@ public:
 
 	ND inline Control* GetControl(unsigned int index) const noexcept;
 	ND inline Layout* GetSublayout(unsigned int index) const noexcept;
+	ND Control* GetControlByName(const std::string& name) const noexcept;
+	ND Control* GetControlByID(unsigned int id) const noexcept;
 
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;

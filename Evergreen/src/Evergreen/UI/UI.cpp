@@ -469,6 +469,96 @@ void UI::LoadDefaultUI() noexcept
 		2.0f,
 		tiMargin
 	);
+	ti->Name("TextInputControl");
+
+	Layout* tiRightLayout = ti->AddRightColumnLayout({ RowColumnType::FIXED, 50.0f });
+	tiRightLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	tiRightLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	std::unique_ptr<SolidColorBrush> tiRightButtonBackgroundBrush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+	std::unique_ptr<SolidColorBrush> tiRightButtonBorderBrush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Pink));
+	Evergreen::Margin tiRightButtonMargin = { 4.0f, 4.0f, 4.0f, 4.0f };
+
+	Button* tiRightButton = tiRightLayout->CreateControl<Button>(
+		m_deviceResources,
+		std::move(tiRightButtonBackgroundBrush),
+		std::move(tiRightButtonBorderBrush),
+		0.0f,
+		tiRightButtonMargin
+		);
+
+	Layout* tiRightButtonLayout = tiRightButton->GetLayout();
+	tiRightButtonLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	tiRightButtonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	Text* tiRightButtonText = tiRightButtonLayout->CreateControl<Text>(m_deviceResources);
+
+	std::wstring tiRightButtonTextString = L"";
+	tiRightButtonTextString.push_back(static_cast<wchar_t>(std::stoi(L"0xE721", nullptr, 16)));
+
+	tiRightButtonText->SetText(tiRightButtonTextString);
+	tiRightButtonText->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+	tiRightButtonText->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+	tiRightButtonText->GetTextStyle()->FontFamily(FontFamily::Segoe_MDL2_Assets);
+	tiRightButtonText->GetTextStyle()->FontSize(22.0f);
+
+	tiRightButton->SetOnMouseEnteredButtonCallback(
+		[](Control* b, Event& e)
+		{
+			Button* button = static_cast<Button*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::AliceBlue));
+			button->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	tiRightButton->SetOnMouseExitedButtonCallback(
+		[](Control* b, Event& e)
+		{
+			Button* button = static_cast<Button*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+			button->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	tiRightButton->SetOnMouseLButtonDownCallback(
+		[](Control* b, Event& e)
+		{
+			Button* button = static_cast<Button*>(b);
+
+			std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightBlue));
+			button->BackgroundBrush(std::move(backgroundBrush));
+		}
+	);
+	tiRightButton->SetOnMouseLButtonUpCallback(
+		[](Control* b, Event& e)
+		{
+			Button* button = static_cast<Button*>(b);
+
+			// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
+			// OnMouseLeave event will fire and set the background color anyways)
+			if (button->MouseIsOver())
+			{
+				std::unique_ptr<SolidColorBrush> backgroundBrush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::AliceBlue));
+				button->BackgroundBrush(std::move(backgroundBrush));
+			}
+
+		}
+	);
+	tiRightButton->SetOnClickCallback(
+		[this](Control* b, Event& e)
+		{
+			Control* _textInput = this->GetControlByName("TextInputControl");
+			TextInput* textInput = static_cast<TextInput*>(_textInput);
+
+
+
+			static int iii = 0;
+
+			textInput->SetInputText(std::format(L"{}", iii));
+
+			++iii;
+		}
+	);
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

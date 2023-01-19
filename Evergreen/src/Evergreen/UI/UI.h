@@ -48,6 +48,9 @@ public:
 	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
 	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
 
+	ND inline Control* GetControlByName(const std::string& name) const noexcept { return m_rootLayout->GetControlByName(name); }
+	ND inline Control* GetControlByID(unsigned int id) const noexcept { return m_rootLayout->GetControlByID(id); }
+
 private:
 	void LoadDefaultUI() noexcept;
 	void LoadErrorUI() noexcept;
