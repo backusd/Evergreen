@@ -30,7 +30,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	float borderWidth = ParseBorderWidth(data);
 
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
+	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
 	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick"};
 	for (auto& [key, value] : data.items())
@@ -42,6 +42,9 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	// Create the new Text control
 	Button* button = parent->CreateControl<Button>(rowCol, deviceResources, std::move(backgroundBrush), std::move(borderBrush), borderWidth, margin);
 	EG_CORE_ASSERT(button != nullptr, "Something went wrong, button is nullptr");
+
+	button->Name(name);
+	button->ID(ParseID(data));
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 

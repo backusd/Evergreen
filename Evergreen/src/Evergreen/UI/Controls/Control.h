@@ -67,7 +67,7 @@ public:
 	// Virtual functions to retrieve a control by either name or ID. By default, they will simply only
 	// check whether their name/ID matches and either return 'this' or nullptr. However, other controls (such
 	// as Button) which may contain sub-controls, will want to forward this function call to test its sub-layouts/controls
-	ND inline virtual Control* GetControlByName(const std::string& name) noexcept { return m_name.contains(name) ? this : nullptr; }
+	ND inline virtual Control* GetControlByName(const std::string& name) noexcept { return m_name.compare(name) == 0 ? this : nullptr; }
 	ND inline virtual Control* GetControlByID(unsigned int id) noexcept { return m_id == id ? this : nullptr; }
 
 

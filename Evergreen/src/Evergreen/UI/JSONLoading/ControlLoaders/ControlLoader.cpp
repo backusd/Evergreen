@@ -99,4 +99,16 @@ Margin ControlLoader::ParseMargin(json& data)
 	return margin;
 }
 
+unsigned int ControlLoader::ParseID(json& data)
+{
+	if (data.contains("id"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["id"].is_number_unsigned(), "Control with name: '{}'. 'id' value must be an unsigned int. Invalid data: {}", m_name, data.dump(4));
+
+		return data["id"].get<unsigned int>();
+	}
+
+	return 0;
+}
+
 }

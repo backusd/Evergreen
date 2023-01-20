@@ -700,7 +700,7 @@ void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) 
 
 Control* ScrollableLayout::GetControlByName(const std::string& name) noexcept
 {
-	if (m_name.contains(name))
+	if (m_name.compare(name) == 0)
 		return this;
 
 	return m_layout->GetControlByName(name);

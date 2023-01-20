@@ -240,6 +240,13 @@ void TextInput::OnAllowedRegionChanged()
 
 	// Update the location of the vertical bar
 	UpdateVerticalBar();
+
+	// Update brush regions
+	m_backgroundBrush->SetDrawRegion(m_allowedRegion);
+	m_borderBrush->SetDrawRegion(m_allowedRegion);
+	m_placeholderTextBrush->SetDrawRegion(m_allowedRegion);
+	m_inputTextBrush->SetDrawRegion(m_allowedRegion);
+	m_verticalBarBrush->SetDrawRegion(m_allowedRegion);
 }
 
 void TextInput::SetTextToPlaceholder() noexcept
@@ -321,16 +328,10 @@ void TextInput::OnChar(CharEvent& e) noexcept
 		m_text->AddChar(key, m_nextCharIndex);
 		++m_nextCharIndex;
 
-		// If the text has surpassed the right side of the input control, move the left margin to keep the right side
-		// of the text aligned with the right side of the control area
-		//float r1 = m_text->Right();
-		//float r2 = m_text->MarginRight();
-		//float r3 = m_textRegionRect.right;
-		//float r4 = m_text->RightSideOfCharacterAtIndex(m_nextCharIndex - 1);
-
-		//if (m_text->Right() + m_text->MarginRight() > m_textRegionRect.right)
 		UpdateVerticalBar();
 
+		// If the text has surpassed the right side of the input control, move the left margin to keep the right side
+		// of the text aligned with the right side of the control area
 		if (m_verticalBarX > m_textRegionRect.right)
 		{
 			m_marginLeft = -1.0f * (m_text->Width() - (m_textRegionRect.right - m_textRegionRect.left - 4.0f));
@@ -390,51 +391,21 @@ void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
 }
 void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
-	/*
-	// Only edit the text if this control has been clicked into
-	if (m_textInputControlIsSelected)
-	{
-		switch (e.GetKeyCode())
-		{
-		case KEY_CODE::EG_LEFT_ARROW: 
-		{
-			if (m_nextCharIndex > 0)
-			{
-				--m_nextCharIndex;
-				UpdateVerticalBar();
 
-				// If the vertical bar is left of the text region, adjust the margin
-				if (m_verticalBarX < m_textRegionRect.left)
-				{
-					const float quarterTextRegionWidth = ((m_textRegionRect.right - m_textRegionRect.left) / 4.0f);
-					m_marginLeft = std::min(m_originalMarginLeft, m_marginLeft + quarterTextRegionWidth); // Add back one quarter of the available space
-					m_text->MarginLeft(m_marginLeft);
-					UpdateVerticalBar();
-				}
-			}
-			break;
-		}
-		case KEY_CODE::EG_RIGHT_ARROW: 
-		{
-			if (m_nextCharIndex < m_text->Size())
-			{
-				++m_nextCharIndex;
-				UpdateVerticalBar();
-			}
-			break;
-		}
-		}
-	}
-	*/
 }
 void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 {
+	bool mouseIsOver = ContainsPoint(e.GetX(), e.GetY());
+
+	// We are going to just trigger the OnMouseMove callback as long as the mouse is moving over the
+	// control, even though the layout may decide to handle the event
+	if (mouseIsOver)
+		m_OnMouseMoved(this, e);
+
 	// First pass to layout, if the layout does not handle it, then the control can handle it
 	m_layout->OnMouseMove(e);
 	if (e.Handled())
 		return;
-
-	bool mouseIsOver = ContainsPoint(e.GetX(), e.GetY());
 
 	switch (m_mouseState)
 	{
@@ -443,6 +414,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			m_mouseState = MouseOverState::OVER;
 			e.Handled(this);
+			m_OnMouseEntered(this, e);
 		}
 
 		break;
@@ -450,6 +422,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 		if (!mouseIsOver)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
+			m_OnMouseExited(this, e);
 			return;
 		}
 
@@ -577,57 +550,107 @@ bool TextInput::ContainsPoint(float x, float y) const noexcept
 
 void TextInput::SetPlaceholderText(const std::wstring& placeholderText) noexcept
 {
+	m_placeholderText = placeholderText;
 
+	// If there is no input text and the control is not selected, display the placeholder text
+	if (m_inputText.size() == 0 && !m_textInputControlIsSelected)
+	{
+		SetTextToPlaceholder();
+	}
 }
 void TextInput::SetPlaceholderTextStyle(std::unique_ptr<TextStyle> style) noexcept
 {
+	EG_CORE_ASSERT(style != nullptr, "Cannot set placeholder style to nullptr");
 
+	m_placeholderTextStyle = std::move(style);
+
+	// If there is no input text and the control is not selected, display the placeholder text
+	if (m_inputText.size() == 0 && !m_textInputControlIsSelected)
+	{
+		SetTextToPlaceholder();
+	}
 }
 void TextInput::SetPlaceholderTextBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
+	EG_CORE_ASSERT(brush != nullptr, "Cannot set placeholder brush to nullptr");
 
+	m_placeholderTextBrush = std::move(brush);
+
+	// If there is no input text and the control is not selected, display the placeholder text
+	if (m_inputText.size() == 0 && !m_textInputControlIsSelected)
+	{
+		SetTextToPlaceholder();
+	}
 }
 void TextInput::SetInputText(const std::wstring& inputText) noexcept
 {
+	m_inputText = inputText;
+
 	if (inputText.size() > 0)
-	{
-		m_inputText = inputText;
-		m_nextCharIndex = 0;
+	{		
+		m_nextCharIndex = static_cast<unsigned int>(m_inputText.size());
 		SetTextToInput();
+	}
+	else if (!m_textInputControlIsSelected)
+	{
+		SetTextToPlaceholder();
 	}
 }
 void TextInput::SetInputTextStyle(std::unique_ptr<TextStyle> style) noexcept
 {
+	EG_CORE_ASSERT(style != nullptr, "Cannot set input style to nullptr");
 
+	m_inputTextStyle = std::move(style);
+
+	if (m_inputText.size() > 0 || m_textInputControlIsSelected)
+	{
+		SetTextToInput();
+	}
 }
 void TextInput::SetInputTextBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
+	EG_CORE_ASSERT(brush != nullptr, "Cannot set input brush to nullptr");
 
+	m_inputTextBrush = std::move(brush);
+
+	if (m_inputText.size() > 0 || m_textInputControlIsSelected)
+	{
+		SetTextToInput();
+	}
 }
 void TextInput::SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
+	EG_CORE_ASSERT(brush != nullptr, "Cannot set background brush to nullptr");
 
+	m_backgroundBrush = std::move(brush);	
+	m_backgroundBrush->SetDrawRegion(m_allowedRegion);
 }
 void TextInput::SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
+	EG_CORE_ASSERT(brush != nullptr, "Cannot set border brush to nullptr");
 
+	m_borderBrush = std::move(brush);
+	m_borderBrush->SetDrawRegion(m_allowedRegion);
 }
 void TextInput::SetBorderWidth(float width) noexcept
 {
-
+	m_borderWidth = width;
 }
 void TextInput::SetVerticalBarBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
+	EG_CORE_ASSERT(brush != nullptr, "Cannot set vertical bar brush to nullptr");
 
+	m_verticalBarBrush = std::move(brush);
+	m_verticalBarBrush->SetDrawRegion(m_allowedRegion);
 }
 void TextInput::SetVerticalBarWidth(float width) noexcept
 {
-
+	m_verticalBarWidth = width;
 }
 
 Control* TextInput::GetControlByName(const std::string& name) noexcept
 {
-	if (m_name.contains(name))
+	if (m_name.compare(name) == 0)
 		return this;
 
 	return m_layout->GetControlByName(name);

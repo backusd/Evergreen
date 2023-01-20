@@ -36,7 +36,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 
 
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
+	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"Style", "Brush", "FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
 	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale"};
 	for (auto& [key, value] : data.items())
@@ -46,7 +46,13 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	}
 
 	// Create the new Text control
-	return parent->CreateControl<Text>(rowCol, deviceResources, text, std::move(brush), std::move(style), margin);
+	Text* textControl = parent->CreateControl<Text>(rowCol, deviceResources, text, std::move(brush), std::move(style), margin);
+	EG_CORE_ASSERT(textControl != nullptr, "Something went wrong, Text is nullptr");
+
+	textControl->Name(name);
+	textControl->ID(ParseID(data));
+	
+	return textControl;
 }
 
 void TextLoader::ValidateJSONData(json& data)

@@ -28,6 +28,7 @@ protected:
 
 	RowColumnPosition ParseRowColumnPosition(json& data);
 	Margin ParseMargin(json& data);
+	unsigned int ParseID(json& data);
 
 	std::string m_name;
 

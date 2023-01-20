@@ -34,7 +34,7 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	float radiusY = ParseRadiusY(data);
 
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
+	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadiusX", "CornerRadiusY", "Content", "OnMouseEnter",
 	"OnMouseMoved", "OnMouseLeave", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick" };
 	for (auto& [key, value] : data.items())
@@ -46,6 +46,9 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	// Create the new Text control
 	RoundedButton* button = parent->CreateControl<RoundedButton>(rowCol, deviceResources, std::move(backgroundBrush), std::move(borderBrush), radiusX, radiusY, borderWidth, margin);
 	EG_CORE_ASSERT(button != nullptr, "Something went wrong, button is nullptr");
+
+	button->Name(name);
+	button->ID(ParseID(data));
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 

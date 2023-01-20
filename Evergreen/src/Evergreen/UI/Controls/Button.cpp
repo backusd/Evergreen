@@ -211,7 +211,7 @@ void Button::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 
 Control* Button::GetControlByName(const std::string& name) noexcept
 {
-	if (m_name.contains(name))
+	if (m_name.compare(name) == 0)
 		return this;
 
 	return m_layout->GetControlByName(name);

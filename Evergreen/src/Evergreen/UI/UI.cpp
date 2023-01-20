@@ -550,13 +550,22 @@ void UI::LoadDefaultUI() noexcept
 			Control* _textInput = this->GetControlByName("TextInputControl");
 			TextInput* textInput = static_cast<TextInput*>(_textInput);
 
-
-
 			static int iii = 0;
+			textInput->SetInputText(std::format(L"{}", ++iii));
+			
+			textInput->SetPlaceholderText(L"baby cakes");
+			textInput->ActivateForTextInput();
 
-			textInput->SetInputText(std::format(L"{}", iii));
+			std::unique_ptr<SolidColorBrush> inputBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
+			textInput->SetInputTextBrush(std::move(inputBrush));
 
-			++iii;
+			std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
+			textInput->SetBackgroundBrush(std::move(bkgdBrush));
+
+			std::unique_ptr<SolidColorBrush> borderBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DarkGreen));
+			textInput->SetBorderBrush(std::move(borderBrush));
+
+			textInput->SetBorderWidth(6.0f);
 		}
 	);
 }

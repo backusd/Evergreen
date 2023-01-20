@@ -58,9 +58,10 @@ public:
 	void SetInputTextBrush(std::unique_ptr<ColorBrush> brush) noexcept; 
 	void SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	void SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
-	void SetBorderWidth(float width) noexcept;
+	inline void SetBorderWidth(float width) noexcept;
 	void SetVerticalBarBrush(std::unique_ptr<ColorBrush> brush) noexcept;
-	void SetVerticalBarWidth(float width) noexcept;
+	inline void SetVerticalBarWidth(float width) noexcept;
+	void ActivateForTextInput() noexcept { m_textInputControlIsSelected = true; m_OnTextInputActivationChanged(this, true); }
 
 	ND inline const std::wstring& GetPlaceholderText() const noexcept { return m_placeholderText; }
 	ND inline const TextStyle* GetPlaceholderTextStyle() const noexcept { return m_placeholderTextStyle.get(); }
@@ -74,18 +75,29 @@ public:
 	ND inline const ColorBrush* GetVerticalBarBrush() const noexcept { return m_verticalBarBrush.get(); }
 	ND inline float GetVerticalBarWidth() const noexcept { return m_verticalBarWidth; }
 
-	/*
-	// Text specific
-	ND inline const std::wstring& GetText() const noexcept { return m_text; }
-	ND inline TextStyle* GetTextStyle() const noexcept { return m_style.get(); }
-	ND inline ColorBrush* GetColorBrush() const noexcept { return m_colorBrush.get(); }
-
-	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
-	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept;
-	void SetColorBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
-	*/
+	// Callback Setters
+	void SetOnMouseEnteredButtonCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseEntered = func; }
+	void SetOnMouseExitedButtonCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseExited = func; }
+	void SetOnMouseMovedCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseMoved = func; }
+	void SetOnMouseLButtonDownCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseLButtonDown = func; }
+	void SetOnMouseLButtonUpCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseLButtonUp = func; }
+	void SetOnClickCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnClick = func; }
+	void SetOnEnterKeyCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnEnterKey = func; }
+	void SetOnInputTextChangedCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnInputTextChanged = func; }
+	void SetOnTextInputActivationChangedCallback(std::function<void(Control*, bool)> func) noexcept { m_OnTextInputActivationChanged = func; }
 
 private:
+	std::function<void(Control*, Event&)> m_OnMouseEntered = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseExited = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseMoved = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseLButtonDown = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseLButtonUp = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnClick = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnEnterKey = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnInputTextChanged = [](Control*, Event&) {};
+	std::function<void(Control*, bool)> m_OnTextInputActivationChanged = [](Control*, bool) {};
+
+
 	enum class MouseOverState
 	{
 		NOT_OVER,

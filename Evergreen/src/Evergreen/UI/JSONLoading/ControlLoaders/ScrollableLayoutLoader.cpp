@@ -36,7 +36,7 @@ Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> devic
 		EG_CORE_WARN("{}:{} - ScrollableLayout control with name '{}'. 'scrollHorizontal' and 'scrollVertical' are both false. At least one of these should be true.", __FILE__, __LINE__, m_name);
 
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "Type", "Row", "Column", "RowSpan", "ColumnSpan", "RowDefinitions", "ColumnDefinitions",
+	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "RowDefinitions", "ColumnDefinitions",
 	"Margin", "ScrollVertical", "ScrollHorizontal", "BackgroundBrush", "BorderBrush", "BorderWidth", "VerticalScrollBarCornerRadius", 
 	"VerticalScrollBarCornerRadiusX", "VerticalScrollBarCornerRadiusY", "VerticalScrollBarEnabled", "VerticalScrollBarHiddenWhenNotOver", 
 	"VerticalScrollBarWidth",	"VerticalScrollBarRegionWidth", "VerticalScrollBarBrush", "VerticalScrollBarHoveredBrush", 
@@ -65,6 +65,9 @@ Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> devic
 		borderWidth, 
 		margin);
 	EG_CORE_ASSERT(scrollableLayout != nullptr, "Something went wrong, scrollableLayout is nullptr");
+
+	scrollableLayout->Name(name);
+	scrollableLayout->ID(ParseID(data));
 
 	ParseRowDefinitions(scrollableLayout, data, scrollVertical);
 	ParseColumnDefinitions(scrollableLayout, data, scrollhorizontal);
