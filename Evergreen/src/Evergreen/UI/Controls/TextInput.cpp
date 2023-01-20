@@ -231,6 +231,13 @@ void TextInput::OnMarginChanged()
 }
 void TextInput::OnAllowedRegionChanged()
 {
+	EG_CORE_ASSERT(m_text != nullptr, "No Text");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+	EG_CORE_ASSERT(m_placeholderTextBrush != nullptr, "No placeholder text brush");
+	EG_CORE_ASSERT(m_inputTextBrush != nullptr, "No input text brush");
+	EG_CORE_ASSERT(m_verticalBarBrush != nullptr, "No vertical bar brush");
+
 	TextInputChanged();
 
 	// Reset the text margin and vertical bar
@@ -277,6 +284,9 @@ void TextInput::SetTextToInput() noexcept
 
 void TextInput::OnChar(CharEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	EG_CORE_ASSERT(m_text != nullptr, "No Text");
+
 	// Only edit the text if this control has been clicked into
 	if (m_textInputControlIsSelected)
 	{
@@ -350,9 +360,16 @@ void TextInput::OnChar(CharEvent& e) noexcept
 
 		m_OnInputTextChanged(this, e);
 	}
+	else
+	{
+		m_layout->OnChar(e);
+	}
 }
 void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	EG_CORE_ASSERT(m_text != nullptr, "No Text");
+
 	// Going to process the arrow keys here because when an arrow is held down, only the OnKeyPressed event is
 	// repeated. OnKeyReleased only occurs once when the key is actually released
 
@@ -399,6 +416,10 @@ void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
 		}
 		}
 	}
+	else
+	{
+		m_layout->OnKeyPressed(e);
+	}
 }
 void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
@@ -406,6 +427,8 @@ void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
 }
 void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	bool mouseIsOver = ContainsPoint(e.GetX(), e.GetY());
 
 	// We are going to just trigger the OnMouseMove callback as long as the mouse is moving over the
@@ -425,6 +448,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			m_mouseState = MouseOverState::OVER;
 			e.Handled(this);
+			Window::SetCursor(Cursor::I_BEAM);
 			m_OnMouseEntered(this, e);
 		}
 
@@ -433,6 +457,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 		if (!mouseIsOver)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
+			Window::SetCursor(Cursor::ARROW);
 			m_OnMouseExited(this, e);
 			return;
 		}
@@ -466,6 +491,8 @@ void TextInput::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 }
 void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	// First, handle the scenario when a user clicks out of the control
 	if (m_textInputControlIsSelected && m_mouseState == MouseOverState::NOT_OVER)
 	{
@@ -503,6 +530,9 @@ void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 }
 void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	EG_CORE_ASSERT(m_text != nullptr, "No Text");
+
 	// Before passing to layout, first handle this event if in the state OVER_AND_LBUTTON_DOWN
 
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
@@ -541,15 +571,21 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 			UpdateVerticalBar();
 			
 			e.Handled(this);
+			m_OnMouseLButtonUp(this, e);
+			m_OnClick(this, e);
+			return;
 		}
 		else if (m_mouseState == MouseOverState::NOT_OVER_AND_LBUTTON_DOWN)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
+			m_OnMouseLButtonUp(this, e);
+			m_OnClick(this, e);
+			return;
 		}
-
-		m_OnMouseLButtonUp(this, e);
-		m_OnClick(this, e);
 	}
+
+	// Finally, pass to layout
+	m_layout->OnMouseButtonReleased(e);
 }
 void TextInput::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 {
@@ -558,6 +594,7 @@ void TextInput::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcep
 
 bool TextInput::ContainsPoint(float x, float y) const noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 	return m_layout->ContainsPoint(x, y);
 }
 
@@ -663,6 +700,8 @@ void TextInput::SetVerticalBarWidth(float width) noexcept
 
 Control* TextInput::GetControlByName(const std::string& name) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	if (m_name.compare(name) == 0)
 		return this;
 
@@ -670,6 +709,8 @@ Control* TextInput::GetControlByName(const std::string& name) noexcept
 }
 Control* TextInput::GetControlByID(unsigned int id) noexcept
 {
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+
 	if (m_id == id)
 		return this;
 
