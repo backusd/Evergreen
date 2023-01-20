@@ -61,7 +61,7 @@ public:
 	inline void SetBorderWidth(float width) noexcept;
 	void SetVerticalBarBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	inline void SetVerticalBarWidth(float width) noexcept;
-	void ActivateForTextInput() noexcept { m_textInputControlIsSelected = true; m_OnTextInputActivationChanged(this, true); }
+	inline void ActivateForTextInput() noexcept { m_textInputControlIsSelected = true; }
 
 	ND inline const std::wstring& GetPlaceholderText() const noexcept { return m_placeholderText; }
 	ND inline const TextStyle* GetPlaceholderTextStyle() const noexcept { return m_placeholderTextStyle.get(); }
@@ -84,7 +84,6 @@ public:
 	void SetOnClickCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnClick = func; }
 	void SetOnEnterKeyCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnEnterKey = func; }
 	void SetOnInputTextChangedCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnInputTextChanged = func; }
-	void SetOnTextInputActivationChangedCallback(std::function<void(Control*, bool)> func) noexcept { m_OnTextInputActivationChanged = func; }
 
 private:
 	std::function<void(Control*, Event&)> m_OnMouseEntered = [](Control*, Event&) {};
@@ -95,7 +94,6 @@ private:
 	std::function<void(Control*, Event&)> m_OnClick = [](Control*, Event&) {};
 	std::function<void(Control*, Event&)> m_OnEnterKey = [](Control*, Event&) {};
 	std::function<void(Control*, Event&)> m_OnInputTextChanged = [](Control*, Event&) {};
-	std::function<void(Control*, bool)> m_OnTextInputActivationChanged = [](Control*, bool) {};
 
 
 	enum class MouseOverState

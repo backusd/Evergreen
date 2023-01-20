@@ -568,6 +568,59 @@ void UI::LoadDefaultUI() noexcept
 			textInput->SetBorderWidth(6.0f);
 		}
 	);
+	// ---
+	ti->SetOnMouseEnteredButtonCallback(
+		[](Control* c, Event& e)
+		{
+			TextInput* textInput = static_cast<TextInput*>(c);
+			std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
+			textInput->SetBackgroundBrush(std::move(bkgdBrush));
+		}
+	);
+
+	ti->SetOnMouseExitedButtonCallback(
+		[](Control* c, Event& e)
+		{
+			TextInput* textInput = static_cast<TextInput*>(c);
+			std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
+			textInput->SetBackgroundBrush(std::move(bkgdBrush));
+		}
+	);
+
+	ti->SetOnMouseLButtonDownCallback(
+		[](Control* c, Event& e)
+		{
+			TextInput* textInput = static_cast<TextInput*>(c);
+			std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Coral));
+			textInput->SetBackgroundBrush(std::move(bkgdBrush));
+		}
+	);
+
+	ti->SetOnMouseLButtonUpCallback(
+		[](Control* c, Event& e)
+		{
+			TextInput* textInput = static_cast<TextInput*>(c);
+			std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
+			textInput->SetBackgroundBrush(std::move(bkgdBrush));
+		}
+	);
+
+	ti->SetOnEnterKeyCallback(
+		[](Control* c, Event& e)
+		{
+			TextInput* textInput = static_cast<TextInput*>(c);
+			//EG_CORE_TRACE("{}", "TextInput: ENTER");
+		}
+	);
+
+	ti->SetOnInputTextChangedCallback(
+		[](Control* c, Event& e)
+		{
+			TextInput* textInput = static_cast<TextInput*>(c);
+			//std::string s(textInput->GetInputText().begin(), textInput->GetInputText().end());
+			//EG_CORE_TRACE("{}", s);
+		}
+	);
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

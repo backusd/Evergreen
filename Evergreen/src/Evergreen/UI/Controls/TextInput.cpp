@@ -281,7 +281,15 @@ void TextInput::OnChar(CharEvent& e) noexcept
 	if (m_textInputControlIsSelected)
 	{
 		const char key = e.GetKeyCode();
-		// First, handle the backspace character
+
+		// First, handle if the user presses ENTER
+		if (key == '\r' || key == '\n')
+		{
+			m_OnEnterKey(this, e);
+			return;
+		}
+
+		// Second, handle the backspace character
 		if (key == '\b')
 		{
 			if (m_nextCharIndex > 0)
@@ -314,30 +322,33 @@ void TextInput::OnChar(CharEvent& e) noexcept
 					UpdateVerticalBar();
 				}
 			}
-			return;
+		}
+		else
+		{
+			// Update the input text string that is held locally (we need this to be able to swap back and
+			// forth between the input text and placeholder text)
+			if (m_nextCharIndex == m_inputText.size())
+				m_inputText.push_back(key);
+			else
+				m_inputText.insert(m_nextCharIndex, 1, key);
+
+			// Next, update Text control (Faster than calling SetText)
+			m_text->AddChar(key, m_nextCharIndex);
+			++m_nextCharIndex;
+
+			UpdateVerticalBar();
+
+			// If the text has surpassed the right side of the input control, move the left margin to keep the right side
+			// of the text aligned with the right side of the control area
+			if (m_verticalBarX > m_textRegionRect.right)
+			{
+				m_marginLeft = -1.0f * (m_text->Width() - (m_textRegionRect.right - m_textRegionRect.left - 4.0f));
+				m_text->MarginLeft(m_marginLeft);
+				UpdateVerticalBar();
+			}
 		}
 
-		// Update the input text string that is held locally (we need this to be able to swap back and
-		// forth between the input text and placeholder text)
-		if (m_nextCharIndex == m_inputText.size())
-			m_inputText.push_back(key);
-		else
-			m_inputText.insert(m_nextCharIndex, 1, key);
-
-		// Next, update Text control (Faster than calling SetText)
-		m_text->AddChar(key, m_nextCharIndex);
-		++m_nextCharIndex;
-
-		UpdateVerticalBar();
-
-		// If the text has surpassed the right side of the input control, move the left margin to keep the right side
-		// of the text aligned with the right side of the control area
-		if (m_verticalBarX > m_textRegionRect.right)
-		{
-			m_marginLeft = -1.0f * (m_text->Width() - (m_textRegionRect.right - m_textRegionRect.left - 4.0f));
-			m_text->MarginLeft(m_marginLeft);
-			UpdateVerticalBar();
-		}		
+		m_OnInputTextChanged(this, e);
 	}
 }
 void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
@@ -485,7 +496,8 @@ void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
-			m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;			
+			m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;
+			m_OnMouseLButtonDown(this, e);
 		}
 	}
 }
@@ -529,13 +541,14 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 			UpdateVerticalBar();
 			
 			e.Handled(this);
-			return;
 		}
 		else if (m_mouseState == MouseOverState::NOT_OVER_AND_LBUTTON_DOWN)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
-			return;
 		}
+
+		m_OnMouseLButtonUp(this, e);
+		m_OnClick(this, e);
 	}
 }
 void TextInput::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
