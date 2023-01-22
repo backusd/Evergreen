@@ -71,6 +71,8 @@ private:
 	virtual void Init(const WindowProperties& props) noexcept;
 	virtual void Shutdown() noexcept;
 
+	inline void BringToForeground() const;
+
 	ND KEY_CODE WParamToKeyCode(WPARAM wParam) const noexcept;
 
 	ND LRESULT OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept;

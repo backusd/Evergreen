@@ -52,6 +52,14 @@ void Window::Init(const WindowProperties& props) noexcept
 	// ... Create window ...
 }
 
+void Window::BringToForeground() const
+{
+	if (m_hWnd != ::GetForegroundWindow())
+	{
+		::SetForegroundWindow(m_hWnd);
+	}
+}
+
 std::optional<int> Window::ProcessMessages() const noexcept
 {
 	MSG msg;
@@ -179,6 +187,8 @@ LRESULT Window::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) c
 		OnMouseLeaveFn(l);
 	}
 
+	BringToForeground();
+
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-lbuttonup
 	// --> "An application should return zero if it processes this message."
 	return 0;
@@ -216,6 +226,8 @@ LRESULT Window::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) c
 		OnMouseLeaveFn(l);
 	}
 
+	BringToForeground();
+
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mbuttonup
 	// --> "An application should return zero if it processes this message."
 	return 0;
@@ -252,6 +264,8 @@ LRESULT Window::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) c
 		MouseLeaveEvent l;
 		OnMouseLeaveFn(l);
 	}
+
+	BringToForeground();
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-rbuttonup
 	// --> "An application should return zero if it processes this message."
