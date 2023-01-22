@@ -16,13 +16,14 @@ class EVERGREEN_API Text : public Control
 {	
 public:
 	Text(std::shared_ptr<DeviceResources> deviceResources, 
+		UI* ui,
 		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		const std::wstring& text = L"",
 		std::unique_ptr<ColorBrush> brush = nullptr,
 		std::unique_ptr<TextStyle> style = nullptr, 
 		const Evergreen::Margin& margin = { 0 }) noexcept;
-	Text(const Text& text) noexcept;		
-	void operator=(const Text&) noexcept;
+	Text(const Text& text) noexcept = delete;
+	void operator=(const Text&) noexcept = delete;
 	virtual ~Text() noexcept override {}
 
 	// Inherited from Control

@@ -349,9 +349,14 @@ LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 }
 LRESULT Window::OnMouseHWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	const POINTS pt = MAKEPOINTS(lParam);
+	// Kind of weird behavior, but the mouse location stored in the lParam does not exactly match
+	// the actual location of the mouse on the screen. So instead of calling MAKEPOINTS(lParam), we are
+	// just going to keep track of mouse location and pass these values instead
+
+	// const POINTS pt = MAKEPOINTS(lParam);
+
 	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-	MouseScrolledEvent e(pt.x, pt.y, delta);
+	MouseScrolledEvent e(m_mouseX, m_mouseY, delta);
 	OnMouseScrolledHorizontalFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousehwheel

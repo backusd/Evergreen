@@ -131,14 +131,16 @@ std::string LayoutException::GetErrorInfo() const noexcept
 }
 
 // Layout ------------------------------------------------------------------------------
-Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, float top, float left, float width, float height, std::unique_ptr<ColorBrush> brush, const std::string& name) noexcept :
+Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui, float top, float left, float width, float height, std::unique_ptr<ColorBrush> brush, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
 	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
 	m_adjustingLayout(false),
 	m_deviceResources(deviceResources),
+	m_ui(ui),
 	m_colorBrush(std::move(brush))
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(ui != nullptr, "No UI");
 
 	// Leave rows and columns empty for now
 }
@@ -886,6 +888,7 @@ Layout* Layout::AddSubLayout(RowColumnPosition position, const std::string& name
 	m_subLayouts.push_back(
 		std::make_unique<Layout>(
 			m_deviceResources,
+			m_ui,
 			m_rows[position.Row].Top(),
 			m_columns[position.Column].Left(),
 			m_columns[position.Column + position.ColumnSpan - 1].Right() - m_columns[position.Column].Left(),

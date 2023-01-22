@@ -14,6 +14,8 @@ struct EVERGREEN_API Margin
 	float Bottom;
 };
 
+class UI;
+
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -23,14 +25,17 @@ class EVERGREEN_API Control
 {
 public:
 	Control(std::shared_ptr<DeviceResources> deviceResources, 
+			UI* ui,
 		    const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		    const Evergreen::Margin& margin = { 0 }) noexcept;
-	Control(const Control& control) noexcept;
-	void operator=(const Control& control) noexcept;
+	Control(const Control& control) noexcept = delete;
+	void operator=(const Control& control) noexcept = delete;
 	virtual ~Control() noexcept {}
 
 	virtual void Update() noexcept = 0;
 	virtual void Render() const = 0;
+	virtual void RenderOverlay() const {}
+	virtual void OverlayCollapsed() {}
 
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 
@@ -81,6 +86,7 @@ protected:
 	unsigned int						m_id;
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;	
+	UI*									m_ui;
 
 	// Allowed region should be set by the parent layout
 	D2D1_RECT_F							m_allowedRegion;

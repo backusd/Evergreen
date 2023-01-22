@@ -4,12 +4,13 @@
 namespace Evergreen
 {
 Button::Button(std::shared_ptr<DeviceResources> deviceResources,
+				UI* ui,
 				const D2D1_RECT_F& allowedRegion,
 				std::unique_ptr<ColorBrush> backgroundBrush,
 				std::unique_ptr<ColorBrush> borderBrush,
 				float borderWidth,
 				const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, allowedRegion, margin),
+	Control(deviceResources, ui, allowedRegion, margin),
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidth(borderWidth),
@@ -25,6 +26,7 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 
 	m_layout = std::make_unique<Layout>(
 		m_deviceResources,
+		ui,
 		0.0f, 0.0f, 1000.0f, 1000.0f,
 		nullptr, // Don't pass a brush to the layout - Button should draw the background, not the layout
 		"button layout");

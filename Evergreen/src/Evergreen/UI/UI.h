@@ -51,6 +51,8 @@ public:
 	ND inline Control* GetControlByName(const std::string& name) const noexcept { return m_rootLayout->GetControlByName(name); }
 	ND inline Control* GetControlByID(unsigned int id) const noexcept { return m_rootLayout->GetControlByID(id); }
 
+	void SetOverlayRenderControl(Control* control) noexcept;
+
 private:
 	void LoadDefaultUI() noexcept;
 	void LoadErrorUI() noexcept;
@@ -60,6 +62,8 @@ private:
 	std::filesystem::path		m_jsonRootDirectory;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
+
+	Control* m_overlayRenderControl;
 
 	// Controls/Layouts that have handled key/mouse events
 	Control* m_mouseHandlingControl;

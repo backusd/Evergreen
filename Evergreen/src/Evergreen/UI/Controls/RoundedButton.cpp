@@ -7,6 +7,7 @@
 namespace Evergreen
 {
 RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
+								UI* ui,
 								const D2D1_RECT_F& allowedRegion,
 								std::unique_ptr<ColorBrush> backgroundBrush,
 								std::unique_ptr<ColorBrush> borderBrush,
@@ -14,7 +15,7 @@ RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
 								float radiusY,
 								float borderWidth,
 								const Evergreen::Margin& margin) :
-	Button(deviceResources, allowedRegion, nullptr, std::move(borderBrush), borderWidth, margin),
+	Button(deviceResources, ui, allowedRegion, nullptr, std::move(borderBrush), borderWidth, margin),
 	m_radiusX(radiusX),
 	m_radiusY(radiusY)
 {

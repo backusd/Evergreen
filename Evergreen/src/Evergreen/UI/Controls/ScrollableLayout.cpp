@@ -6,6 +6,7 @@ using Microsoft::WRL::ComPtr;
 namespace Evergreen
 {
 ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResources,
+									UI* ui,
 									const D2D1_RECT_F& allowedRegion, 
 									bool scrollVertical,
 									bool scrollHorizontal,
@@ -13,7 +14,7 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 									std::unique_ptr<ColorBrush> borderBrush,
 									float borderWidth,
 									const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, allowedRegion, margin),
+	Control(deviceResources, ui, allowedRegion, margin),
 	m_horizontalScrollOffset(0.0f),
 	m_verticalScrollOffset(0.0f),
 	m_canScrollHorizontal(scrollHorizontal),
@@ -62,7 +63,7 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	// In the scrolling direction, set the height/width to 0. It will be incremented when rows/columns are added
 	float width  = m_canScrollHorizontal ? 0.0f : m_allowedRegion.right  - m_allowedRegion.left;
 	float height = m_canScrollVertical   ? 0.0f : m_allowedRegion.bottom - m_allowedRegion.top;
-	m_layout = std::make_unique<Layout>(deviceResources, m_allowedRegion.top, m_allowedRegion.left, width, height, nullptr, "ScrollableLayoutLayout");
+	m_layout = std::make_unique<Layout>(deviceResources, ui, m_allowedRegion.top, m_allowedRegion.left, width, height, nullptr, "ScrollableLayoutLayout");
 
 	// Calling OnAllowedRegionChanged here will update the DrawRegion for each brush and subsequently call
 	// ScrollableLayoutChanged() which will update all rect data

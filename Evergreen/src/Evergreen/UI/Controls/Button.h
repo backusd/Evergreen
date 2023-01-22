@@ -16,6 +16,7 @@ class EVERGREEN_API Button : public Control
 {
 public:
 	Button(std::shared_ptr<DeviceResources> deviceResources,
+		UI* ui,
 		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,

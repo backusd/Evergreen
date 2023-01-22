@@ -7,34 +7,18 @@
 namespace Evergreen
 {
 Control::Control(std::shared_ptr<DeviceResources> deviceResources, 
+				 UI* ui,
 				 const D2D1_RECT_F& allowedRegion,
 	             const Evergreen::Margin& margin) noexcept :
 	m_name(""),
 	m_deviceResources(deviceResources),
+	m_ui(ui),
 	m_margin(margin),
 	m_allowedRegion(allowedRegion),
 	m_id(0)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-}
-Control::Control(const Control& control) noexcept :
-	m_name(control.m_name + "_copy"),
-	m_deviceResources(control.m_deviceResources),
-	m_margin(control.m_margin),
-	m_allowedRegion(control.m_allowedRegion),
-	m_id(0)
-{
-	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-}
-void Control::operator=(const Control& control) noexcept 
-{ 
-	m_name = control.m_name + "_copy";
-	m_deviceResources = control.m_deviceResources; 
-	m_margin = control.m_margin;
-	m_allowedRegion = control.m_allowedRegion;
-	m_id = 0;
-
-	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_ui != nullptr, "No UI");
 }
 
 void Control::Margin(float left, float top, float right, float bottom) noexcept

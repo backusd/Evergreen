@@ -14,6 +14,7 @@ class EVERGREEN_API TextInput : public Control
 {
 public:
 	TextInput(std::shared_ptr<DeviceResources> deviceResources,
+		UI* ui,
 		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		const std::wstring& placeholderText = L"",
 		std::unique_ptr<ColorBrush> placeholderBrush = nullptr,

@@ -7,6 +7,7 @@ namespace Evergreen
 const float TextInput::m_originalMarginLeft = 4.0f;
 
 TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
+					UI* ui,
 					const D2D1_RECT_F& allowedRegion,
 					const std::wstring& placeholderText,
 					std::unique_ptr<ColorBrush> placeholderBrush,
@@ -17,7 +18,7 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 					std::unique_ptr<ColorBrush> borderBrush,
 					float borderWidth,
 					const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, allowedRegion, margin),
+	Control(deviceResources, ui, allowedRegion, margin),
 	m_rightSublayout(nullptr),
 	m_placeholderText(placeholderText),
 	m_placeholderTextBrush(std::move(placeholderBrush)),
@@ -97,6 +98,7 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 	// Create the layout with a dummy size - will be updated when TextInputChanged() is called
 	m_layout = std::make_unique<Layout>(
 		m_deviceResources,
+		ui,
 		0.0f, 0.0f, 1000.0f, 1000.0f,
 		nullptr, // Don't pass a brush to the layout - Button should draw the background, not the layout
 		"TextInput Layout");

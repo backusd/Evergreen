@@ -22,7 +22,8 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_mouseHandlingControl(nullptr),
 	m_mouseHandlingLayout(nullptr),
 	m_keyboardHandlingControl(nullptr),
-	m_keyboardHandlingLayout(nullptr)
+	m_keyboardHandlingLayout(nullptr),
+	m_overlayRenderControl(nullptr)
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
@@ -43,11 +44,10 @@ void UI::LoadDefaultUI() noexcept
 	// Could make this quite elaborate, similar to how ImGui has the example of all controls
 	// This could also contain links our website/documentation
 
-
-
 	// TEST CODE
 	m_rootLayout = std::make_unique<Layout>(
 		m_deviceResources, 
+		this,
 		0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()),
 		nullptr, 
 		"root layout");
@@ -630,6 +630,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 	// Create a new root layout - this will destroy any layout that previously existed
 	m_rootLayout = std::make_unique<Layout>(
 		m_deviceResources, 
+		this,
 		0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()),
 		nullptr,
 		"Root Layout");
@@ -644,6 +645,7 @@ void UI::LoadErrorUI() noexcept
 {
 	m_rootLayout = std::make_unique<Layout>(
 		m_deviceResources, 
+		this,
 		0.0f, 0.0f, static_cast<float>(m_window->GetWidth()), static_cast<float>(m_window->GetHeight()),
 		nullptr, 
 		"error UI root layout");
@@ -686,7 +688,18 @@ void UI::Render() const noexcept
 
 	m_rootLayout->Render();
 
+	if (m_overlayRenderControl != nullptr)
+		m_overlayRenderControl->RenderOverlay();
+
 	m_deviceResources->EndDraw();
+}
+
+void UI::SetOverlayRenderControl(Control* control) noexcept
+{
+	if (m_overlayRenderControl != nullptr)
+		m_overlayRenderControl->OverlayCollapsed();
+
+	m_overlayRenderControl = control;
 }
 
 void UI::OnChar(CharEvent& e) noexcept

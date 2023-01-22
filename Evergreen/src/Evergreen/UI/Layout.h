@@ -148,6 +148,9 @@ private:
 };
 
 // Layout ------------------------------------------------------------------------------
+
+class UI;
+
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -156,7 +159,8 @@ private:
 class EVERGREEN_API Layout
 {
 public:
-	Layout(std::shared_ptr<DeviceResources> deviceResources, float top, float left, float width, float height, 
+	Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui,
+		float top, float left, float width, float height, 
 		std::unique_ptr<ColorBrush> brush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
@@ -233,6 +237,7 @@ private:
 	ND std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
+	UI* m_ui;
 
 	std::unique_ptr<Evergreen::ColorBrush> m_colorBrush;
 
@@ -291,7 +296,7 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 		m_rows[position.Row + position.RowSpan - 1].Bottom()
 	);
 
-	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, rect);
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, m_ui, rect);
 
 	m_controls.push_back(std::move(control));
 	return (T*)m_controls.back().get();
@@ -315,7 +320,7 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 		m_rows[position.Row + position.RowSpan - 1].Bottom()
 	);
 
-	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, rect, std::forward<U>(args)...);
+	std::unique_ptr<T> control = std::make_unique<T>(deviceResources, m_ui, rect, std::forward<U>(args)...);
 
 	m_controls.push_back(std::move(control));
 	return (T*)m_controls.back().get();
