@@ -65,6 +65,8 @@ public:
 
 private:	
 	bool m_mouseIsInWindow;
+	float m_mouseX;
+	float m_mouseY;
 
 	virtual void Init(const WindowProperties& props) noexcept;
 	virtual void Shutdown() noexcept;

@@ -28,7 +28,9 @@ namespace Evergreen
 {
 Window::Window(const WindowProperties& props) noexcept :
 	WindowTemplate(props),
-	m_mouseIsInWindow(false)
+	m_mouseIsInWindow(false),
+	m_mouseX(0.0f),
+	m_mouseY(0.0f)
 {
 	Init(props);
 }
@@ -281,6 +283,8 @@ LRESULT Window::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noex
 LRESULT Window::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	const POINTS pt = MAKEPOINTS(lParam);
+	m_mouseX = pt.x;
+	m_mouseY = pt.y;
 	// in client region -> trigger move event, and trigger enter event + capture mouse (if not previously in window)
 	if (pt.x >= 0 && pt.x < static_cast<int>(m_width) && pt.y >= 0 && pt.y < static_cast<int>(m_height))
 	{
@@ -329,9 +333,14 @@ LRESULT Window::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 }
 LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
 {
-	const POINTS pt = MAKEPOINTS(lParam);
+	// Kind of weird behavior, but the mouse location stored in the lParam does not exactly match
+	// the actual location of the mouse on the screen. So instead of calling MAKEPOINTS(lParam), we are
+	// just going to keep track of mouse location and pass these values instead
+	
+	// POINTS pt = MAKEPOINTS(lParam);
+
 	const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-	MouseScrolledEvent e(pt.x, pt.y, delta);
+	MouseScrolledEvent e(m_mouseX, m_mouseY, delta);
 	OnMouseScrolledVerticalFn(e);
 
 	// According to: https://learn.microsoft.com/en-us/windows/win32/inputdev/wm-mousewheel

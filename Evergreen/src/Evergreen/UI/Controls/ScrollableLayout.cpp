@@ -580,34 +580,42 @@ void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
-	// First determine if a child control wants to handle the event
-	m_layout->OnMouseScrolledVertical(e);
-	if (e.Handled())
-		return;
-
-	if (m_canScrollVertical && LayoutHeightExceedsBackgroundHeight())
+	// Only react to scrolling if the mouse is over the layout
+	if (RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
 	{
-		// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
-		// are usually +/-120. So if we get a large value, just divide it by 10
-		IncrementVerticalScrollOffset(-1.0f * static_cast<float>(std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10));
-		e.Handled(this);
+		// First determine if a child control wants to handle the event
+		m_layout->OnMouseScrolledVertical(e);
+		if (e.Handled())
+			return;
+
+		if (m_canScrollVertical && LayoutHeightExceedsBackgroundHeight())
+		{
+			// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
+			// are usually +/-120. So if we get a large value, just divide it by 10
+			IncrementVerticalScrollOffset(-1.0f * static_cast<float>(std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10));
+			e.Handled(this);
+		}
 	}
 }
 void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
-	// First determine if a child control wants to handle the event
-	m_layout->OnMouseScrolledHorizontal(e);
-	if (e.Handled())
-		return;
-
-	if (m_canScrollHorizontal && LayoutWidthExceedsBackgroundWidth())
+	// Only react to scrolling if the mouse is over the layout
+	if (RectContainsPoint(m_backgroundRect, e.GetX(), e.GetY()))
 	{
-		// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
-		// are usually +/-120. So if we get a large value, just divide it by 10
-		IncrementHorizontalScrollOffset(-1.0f * static_cast<float>(std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10));
-		e.Handled(this);
+		// First determine if a child control wants to handle the event
+		m_layout->OnMouseScrolledHorizontal(e);
+		if (e.Handled())
+			return;
+
+		if (m_canScrollHorizontal && LayoutWidthExceedsBackgroundWidth())
+		{
+			// When using a mouse pad, the scroll deltas are usually in the range [1-10]. When using a mouse wheel, the deltas
+			// are usually +/-120. So if we get a large value, just divide it by 10
+			IncrementHorizontalScrollOffset(-1.0f * static_cast<float>(std::abs(e.GetScrollDelta()) < 100 ? e.GetScrollDelta() : e.GetScrollDelta() / 10));
+			e.Handled(this);
+		}
 	}
 }
 void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
