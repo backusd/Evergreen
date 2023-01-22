@@ -38,8 +38,8 @@ private:
 	float ParseRadiusY(json& data);
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
-	void ParseOnMouseEnter(RoundedButton* button, json& data);
-	void ParseOnMouseLeave(RoundedButton* button, json& data);
+	void ParseOnMouseEntered(RoundedButton* button, json& data);
+	void ParseOnMouseExited(RoundedButton* button, json& data);
 	void ParseOnMouseMoved(RoundedButton* button, json& data);
 	void ParseOnMouseLButtonDown(RoundedButton* button, json& data);
 	void ParseOnMouseLButtonUp(RoundedButton* button, json& data);

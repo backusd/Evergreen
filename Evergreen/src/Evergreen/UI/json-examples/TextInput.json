@@ -1,0 +1,61 @@
+{
+	"TextInput1": {
+		"Type": "TextInput",
+		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 1,
+		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 2,
+		"Margin": [ 5, 5, 5, 5 ], // Specify margin in order: left/top/right/bottom
+		"BackgroundBrush": "Black", // Background color - See Brushes.json for details on using a color brush
+		"BorderBrush": "Yellow", // (optional) Border color - See Brushes.json for details on using a color brush
+		"BorderWidth": 3.0, // (optional) Border width - default will be 0
+
+		// Input Text: The following two parameters are REQUIRED
+		"InputTextBrush": "Pink", // input text brush - See Brushes.json for details on using a color brush
+		"InputTextStyle": { // input text style - See Text.json for available text style attributes
+			"FontFamily": "Calibri",
+			"..."
+		},
+
+		// Placeholder Text: Text that will be displayed when there is 0 input text and the control is not actively selected
+		//									 NOTE: Specifying placeholder text is OPTIONAL, but if specified, all three of the following keys MUST be present
+		"PlaceholderText": "Input Text Here", // (optional) string to be displayed for placeholder text
+		"PlaceholderTextBrush": "LightGray", // (optional) placeholder text brush - See Brushes.json for details on using a color brush
+		"PlaceholderTextStyle": { // (optional) placeholder text style - See Text.json for available text style attributes
+			"FontFamily": "Calibri",
+			"..."
+		},
+
+		// Vertical Bar attributes: The vertical bar is the bar that shows where the next input character will be placed
+		"VerticalBarBrush": "Black", // (optional) vertical bar brush - See Brushes.json for details on using a color brush
+		"VerticalBarWidth": 2.0, // (optional) vertical bar width - Should be >= 0
+
+		// On* callbacks: Specify functions to execute when the control triggers certain events.
+		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
+		//                can be set by calling JSONLoaders::AddControlFunction(). Each one of these are OPTIONAL
+		"OnMouseEntered": "TextInput_OnMouseEntered",
+		"OnMouseExited": "TextInput_OnMouseExited",
+		"OnMouseMoved": "TextInput_OnMouseMoved",
+		"OnMouseLButtonDown": "TextInput_OnMouseLButtonDown",
+		"OnMouseLButtonUp": "TextInput_OnMouseLButtonUp",
+		"OnClick": "TextInput_OnClick",
+		"OnEnterKey": "TextInput_OnEnterKey",
+		"OnInputTextChanged": "TextInput_OnInputTextChanged",
+
+		// Right Side Layout: If the user wishes, a layout can be inserted into the control that will reside immediately
+		//                    to the right of the text input area. This is achieved by created a second column within the
+		//                    contol's layout and creating a sublayout within row 0 column 1. The user can place whatever
+		//                    they want within this sublayout.
+		//                    NOTE: When creating a right side layout, BOTH of the following keys MUST be specified
+		"RightSideLayoutColumnWidth": 50, // (optional) right side layout width - Can be FIXED, PERCENT, or STAR. The same rules to this field as for the Height/Width field for Row/Column specification. See Layout.json for details.
+		"RightSideLayout": { // (optional) right side layout - This is implicitly treated as if there exists a 'Type': 'Layout' key-value pair entry. See Layout.json for specifying layouts.
+			"SearchIcon": {
+				"Type": "Text",
+				"Text": "0xE721",
+				"Brush": "Black",
+				"FontFamily": "Segoe MDL2 Assets",
+				...
+			}
+		}
+	}
+}

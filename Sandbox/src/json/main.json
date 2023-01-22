@@ -187,9 +187,6 @@
 				"WordWrapping": "None"
 			},
 
-
-
-
 			"TestButton1": {
 				"Type": "Button",
 				"Column": 4,
@@ -213,9 +210,6 @@
 				"OnMouseLButtonUp": "TestButtonOnMouseLButtonUp",
 				"OnClick": "TestButtonOnClick"
 			},
-
-
-
 
 			"TestButton2": {
 				"Type": "Button",
@@ -250,9 +244,6 @@
 				"OnClick": "TestButton2OnClick"
 			},
 
-
-
-
 			"TestButton3": {
 				"Type": "RoundedButton",
 				"Column": 6,
@@ -270,9 +261,67 @@
 					"FontFamily": "Arial",
 					"FontSize": 12
 				}
+			},
+
+			"TextInput1": {
+				"Type": "TextInput",
+				"Column": 7,
+				"Margin": [ 5, 5, 5, 5 ],
+				"BackgroundBrush": "Gray",
+				"BorderBrush": "Blue",
+				"BorderWidth": 3.0,
+				"PlaceholderText": "Input Text Here",
+				"PlaceholderTextBrush": "LightGray",
+				"PlaceholderTextStyle": {
+					"FontFamily": "Calibri",
+					"FontSize": 18,
+					"FontWeight": "Bold",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Center",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				},
+				"InputTextBrush": "Pink",
+				"InputTextStyle": {
+					"FontFamily": "Calibri",
+					"FontSize": 18,
+					"FontWeight": "Normal",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Leading",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				},
+				"VerticalBarBrush": "Black",
+				"VerticalBarWidth": 2.0,
+
+				"OnMouseEntered": "TextInput1_OnMouseEntered",
+				"OnMouseExited": "TextInput1_OnMouseExited",
+				"OnMouseMoved": "TextInput1_OnMouseMoved",
+				"OnMouseLButtonDown": "TextInput1_OnMouseLButtonDown",
+				"OnMouseLButtonUp": "TextInput1_OnMouseLButtonUp",
+				"OnClick": "TextInput1_OnClick",
+				"OnEnterKey": "TextInput1_OnEnterKey",
+				"OnInputTextChanged": "TextInput1_OnInputTextChanged",
+
+				"RightSideLayoutColumnWidth": 50,
+				"RightSideLayout": {
+					"SearchIcon": {
+						"Type": "Text",
+						"Text": "0xE721",
+						"Brush": "Black",
+						"FontFamily": "Segoe MDL2 Assets",
+						"FontSize": 24,
+						"FontWeight": "Bold",
+						"FontStyle": "Normal",
+						"FontStretch": "Expanded",
+						"TextAlignment": "Center",
+						"ParagraphAlignment": "Center",
+						"WordWrapping": "None"
+					}
+				}
 			}
-
-
 
 		},
 

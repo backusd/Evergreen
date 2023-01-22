@@ -76,8 +76,8 @@ public:
 	ND inline float GetVerticalBarWidth() const noexcept { return m_verticalBarWidth; }
 
 	// Callback Setters
-	void SetOnMouseEnteredButtonCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseEntered = func; }
-	void SetOnMouseExitedButtonCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseExited = func; }
+	void SetOnMouseEnteredCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseEntered = func; }
+	void SetOnMouseExitedCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseExited = func; }
 	void SetOnMouseMovedCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseMoved = func; }
 	void SetOnMouseLButtonDownCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseLButtonDown = func; }
 	void SetOnMouseLButtonUpCallback(std::function<void(Control*, Event&)> func) noexcept { m_OnMouseLButtonUp = func; }

@@ -52,8 +52,8 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 
-	ParseOnMouseEnter(button, data);
-	ParseOnMouseLeave(button, data);
+	ParseOnMouseEntered(button, data);
+	ParseOnMouseExited(button, data);
 	ParseOnMouseLButtonDown(button, data);
 	ParseOnMouseLButtonUp(button, data);
 	ParseOnClick(button, data);
@@ -181,7 +181,7 @@ void RoundedButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceRe
 	}
 }
 
-void RoundedButtonLoader::ParseOnMouseEnter(RoundedButton* button, json& data)
+void RoundedButtonLoader::ParseOnMouseEntered(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -193,10 +193,10 @@ void RoundedButtonLoader::ParseOnMouseEnter(RoundedButton* button, json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseEnter' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->SetOnMouseEnteredButtonCallback(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseEnteredCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, json& data)
+void RoundedButtonLoader::ParseOnMouseExited(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -208,7 +208,7 @@ void RoundedButtonLoader::ParseOnMouseLeave(RoundedButton* button, json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
 
-		button->SetOnMouseExitedButtonCallback(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseExitedCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, json& data)

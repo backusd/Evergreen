@@ -171,6 +171,9 @@
     <ClInclude Include="src\Evergreen\UI\Controls\TextInput.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextInputLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -284,6 +287,9 @@
     <ClCompile Include="src\Evergreen\UI\Controls\TextInput.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextInputLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Evergreen\UI\json-examples\Brushes.json" />
@@ -294,5 +300,6 @@
     <None Include="src\Evergreen\UI\json-examples\Margin.json" />
     <None Include="src\Evergreen\UI\json-examples\RoundedButton.json" />
     <None Include="src\Evergreen\UI\json-examples\ScrollableLayout.json" />
+    <None Include="src\Evergreen\UI\json-examples\TextInput.json" />
   </ItemGroup>
 </Project>

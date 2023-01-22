@@ -7,9 +7,9 @@ class Sandbox : public Evergreen::Application
 public:
 	Sandbox() noexcept
 	{
-		//SetCallbacks();
-		//m_ui->SetUIRoot("src/json/");
-		//m_ui->LoadUI("main.json");
+		SetCallbacks();
+		m_ui->SetUIRoot("src/json/");
+		m_ui->LoadUI("main.json");
 	}
 	~Sandbox() noexcept override
 	{
@@ -18,8 +18,59 @@ public:
 private:
 	void SetCallbacks()
 	{
+		// TextInput
+		JSONLoaders::AddControlFunction("TextInput1_OnMouseEntered", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
+				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
+				textInput->SetBackgroundBrush(std::move(bkgdBrush));
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnMouseExited", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
+				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+				textInput->SetBackgroundBrush(std::move(bkgdBrush));
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnMouseMoved", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnMouseLButtonDown", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
+				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Coral));
+				textInput->SetBackgroundBrush(std::move(bkgdBrush));
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnMouseLButtonUp", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
+				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
+				textInput->SetBackgroundBrush(std::move(bkgdBrush));
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnClick", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
 
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnEnterKey", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
+				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
+				textInput->SetBackgroundBrush(std::move(bkgdBrush));
+			}
+		);
+		JSONLoaders::AddControlFunction("TextInput1_OnInputTextChanged", [](Control* control, Event& e)
+			{
+				TextInput* textInput = static_cast<TextInput*>(control);
 
+			}
+		);
 
 
 

@@ -37,8 +37,8 @@ private:
 	float ParseBorderWidth(json& data);
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
-	void ParseOnMouseEnter(Button* button, json& data);
-	void ParseOnMouseLeave(Button* button, json& data);
+	void ParseOnMouseEntered(Button* button, json& data);
+	void ParseOnMouseExited(Button* button, json& data);
 	void ParseOnMouseMoved(Button* button, json& data);
 	void ParseOnMouseLButtonDown(Button* button, json& data);
 	void ParseOnMouseLButtonUp(Button* button, json& data);

@@ -48,8 +48,8 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 
-	ParseOnMouseEnter(button, data);
-	ParseOnMouseLeave(button, data);
+	ParseOnMouseEntered(button, data);
+	ParseOnMouseExited(button, data);
 	ParseOnMouseMoved(button, data);
 	ParseOnMouseLButtonDown(button, data);
 	ParseOnMouseLButtonUp(button, data);
@@ -142,7 +142,7 @@ void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources
 	}
 }
 
-void ButtonLoader::ParseOnMouseEnter(Button* button, json& data)
+void ButtonLoader::ParseOnMouseEntered(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -154,10 +154,10 @@ void ButtonLoader::ParseOnMouseEnter(Button* button, json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseEnter' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->SetOnMouseEnteredButtonCallback(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseEnteredCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
-void ButtonLoader::ParseOnMouseLeave(Button* button, json& data)
+void ButtonLoader::ParseOnMouseExited(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
 
@@ -169,7 +169,7 @@ void ButtonLoader::ParseOnMouseLeave(Button* button, json& data)
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
 
-		button->SetOnMouseExitedButtonCallback(JSONLoaders::GetControlFunction(key));
+		button->SetOnMouseExitedCallback(JSONLoaders::GetControlFunction(key));
 	}
 }
 void ButtonLoader::ParseOnMouseMoved(Button* button, json& data)

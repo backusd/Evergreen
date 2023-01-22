@@ -4,6 +4,7 @@
 #include "JSONLoading/ControlLoaders/ButtonLoader.h"
 #include "JSONLoading/ControlLoaders/RoundedButtonLoader.h"
 #include "JSONLoading/ControlLoaders/ScrollableLayoutLoader.h"
+#include "JSONLoading/ControlLoaders/TextInputLoader.h"
 
 #include <fstream>
 
@@ -28,6 +29,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName); });
 
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
@@ -142,7 +144,7 @@ void UI::LoadDefaultUI() noexcept
 	buttonLayout->AddRow({ RowColumnType::STAR, 1.0f });
 	buttonLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
-	button->SetOnMouseEnteredButtonCallback(
+	button->SetOnMouseEnteredCallback(
 		[](Control* control, Event& e) 
 		{
 			Button* b = static_cast<Button*>(control);
@@ -150,7 +152,7 @@ void UI::LoadDefaultUI() noexcept
 			b->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button->SetOnMouseExitedButtonCallback(
+	button->SetOnMouseExitedCallback(
 		[](Control* control, Event& e)
 		{
 			Button* b = static_cast<Button*>(control);
@@ -221,7 +223,7 @@ void UI::LoadDefaultUI() noexcept
 	text3->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	text3->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 	
-	button2->SetOnMouseEnteredButtonCallback(
+	button2->SetOnMouseEnteredCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -230,7 +232,7 @@ void UI::LoadDefaultUI() noexcept
 			rb->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	button2->SetOnMouseExitedButtonCallback(
+	button2->SetOnMouseExitedCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -339,7 +341,7 @@ void UI::LoadDefaultUI() noexcept
 	scrollButtonText->GetTextStyle()->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
 	scrollButtonText->GetTextStyle()->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
 
-	scrollButton->SetOnMouseEnteredButtonCallback(
+	scrollButton->SetOnMouseEnteredCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -348,7 +350,7 @@ void UI::LoadDefaultUI() noexcept
 			rb->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	scrollButton->SetOnMouseExitedButtonCallback(
+	scrollButton->SetOnMouseExitedCallback(
 		[](Control* b, Event& e)
 		{
 			RoundedButton* rb = static_cast<RoundedButton*>(b);
@@ -502,7 +504,7 @@ void UI::LoadDefaultUI() noexcept
 	tiRightButtonText->GetTextStyle()->FontFamily(FontFamily::Segoe_MDL2_Assets);
 	tiRightButtonText->GetTextStyle()->FontSize(22.0f);
 
-	tiRightButton->SetOnMouseEnteredButtonCallback(
+	tiRightButton->SetOnMouseEnteredCallback(
 		[](Control* b, Event& e)
 		{
 			Button* button = static_cast<Button*>(b);
@@ -511,7 +513,7 @@ void UI::LoadDefaultUI() noexcept
 			button->BackgroundBrush(std::move(backgroundBrush));
 		}
 	);
-	tiRightButton->SetOnMouseExitedButtonCallback(
+	tiRightButton->SetOnMouseExitedCallback(
 		[](Control* b, Event& e)
 		{
 			Button* button = static_cast<Button*>(b);
@@ -569,7 +571,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 	// ---
-	ti->SetOnMouseEnteredButtonCallback(
+	ti->SetOnMouseEnteredCallback(
 		[](Control* c, Event& e)
 		{
 			TextInput* textInput = static_cast<TextInput*>(c);
@@ -578,7 +580,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 
-	ti->SetOnMouseExitedButtonCallback(
+	ti->SetOnMouseExitedCallback(
 		[](Control* c, Event& e)
 		{
 			TextInput* textInput = static_cast<TextInput*>(c);

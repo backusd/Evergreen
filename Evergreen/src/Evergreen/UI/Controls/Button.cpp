@@ -114,7 +114,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 		if (!currentMouseIsOver)
 		{
 			m_mouseIsOver = false;
-			m_OnMouseExitedButton(this, e);
+			m_OnMouseExited(this, e);
 
 			// Only set handled=true if the mouse is down, making it so that another control can not process this event
 			// The button should continue to handle mouse events until the mouse button is released
@@ -131,7 +131,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 	else if (currentMouseIsOver) // Check if the mouse is newly over the button
 	{
 		m_mouseIsOver = true;
-		m_OnMouseEnteredButton(this, e);
+		m_OnMouseEntered(this, e);
 		e.Handled(this);
 	}
 	else if (m_mouseLButtonIsDown)
