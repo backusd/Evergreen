@@ -26,10 +26,7 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_deviceResources(deviceResources),
 	m_title(title),
 	m_ui(ui),
-	m_top(top),
-	m_left(left),
-	m_height(height),
-	m_width(width),
+	m_paneRect(D2D1::RectF(left, top, left + width, top + height)),
 	m_resizeable(resizeable),
 	m_relocatable(relocatable),
 	m_backgroundBrush(std::move(backgroundBrush)),
@@ -38,7 +35,9 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_titleBrush(std::move(titleBrush)),
 	m_titleLayout(nullptr),
 	m_visible(true),
-	m_minimized(false)
+	m_minimized(false),
+	m_paneCornerRadiusX(0.0f),
+	m_paneCornerRadiusY(0.0f)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
@@ -65,12 +64,11 @@ void Pane::InitializeLayoutWithHeaderBar()
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 	
-	
 	m_titleLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_top, m_left, m_width, 20.0f,	// Title will have a fixed height of 20
-		std::move(m_headerBarBrush->Duplicate()),
+		m_paneRect.top, m_paneRect.left, m_paneRect.right - m_paneRect.left, 20.0f,
+		nullptr,
 		m_title + "_Pane_Title_Layout"
 	);
 
@@ -82,8 +80,8 @@ void Pane::InitializeLayoutWithHeaderBar()
 	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_top + 20.0f, m_left, m_width, m_height - 20.0f,	// Content will be placed directly under the title bar
-		std::move(m_backgroundBrush->Duplicate()),
+		m_paneRect.top + 20.0f, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_paneRect.bottom - m_paneRect.top - 20.0f,
+		nullptr,
 		m_title + "_Pane_Content_Layout"
 	);
 
@@ -258,8 +256,8 @@ void Pane::InitializeLayoutWithoutHeaderBar()
 	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_top, m_left, m_width, m_height,
-		std::move(m_backgroundBrush->Duplicate()),
+		m_paneRect.top, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_paneRect.bottom - m_paneRect.top,
+		nullptr,
 		m_title + "_Pane_Content_Layout"
 	);
 }
@@ -276,12 +274,93 @@ void Pane::Update() noexcept
 void Pane::Render() const noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+	
+	auto context = m_deviceResources->D2DDeviceContext();
 
 	if (m_titleLayout != nullptr)
-		m_titleLayout->Render();
+	{
+		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + 20.0f);
+		D2D1_RECT_F contentRect = D2D1::RectF(m_paneRect.left, m_paneRect.top + 20.0f, m_paneRect.right, m_paneRect.bottom);
 
-	if (!m_minimized)
-		m_contentLayout->Render();
+		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
+		{
+			if (m_minimized)
+			{
+				context->FillRoundedRectangle(
+					D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY),
+					m_headerBarBrush->Get()
+				);
+				m_titleLayout->Render();
+				
+				if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+				{
+					context->DrawRoundedRectangle(
+						D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY),
+						m_borderBrush->Get(), 
+						m_borderWidth
+					);
+				}
+			}
+			else
+			{
+				context->PushAxisAlignedClip(titleRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+				context->FillRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_headerBarBrush->Get());
+				m_titleLayout->Render();
+				context->PopAxisAlignedClip();
+
+				context->PushAxisAlignedClip(contentRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
+				context->FillRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
+				m_contentLayout->Render();
+				context->PopAxisAlignedClip();
+
+				if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+				{
+					context->DrawRoundedRectangle(
+						D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY),
+						m_borderBrush->Get(),
+						m_borderWidth
+					);
+				}
+			}
+		}
+		else
+		{
+			context->FillRectangle(titleRect, m_headerBarBrush->Get());
+			context->FillRectangle(contentRect, m_backgroundBrush->Get());
+
+			m_titleLayout->Render();
+			m_contentLayout->Render();
+
+			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+			{
+				context->DrawRectangle(m_paneRect, m_borderBrush->Get(), m_borderWidth);
+			}
+		}
+	}
+	else if (!m_minimized)
+	{
+		// In order to draw the background with rounded corners, we draw the background for the layout manually here
+		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
+		{
+			context->FillRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
+			m_contentLayout->Render();
+
+			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+			{
+				context->DrawRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_borderBrush->Get(), m_borderWidth);
+			}
+		}
+		else
+		{
+			context->FillRectangle(m_paneRect, m_backgroundBrush->Get());
+			m_contentLayout->Render();
+
+			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+			{
+				context->DrawRectangle(m_paneRect, m_borderBrush->Get(), m_borderWidth);
+			}
+		}
+	}
 }
 
 Row* Pane::AddRow(RowColumnDefinition definition)

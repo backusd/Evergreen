@@ -51,6 +51,8 @@ public:
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
 	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
+	inline void SetCornerRadius(float xAndY) noexcept { m_paneCornerRadiusX = xAndY; m_paneCornerRadiusY = xAndY; }
+	inline void SetCornerRadius(float x, float y) noexcept { m_paneCornerRadiusX = x; m_paneCornerRadiusY = y; }
 
 	ND inline UI* GetUI() const noexcept { return m_ui; }
 
@@ -60,20 +62,24 @@ private:
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 	UI* m_ui;
+
 	std::unique_ptr<Layout> m_titleLayout;
 	std::unique_ptr<Layout> m_contentLayout;
-	float m_top;
-	float m_left;
-	float m_height;
-	float m_width;
+	D2D1_RECT_F m_paneRect;
+	float m_paneCornerRadiusX;
+	float m_paneCornerRadiusY;
+
 	bool m_resizeable;
 	bool m_relocatable;
+
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
 	float m_borderWidth;
+
 	std::unique_ptr<ColorBrush> m_headerBarBrush;
 	std::string m_title;
 	std::unique_ptr<ColorBrush> m_titleBrush;
+
 	bool m_minimized;
 	bool m_visible;
 };
