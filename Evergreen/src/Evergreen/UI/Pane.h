@@ -1,5 +1,6 @@
 #pragma once
 #include "pch.h"
+#include "Controls/Control.h"
 #include "Layout.h"
 
 
@@ -11,7 +12,7 @@ namespace Evergreen
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
 #pragma warning( push )
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
-class EVERGREEN_API Pane
+class EVERGREEN_API Pane : public Control
 {
 public:
 	Pane(std::shared_ptr<DeviceResources> deviceResources,
@@ -20,6 +21,7 @@ public:
 		float left,
 		float height,
 		float width,
+		const std::string& title = "",
 		bool resizeable = true,
 		bool relocatable = true,
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
@@ -27,41 +29,57 @@ public:
 		float borderWidth = 0.0f,
 		bool headerBar = true,
 		std::unique_ptr<ColorBrush> headerBarBrush = nullptr,
-		const std::string& title = "",
-		std::unique_ptr<ColorBrush> titleBrush = nullptr
+		std::unique_ptr<ColorBrush> titleBrush = nullptr,
+		float titleBarHeight = 20.0f
 	);
 	Pane(const Pane&) = delete;
 	void operator=(const Pane&) = delete;
-	virtual ~Pane() noexcept {}
+	virtual ~Pane() noexcept override {}
 
-	void Update() noexcept;
-	void Render() const noexcept;
+	void Update() noexcept override;
+	void Render() const noexcept override;
 
 	inline Row* AddRow(RowColumnDefinition definition);
 	inline Column* AddColumn(RowColumnDefinition definition);
 
-	void OnChar(CharEvent& e) noexcept;
-	void OnKeyPressed(KeyPressedEvent& e) noexcept;
-	void OnKeyReleased(KeyReleasedEvent& e) noexcept;
-	void OnMouseMove(MouseMoveEvent& e) noexcept;
-	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
-	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
-	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
+	void OnChar(CharEvent& e) noexcept override;
+	void OnKeyPressed(KeyPressedEvent& e) noexcept override;
+	void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
+	void OnMouseMove(MouseMoveEvent& e) noexcept override;
+
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
 
 	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
 	inline void SetCornerRadius(float xAndY) noexcept { m_paneCornerRadiusX = xAndY; m_paneCornerRadiusY = xAndY; }
 	inline void SetCornerRadius(float x, float y) noexcept { m_paneCornerRadiusX = x; m_paneCornerRadiusY = y; }
 
-	ND inline UI* GetUI() const noexcept { return m_ui; }
-
 private:
+	enum class MouseOverDraggableAreaState
+	{
+		NOT_OVER,
+		OVER,
+		DRAGGING
+	};
+
 	void InitializeLayoutWithHeaderBar();
 	void InitializeLayoutWithoutHeaderBar();
 
-	std::shared_ptr<DeviceResources> m_deviceResources;
-	UI* m_ui;
+	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept;
+	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
+
+	MouseOverDraggableAreaState m_mouseTitleBarState;
+	MouseOverDraggableAreaState m_mouseRightEdgeState;
+	MouseOverDraggableAreaState m_mouseLeftEdgeState;
+	MouseOverDraggableAreaState m_mouseTopEdgeState;
+	MouseOverDraggableAreaState m_mouseBottomEdgeState;
+	MouseOverDraggableAreaState m_mouseBottomRightCornerState;
+	MouseOverDraggableAreaState m_mouseBottomLeftCornerState;
+	MouseOverDraggableAreaState m_mouseTopRightCornerState;
+	MouseOverDraggableAreaState m_mouseTopLeftCornerState;
 
 	std::unique_ptr<Layout> m_titleLayout;
 	std::unique_ptr<Layout> m_contentLayout;
@@ -79,9 +97,14 @@ private:
 	std::unique_ptr<ColorBrush> m_headerBarBrush;
 	std::string m_title;
 	std::unique_ptr<ColorBrush> m_titleBrush;
+	float m_titleBarHeight;
 
 	bool m_minimized;
 	bool m_visible;
+
+	// Dragging 
+	float m_lastMouseX;
+	float m_lastMouseY;
 };
 #pragma warning( pop )
 

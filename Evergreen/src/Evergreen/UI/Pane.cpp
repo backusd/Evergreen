@@ -5,6 +5,8 @@
 #include "Styles/TextStyle.h"
 #include "UI.h"
 
+using Microsoft::WRL::ComPtr;
+
 
 namespace Evergreen
 {
@@ -14,6 +16,7 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			float left,
 			float height,
 			float width,
+			const std::string& title,
 			bool resizeable,
 			bool relocatable,
 			std::unique_ptr<ColorBrush> backgroundBrush,
@@ -21,11 +24,10 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			float borderWidth,
 			bool headerBar,
 			std::unique_ptr<ColorBrush> headerBarBrush,
-			const std::string& title,
-			std::unique_ptr<ColorBrush> titleBrush) :
-	m_deviceResources(deviceResources),
+			std::unique_ptr<ColorBrush> titleBrush,
+			float titleBarHeight) :
+	Control(deviceResources, ui),
 	m_title(title),
-	m_ui(ui),
 	m_paneRect(D2D1::RectF(left, top, left + width, top + height)),
 	m_resizeable(resizeable),
 	m_relocatable(relocatable),
@@ -37,7 +39,19 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_visible(true),
 	m_minimized(false),
 	m_paneCornerRadiusX(0.0f),
-	m_paneCornerRadiusY(0.0f)
+	m_paneCornerRadiusY(0.0f),
+	m_titleBarHeight(titleBarHeight),
+	m_lastMouseX(0.0f),
+	m_lastMouseY(0.0f),
+	m_mouseTitleBarState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseRightEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseLeftEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseTopEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseBottomEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseBottomRightCornerState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseBottomLeftCornerState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseTopRightCornerState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseTopLeftCornerState(MouseOverDraggableAreaState::NOT_OVER)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
@@ -67,12 +81,12 @@ void Pane::InitializeLayoutWithHeaderBar()
 	m_titleLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_paneRect.top, m_paneRect.left, m_paneRect.right - m_paneRect.left, 20.0f,
+		m_paneRect.top, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_titleBarHeight,
 		nullptr,
 		m_title + "_Pane_Title_Layout"
 	);
 
-	m_titleLayout->AddRow({ RowColumnType::FIXED, 20.0f });
+	m_titleLayout->AddRow({ RowColumnType::FIXED, m_titleBarHeight });
 	m_titleLayout->AddColumn({ RowColumnType::STAR, 1.0f });	// Title column
 	m_titleLayout->AddColumn({ RowColumnType::FIXED, 20.0f });	// Minimize button
 	m_titleLayout->AddColumn({ RowColumnType::FIXED, 20.0f });	// Close button
@@ -80,7 +94,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_paneRect.top + 20.0f, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_paneRect.bottom - m_paneRect.top - 20.0f,
+		m_paneRect.top + m_titleBarHeight, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_paneRect.bottom - m_paneRect.top - m_titleBarHeight,
 		nullptr,
 		m_title + "_Pane_Content_Layout"
 	);
@@ -99,7 +113,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
 	);
 	std::wstring title(m_title.begin(), m_title.end());
-	Evergreen::Margin titleMargin{ 5.0f, 0.0f, 0.0f, 0.0f };
+	Evergreen::Margin titleMargin{ 10.0f, 0.0f, 0.0f, 0.0f };
 	m_titleLayout->CreateControl<Text>(m_deviceResources, title, std::move(m_titleBrush->Duplicate()), std::move(style), titleMargin);
 
 	// Minimize Button ----------------------------------------------------------
@@ -279,8 +293,8 @@ void Pane::Render() const noexcept
 
 	if (m_titleLayout != nullptr)
 	{
-		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + 20.0f);
-		D2D1_RECT_F contentRect = D2D1::RectF(m_paneRect.left, m_paneRect.top + 20.0f, m_paneRect.right, m_paneRect.bottom);
+		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
+		D2D1_RECT_F contentRect = D2D1::RectF(m_paneRect.left, m_paneRect.top + m_titleBarHeight, m_paneRect.right, m_paneRect.bottom);
 
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
@@ -326,14 +340,20 @@ void Pane::Render() const noexcept
 		else
 		{
 			context->FillRectangle(titleRect, m_headerBarBrush->Get());
-			context->FillRectangle(contentRect, m_backgroundBrush->Get());
-
 			m_titleLayout->Render();
-			m_contentLayout->Render();
+
+			if (!m_minimized)
+			{
+				context->FillRectangle(contentRect, m_backgroundBrush->Get());
+				m_contentLayout->Render();
+			}
 
 			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
 			{
-				context->DrawRectangle(m_paneRect, m_borderBrush->Get(), m_borderWidth);
+				if (m_minimized)
+					context->DrawRectangle(titleRect, m_borderBrush->Get(), m_borderWidth);
+				else
+					context->DrawRectangle(m_paneRect, m_borderBrush->Get(), m_borderWidth);
 			}
 		}
 	}
@@ -420,8 +440,73 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
+	// Check if there is even a title bar
 	if (m_titleLayout != nullptr)
-		m_titleLayout->OnMouseMove(e);
+	{
+		// First check if we are dragging before passing to layouts
+		if (m_mouseTitleBarState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			float deltaX = e.GetX() - m_lastMouseX;
+			float deltaY = e.GetY() - m_lastMouseY;
+
+			m_paneRect.top += deltaY;
+			m_paneRect.bottom += deltaY;
+			m_paneRect.left += deltaX;
+			m_paneRect.right += deltaX;
+
+			D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
+			D2D1_RECT_F contentRect = D2D1::RectF(m_paneRect.left, m_paneRect.top + m_titleBarHeight, m_paneRect.right, m_paneRect.bottom);
+
+			m_titleLayout->Resize(titleRect);
+			m_contentLayout->Resize(contentRect);
+
+			m_headerBarBrush->SetDrawRegion(titleRect);
+			m_titleBrush->SetDrawRegion(titleRect);
+			m_backgroundBrush->SetDrawRegion(contentRect);
+			m_borderBrush->SetDrawRegion(contentRect);
+
+			m_lastMouseX = e.GetX();
+			m_lastMouseY = e.GetY();
+			e.Handled(this);
+			return;
+		}
+
+		// Allow the title bar to handle the event first
+		if (m_titleLayout != nullptr)
+		{
+			m_titleLayout->OnMouseMove(e);
+			if (e.Handled())
+				return;
+		}
+
+		// Check for other mouse state changes
+		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
+		bool mouseIsOverTitleBar =
+			(m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f) ?
+			RectContainsPoint(D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY), e.GetX(), e.GetY()) :
+			RectContainsPoint(titleRect, e.GetX(), e.GetY());
+
+		if (m_mouseTitleBarState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverTitleBar)
+			{
+				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverTitleBar)
+			{
+				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
+			}
+		}
+	}
+
+
+	
+
 
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseMove(e);
@@ -453,6 +538,19 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseButtonPressed(e);
 
+	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseTitleBarState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX();
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
+
+
+
+
+
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseButtonPressed(e);
 }
@@ -462,6 +560,41 @@ void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseButtonReleased(e);
+
+	if (m_mouseTitleBarState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
+
+		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
+		{
+			if (RectContainsPoint(D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY), e.GetX(), e.GetY()))
+			{
+				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
+				e.Handled(this);
+				return;
+			}
+			else
+			{
+				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
+			}
+		}
+		else
+		{
+			if (RectContainsPoint(titleRect, e.GetX(), e.GetY()))
+			{
+				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
+				e.Handled(this);
+				return;
+			}
+			else
+			{
+				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
+			}
+		}
+	}
+
+
+
 
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseButtonReleased(e);
@@ -476,4 +609,24 @@ void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseButtonDoubleClick(e);
 }
+
+
+bool Pane::RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept
+{
+	return rect.left <= x && rect.right >= x && rect.top <= y && rect.bottom >= y;
+}
+bool Pane::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y)
+{
+	ComPtr<ID2D1RoundedRectangleGeometry> m_roundedRect = nullptr;
+	GFX_THROW_INFO(
+		m_deviceResources->D2DFactory()->CreateRoundedRectangleGeometry(rect, m_roundedRect.ReleaseAndGetAddressOf())
+	)
+
+	EG_CORE_ASSERT(m_roundedRect != nullptr, "rounded rect geometry should not be nullptr");
+
+	BOOL b;
+	m_roundedRect->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
+	return static_cast<bool>(b);
+}
+
 }

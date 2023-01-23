@@ -34,8 +34,6 @@ public:
 
 	virtual void Update() noexcept = 0;
 	virtual void Render() const = 0;
-	virtual void RenderOverlay() const {}
-	virtual void OverlayCollapsed() {}
 
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 
@@ -60,6 +58,7 @@ public:
 	void AllowedRegion(D2D1_RECT_F region) noexcept { m_allowedRegion = region; OnAllowedRegionChanged(); }
 	void AllowedRegion(float left, float top, float right, float bottom) noexcept;
 
+
 	ND inline const std::string& Name() const noexcept { return m_name; }
 	ND inline unsigned int ID() const noexcept { return m_id; }
 	ND inline Evergreen::Margin Margin() const noexcept { return m_margin; }
@@ -68,6 +67,7 @@ public:
 	ND inline float MarginRight() const noexcept { return m_margin.Right; }
 	ND inline float MarginBottom() const noexcept { return m_margin.Bottom; }
 	ND inline D2D1_RECT_F AllowedRegion() const noexcept { return m_allowedRegion; }
+	ND inline UI* GetUI() const noexcept { return m_ui; }
 
 	// Virtual functions to retrieve a control by either name or ID. By default, they will simply only
 	// check whether their name/ID matches and either return 'this' or nullptr. However, other controls (such

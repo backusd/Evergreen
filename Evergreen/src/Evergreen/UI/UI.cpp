@@ -632,16 +632,16 @@ void UI::LoadDefaultUI() noexcept
 		m_deviceResources,
 		this,
 		150.0f, 150.0f, 500.0f, 700.0f,
+		"Test Pane",
 		true, true, 
 		nullptr, nullptr, 1.0f,
 		true, nullptr,
-		"Test Pane",
 		nullptr
 		);
 
 	pane->AddRow({ RowColumnType::STAR, 1.0f });
 	pane->AddColumn({ RowColumnType::STAR, 1.0f });
-	pane->SetCornerRadius(7.0f);
+	pane->SetCornerRadius(10.0f);
 
 	m_panes.push_back(std::move(pane));
 }
