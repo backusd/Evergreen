@@ -623,6 +623,26 @@ void UI::LoadDefaultUI() noexcept
 			//EG_CORE_TRACE("{}", s);
 		}
 	);
+
+
+	// ========================================================================================
+	// Pane
+	//
+
+	std::unique_ptr<Pane> pane = std::make_unique<Pane>(
+		m_deviceResources,
+		this,
+		150.0f, 150.0f, 500.0f, 700.0f,
+		true, true, 
+		nullptr, nullptr, 0.0f,
+		true, nullptr,
+		"Test Pane"
+		);
+
+	pane->AddRow({ RowColumnType::STAR, 1.0f });
+	pane->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	m_panes.push_back(std::move(pane));
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
@@ -690,6 +710,11 @@ void UI::Render() const noexcept
 
 	if (m_overlayRenderControl != nullptr)
 		m_overlayRenderControl->RenderOverlay();
+
+	for (const auto& pane : m_panes)
+	{
+		pane->Render();
+	}
 
 	m_deviceResources->EndDraw();
 }

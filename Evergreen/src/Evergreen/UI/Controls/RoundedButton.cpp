@@ -27,7 +27,7 @@ RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
 
 	// Make sure layout uses a transparent brush
 	std::unique_ptr<Evergreen::SolidColorBrush> transparentBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-	m_layout->Brush(std::move(transparentBrush));
+	m_layout->BackgroundBrush(std::move(transparentBrush));
 
 	// Update the rounded rect and rounded rect geometry
 	ButtonChanged();

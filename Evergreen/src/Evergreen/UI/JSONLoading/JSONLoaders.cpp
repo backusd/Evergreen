@@ -648,7 +648,7 @@ void JSONLoaders::LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResourc
 	if (data.contains("Brush"))
 	{
 		std::unique_ptr<ColorBrush> brush = JSONLoaders::LoadBrush(deviceResources, data["Brush"]);
-		layout->Brush(std::move(brush));
+		layout->BackgroundBrush(std::move(brush));
 	}
 }
 void JSONLoaders::LoadLayoutRowDefinitions(Layout* layout, json& data)

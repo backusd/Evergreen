@@ -161,7 +161,7 @@ class EVERGREEN_API Layout
 public:
 	Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui,
 		float top, float left, float width, float height, 
-		std::unique_ptr<ColorBrush> brush = nullptr, const std::string& name = "Unnamed") noexcept;
+		std::unique_ptr<ColorBrush> backgroundBrush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
 
@@ -176,8 +176,13 @@ public:
 	template<class T, class ... U>
 	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
 
-	void Brush(std::unique_ptr<ColorBrush> brush) noexcept;
-	ND ColorBrush* Brush() const noexcept { return m_colorBrush.get(); }
+	void BackgroundBrush(std::unique_ptr<ColorBrush> backgroundBrush) noexcept;
+	void BorderBrush(std::unique_ptr<ColorBrush> borderBrush) noexcept;
+	void BorderWidth(float width) noexcept { m_borderWidth = width; }
+
+	ND ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
+	ND ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
+	ND float BorderWidth() const noexcept { return m_borderWidth; }
 
 	Row* AddRow(RowColumnDefinition definition);
 	Column* AddColumn(RowColumnDefinition definition);
@@ -239,7 +244,9 @@ private:
 	std::shared_ptr<DeviceResources> m_deviceResources;
 	UI* m_ui;
 
-	std::unique_ptr<Evergreen::ColorBrush> m_colorBrush;
+	std::unique_ptr<Evergreen::ColorBrush> m_backgroundBrush;
+	std::unique_ptr<Evergreen::ColorBrush> m_borderBrush;
+	float								   m_borderWidth;
 
 	float							 m_top;
 	float							 m_left;

@@ -131,13 +131,13 @@ std::string LayoutException::GetErrorInfo() const noexcept
 }
 
 // Layout ------------------------------------------------------------------------------
-Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui, float top, float left, float width, float height, std::unique_ptr<ColorBrush> brush, const std::string& name) noexcept :
+Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui, float top, float left, float width, float height, std::unique_ptr<ColorBrush> backgroundBrush, const std::string& name) noexcept :
 	m_top(top), m_left(left), m_width(width), m_height(height), m_name(name),
 	m_columnIndexBeingAdjusted(std::nullopt), m_rowIndexBeingAdjusted(std::nullopt),
 	m_adjustingLayout(false),
 	m_deviceResources(deviceResources),
 	m_ui(ui),
-	m_colorBrush(std::move(brush))
+	m_backgroundBrush(std::move(backgroundBrush))
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(ui != nullptr, "No UI");
@@ -198,12 +198,20 @@ Column* Layout::AddColumn(RowColumnDefinition definition)
 	return &m_columns.back();
 }
 
-void Layout::Brush(std::unique_ptr<ColorBrush> brush) noexcept
+void Layout::BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
 	EG_CORE_ASSERT(brush != nullptr, "brush cannot be nullptr");
 
-	m_colorBrush = std::move(brush);
-	m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+	m_backgroundBrush = std::move(brush);
+	m_backgroundBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+}
+void Layout::BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept
+{
+	m_borderBrush = std::move(brush);
+
+	// technically we all the border brush to be nullptr so do a check here
+	if (m_borderBrush != nullptr)
+		m_borderBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
 }
 
 void Layout::UpdateLayout() noexcept
@@ -213,8 +221,11 @@ void Layout::UpdateLayout() noexcept
 	UpdateSubLayouts();
 	UpdateControls();
 
-	if (m_colorBrush != nullptr)
-		m_colorBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+	if (m_backgroundBrush != nullptr)
+		m_backgroundBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
+
+	if (m_borderBrush != nullptr)
+		m_borderBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
 
 #ifdef _DEBUG
 	LayoutCheck();
@@ -426,8 +437,17 @@ void Layout::Render() const noexcept
 
 	auto context = m_deviceResources->D2DDeviceContext();
 
-	if (m_colorBrush != nullptr)
-		context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_colorBrush->Get());
+	if (m_backgroundBrush != nullptr)
+		context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_backgroundBrush->Get());
+
+	if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+	{
+		context->DrawRectangle(
+			D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height),
+			m_borderBrush->Get(),
+			m_borderWidth
+		);
+	}
 
 	DrawBorders();
 

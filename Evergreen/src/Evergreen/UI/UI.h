@@ -6,6 +6,7 @@
 #include "Evergreen/Events/MouseEvent.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Layout.h"
+#include "Pane.h"
 #include "Evergreen/Window/Window.h"
 #include "JSONLoading/ControlLoaders/ControlLoader.h"
 #include "JSONLoading/StyleLoaders/TextStyleLoader.h"
@@ -59,6 +60,8 @@ private:
 
 	std::shared_ptr<Window>		m_window;
 	std::unique_ptr<Layout>		m_rootLayout;
+	std::vector<std::unique_ptr<Pane>> m_panes;
+
 	std::filesystem::path		m_jsonRootDirectory;
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
