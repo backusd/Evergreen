@@ -27,7 +27,8 @@ public:
 		float borderWidth = 0.0f,
 		bool headerBar = true,
 		std::unique_ptr<ColorBrush> headerBarBrush = nullptr,
-		const std::string& title = ""
+		const std::string& title = "",
+		std::unique_ptr<ColorBrush> titleBrush = nullptr
 	);
 	Pane(const Pane&) = delete;
 	void operator=(const Pane&) = delete;
@@ -39,14 +40,28 @@ public:
 	inline Row* AddRow(RowColumnDefinition definition);
 	inline Column* AddColumn(RowColumnDefinition definition);
 
+	void OnChar(CharEvent& e) noexcept;
+	void OnKeyPressed(KeyPressedEvent& e) noexcept;
+	void OnKeyReleased(KeyReleasedEvent& e) noexcept;
+	void OnMouseMove(MouseMoveEvent& e) noexcept;
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
+
+	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
+
+	ND inline UI* GetUI() const noexcept { return m_ui; }
+
 private:
 	void InitializeLayoutWithHeaderBar();
 	void InitializeLayoutWithoutHeaderBar();
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 	UI* m_ui;
-	std::unique_ptr<Layout> m_layout;
-	Layout* m_contentLayout;
+	std::unique_ptr<Layout> m_titleLayout;
+	std::unique_ptr<Layout> m_contentLayout;
 	float m_top;
 	float m_left;
 	float m_height;
@@ -56,9 +71,9 @@ private:
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
 	float m_borderWidth;
-	bool m_headerBar;
 	std::unique_ptr<ColorBrush> m_headerBarBrush;
 	std::string m_title;
+	std::unique_ptr<ColorBrush> m_titleBrush;
 	bool m_minimized;
 	bool m_visible;
 };

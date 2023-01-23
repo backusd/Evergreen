@@ -52,19 +52,24 @@ public:
 
 	inline bool Handled() const noexcept { return m_handlingControl != nullptr || m_handlingLayout != nullptr; }
 
-	void Handled(Control* control) noexcept 
+	inline void Handled(Control* control) noexcept 
 	{ 
 		EG_CORE_ASSERT(m_handlingControl == nullptr, "Handling control should not already be set");
 		EG_CORE_ASSERT(m_handlingLayout == nullptr, "Handling layout should not already be set");
 		
 		m_handlingControl = control;
 	}
-	void Handled(Layout* layout) noexcept 
+	inline void Handled(Layout* layout) noexcept 
 	{ 
 		EG_CORE_ASSERT(m_handlingControl == nullptr, "Handling control should not already be set");
 		EG_CORE_ASSERT(m_handlingLayout == nullptr, "Handling layout should not already be set");
 		
 		m_handlingLayout = layout;
+	}
+	inline void ClearHandles() noexcept
+	{
+		m_handlingControl = nullptr;
+		m_handlingLayout = nullptr;
 	}
 
 	Control* HandlingControl() const noexcept { return m_handlingControl; }

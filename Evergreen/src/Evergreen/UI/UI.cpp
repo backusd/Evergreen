@@ -22,8 +22,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_mouseHandlingControl(nullptr),
 	m_mouseHandlingLayout(nullptr),
 	m_keyboardHandlingControl(nullptr),
-	m_keyboardHandlingLayout(nullptr),
-	m_overlayRenderControl(nullptr)
+	m_keyboardHandlingLayout(nullptr)
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
@@ -636,7 +635,8 @@ void UI::LoadDefaultUI() noexcept
 		true, true, 
 		nullptr, nullptr, 0.0f,
 		true, nullptr,
-		"Test Pane"
+		"Test Pane",
+		nullptr
 		);
 
 	pane->AddRow({ RowColumnType::STAR, 1.0f });
@@ -708,9 +708,6 @@ void UI::Render() const noexcept
 
 	m_rootLayout->Render();
 
-	if (m_overlayRenderControl != nullptr)
-		m_overlayRenderControl->RenderOverlay();
-
 	for (const auto& pane : m_panes)
 	{
 		pane->Render();
@@ -719,12 +716,24 @@ void UI::Render() const noexcept
 	m_deviceResources->EndDraw();
 }
 
-void UI::SetOverlayRenderControl(Control* control) noexcept
+void UI::RemovePane(Pane* pane) noexcept
 {
-	if (m_overlayRenderControl != nullptr)
-		m_overlayRenderControl->OverlayCollapsed();
+	for (int iii = 0; iii < m_panes.size(); ++iii)
+	{
+		if (m_panes[iii].get() == pane)
+		{
+			// It is possible (if not likely) that the mouse handling control is within the pane
+			// So this needs to be cleared out before we can remove the pane, otherwise, the mouse handling
+			// control pointer will point to a control that does not exist any more
+			m_mouseHandlingControl = nullptr;
+			m_mouseHandlingLayout = nullptr;
+			m_keyboardHandlingControl = nullptr;
+			m_keyboardHandlingLayout = nullptr;
 
-	m_overlayRenderControl = control;
+			m_panes.erase(m_panes.begin() + iii);
+			break;
+		}
+	}
 }
 
 void UI::OnChar(CharEvent& e) noexcept
@@ -736,6 +745,12 @@ void UI::OnChar(CharEvent& e) noexcept
 	else if (m_keyboardHandlingLayout != nullptr)
 	{
 		m_keyboardHandlingLayout->OnChar(e);
+	}
+	
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnChar(e);
 	}
 
 	if (!e.Handled())
@@ -755,6 +770,12 @@ void UI::OnKeyPressed(KeyPressedEvent& e) noexcept
 		m_keyboardHandlingLayout->OnKeyPressed(e);
 	}
 
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnKeyPressed(e);
+	}
+
 	if (!e.Handled())
 		m_rootLayout->OnKeyPressed(e);
 
@@ -772,6 +793,12 @@ void UI::OnKeyReleased(KeyReleasedEvent& e) noexcept
 		m_keyboardHandlingLayout->OnKeyReleased(e);
 	}
 
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnKeyReleased(e);
+	}
+
 	if (!e.Handled())
 		m_rootLayout->OnKeyReleased(e);
 
@@ -784,6 +811,9 @@ void UI::OnWindowResize(WindowResizeEvent& e) noexcept
 }
 void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 {
+	if (m_panes.size() == 0)
+		int iii = 0;
+
 	if (m_mouseHandlingControl != nullptr)
 	{
 		m_mouseHandlingControl->OnMouseMove(e);
@@ -791,6 +821,12 @@ void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 	else if (m_mouseHandlingLayout != nullptr)
 	{
 		m_mouseHandlingLayout->OnMouseMove(e);
+	}
+
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnMouseMove(e);
 	}
 
 	if (!e.Handled())
@@ -810,6 +846,12 @@ void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		m_mouseHandlingLayout->OnMouseButtonPressed(e);
 	}
 
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnMouseButtonPressed(e);
+	}
+
 	if (!e.Handled())
 		m_rootLayout->OnMouseButtonPressed(e);
 
@@ -827,6 +869,12 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		m_mouseHandlingLayout->OnMouseButtonReleased(e);
 	}
 
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnMouseButtonReleased(e);
+	}
+
 	if (!e.Handled())
 		m_rootLayout->OnMouseButtonReleased(e);
 
@@ -836,10 +884,22 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 void UI::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnMouseScrolledVertical(e);
+	}
+
 	m_rootLayout->OnMouseScrolledVertical(e);
 }
 void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 {
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnMouseScrolledHorizontal(e);
+	}
+
 	m_rootLayout->OnMouseScrolledHorizontal(e);
 }
 

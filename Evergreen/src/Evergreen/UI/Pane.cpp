@@ -3,6 +3,7 @@
 #include "Controls/Text.h"
 #include "Controls/Button.h"
 #include "Styles/TextStyle.h"
+#include "UI.h"
 
 
 namespace Evergreen
@@ -20,7 +21,8 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			float borderWidth,
 			bool headerBar,
 			std::unique_ptr<ColorBrush> headerBarBrush,
-			const std::string& title) :
+			const std::string& title,
+			std::unique_ptr<ColorBrush> titleBrush) :
 	m_deviceResources(deviceResources),
 	m_title(title),
 	m_ui(ui),
@@ -30,51 +32,60 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_width(width),
 	m_resizeable(resizeable),
 	m_relocatable(relocatable),
-	m_headerBar(headerBar),
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidth(borderWidth),
+	m_titleBrush(std::move(titleBrush)),
+	m_titleLayout(nullptr),
 	m_visible(true),
 	m_minimized(false)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	if (m_backgroundBrush == nullptr)
-		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
+		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::DarkGray));
 
 	if (m_borderBrush == nullptr)
 		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 
-	if (m_borderBrush == nullptr && m_headerBar)
-		m_headerBarBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Yellow));
+	if (m_headerBarBrush == nullptr && headerBar)
+		m_headerBarBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f));
 
+	if (m_titleBrush == nullptr && headerBar)
+		m_titleBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
 
-	if (m_headerBar)
+	if (headerBar)
 		InitializeLayoutWithHeaderBar();
 	else
 		InitializeLayoutWithoutHeaderBar();
 }
 void Pane::InitializeLayoutWithHeaderBar()
 {
-	m_layout = std::make_unique<Layout>(
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	
+	
+	m_titleLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_top, m_left, m_width, m_height,
-		std::move(m_backgroundBrush->Duplicate()),
-		m_title + "_Pane_Layout_all"
+		m_top, m_left, m_width, 20.0f,	// Title will have a fixed height of 20
+		std::move(m_headerBarBrush->Duplicate()),
+		m_title + "_Pane_Title_Layout"
 	);
 
-	m_layout->AddRow({ RowColumnType::FIXED, 20.0f });
-	m_layout->AddRow({ RowColumnType::STAR, 1.0f });
-	m_layout->AddColumn({ RowColumnType::STAR, 1.0f });
-	m_layout->AddColumn({ RowColumnType::FIXED, 20.0f });
-	m_layout->AddColumn({ RowColumnType::FIXED, 20.0f });
+	m_titleLayout->AddRow({ RowColumnType::FIXED, 20.0f });
+	m_titleLayout->AddColumn({ RowColumnType::STAR, 1.0f });	// Title column
+	m_titleLayout->AddColumn({ RowColumnType::FIXED, 20.0f });	// Minimize button
+	m_titleLayout->AddColumn({ RowColumnType::FIXED, 20.0f });	// Close button
 
-	RowColumnPosition pos;
-	pos.Row = 1;
-	pos.Column = 0;
-	pos.ColumnSpan = 3;
-	m_contentLayout = m_layout->AddSubLayout(pos, m_title + "_Pane_Layout_content");
+	m_contentLayout = std::make_unique<Layout>(
+		m_deviceResources,
+		m_ui,
+		m_top + 20.0f, m_left, m_width, m_height - 20.0f,	// Content will be placed directly under the title bar
+		std::move(m_backgroundBrush->Duplicate()),
+		m_title + "_Pane_Content_Layout"
+	);
 
 	// Title ------------------------------------------------------------------
 	std::unique_ptr<TextStyle> style = std::make_unique<TextStyle>(
@@ -82,77 +93,195 @@ void Pane::InitializeLayoutWithHeaderBar()
 		"Pane Title TextStyle",
 		Evergreen::FontFamily::Arial,
 		12.0f,
-		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD,
 		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
 		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
 		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
 	);
-	std::unique_ptr<SolidColorBrush> titleBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
 	std::wstring title(m_title.begin(), m_title.end());
-	m_layout->CreateControl<Text>(m_deviceResources, title, std::move(titleBrush), std::move(style));
+	Evergreen::Margin titleMargin{ 5.0f, 0.0f, 0.0f, 0.0f };
+	m_titleLayout->CreateControl<Text>(m_deviceResources, title, std::move(m_titleBrush->Duplicate()), std::move(style), titleMargin);
 
 	// Minimize Button ----------------------------------------------------------
 	RowColumnPosition minimizeButtonPosition;
 	minimizeButtonPosition.Row = 0;
 	minimizeButtonPosition.Column = 1;
 
-	std::unique_ptr<SolidColorBrush> minimizeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Blue));
-	std::unique_ptr<SolidColorBrush> minimizeBorderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Red));
+	std::unique_ptr<SolidColorBrush> minimizeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	Button* minimizeButton = m_layout->CreateControl<Button>(
+	Button* minimizeButton = m_titleLayout->CreateControl<Button>(
 		minimizeButtonPosition,
 		m_deviceResources,
-		std::move(minimizeBackgroundBrush),
-		std::move(minimizeBorderBrush),
-		1.0f
-		);
+		std::move(minimizeBackgroundBrush)
+	);
 	
 	minimizeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
 	minimizeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	std::unique_ptr<TextStyle> minimizeTextStyle = std::make_unique<TextStyle>(
+		m_deviceResources,
+		"Pane Close Button TextStyle",
+		Evergreen::FontFamily::Segoe_MDL2_Assets,
+		12.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
+		);
+	std::wstring minimizeString = L"";
+	minimizeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE738", nullptr, 16)));
+	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(m_titleBrush->Duplicate()), std::move(minimizeTextStyle));
+
+	minimizeButton->SetOnMouseEnteredCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	minimizeButton->SetOnMouseExitedCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);	
+	minimizeButton->SetOnMouseLButtonDownCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	minimizeButton->SetOnMouseLButtonUpCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	minimizeButton->SetOnClickCallback(
+		[this](Control* c, Event& e)
+		{
+			this->SwitchMinimize();
+		}
+	);
+
+
+
+
 
 	// Close Button --------------------------------------------------------------
 	RowColumnPosition closeButtonPosition;
 	closeButtonPosition.Row = 0;
 	closeButtonPosition.Column = 2;
 
-	std::unique_ptr<SolidColorBrush> closeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Green));
-	std::unique_ptr<SolidColorBrush> closeBorderBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Yellow));
+	std::unique_ptr<SolidColorBrush> closeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	Button* closeButton = m_layout->CreateControl<Button>(
+	Button* closeButton = m_titleLayout->CreateControl<Button>(
 		closeButtonPosition,
 		m_deviceResources,
-		std::move(closeBackgroundBrush),
-		std::move(closeBorderBrush),
-		1.0f
+		std::move(closeBackgroundBrush)
 		);
 
 	closeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
 	closeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	std::unique_ptr<TextStyle> closeTextStyle = std::make_unique<TextStyle>(
+		m_deviceResources,
+		"Pane Close Button TextStyle",
+		Evergreen::FontFamily::Segoe_MDL2_Assets,
+		12.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
+		);
+	std::wstring closeString = L"";
+	closeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE711", nullptr, 16)));
+	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(m_titleBrush->Duplicate()), std::move(closeTextStyle));
+
+	closeButton->SetOnMouseEnteredCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	closeButton->SetOnMouseExitedCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	closeButton->SetOnMouseLButtonDownCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	closeButton->SetOnMouseLButtonUpCallback(
+		[](Control* c, Event& e)
+		{
+			Button* button = static_cast<Button*>(c);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+			button->BackgroundBrush(std::move(brush));
+		}
+	);
+	closeButton->SetOnClickCallback(
+		[this](Control* c, Event& e)
+		{
+			this->GetUI()->RemovePane(this);
+			e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
+		}
+	);
 }
 void Pane::InitializeLayoutWithoutHeaderBar()
 {
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 
-	m_layout = std::make_unique<Layout>(
+	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
 		m_top, m_left, m_width, m_height,
 		std::move(m_backgroundBrush->Duplicate()),
-		m_title + "_Pane_Layout"
+		m_title + "_Pane_Content_Layout"
 	);
-
-	m_contentLayout = m_layout.get();
 }
 
 void Pane::Update() noexcept
 {
-	m_layout->Update();
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->Update();
+
+	m_contentLayout->Update();
 }
 void Pane::Render() const noexcept
 {
-	m_layout->Render();
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->Render();
+
+	if (!m_minimized)
+		m_contentLayout->Render();
 }
 
 Row* Pane::AddRow(RowColumnDefinition definition)
@@ -166,4 +295,106 @@ Column* Pane::AddColumn(RowColumnDefinition definition)
 	return m_contentLayout->AddColumn(definition);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+void Pane::OnChar(CharEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnChar(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnChar(e);
+}
+void Pane::OnKeyPressed(KeyPressedEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnKeyPressed(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnKeyPressed(e);
+
+}
+void Pane::OnKeyReleased(KeyReleasedEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnKeyReleased(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnKeyReleased(e);
+}
+void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnMouseMove(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnMouseMove(e);
+}
+void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnMouseScrolledVertical(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnMouseScrolledVertical(e);
+}
+void Pane::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnMouseScrolledHorizontal(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnMouseScrolledHorizontal(e);
+}
+void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnMouseButtonPressed(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnMouseButtonPressed(e);
+}
+void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnMouseButtonReleased(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnMouseButtonReleased(e);
+}
+void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (m_titleLayout != nullptr)
+		m_titleLayout->OnMouseButtonDoubleClick(e);
+
+	if (!e.Handled() && !m_minimized)
+		m_contentLayout->OnMouseButtonDoubleClick(e);
+}
 }
