@@ -57,6 +57,10 @@ public:
 	void MarginBottom(float bottom) noexcept { m_margin.Bottom = bottom; OnMarginChanged();}
 	void AllowedRegion(D2D1_RECT_F region) noexcept { m_allowedRegion = region; OnAllowedRegionChanged(); }
 	void AllowedRegion(float left, float top, float right, float bottom) noexcept;
+	void AllowedRegionLeft(float left) noexcept;
+	void AllowedRegionRight(float right) noexcept;
+	void AllowedRegionTop(float top) noexcept;
+	void AllowedRegionBottom(float bottom) noexcept;
 
 
 	ND inline const std::string& Name() const noexcept { return m_name; }

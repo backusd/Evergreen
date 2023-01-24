@@ -40,6 +40,26 @@ void Control::AllowedRegion(float left, float top, float right, float bottom) no
 
 	OnAllowedRegionChanged();
 }
+void Control::AllowedRegionLeft(float left) noexcept
+{
+	m_allowedRegion.left = left;
+	OnAllowedRegionChanged();
+}
+void Control::AllowedRegionRight(float right) noexcept
+{
+	m_allowedRegion.right = right;
+	OnAllowedRegionChanged();
+}
+void Control::AllowedRegionTop(float top) noexcept
+{
+	m_allowedRegion.top = top;
+	OnAllowedRegionChanged();
+}
+void Control::AllowedRegionBottom(float bottom) noexcept 
+{
+	m_allowedRegion.bottom = bottom;
+	OnAllowedRegionChanged();
+}
 
 
 }

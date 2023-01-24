@@ -10,6 +10,8 @@ using Microsoft::WRL::ComPtr;
 
 namespace Evergreen
 {
+const float Pane::edgeSensitivity = 3.0f;
+
 Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			UI* ui,
 			float top,
@@ -26,9 +28,8 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			std::unique_ptr<ColorBrush> headerBarBrush,
 			std::unique_ptr<ColorBrush> titleBrush,
 			float titleBarHeight) :
-	Control(deviceResources, ui),
+	Control(deviceResources, ui, D2D1::RectF(left, top, left + width, top + height)),
 	m_title(title),
-	m_paneRect(D2D1::RectF(left, top, left + width, top + height)),
 	m_resizeable(resizeable),
 	m_relocatable(relocatable),
 	m_backgroundBrush(std::move(backgroundBrush)),
@@ -43,6 +44,8 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_titleBarHeight(titleBarHeight),
 	m_lastMouseX(0.0f),
 	m_lastMouseY(0.0f),
+	m_minPaneWidth(100.0f), 
+	m_minPaneHeight(100.0f),
 	m_mouseTitleBarState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseRightEdgeState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseLeftEdgeState(MouseOverDraggableAreaState::NOT_OVER),
@@ -81,7 +84,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 	m_titleLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_paneRect.top, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_titleBarHeight,
+		m_allowedRegion.top, m_allowedRegion.left, m_allowedRegion.right - m_allowedRegion.left, m_titleBarHeight,
 		nullptr,
 		m_title + "_Pane_Title_Layout"
 	);
@@ -94,7 +97,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_paneRect.top + m_titleBarHeight, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_paneRect.bottom - m_paneRect.top - m_titleBarHeight,
+		m_allowedRegion.top + m_titleBarHeight, m_allowedRegion.left, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top - m_titleBarHeight,
 		nullptr,
 		m_title + "_Pane_Content_Layout"
 	);
@@ -270,7 +273,7 @@ void Pane::InitializeLayoutWithoutHeaderBar()
 	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
 		m_ui,
-		m_paneRect.top, m_paneRect.left, m_paneRect.right - m_paneRect.left, m_paneRect.bottom - m_paneRect.top,
+		m_allowedRegion.top, m_allowedRegion.left, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top,
 		nullptr,
 		m_title + "_Pane_Content_Layout"
 	);
@@ -293,8 +296,8 @@ void Pane::Render() const noexcept
 
 	if (m_titleLayout != nullptr)
 	{
-		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
-		D2D1_RECT_F contentRect = D2D1::RectF(m_paneRect.left, m_paneRect.top + m_titleBarHeight, m_paneRect.right, m_paneRect.bottom);
+		D2D1_RECT_F titleRect = TitleRect();
+		D2D1_RECT_F contentRect = ContentRect();
 
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
@@ -318,19 +321,19 @@ void Pane::Render() const noexcept
 			else
 			{
 				context->PushAxisAlignedClip(titleRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-				context->FillRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_headerBarBrush->Get());
+				context->FillRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_headerBarBrush->Get());
 				m_titleLayout->Render();
 				context->PopAxisAlignedClip();
 
 				context->PushAxisAlignedClip(contentRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);
-				context->FillRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
+				context->FillRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
 				m_contentLayout->Render();
 				context->PopAxisAlignedClip();
 
 				if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
 				{
 					context->DrawRoundedRectangle(
-						D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY),
+						D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY),
 						m_borderBrush->Get(),
 						m_borderWidth
 					);
@@ -353,7 +356,7 @@ void Pane::Render() const noexcept
 				if (m_minimized)
 					context->DrawRectangle(titleRect, m_borderBrush->Get(), m_borderWidth);
 				else
-					context->DrawRectangle(m_paneRect, m_borderBrush->Get(), m_borderWidth);
+					context->DrawRectangle(m_allowedRegion, m_borderBrush->Get(), m_borderWidth);
 			}
 		}
 	}
@@ -362,22 +365,22 @@ void Pane::Render() const noexcept
 		// In order to draw the background with rounded corners, we draw the background for the layout manually here
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
-			context->FillRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
+			context->FillRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
 			m_contentLayout->Render();
 
 			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
 			{
-				context->DrawRoundedRectangle(D2D1::RoundedRect(m_paneRect, m_paneCornerRadiusX, m_paneCornerRadiusY), m_borderBrush->Get(), m_borderWidth);
+				context->DrawRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_borderBrush->Get(), m_borderWidth);
 			}
 		}
 		else
 		{
-			context->FillRectangle(m_paneRect, m_backgroundBrush->Get());
+			context->FillRectangle(m_allowedRegion, m_backgroundBrush->Get());
 			m_contentLayout->Render();
 
 			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
 			{
-				context->DrawRectangle(m_paneRect, m_borderBrush->Get(), m_borderWidth);
+				context->DrawRectangle(m_allowedRegion, m_borderBrush->Get(), m_borderWidth);
 			}
 		}
 	}
@@ -398,7 +401,27 @@ Column* Pane::AddColumn(RowColumnDefinition definition)
 
 
 
+void Pane::PaneChanged() noexcept
+{
+	D2D1_RECT_F titleRect = TitleRect();
+	D2D1_RECT_F contentRect = ContentRect();
 
+	m_titleLayout->Resize(titleRect);
+	m_contentLayout->Resize(contentRect);
+
+	m_headerBarBrush->SetDrawRegion(titleRect);
+	m_titleBrush->SetDrawRegion(titleRect);
+	m_backgroundBrush->SetDrawRegion(contentRect);
+	m_borderBrush->SetDrawRegion(contentRect);
+}
+void Pane::OnMarginChanged()
+{
+	PaneChanged();
+}
+void Pane::OnAllowedRegionChanged()
+{
+	PaneChanged();
+}
 
 
 
@@ -444,26 +467,91 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 	if (m_titleLayout != nullptr)
 	{
 		// First check if we are dragging before passing to layouts
+		if (m_mouseRightEdgeState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			// We want to disable the case where the user selected the right edge, drags it to the left and the min width is reached, and they
+			// continue dragging to the left and nothing seems to happen. Then if they move their cursor to the right, even though the cursor
+			// is no longer over the edge, it will move the edge to the right. To stop this, only compute a deltaX if the mouse is right of where
+			// the edge would be at minimum width
+			if (e.GetX() < m_allowedRegion.left + m_minPaneWidth)
+			{
+				e.Handled(this);
+				return;
+			}
+
+			float deltaX = e.GetX() - m_lastMouseX;
+			AllowedRegionRight(std::max(m_allowedRegion.left + m_minPaneWidth, m_allowedRegion.right + deltaX));
+
+			m_lastMouseX = e.GetX();
+			e.Handled(this);
+			return;
+		}
+
+		if (m_mouseLeftEdgeState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			// We want to disable the case where the user selected the left edge, drags it to the right and the min width is reached, and they
+			// continue dragging to the right and nothing seems to happen. Then if they move their cursor to the left, even though the cursor
+			// is no longer over the edge, it will move the edge to the left. To stop this, only compute a deltaX if the mouse is left of where
+			// the edge would be at minimum width
+			if (e.GetX() > m_allowedRegion.right - m_minPaneWidth)
+			{
+				e.Handled(this);
+				return;
+			}
+
+			float deltaX = e.GetX() - m_lastMouseX;
+			AllowedRegionLeft(std::min(m_allowedRegion.right - m_minPaneWidth, m_allowedRegion.left + deltaX));
+
+			m_lastMouseX = e.GetX();
+			e.Handled(this);
+			return;
+		}
+
+		if (m_mouseTopEdgeState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			// We want to disable the case where the user selected the top edge, drags it down and the min height is reached, and they
+			// continue dragging down and nothing seems to happen. Then if they move their cursor up, even though the cursor
+			// is no longer over the edge, it will move the edge upward. To stop this, only compute a deltaY if the mouse is above where
+			// the edge would be at minimum height
+			if (e.GetY() > m_allowedRegion.bottom - m_minPaneHeight)
+			{
+				e.Handled(this);
+				return;
+			}
+
+			float deltaY = e.GetY() - m_lastMouseY;
+			AllowedRegionTop(std::min(m_allowedRegion.bottom - m_minPaneHeight, m_allowedRegion.top + deltaY));
+
+			m_lastMouseY = e.GetY();
+			e.Handled(this);
+			return;
+		}
+
+		if (m_mouseBottomEdgeState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			// We want to disable the case where the user selected the bottom edge, drags it up and the min height is reached, and they
+			// continue dragging up and nothing seems to happen. Then if they move their cursor down, even though the cursor
+			// is no longer over the edge, it will move the edge downward. To stop this, only compute a deltaY if the mouse is below where
+			// the edge would be at minimum height
+			if (e.GetY() < m_allowedRegion.top + m_minPaneHeight)
+			{
+				e.Handled(this);
+				return;
+			}
+
+			float deltaY = e.GetY() - m_lastMouseY;
+			AllowedRegionBottom(std::max(m_allowedRegion.top + m_minPaneHeight, m_allowedRegion.bottom + deltaY));
+
+			m_lastMouseY = e.GetY();
+			e.Handled(this);
+			return;
+		}
+
 		if (m_mouseTitleBarState == MouseOverDraggableAreaState::DRAGGING)
 		{
 			float deltaX = e.GetX() - m_lastMouseX;
 			float deltaY = e.GetY() - m_lastMouseY;
-
-			m_paneRect.top += deltaY;
-			m_paneRect.bottom += deltaY;
-			m_paneRect.left += deltaX;
-			m_paneRect.right += deltaX;
-
-			D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
-			D2D1_RECT_F contentRect = D2D1::RectF(m_paneRect.left, m_paneRect.top + m_titleBarHeight, m_paneRect.right, m_paneRect.bottom);
-
-			m_titleLayout->Resize(titleRect);
-			m_contentLayout->Resize(contentRect);
-
-			m_headerBarBrush->SetDrawRegion(titleRect);
-			m_titleBrush->SetDrawRegion(titleRect);
-			m_backgroundBrush->SetDrawRegion(contentRect);
-			m_borderBrush->SetDrawRegion(contentRect);
+			AllowedRegion(m_allowedRegion.left + deltaX, m_allowedRegion.top + deltaY, m_allowedRegion.right + deltaX, m_allowedRegion.bottom + deltaY);
 
 			m_lastMouseX = e.GetX();
 			m_lastMouseY = e.GetY();
@@ -480,7 +568,113 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 
 		// Check for other mouse state changes
-		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
+
+		// Right Edge
+		bool mouseIsOverRightEdge = RectContainsPoint(RightEdgeRect(), e.GetX(), e.GetY());
+		if (m_mouseRightEdgeState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverRightEdge)
+			{
+				m_mouseRightEdgeState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseRightEdgeState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverRightEdge)
+			{
+				m_mouseRightEdgeState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Left Edge
+		bool mouseIsOverLeftEdge = RectContainsPoint(LeftEdgeRect(), e.GetX(), e.GetY());
+		if (m_mouseLeftEdgeState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverLeftEdge)
+			{
+				m_mouseLeftEdgeState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseLeftEdgeState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverLeftEdge)
+			{
+				m_mouseLeftEdgeState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Top Edge
+		bool mouseIsOverTopEdge = RectContainsPoint(TopEdgeRect(), e.GetX(), e.GetY());
+		if (m_mouseTopEdgeState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverTopEdge)
+			{
+				m_mouseTopEdgeState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseTopEdgeState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverTopEdge)
+			{
+				m_mouseTopEdgeState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Bottom Edge
+		bool mouseIsOverBottomEdge = RectContainsPoint(BottomEdgeRect(), e.GetX(), e.GetY());
+		if (m_mouseBottomEdgeState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverBottomEdge)
+			{
+				m_mouseBottomEdgeState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseBottomEdgeState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverBottomEdge)
+			{
+				m_mouseBottomEdgeState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Title Bar
+		D2D1_RECT_F titleRect = TitleRect();
 		bool mouseIsOverTitleBar =
 			(m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f) ?
 			RectContainsPoint(D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY), e.GetX(), e.GetY()) :
@@ -504,12 +698,14 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 	}
 
-
-	
-
-
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseMove(e);
+
+	// Finally, if the mouse is over the Pane but the event has not been handled, just let the Pane handle it
+	if (!e.Handled() && RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY()))
+	{
+		e.Handled(this);
+	}
 }
 void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
@@ -538,6 +734,43 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseButtonPressed(e);
 
+	// Right Edge
+	if (m_mouseRightEdgeState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseRightEdgeState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX();
+		e.Handled(this);
+		return;
+	}
+
+	// Left Edge
+	if (m_mouseLeftEdgeState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseLeftEdgeState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX();
+		e.Handled(this);
+		return;
+	}
+
+	// Top Edge
+	if (m_mouseTopEdgeState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseTopEdgeState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
+
+	// Bottom Edge
+	if (m_mouseBottomEdgeState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseBottomEdgeState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
+
+	// Title Bar
 	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
 	{
 		m_mouseTitleBarState = MouseOverDraggableAreaState::DRAGGING;
@@ -561,36 +794,57 @@ void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseButtonReleased(e);
 
+	// Right Edge
+	if (m_mouseRightEdgeState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseRightEdgeState = RectContainsPoint(RightEdgeRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Left Edge
+	if (m_mouseLeftEdgeState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseLeftEdgeState = RectContainsPoint(LeftEdgeRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Top Edge
+	if (m_mouseTopEdgeState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseTopEdgeState = RectContainsPoint(TopEdgeRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Bottom Edge
+	if (m_mouseBottomEdgeState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseBottomEdgeState = RectContainsPoint(BottomEdgeRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Title Bar
 	if (m_mouseTitleBarState == MouseOverDraggableAreaState::DRAGGING)
 	{
-		D2D1_RECT_F titleRect = D2D1::RectF(m_paneRect.left, m_paneRect.top, m_paneRect.right, m_paneRect.top + m_titleBarHeight);
+		D2D1_RECT_F titleRect = TitleRect();
 
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
-			if (RectContainsPoint(D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY), e.GetX(), e.GetY()))
-			{
-				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
-				e.Handled(this);
-				return;
-			}
-			else
-			{
-				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
-			}
+			m_mouseTitleBarState = RectContainsPoint(D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
 		}
 		else
 		{
-			if (RectContainsPoint(titleRect, e.GetX(), e.GetY()))
-			{
-				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
-				e.Handled(this);
-				return;
-			}
-			else
-			{
-				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
-			}
+			m_mouseTitleBarState = RectContainsPoint(titleRect, e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
 		}
+		e.Handled(this);
+		return;
 	}
 
 

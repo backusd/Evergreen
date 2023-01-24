@@ -68,6 +68,23 @@ private:
 	void InitializeLayoutWithHeaderBar();
 	void InitializeLayoutWithoutHeaderBar();
 
+	void PaneChanged() noexcept;
+
+	// React to changes made when base-class methods are called
+	void OnMarginChanged() override;
+	void OnAllowedRegionChanged() override;
+
+	ND inline D2D1_RECT_F TitleRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top, m_allowedRegion.right, m_allowedRegion.top + m_titleBarHeight); }
+	ND inline D2D1_RECT_F ContentRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top + m_titleBarHeight, m_allowedRegion.right, m_allowedRegion.bottom); }
+	ND inline D2D1_RECT_F RightEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.right - edgeSensitivity, m_allowedRegion.top, m_allowedRegion.right + edgeSensitivity, m_allowedRegion.bottom); }
+	ND inline D2D1_RECT_F LeftEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left - edgeSensitivity, m_allowedRegion.top, m_allowedRegion.left + edgeSensitivity, m_allowedRegion.bottom); }
+	ND inline D2D1_RECT_F TopEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top - edgeSensitivity, m_allowedRegion.right, m_allowedRegion.top + edgeSensitivity); }
+	ND inline D2D1_RECT_F BottomEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.bottom - edgeSensitivity, m_allowedRegion.right, m_allowedRegion.bottom + edgeSensitivity); }
+	ND inline D2D1_RECT_F TopRightCornerRect() const noexcept { return D2D1::RectF(); }
+	ND inline D2D1_RECT_F TopLeftCornerRect() const noexcept { return D2D1::RectF(); }
+	ND inline D2D1_RECT_F BottomRightCornerRect() const noexcept { return D2D1::RectF(); }
+	ND inline D2D1_RECT_F BottomLeftCornerRect() const noexcept { return D2D1::RectF(); }
+
 	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept;
 	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
 
@@ -83,7 +100,6 @@ private:
 
 	std::unique_ptr<Layout> m_titleLayout;
 	std::unique_ptr<Layout> m_contentLayout;
-	D2D1_RECT_F m_paneRect;
 	float m_paneCornerRadiusX;
 	float m_paneCornerRadiusY;
 
@@ -105,6 +121,12 @@ private:
 	// Dragging 
 	float m_lastMouseX;
 	float m_lastMouseY;
+	float m_minPaneWidth;
+	float m_minPaneHeight;
+
+
+	// How many pixels from an edge will we all for clicking to drag the edge
+	static const float edgeSensitivity;
 };
 #pragma warning( pop )
 
