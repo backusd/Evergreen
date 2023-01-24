@@ -154,6 +154,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 	minimizeButton->SetOnMouseEnteredCallback(
 		[](Control* c, Event& e)
 		{
+
 			Button* button = static_cast<Button*>(c);
 			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
 			button->BackgroundBrush(std::move(brush));
@@ -229,6 +230,9 @@ void Pane::InitializeLayoutWithHeaderBar()
 	closeButton->SetOnMouseEnteredCallback(
 		[](Control* c, Event& e)
 		{
+			// Set cursor here because it may be entering from outside the pane and be a double arrow
+			Window::SetCursor(Cursor::ARROW);
+
 			Button* button = static_cast<Button*>(c);
 			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
 			button->BackgroundBrush(std::move(brush));
@@ -425,9 +429,6 @@ void Pane::OnAllowedRegionChanged()
 
 
 
-
-
-
 void Pane::OnChar(CharEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
@@ -467,6 +468,126 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 	if (m_titleLayout != nullptr)
 	{
 		// First check if we are dragging before passing to layouts
+		if (m_mouseTopRightCornerState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			float deltaX = 0.0f;
+			float deltaY = 0.0f;
+			
+			if (e.GetX() >= m_allowedRegion.left + m_minPaneWidth)
+			{
+				deltaX = e.GetX() - m_lastMouseX;
+				m_lastMouseX = e.GetX();
+			}
+			if (e.GetY() <= m_allowedRegion.bottom - m_minPaneHeight)
+			{
+				deltaY = e.GetY() - m_lastMouseY;
+				m_lastMouseY = e.GetY();
+			}
+
+			if (deltaX != 0.0f || deltaY != 0.0f)
+			{
+				AllowedRegion(
+					m_allowedRegion.left,
+					std::min(m_allowedRegion.bottom - m_minPaneHeight, m_allowedRegion.top + deltaY),
+					std::max(m_allowedRegion.left + m_minPaneWidth, m_allowedRegion.right + deltaX),
+					m_allowedRegion.bottom
+				);
+			}
+
+			e.Handled(this);
+			return;
+		}
+
+		if (m_mouseTopLeftCornerState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			float deltaX = 0.0f;
+			float deltaY = 0.0f;
+
+			if (e.GetX() <= m_allowedRegion.right - m_minPaneWidth)
+			{
+				deltaX = e.GetX() - m_lastMouseX;
+				m_lastMouseX = e.GetX();
+			}
+			if (e.GetY() <= m_allowedRegion.bottom - m_minPaneHeight)
+			{
+				deltaY = e.GetY() - m_lastMouseY;
+				m_lastMouseY = e.GetY();
+			}
+
+			if (deltaX != 0.0f || deltaY != 0.0f)
+			{
+				AllowedRegion(
+					std::min(m_allowedRegion.right - m_minPaneWidth, m_allowedRegion.left + deltaX),
+					std::min(m_allowedRegion.bottom - m_minPaneHeight, m_allowedRegion.top + deltaY),
+					m_allowedRegion.right,
+					m_allowedRegion.bottom
+				);
+			}
+
+			e.Handled(this);
+			return;
+		}
+
+		if (m_mouseBottomRightCornerState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			float deltaX = 0.0f;
+			float deltaY = 0.0f;
+
+			if (e.GetX() >= m_allowedRegion.left + m_minPaneWidth)
+			{
+				deltaX = e.GetX() - m_lastMouseX;
+				m_lastMouseX = e.GetX();
+			}
+			if (e.GetY() >= m_allowedRegion.top + m_minPaneHeight)
+			{
+				deltaY = e.GetY() - m_lastMouseY;
+				m_lastMouseY = e.GetY();
+			}
+
+			if (deltaX != 0.0f || deltaY != 0.0f)
+			{
+				AllowedRegion(
+					m_allowedRegion.left,
+					m_allowedRegion.top,
+					std::max(m_allowedRegion.left + m_minPaneWidth, m_allowedRegion.right + deltaX),
+					std::max(m_allowedRegion.top + m_minPaneHeight, m_allowedRegion.bottom + deltaY)
+				);
+			}
+
+			e.Handled(this);
+			return;
+		}
+
+		if (m_mouseBottomLeftCornerState == MouseOverDraggableAreaState::DRAGGING)
+		{
+			float deltaX = 0.0f;
+			float deltaY = 0.0f;
+
+			if (e.GetX() <= m_allowedRegion.right - m_minPaneWidth)
+			{
+				deltaX = e.GetX() - m_lastMouseX;
+				m_lastMouseX = e.GetX();
+			}
+			if (e.GetY() >= m_allowedRegion.top + m_minPaneHeight)
+			{
+				deltaY = e.GetY() - m_lastMouseY;
+				m_lastMouseY = e.GetY();
+			}
+
+			if (deltaX != 0.0f || deltaY != 0.0f)
+			{
+				AllowedRegion(
+					std::min(m_allowedRegion.right - m_minPaneWidth, m_allowedRegion.left + deltaX),
+					m_allowedRegion.top,
+					m_allowedRegion.right,
+					std::max(m_allowedRegion.top + m_minPaneHeight, m_allowedRegion.bottom + deltaY)
+				);
+			}
+
+			e.Handled(this);
+			return;
+		}
+
 		if (m_mouseRightEdgeState == MouseOverDraggableAreaState::DRAGGING)
 		{
 			// We want to disable the case where the user selected the right edge, drags it to the left and the min width is reached, and they
@@ -568,6 +689,110 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 
 		// Check for other mouse state changes
+		//
+		// Top Right Corner
+		bool mouseIsOverTopRightCorner = RectContainsPoint(TopRightCornerRect(), e.GetX(), e.GetY());
+		if (m_mouseTopRightCornerState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverTopRightCorner)
+			{
+				m_mouseTopRightCornerState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_NESW);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseTopRightCornerState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverTopRightCorner)
+			{
+				m_mouseTopRightCornerState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Top Left Corner
+		bool mouseIsOverTopLeftCorner = RectContainsPoint(TopLeftCornerRect(), e.GetX(), e.GetY());
+		if (m_mouseTopLeftCornerState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverTopLeftCorner)
+			{
+				m_mouseTopLeftCornerState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_NWSE);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseTopLeftCornerState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverTopLeftCorner)
+			{
+				m_mouseTopLeftCornerState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Bottom Right Corner
+		bool mouseIsOverBottomRightCorner = RectContainsPoint(BottomRightCornerRect(), e.GetX(), e.GetY());
+		if (m_mouseBottomRightCornerState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverBottomRightCorner)
+			{
+				m_mouseBottomRightCornerState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_NWSE);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseBottomRightCornerState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverBottomRightCorner)
+			{
+				m_mouseBottomRightCornerState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
+
+		// Bottom Left Corner
+		bool mouseIsOverBottomLeftCorner = RectContainsPoint(BottomLeftCornerRect(), e.GetX(), e.GetY());
+		if (m_mouseBottomLeftCornerState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverBottomLeftCorner)
+			{
+				m_mouseBottomLeftCornerState = MouseOverDraggableAreaState::OVER;
+				Window::SetCursor(Cursor::DOUBLE_ARROW_NESW);
+				e.Handled(this);
+				return;
+			}
+		}
+		else if (m_mouseBottomLeftCornerState == MouseOverDraggableAreaState::OVER)
+		{
+			if (!mouseIsOverBottomLeftCorner)
+			{
+				m_mouseBottomLeftCornerState = MouseOverDraggableAreaState::NOT_OVER;
+				Window::SetCursor(Cursor::ARROW);
+			}
+			else
+			{
+				e.Handled(this);
+				return;
+			}
+		}
 
 		// Right Edge
 		bool mouseIsOverRightEdge = RectContainsPoint(RightEdgeRect(), e.GetX(), e.GetY());
@@ -731,8 +956,47 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
-	if (m_titleLayout != nullptr)
-		m_titleLayout->OnMouseButtonPressed(e);
+	// Handle mouse over draggable areas first before passing the event to the title layout
+	// 
+	// Top Right Corner
+	if (m_mouseTopRightCornerState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseTopRightCornerState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX(); 
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
+
+	// Top Left Corner
+	if (m_mouseTopLeftCornerState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseTopLeftCornerState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX();
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
+
+	// Bottom Right Corner
+	if (m_mouseBottomRightCornerState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseBottomRightCornerState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX();
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
+
+	// Bottom Left Corner
+	if (m_mouseBottomLeftCornerState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseBottomLeftCornerState = MouseOverDraggableAreaState::DRAGGING;
+		m_lastMouseX = e.GetX();
+		m_lastMouseY = e.GetY();
+		e.Handled(this);
+		return;
+	}
 
 	// Right Edge
 	if (m_mouseRightEdgeState == MouseOverDraggableAreaState::OVER)
@@ -781,7 +1045,8 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	}
 
 
-
+	if (!e.Handled() && m_titleLayout != nullptr)
+		m_titleLayout->OnMouseButtonPressed(e);
 
 
 	if (!e.Handled() && !m_minimized)
@@ -791,8 +1056,41 @@ void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
-	if (m_titleLayout != nullptr)
-		m_titleLayout->OnMouseButtonReleased(e);
+	// Top Right Corner
+	if (m_mouseTopRightCornerState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseTopRightCornerState = RectContainsPoint(TopRightCornerRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Top Left Corner
+	if (m_mouseTopLeftCornerState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseTopLeftCornerState = RectContainsPoint(TopLeftCornerRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Bottom Right Corner
+	if (m_mouseBottomRightCornerState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseBottomRightCornerState = RectContainsPoint(BottomRightCornerRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
+
+	// Bottom Left Corner
+	if (m_mouseBottomLeftCornerState == MouseOverDraggableAreaState::DRAGGING)
+	{
+		m_mouseBottomLeftCornerState = RectContainsPoint(BottomLeftCornerRect(), e.GetX(), e.GetY()) ? MouseOverDraggableAreaState::OVER : MouseOverDraggableAreaState::NOT_OVER;
+		Window::SetCursor(Cursor::ARROW);
+		e.Handled(this);
+		return;
+	}
 
 	// Right Edge
 	if (m_mouseRightEdgeState == MouseOverDraggableAreaState::DRAGGING)
@@ -847,8 +1145,8 @@ void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		return;
 	}
 
-
-
+	if (!e.Handled() && m_titleLayout != nullptr)
+		m_titleLayout->OnMouseButtonReleased(e);
 
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseButtonReleased(e);

@@ -641,7 +641,7 @@ void UI::LoadDefaultUI() noexcept
 
 	pane->AddRow({ RowColumnType::STAR, 1.0f });
 	pane->AddColumn({ RowColumnType::STAR, 1.0f });
-	pane->SetCornerRadius(10.0f);
+	pane->SetCornerRadius(0.0f);
 
 	m_panes.push_back(std::move(pane));
 }

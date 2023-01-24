@@ -80,10 +80,10 @@ private:
 	ND inline D2D1_RECT_F LeftEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left - edgeSensitivity, m_allowedRegion.top, m_allowedRegion.left + edgeSensitivity, m_allowedRegion.bottom); }
 	ND inline D2D1_RECT_F TopEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top - edgeSensitivity, m_allowedRegion.right, m_allowedRegion.top + edgeSensitivity); }
 	ND inline D2D1_RECT_F BottomEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.bottom - edgeSensitivity, m_allowedRegion.right, m_allowedRegion.bottom + edgeSensitivity); }
-	ND inline D2D1_RECT_F TopRightCornerRect() const noexcept { return D2D1::RectF(); }
-	ND inline D2D1_RECT_F TopLeftCornerRect() const noexcept { return D2D1::RectF(); }
-	ND inline D2D1_RECT_F BottomRightCornerRect() const noexcept { return D2D1::RectF(); }
-	ND inline D2D1_RECT_F BottomLeftCornerRect() const noexcept { return D2D1::RectF(); }
+	ND inline D2D1_RECT_F TopRightCornerRect() const noexcept { return D2D1::RectF(m_allowedRegion.right - edgeSensitivity, m_allowedRegion.top - edgeSensitivity, m_allowedRegion.right + edgeSensitivity, m_allowedRegion.top + edgeSensitivity); }
+	ND inline D2D1_RECT_F TopLeftCornerRect() const noexcept { return D2D1::RectF(m_allowedRegion.left - edgeSensitivity, m_allowedRegion.top - edgeSensitivity, m_allowedRegion.left + edgeSensitivity, m_allowedRegion.top + edgeSensitivity); }
+	ND inline D2D1_RECT_F BottomRightCornerRect() const noexcept { return D2D1::RectF(m_allowedRegion.right - edgeSensitivity, m_allowedRegion.bottom - edgeSensitivity, m_allowedRegion.right + edgeSensitivity, m_allowedRegion.bottom + edgeSensitivity); }
+	ND inline D2D1_RECT_F BottomLeftCornerRect() const noexcept { return D2D1::RectF(m_allowedRegion.left - edgeSensitivity, m_allowedRegion.bottom - edgeSensitivity, m_allowedRegion.left + edgeSensitivity, m_allowedRegion.bottom + edgeSensitivity); }
 
 	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept;
 	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
