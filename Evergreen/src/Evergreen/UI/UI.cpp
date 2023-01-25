@@ -632,16 +632,20 @@ void UI::LoadDefaultUI() noexcept
 		m_deviceResources,
 		this,
 		150.0f, 150.0f, 500.0f, 700.0f,
-		"Test Pane",
 		true, true, 
 		nullptr, nullptr, 1.0f,
-		true, nullptr,
-		nullptr
+		true, nullptr
 		);
 
 	pane->AddRow({ RowColumnType::STAR, 1.0f });
 	pane->AddColumn({ RowColumnType::STAR, 1.0f });
-	pane->SetCornerRadius(0.0f);
+	pane->SetCornerRadius(8.0f);
+
+	Layout* titleLayout = pane->GetTitleBarLayout();
+	titleLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	titleLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	pane->ClearTitleBarLayoutAndAddTitle("Some title bitch");
 
 	m_panes.push_back(std::move(pane));
 }

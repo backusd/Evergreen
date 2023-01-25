@@ -187,8 +187,11 @@ public:
 	Row* AddRow(RowColumnDefinition definition);
 	Column* AddColumn(RowColumnDefinition definition);
 
-	void ClearRows() noexcept;
-	void ClearColumns() noexcept;
+	inline void ClearRows() noexcept;
+	inline void ClearColumns() noexcept;
+	inline void ClearControls() noexcept;
+	inline void ClearSubLayouts() noexcept;
+	void ClearContents() noexcept;
 
 	ND inline std::string Name() const noexcept { return m_name; }
 	void Name(const std::string& name) noexcept { m_name = name; }

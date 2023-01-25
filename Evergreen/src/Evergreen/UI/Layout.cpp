@@ -420,6 +420,23 @@ void Layout::ClearColumns() noexcept
 	m_columns.clear();
 	m_columnDefinitions.clear();
 }
+void Layout::ClearControls() noexcept 
+{ 
+	m_controls.clear(); 
+	m_controlPositions.clear(); 
+}
+void Layout::ClearSubLayouts() noexcept 
+{ 
+	m_subLayouts.clear(); 
+	m_subLayoutPositions.clear(); 
+}
+void Layout::ClearContents() noexcept
+{
+	ClearControls();
+	ClearSubLayouts();
+	ClearRows();
+	ClearColumns();
+}
 
 void Layout::Update() noexcept
 {

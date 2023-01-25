@@ -32,6 +32,10 @@ public:
 
 	ND bool ContainsPoint(float x, float y) const noexcept override;
 
+	void SetCornerRadius(float xAndY) noexcept { m_radiusX = xAndY; m_radiusY = xAndY; ButtonChanged();  }
+	void SetCornerRadius(float x, float y) noexcept { m_radiusX = x; m_radiusY = y; ButtonChanged(); }
+
+
 protected:
 	void ButtonChanged() override;
 	virtual void OnAllowedRegionChanged() noexcept override;

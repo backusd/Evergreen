@@ -18,7 +18,6 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			float left,
 			float height,
 			float width,
-			const std::string& title,
 			bool resizeable,
 			bool relocatable,
 			std::unique_ptr<ColorBrush> backgroundBrush,
@@ -26,16 +25,13 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			float borderWidth,
 			bool headerBar,
 			std::unique_ptr<ColorBrush> headerBarBrush,
-			std::unique_ptr<ColorBrush> titleBrush,
 			float titleBarHeight) :
 	Control(deviceResources, ui, D2D1::RectF(left, top, left + width, top + height)),
-	m_title(title),
 	m_resizeable(resizeable),
 	m_relocatable(relocatable),
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidth(borderWidth),
-	m_titleBrush(std::move(titleBrush)),
 	m_titleLayout(nullptr),
 	m_visible(true),
 	m_minimized(false),
@@ -67,9 +63,6 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	if (m_headerBarBrush == nullptr && headerBar)
 		m_headerBarBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f));
 
-	if (m_titleBrush == nullptr && headerBar)
-		m_titleBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
-
 	if (headerBar)
 		InitializeLayoutWithHeaderBar();
 	else
@@ -86,7 +79,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 		m_ui,
 		m_allowedRegion.top, m_allowedRegion.left, m_allowedRegion.right - m_allowedRegion.left, m_titleBarHeight,
 		nullptr,
-		m_title + "_Pane_Title_Layout"
+		"Pane_Title_Layout"
 	);
 
 	m_titleLayout->AddRow({ RowColumnType::FIXED, m_titleBarHeight });
@@ -99,25 +92,13 @@ void Pane::InitializeLayoutWithHeaderBar()
 		m_ui,
 		m_allowedRegion.top + m_titleBarHeight, m_allowedRegion.left, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top - m_titleBarHeight,
 		nullptr,
-		m_title + "_Pane_Content_Layout"
+		"Pane_Content_Layout"
 	);
 
-	// Title ------------------------------------------------------------------
-	std::unique_ptr<TextStyle> style = std::make_unique<TextStyle>(
-		m_deviceResources,
-		"Pane Title TextStyle",
-		Evergreen::FontFamily::Arial,
-		12.0f,
-		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD,
-		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
-		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-	);
-	std::wstring title(m_title.begin(), m_title.end());
-	Evergreen::Margin titleMargin{ 10.0f, 0.0f, 0.0f, 0.0f };
-	m_titleLayout->CreateControl<Text>(m_deviceResources, title, std::move(m_titleBrush->Duplicate()), std::move(style), titleMargin);
+	// Title Bar Layout ------------------------------------------------------------------
+	// Just create a sublayout so that we can return a Layout* for this sublayout that will
+	// not include the minimize and close buttons
+	m_titleLayout->AddSubLayout({}, "Pane_Title_Bar_Sublayout");
 
 	// Minimize Button ----------------------------------------------------------
 	RowColumnPosition minimizeButtonPosition;
@@ -126,15 +107,19 @@ void Pane::InitializeLayoutWithHeaderBar()
 
 	std::unique_ptr<SolidColorBrush> minimizeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	Button* minimizeButton = m_titleLayout->CreateControl<Button>(
+	RoundedButton* minimizeButton = m_titleLayout->CreateControl<RoundedButton>(
 		minimizeButtonPosition,
 		m_deviceResources,
-		std::move(minimizeBackgroundBrush)
+		std::move(minimizeBackgroundBrush),
+		nullptr,
+		m_paneCornerRadiusX,
+		m_paneCornerRadiusY
 	);
 	
 	minimizeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
 	minimizeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
 
+	std::unique_ptr<SolidColorBrush> whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
 	std::unique_ptr<TextStyle> minimizeTextStyle = std::make_unique<TextStyle>(
 		m_deviceResources,
 		"Pane Close Button TextStyle",
@@ -149,7 +134,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 		);
 	std::wstring minimizeString = L"";
 	minimizeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE738", nullptr, 16)));
-	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(m_titleBrush->Duplicate()), std::move(minimizeTextStyle));
+	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(whiteBrush), std::move(minimizeTextStyle));
 
 	minimizeButton->SetOnMouseEnteredCallback(
 		[](Control* c, Event& e)
@@ -202,15 +187,19 @@ void Pane::InitializeLayoutWithHeaderBar()
 
 	std::unique_ptr<SolidColorBrush> closeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	Button* closeButton = m_titleLayout->CreateControl<Button>(
+	RoundedButton* closeButton = m_titleLayout->CreateControl<RoundedButton>(
 		closeButtonPosition,
 		m_deviceResources,
-		std::move(closeBackgroundBrush)
-		);
+		std::move(closeBackgroundBrush),
+		nullptr,
+		m_paneCornerRadiusX,
+		m_paneCornerRadiusY
+	);
 
 	closeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
 	closeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
 
+	whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
 	std::unique_ptr<TextStyle> closeTextStyle = std::make_unique<TextStyle>(
 		m_deviceResources,
 		"Pane Close Button TextStyle",
@@ -225,7 +214,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 		);
 	std::wstring closeString = L"";
 	closeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE711", nullptr, 16)));
-	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(m_titleBrush->Duplicate()), std::move(closeTextStyle));
+	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(whiteBrush), std::move(closeTextStyle));
 
 	closeButton->SetOnMouseEnteredCallback(
 		[](Control* c, Event& e)
@@ -234,7 +223,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 			Window::SetCursor(Cursor::ARROW);
 
 			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Crimson));
 			button->BackgroundBrush(std::move(brush));
 		}
 	);
@@ -279,8 +268,39 @@ void Pane::InitializeLayoutWithoutHeaderBar()
 		m_ui,
 		m_allowedRegion.top, m_allowedRegion.left, m_allowedRegion.right - m_allowedRegion.left, m_allowedRegion.bottom - m_allowedRegion.top,
 		nullptr,
-		m_title + "_Pane_Content_Layout"
+		"Pane_Content_Layout"
 	);
+}
+
+void Pane::ClearTitleBarLayoutAndAddTitle(const std::string& title, std::unique_ptr<ColorBrush> titleBrush)
+{
+	EG_CORE_ASSERT(m_titleLayout != nullptr, "No title layout");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
+	if (titleBrush == nullptr)
+		titleBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
+
+	Layout* titleBarSublayout = m_titleLayout->GetSublayout(0);
+	EG_CORE_ASSERT(titleBarSublayout != nullptr, "No title sublayout");
+	titleBarSublayout->ClearContents();
+	titleBarSublayout->AddRow({ RowColumnType::STAR, 1.0f });
+	titleBarSublayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	std::unique_ptr<TextStyle> style = std::make_unique<TextStyle>(
+		m_deviceResources,
+		"Pane Title TextStyle",
+		Evergreen::FontFamily::Arial,
+		12.0f,
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_BOLD,
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
+		);
+	std::wstring w_title(title.begin(), title.end());
+	Evergreen::Margin titleMargin{ 10.0f, 0.0f, 0.0f, 0.0f };
+	titleBarSublayout->CreateControl<Text>(m_deviceResources, w_title, std::move(titleBrush), std::move(style), titleMargin);
 }
 
 void Pane::Update() noexcept
@@ -401,7 +421,28 @@ Column* Pane::AddColumn(RowColumnDefinition definition)
 	return m_contentLayout->AddColumn(definition);
 }
 
+void Pane::SetCornerRadius(float xAndY) noexcept 
+{ 
+	m_paneCornerRadiusX = xAndY; 
+	m_paneCornerRadiusY = xAndY; 
 
+	RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
+	rb->SetCornerRadius(xAndY);
+
+	rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
+	rb->SetCornerRadius(xAndY);
+}
+void Pane::SetCornerRadius(float x, float y) noexcept 
+{ 
+	m_paneCornerRadiusX = x;
+	m_paneCornerRadiusY = y; 
+
+	RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
+	rb->SetCornerRadius(x, y);
+
+	rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
+	rb->SetCornerRadius(x, y);
+}
 
 
 
@@ -414,7 +455,6 @@ void Pane::PaneChanged() noexcept
 	m_contentLayout->Resize(contentRect);
 
 	m_headerBarBrush->SetDrawRegion(titleRect);
-	m_titleBrush->SetDrawRegion(titleRect);
 	m_backgroundBrush->SetDrawRegion(contentRect);
 	m_borderBrush->SetDrawRegion(contentRect);
 }

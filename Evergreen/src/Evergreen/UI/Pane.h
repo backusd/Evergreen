@@ -21,7 +21,6 @@ public:
 		float left,
 		float height,
 		float width,
-		const std::string& title = "",
 		bool resizeable = true,
 		bool relocatable = true,
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
@@ -29,7 +28,6 @@ public:
 		float borderWidth = 0.0f,
 		bool headerBar = true,
 		std::unique_ptr<ColorBrush> headerBarBrush = nullptr,
-		std::unique_ptr<ColorBrush> titleBrush = nullptr,
 		float titleBarHeight = 20.0f
 	);
 	Pane(const Pane&) = delete;
@@ -42,6 +40,8 @@ public:
 	inline Row* AddRow(RowColumnDefinition definition);
 	inline Column* AddColumn(RowColumnDefinition definition);
 
+	void ClearTitleBarLayoutAndAddTitle(const std::string& title, std::unique_ptr<ColorBrush> titleBrush = nullptr);
+
 	void OnChar(CharEvent& e) noexcept override;
 	void OnKeyPressed(KeyPressedEvent& e) noexcept override;
 	void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
@@ -53,9 +53,11 @@ public:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
 
+	ND inline Layout* GetTitleBarLayout() const noexcept { return m_titleLayout->GetSublayout(0); }
+
 	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
-	inline void SetCornerRadius(float xAndY) noexcept { m_paneCornerRadiusX = xAndY; m_paneCornerRadiusY = xAndY; }
-	inline void SetCornerRadius(float x, float y) noexcept { m_paneCornerRadiusX = x; m_paneCornerRadiusY = y; }
+	void SetCornerRadius(float xAndY) noexcept;
+	void SetCornerRadius(float x, float y) noexcept;
 
 private:
 	enum class MouseOverDraggableAreaState
@@ -111,8 +113,6 @@ private:
 	float m_borderWidth;
 
 	std::unique_ptr<ColorBrush> m_headerBarBrush;
-	std::string m_title;
-	std::unique_ptr<ColorBrush> m_titleBrush;
 	float m_titleBarHeight;
 
 	bool m_minimized;
