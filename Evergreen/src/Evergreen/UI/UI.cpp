@@ -648,6 +648,26 @@ void UI::LoadDefaultUI() noexcept
 	pane->ClearTitleBarLayoutAndAddTitle("Some title bitch");
 
 	m_panes.push_back(std::move(pane));
+
+	pane = std::make_unique<Pane>(
+		m_deviceResources,
+		this,
+		50.0f, 50.0f, 100.0f, 100.0f,
+		true, true,
+		nullptr, nullptr, 1.0f,
+		true, nullptr
+		);
+
+	pane->AddRow({ RowColumnType::STAR, 1.0f });
+	pane->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	titleLayout = pane->GetTitleBarLayout();
+	titleLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	titleLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	pane->ClearTitleBarLayoutAndAddTitle("Second Pane");
+
+	m_panes.push_back(std::move(pane));
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
@@ -713,9 +733,10 @@ void UI::Render() const noexcept
 
 	m_rootLayout->Render();
 
-	for (const auto& pane : m_panes)
+	// Iterate of the panes in reverse order so that we render the ones on top last
+	for (auto iter = m_panes.rbegin(); iter != m_panes.rend(); ++iter) 
 	{
-		pane->Render();
+		iter->get()->Render();
 	}
 
 	m_deviceResources->EndDraw();
@@ -723,21 +744,39 @@ void UI::Render() const noexcept
 
 void UI::RemovePane(Pane* pane) noexcept
 {
-	for (int iii = 0; iii < m_panes.size(); ++iii)
-	{
-		if (m_panes[iii].get() == pane)
+	// Get the iterator to the input Pane parameter
+	auto p = std::find_if(m_panes.begin(), m_panes.end(),
+		[&pane](const std::unique_ptr<Pane>& item) -> bool
 		{
-			// It is possible (if not likely) that the mouse handling control is within the pane
-			// So this needs to be cleared out before we can remove the pane, otherwise, the mouse handling
-			// control pointer will point to a control that does not exist any more
-			m_mouseHandlingControl = nullptr;
-			m_mouseHandlingLayout = nullptr;
-			m_keyboardHandlingControl = nullptr;
-			m_keyboardHandlingLayout = nullptr;
-
-			m_panes.erase(m_panes.begin() + iii);
-			break;
+			return pane == item.get();
 		}
+	);
+
+	if (p != m_panes.end()) {
+		// It is possible (if not likely) that the mouse handling control is within the pane
+		// So this needs to be cleared out before we can remove the pane, otherwise, the mouse handling
+		// control pointer will point to a control that does not exist any more
+		m_mouseHandlingControl = nullptr;
+		m_mouseHandlingLayout = nullptr;
+		m_keyboardHandlingControl = nullptr;
+		m_keyboardHandlingLayout = nullptr;
+
+		m_panes.erase(p);
+	}
+}
+void UI::BringPaneToForeground(Pane* pane) noexcept
+{
+	// Get the iterator to the input Pane parameter
+	auto p = std::find_if(m_panes.begin(), m_panes.end(),
+		[&pane](const std::unique_ptr<Pane>& item) -> bool
+		{
+			return pane == item.get();
+		}
+	);
+
+	// Put the pane at the front of the m_panes vector
+	if (p != m_panes.end()) {
+		std::rotate(m_panes.begin(), p, p + 1);
 	}
 }
 
@@ -882,6 +921,29 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 
 	if (!e.Handled())
 		m_rootLayout->OnMouseButtonReleased(e);
+
+	m_mouseHandlingControl = e.HandlingControl();
+	m_mouseHandlingLayout = e.HandlingLayout();
+}
+void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+{
+	if (m_mouseHandlingControl != nullptr)
+	{
+		m_mouseHandlingControl->OnMouseButtonDoubleClick(e);
+	}
+	else if (m_mouseHandlingLayout != nullptr)
+	{
+		m_mouseHandlingLayout->OnMouseButtonDoubleClick(e);
+	}
+
+	for (const auto& pane : m_panes)
+	{
+		if (!e.Handled())
+			pane->OnMouseButtonDoubleClick(e);
+	}
+
+	if (!e.Handled())
+		m_rootLayout->OnMouseButtonDoubleClick(e);
 
 	m_mouseHandlingControl = e.HandlingControl();
 	m_mouseHandlingLayout = e.HandlingLayout();

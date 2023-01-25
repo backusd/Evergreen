@@ -48,11 +48,14 @@ public:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
 	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
+
 
 	ND inline Control* GetControlByName(const std::string& name) const noexcept { return m_rootLayout->GetControlByName(name); }
 	ND inline Control* GetControlByID(unsigned int id) const noexcept { return m_rootLayout->GetControlByID(id); }
 
 	void RemovePane(Pane* pane) noexcept;
+	void BringPaneToForeground(Pane* pane) noexcept;
 
 private:
 	void LoadDefaultUI() noexcept;

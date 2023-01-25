@@ -124,6 +124,9 @@ private:
 	float m_minPaneWidth;
 	float m_minPaneHeight;
 
+	// Double click on title bar: parameters to remember what height/width to return to
+	float m_heightToExpandTo;
+	float m_widthToExpandTo;
 
 	// How many pixels from an edge will we all for clicking to drag the edge
 	static const float edgeSensitivity;

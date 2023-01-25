@@ -42,6 +42,8 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_lastMouseY(0.0f),
 	m_minPaneWidth(100.0f), 
 	m_minPaneHeight(100.0f),
+	m_heightToExpandTo(height),
+	m_widthToExpandTo(width),
 	m_mouseTitleBarState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseRightEdgeState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseLeftEdgeState(MouseOverDraggableAreaState::NOT_OVER),
@@ -464,6 +466,16 @@ void Pane::OnMarginChanged()
 }
 void Pane::OnAllowedRegionChanged()
 {
+	// If we are changing to something other than the minimum size, keep track of the new size
+	float paneHeight = m_allowedRegion.bottom - m_allowedRegion.top;
+	float paneWidth = m_allowedRegion.right - m_allowedRegion.left;
+	const float errorMargin = 0.1f;
+	if (paneHeight > m_minPaneHeight + errorMargin || paneWidth > m_minPaneWidth + errorMargin)
+	{
+		m_heightToExpandTo = paneHeight;
+		m_widthToExpandTo = paneWidth;
+	}
+
 	PaneChanged();
 }
 
@@ -996,6 +1008,11 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
+	if (RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY()))
+	{
+		m_ui->BringPaneToForeground(this);
+	}
+
 	// Handle mouse over draggable areas first before passing the event to the title layout
 	// 
 	// Top Right Corner
@@ -1195,6 +1212,41 @@ void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
+	// Odds are the title layout will not need to handle a double click, so we will allow the Pane
+	// to take precendence and handle it here first
+	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
+	{
+		float paneHeight = m_allowedRegion.bottom - m_allowedRegion.top;
+		float paneWidth = m_allowedRegion.right - m_allowedRegion.left;
+		const float errorMargin = 0.1f;
+		if (paneHeight < m_minPaneHeight + errorMargin && paneWidth < m_minPaneWidth + errorMargin)
+		{
+			// Pane dimensions are minimized, so expand back to larger size
+			AllowedRegion(
+				m_allowedRegion.left,
+				m_allowedRegion.top,
+				m_allowedRegion.left + m_widthToExpandTo,
+				m_allowedRegion.top + m_heightToExpandTo
+			);
+
+			// Open the pane content layout
+			m_minimized = false;
+		}
+		else
+		{
+			// Pane dimensions are not minimized, so shrink pane to min size
+			AllowedRegion(
+				m_allowedRegion.left,
+				m_allowedRegion.top,
+				m_allowedRegion.left + m_minPaneWidth,
+				m_allowedRegion.top + m_minPaneHeight
+			);
+		}
+
+		e.Handled(this);
+		return;
+	}
+	
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseButtonDoubleClick(e);
 

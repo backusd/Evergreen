@@ -150,6 +150,7 @@ void Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 }
 void Application::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 {
+	m_ui->OnMouseButtonDoubleClick(e);
 	EG_CORE_INFO("{}", e);
 }
 
