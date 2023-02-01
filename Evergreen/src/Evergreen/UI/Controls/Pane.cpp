@@ -1,9 +1,9 @@
 #include "pch.h"
 #include "Pane.h"
-#include "Controls/Text.h"
-#include "Controls/Button.h"
-#include "Styles/TextStyle.h"
-#include "UI.h"
+#include "Text.h"
+#include "Button.h"
+#include "../Styles/TextStyle.h"
+#include "../UI.h"
 
 using Microsoft::WRL::ComPtr;
 
@@ -54,8 +54,6 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_mouseTopRightCornerState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseTopLeftCornerState(MouseOverDraggableAreaState::NOT_OVER)
 {
-	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::DarkGray));
 
@@ -75,6 +73,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_ui != nullptr, "No UI");
 	
 	m_titleLayout = std::make_unique<Layout>(
 		m_deviceResources,
@@ -179,9 +178,6 @@ void Pane::InitializeLayoutWithHeaderBar()
 	);
 
 
-
-
-
 	// Close Button --------------------------------------------------------------
 	RowColumnPosition closeButtonPosition;
 	closeButtonPosition.Row = 0;
@@ -263,7 +259,7 @@ void Pane::InitializeLayoutWithHeaderBar()
 }
 void Pane::InitializeLayoutWithoutHeaderBar()
 {
-	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
 	m_contentLayout = std::make_unique<Layout>(
 		m_deviceResources,
@@ -317,11 +313,16 @@ void Pane::Update() noexcept
 void Pane::Render() const noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
-	
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+
 	auto context = m_deviceResources->D2DDeviceContext();
+	EG_CORE_ASSERT(context != nullptr, "No device context");
 
 	if (m_titleLayout != nullptr)
 	{
+		EG_CORE_ASSERT(m_headerBarBrush != nullptr, "No header brush");
+
 		D2D1_RECT_F titleRect = TitleRect();
 		D2D1_RECT_F contentRect = ContentRect();
 
@@ -426,30 +427,46 @@ Column* Pane::AddColumn(RowColumnDefinition definition)
 void Pane::SetCornerRadius(float xAndY) noexcept 
 { 
 	m_paneCornerRadiusX = xAndY; 
-	m_paneCornerRadiusY = xAndY; 
+	m_paneCornerRadiusY = xAndY;
 
-	RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
-	rb->SetCornerRadius(xAndY);
+	if (m_titleLayout != nullptr)
+	{
+		RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
+		rb->SetCornerRadius(xAndY);
 
-	rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
-	rb->SetCornerRadius(xAndY);
+		rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
+		rb->SetCornerRadius(xAndY);
+	}
 }
 void Pane::SetCornerRadius(float x, float y) noexcept 
 { 
 	m_paneCornerRadiusX = x;
 	m_paneCornerRadiusY = y; 
 
-	RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
-	rb->SetCornerRadius(x, y);
+	if (m_titleLayout != nullptr)
+	{
+		RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
+		rb->SetCornerRadius(x, y);
 
-	rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
-	rb->SetCornerRadius(x, y);
+		rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
+		rb->SetCornerRadius(x, y);
+	}
 }
-
-
 
 void Pane::PaneChanged() noexcept
 {
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+
+
+
+
+
+
+
+
+
+
 	D2D1_RECT_F titleRect = TitleRect();
 	D2D1_RECT_F contentRect = ContentRect();
 
@@ -478,8 +495,6 @@ void Pane::OnAllowedRegionChanged()
 
 	PaneChanged();
 }
-
-
 
 void Pane::OnChar(CharEvent& e) noexcept
 {

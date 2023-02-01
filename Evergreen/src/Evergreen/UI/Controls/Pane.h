@@ -1,8 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "Controls/Control.h"
-#include "Layout.h"
-
+#include "Control.h"
+#include "../Layout.h"
 
 
 namespace Evergreen

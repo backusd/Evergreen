@@ -6,7 +6,6 @@
 #include "Evergreen/Events/MouseEvent.h"
 #include "Evergreen/Rendering/DeviceResources.h"
 #include "Layout.h"
-#include "Pane.h"
 #include "Evergreen/Window/Window.h"
 #include "JSONLoading/ControlLoaders/ControlLoader.h"
 #include "JSONLoading/StyleLoaders/TextStyleLoader.h"
@@ -15,6 +14,7 @@
 #include "Controls/RoundedButton.h"
 #include "Controls/ScrollableLayout.h"
 #include "Controls/TextInput.h"
+#include "Controls/Pane.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
