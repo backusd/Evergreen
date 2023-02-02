@@ -55,21 +55,37 @@ public:
 	ND inline Layout* GetTitleBarLayout() const noexcept { return m_titleLayout->GetSublayout(0); }
 
 	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
-
+	void SwitchVisible() noexcept;
 
 	void SetCornerRadius(float xAndY) noexcept;
 	void SetCornerRadius(float x, float y) noexcept;
-	void SetResizable(bool resizable) noexcept { m_resizable = resizable; }
-	void SetRelocatable(bool relocatable) noexcept { m_relocatable = relocatable; }
+	inline void SetResizable(bool resizable) noexcept { m_resizable = resizable; }
+	inline void SetRelocatable(bool relocatable) noexcept { m_relocatable = relocatable; }
 	void SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); PaneChanged(); }
 	void SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); PaneChanged(); }
-	void SetBorderWidth(float width) noexcept { m_borderWidth = width; }
+	inline void SetBorderWidth(float width) noexcept { m_borderWidth = width; }
 	void SetTitleBarBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_titleBarBrush = std::move(brush); PaneChanged(); }
 	void SetTitleBarHeight(float height) noexcept;
-	void SetMinimized(bool minimized) noexcept { m_minimized = minimized; }
-	void SetVisible(bool visible) noexcept { m_visible = visible; }
+	inline void SetMinimized(bool minimized) noexcept { m_minimized = minimized; }
+	inline void SetVisible(bool visible) noexcept;
 
+	ND inline float GetCornerRadiusX() const noexcept { return m_paneCornerRadiusX; }
+	ND inline float GetCornerRadiusY() const noexcept { return m_paneCornerRadiusY; }
+	ND inline bool GetResizble() const noexcept { return m_resizable; }
+	ND inline bool GetRelocatable() const noexcept { return m_relocatable; }
+	ND inline ColorBrush* GetBackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
+	ND inline ColorBrush* GetBorderBrush() const noexcept { return m_borderBrush.get(); }
+	ND inline float GetBorderWidth() const noexcept { return m_borderWidth; }
+	ND inline ColorBrush* GetTitleBarBrush() const noexcept { return m_titleBarBrush.get(); }
+	ND inline float GetTitleBarHeight() const noexcept { return m_titleBarHeight; }
+	ND inline bool GetMinimized() const noexcept { return m_minimized; }
+	ND inline bool GetVisible() const noexcept { return m_visible; }
 
+	void SetOnMouseEnteredTitleBarCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredTitleBar = func; }
+	void SetOnMouseExitedTitleBarCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedTitleBar = func; }
+	void SetOnMouseEnteredContentRegionCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredContentRegion = func; }
+	void SetOnMouseExitedContentRegionCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedContentRegion = func; }
+	void SetOnMouseMovedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
 
 private:
 	enum class MouseOverDraggableAreaState
@@ -103,7 +119,20 @@ private:
 	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept;
 	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
 
+	void ForceMouseToBeNotOverTitleAndContent(MouseMoveEvent& e) noexcept;
+
+	std::function<void(Control*, Event&)> m_OnMouseEnteredTitleBar = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseExitedTitleBar = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseEnteredContentRegion = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseExitedContentRegion = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseMoved = [](Control*, Event&) {};
+	// I can't think of use cases for these so I'm only going to implement what is currently necessary
+	//std::function<void(Control*, Event&)> m_OnMouseLButtonDown = [](Control*, Event&) {};
+	//std::function<void(Control*, Event&)> m_OnMouseLButtonUp = [](Control*, Event&) {};
+	//std::function<void(Control*, Event&)> m_OnClick = [](Control*, Event&) {};
+
 	MouseOverDraggableAreaState m_mouseTitleBarState;
+	MouseOverDraggableAreaState m_mouseContentRegionState; // Note, the content region is not actually draggable. We only use this for OVER/NOT_OVER
 	MouseOverDraggableAreaState m_mouseRightEdgeState;
 	MouseOverDraggableAreaState m_mouseLeftEdgeState;
 	MouseOverDraggableAreaState m_mouseTopEdgeState;

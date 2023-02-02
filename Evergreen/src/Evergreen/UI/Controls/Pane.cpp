@@ -45,6 +45,7 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_heightToExpandTo(height),
 	m_widthToExpandTo(width),
 	m_mouseTitleBarState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseContentRegionState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseRightEdgeState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseLeftEdgeState(MouseOverDraggableAreaState::NOT_OVER),
 	m_mouseTopEdgeState(MouseOverDraggableAreaState::NOT_OVER),
@@ -321,6 +322,9 @@ void Pane::Render() const noexcept
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 
+	if (!m_visible)
+		return;
+
 	auto context = m_deviceResources->D2DDeviceContext();
 	EG_CORE_ASSERT(context != nullptr, "No device context");
 
@@ -480,6 +484,26 @@ void Pane::SetTitleBarHeight(float height) noexcept
 
 	m_contentLayout->Resize(contentRect);
 }
+void Pane::SwitchVisible() noexcept
+{
+	m_visible = !m_visible;
+
+	// Its possible that the handling control lives within the Pane. Therefore,
+	// if the pane is no longer visible, we want to clear the UIs handling pointers
+	// so we don't get events sent to a control/layout that is no longer visible
+	if (!m_visible)
+		m_ui->ClearHandlingControlAndLayout();
+}
+void Pane::SetVisible(bool visible) noexcept 
+{ 
+	m_visible = visible; 
+
+	// Its possible that the handling control lives within the Pane. Therefore,
+	// if the pane is no longer visible, we want to clear the UIs handling pointers
+	// so we don't get events sent to a control/layout that is no longer visible
+	if (!m_visible)
+		m_ui->ClearHandlingControlAndLayout();
+}
 
 void Pane::PaneChanged() noexcept
 {
@@ -521,9 +545,27 @@ void Pane::OnAllowedRegionChanged()
 	PaneChanged();
 }
 
+void Pane::ForceMouseToBeNotOverTitleAndContent(MouseMoveEvent& e) noexcept
+{
+	// Check if mouse was previously over the Title/Content region and trigger necessary On* callback
+	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
+		m_OnMouseExitedTitleBar(this, e);
+	}
+	else if (m_mouseContentRegionState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
+		m_OnMouseExitedContentRegion(this, e);
+	}
+}
+
 void Pane::OnChar(CharEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (!m_visible)
+		return;
 
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnChar(e);
@@ -535,9 +577,8 @@ void Pane::OnKeyPressed(KeyPressedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
-	static float h = 20.0f;
-	h += 5.0f;
-	SetTitleBarHeight(h);
+	if (!m_visible)
+		return;
 
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnKeyPressed(e);
@@ -550,6 +591,9 @@ void Pane::OnKeyReleased(KeyReleasedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
+	if (!m_visible)
+		return;
+
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnKeyReleased(e);
 
@@ -559,6 +603,12 @@ void Pane::OnKeyReleased(KeyReleasedEvent& e) noexcept
 void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (!m_visible)
+		return;
+
+	if (RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY()))
+		m_OnMouseMoved(this, e);
 
 	// Only perform the DRAGGING checks if the pane is resizeable
 	if (m_resizable)
@@ -800,6 +850,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverTopRightCorner)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseTopRightCornerState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_NESW);
 				e.Handled(this);
@@ -811,7 +864,7 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 			if (!mouseIsOverTopRightCorner)
 			{
 				m_mouseTopRightCornerState = MouseOverDraggableAreaState::NOT_OVER;
-				Window::SetCursor(Cursor::ARROW);
+				Window::SetCursor(Cursor::ARROW);				
 			}
 			else
 			{
@@ -826,6 +879,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverTopLeftCorner)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseTopLeftCornerState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_NWSE);
 				e.Handled(this);
@@ -852,6 +908,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverBottomRightCorner)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseBottomRightCornerState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_NWSE);
 				e.Handled(this);
@@ -878,6 +937,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverBottomLeftCorner)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseBottomLeftCornerState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_NESW);
 				e.Handled(this);
@@ -904,6 +966,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverRightEdge)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseRightEdgeState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
 				e.Handled(this);
@@ -930,6 +995,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverLeftEdge)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseLeftEdgeState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
 				e.Handled(this);
@@ -956,6 +1024,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverTopEdge)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseTopEdgeState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
 				e.Handled(this);
@@ -982,6 +1053,9 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		{
 			if (mouseIsOverBottomEdge)
 			{
+				// Force the mouse to exit the title bar/content region if it is currently over
+				ForceMouseToBeNotOverTitleAndContent(e);
+
 				m_mouseBottomEdgeState = MouseOverDraggableAreaState::OVER;
 				Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
 				e.Handled(this);
@@ -1003,6 +1077,7 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 	}
 
+
 	if (m_titleLayout != nullptr)
 	{
 		// Title Bar
@@ -1018,6 +1093,14 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 			{
 				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
 				e.Handled(this);
+				m_OnMouseEnteredTitleBar(this, e);
+
+				if (m_mouseContentRegionState == MouseOverDraggableAreaState::OVER)
+				{
+					m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
+					m_OnMouseExitedContentRegion(this, e);
+				}
+
 				return;
 			}
 		}
@@ -1026,7 +1109,27 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 			if (!mouseIsOverTitleBar)
 			{
 				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
+				m_OnMouseExitedTitleBar(this, e);
 			}
+		}
+	}
+	
+	if (!m_minimized)
+	{
+		bool mouseIsOverContentRect = RectContainsPoint(ContentRect(), e.GetX(), e.GetY());
+
+		if (m_mouseContentRegionState == MouseOverDraggableAreaState::NOT_OVER)
+		{
+			if (mouseIsOverContentRect)
+			{
+				m_mouseContentRegionState = MouseOverDraggableAreaState::OVER;
+				m_OnMouseEnteredContentRegion(this, e);
+			}
+		}
+		else if (!mouseIsOverContentRect)
+		{
+			m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
+			m_OnMouseExitedContentRegion(this, e);
 		}
 	}
 
@@ -1043,6 +1146,9 @@ void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
+	if (!m_visible)
+		return;
+
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseScrolledVertical(e);
 
@@ -1052,6 +1158,9 @@ void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 void Pane::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+
+	if (!m_visible)
+		return;
 
 	if (m_titleLayout != nullptr)
 		m_titleLayout->OnMouseScrolledHorizontal(e);
@@ -1063,6 +1172,9 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 	EG_CORE_ASSERT(m_ui != nullptr, "No UI");
+
+	if (!m_visible)
+		return;
 
 	if (RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY()))
 	{
@@ -1175,6 +1287,9 @@ void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 	
+	if (!m_visible)
+		return;
+
 	if (m_resizable)
 	{
 		// Top Right Corner
@@ -1280,39 +1395,45 @@ void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
-	// Odds are the title layout will not need to handle a double click, so we will allow the Pane
-	// to take precendence and handle it here first
-	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
-	{
-		float paneHeight = m_allowedRegion.bottom - m_allowedRegion.top;
-		float paneWidth = m_allowedRegion.right - m_allowedRegion.left;
-		const float errorMargin = 0.1f;
-		if (paneHeight < m_minPaneHeight + errorMargin && paneWidth < m_minPaneWidth + errorMargin)
-		{
-			// Pane dimensions are minimized, so expand back to larger size
-			AllowedRegion(
-				m_allowedRegion.left,
-				m_allowedRegion.top,
-				m_allowedRegion.left + m_widthToExpandTo,
-				m_allowedRegion.top + m_heightToExpandTo
-			);
-
-			// Open the pane content layout
-			m_minimized = false;
-		}
-		else
-		{
-			// Pane dimensions are not minimized, so shrink pane to min size
-			AllowedRegion(
-				m_allowedRegion.left,
-				m_allowedRegion.top,
-				m_allowedRegion.left + m_minPaneWidth,
-				m_allowedRegion.top + m_minPaneHeight
-			);
-		}
-
-		e.Handled(this);
+	if (!m_visible)
 		return;
+
+	if (m_resizable)
+	{
+		// Odds are the title layout will not need to handle a double click, so we will allow the Pane
+		// to take precendence and handle it here first
+		if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
+		{
+			float paneHeight = m_allowedRegion.bottom - m_allowedRegion.top;
+			float paneWidth = m_allowedRegion.right - m_allowedRegion.left;
+			const float errorMargin = 0.1f;
+			if (paneHeight < m_minPaneHeight + errorMargin && paneWidth < m_minPaneWidth + errorMargin)
+			{
+				// Pane dimensions are minimized, so expand back to larger size
+				AllowedRegion(
+					m_allowedRegion.left,
+					m_allowedRegion.top,
+					m_allowedRegion.left + m_widthToExpandTo,
+					m_allowedRegion.top + m_heightToExpandTo
+				);
+
+				// Open the pane content layout
+				m_minimized = false;
+			}
+			else
+			{
+				// Pane dimensions are not minimized, so shrink pane to min size
+				AllowedRegion(
+					m_allowedRegion.left,
+					m_allowedRegion.top,
+					m_allowedRegion.left + m_minPaneWidth,
+					m_allowedRegion.top + m_minPaneHeight
+				);
+			}
+
+			e.Handled(this);
+			return;
+		}
 	}
 	
 	if (m_titleLayout != nullptr)

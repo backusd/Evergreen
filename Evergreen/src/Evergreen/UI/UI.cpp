@@ -632,7 +632,7 @@ void UI::LoadDefaultUI() noexcept
 		m_deviceResources,
 		this,
 		150.0f, 150.0f, 500.0f, 700.0f,
-		false, // resizable 
+		true, // resizable 
 		true, // relocatable
 		nullptr, // background brush
 		nullptr, // border brush
@@ -650,6 +650,49 @@ void UI::LoadDefaultUI() noexcept
 	titleLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 	pane->ClearTitleBarLayoutAndAddTitle("Some title bitch");
+
+	pane->SetOnMouseEnteredTitleBarCallback(
+		[](Control* control, Event& e)
+		{
+			Pane* pane = static_cast<Pane*>(control);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
+			pane->SetTitleBarBrush(std::move(brush));
+		}
+	);
+	pane->SetOnMouseExitedTitleBarCallback(
+		[](Control* control, Event& e)
+		{
+			Pane* pane = static_cast<Pane*>(control);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f));
+			pane->SetTitleBarBrush(std::move(brush));
+		}
+	);
+	pane->SetOnMouseEnteredContentRegionCallback(
+		[](Control* control, Event& e)
+		{
+			Pane* pane = static_cast<Pane*>(control);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
+			pane->SetBackgroundBrush(std::move(brush));
+		}
+	);
+	pane->SetOnMouseExitedContentRegionCallback(
+		[](Control* control, Event& e)
+		{
+			Pane* pane = static_cast<Pane*>(control);
+			std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DarkGray));
+			pane->SetBackgroundBrush(std::move(brush));
+		}
+	);
+	pane->SetOnMouseMovedCallback(
+		[](Control* control, Event& _e)
+		{
+			Pane* pane = static_cast<Pane*>(control);
+			MouseMoveEvent& e = dynamic_cast<MouseMoveEvent&>(_e);
+
+			std::string newTitle = std::format("x: {}, y: {}", e.GetX(), e.GetY());
+			pane->ClearTitleBarLayoutAndAddTitle(newTitle);			
+		}
+	);
 
 	m_panes.push_back(std::move(pane));
 
@@ -785,6 +828,13 @@ void UI::BringPaneToForeground(Pane* pane) noexcept
 	if (p != m_panes.end()) {
 		std::rotate(m_panes.begin(), p, p + 1);
 	}
+}
+void UI::ClearHandlingControlAndLayout() noexcept
+{
+	m_mouseHandlingControl = nullptr;
+	m_mouseHandlingLayout = nullptr;
+	m_keyboardHandlingControl = nullptr;
+	m_keyboardHandlingLayout = nullptr;
 }
 
 void UI::OnChar(CharEvent& e) noexcept

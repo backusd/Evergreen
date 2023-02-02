@@ -56,6 +56,7 @@ public:
 
 	void RemovePane(Pane* pane) noexcept;
 	void BringPaneToForeground(Pane* pane) noexcept;
+	void ClearHandlingControlAndLayout() noexcept;
 
 private:
 	void LoadDefaultUI() noexcept;
