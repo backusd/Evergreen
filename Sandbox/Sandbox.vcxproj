@@ -97,7 +97,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\DummyFile.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -107,9 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="evergreen-image-1.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\DummyFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

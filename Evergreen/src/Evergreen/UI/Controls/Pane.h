@@ -20,12 +20,12 @@ public:
 		float left,
 		float height,
 		float width,
-		bool resizeable = true,
+		bool resizable = true,
 		bool relocatable = true,
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
-		bool headerBar = true,
+		bool includeTitleBar = true,
 		std::unique_ptr<ColorBrush> headerBarBrush = nullptr,
 		float titleBarHeight = 20.0f
 	);
@@ -55,8 +55,21 @@ public:
 	ND inline Layout* GetTitleBarLayout() const noexcept { return m_titleLayout->GetSublayout(0); }
 
 	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
+
+
 	void SetCornerRadius(float xAndY) noexcept;
 	void SetCornerRadius(float x, float y) noexcept;
+	void SetResizable(bool resizable) noexcept { m_resizable = resizable; }
+	void SetRelocatable(bool relocatable) noexcept { m_relocatable = relocatable; }
+	void SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); PaneChanged(); }
+	void SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); PaneChanged(); }
+	void SetBorderWidth(float width) noexcept { m_borderWidth = width; }
+	void SetTitleBarBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_titleBarBrush = std::move(brush); PaneChanged(); }
+	void SetTitleBarHeight(float height) noexcept;
+	void SetMinimized(bool minimized) noexcept { m_minimized = minimized; }
+	void SetVisible(bool visible) noexcept { m_visible = visible; }
+
+
 
 private:
 	enum class MouseOverDraggableAreaState
@@ -66,8 +79,9 @@ private:
 		DRAGGING
 	};
 
-	void InitializeLayoutWithHeaderBar();
-	void InitializeLayoutWithoutHeaderBar();
+	void InitializeLayoutWithTitleBar();
+	void CreateTitleBarLayout();
+	void InitializeLayoutWithoutTitleBar();
 
 	void PaneChanged() noexcept;
 
@@ -104,14 +118,14 @@ private:
 	float m_paneCornerRadiusX;
 	float m_paneCornerRadiusY;
 
-	bool m_resizeable;
+	bool m_resizable;
 	bool m_relocatable;
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
 	float m_borderWidth;
 
-	std::unique_ptr<ColorBrush> m_headerBarBrush;
+	std::unique_ptr<ColorBrush> m_titleBarBrush;
 	float m_titleBarHeight;
 
 	bool m_minimized;

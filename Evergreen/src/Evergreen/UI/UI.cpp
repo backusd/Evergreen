@@ -632,9 +632,13 @@ void UI::LoadDefaultUI() noexcept
 		m_deviceResources,
 		this,
 		150.0f, 150.0f, 500.0f, 700.0f,
-		true, true, 
-		nullptr, nullptr, 1.0f,
-		true, nullptr
+		false, // resizable 
+		true, // relocatable
+		nullptr, // background brush
+		nullptr, // border brush
+		1.0f, // border width
+		true, // includeTitleBar
+		nullptr // TitleBarBrush
 		);
 
 	pane->AddRow({ RowColumnType::STAR, 1.0f });
@@ -649,6 +653,8 @@ void UI::LoadDefaultUI() noexcept
 
 	m_panes.push_back(std::move(pane));
 
+	// Pane 2
+	/*
 	pane = std::make_unique<Pane>(
 		m_deviceResources,
 		this,
@@ -668,6 +674,7 @@ void UI::LoadDefaultUI() noexcept
 	pane->ClearTitleBarLayoutAndAddTitle("Second Pane");
 
 	m_panes.push_back(std::move(pane));
+	*/
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
