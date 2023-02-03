@@ -100,7 +100,79 @@
 	},
 
 
+	"Pane1": {
+		"Type": "Pane",
+		"Title": "Suck weeners",
+		"Top": 50,
+		"Left": 50,
+		"Height": 200,
+		"Width": 250,
+		"Resizable": true,
+		"Relocatable": true,
+		"BackgroundBrush": "Blue",
+		"BorderBrush": "Red",
+		"BorderWidth": 3.0,
+		"CornerRadiusX": 15.0,
+		"CornerRadiusY": 25.0,
+		"IncludeTitleBar": true,
+		"TitleBarBrush": "Green",
+		"TitleBarHeight": 30,
+		"IsMinimized": false,
+		"IsVisible": true
+	},
 
+	"Pane2": {
+		"Type": "Pane",
+		"Title": {
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [
+				{ "Width": "20" },
+				{ "Width": "1*" }
+			],
+			"HouseText": {
+				"Type": "Text",
+				"Text": "0xE10F",
+				"FontFamily": "Segoe MDL2 Assets",
+				"FontSize": 20,
+				"FontWeight": "Normal",
+				"FontStyle": "Normal",
+				"FontStretch": "Expanded",
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
+			},
+			"TitleText": {
+				"Type": "Text",
+				"Text": "Suck even more weeners",
+				"Column": 1,
+				"Brush": "White",
+				"FontFamily": "Calibri",
+				"FontSize": 18,
+				"FontWeight": "Normal",
+				"FontStyle": "Normal",
+				"FontStretch": "Normal",
+				"TextAlignment": "Leading",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
+			}
+		},
+		"Top": 50,
+		"Left": 350,
+		"Height": 100,
+		"Width": 200,
+		"Resizable": true,
+		"Relocatable": true,
+		"BackgroundBrush": "Pink",
+		"BorderBrush": "Blue",
+		"BorderWidth": 1.0,
+		"CornerRadiusX": 0.0,
+		"CornerRadiusY": 0.0,
+		"IncludeTitleBar": true,
+		"TitleBarBrush": "Black",
+		"TitleBarHeight": 20,
+		"IsMinimized": false,
+		"IsVisible": true
+	},
 
 	"root": {
 		"Brush": "Gray",

@@ -628,7 +628,7 @@ void UI::LoadDefaultUI() noexcept
 	// Pane
 	//
 
-	std::unique_ptr<Pane> pane = std::make_unique<Pane>(
+	std::unique_ptr<Pane> p = std::make_unique<Pane>(
 		m_deviceResources,
 		this,
 		150.0f, 150.0f, 500.0f, 700.0f,
@@ -640,9 +640,9 @@ void UI::LoadDefaultUI() noexcept
 		true, // includeTitleBar
 		nullptr // TitleBarBrush
 		);
+	AddPane(std::move(p), "Test Pane");
+	Pane* pane = GetPane("Test Pane");
 
-	pane->AddRow({ RowColumnType::STAR, 1.0f });
-	pane->AddColumn({ RowColumnType::STAR, 1.0f });
 	pane->SetCornerRadius(8.0f);
 
 	Layout* titleLayout = pane->GetTitleBarLayout();
@@ -694,7 +694,45 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 
-	m_panes.push_back(std::move(pane));
+	pane->AddRow({ RowColumnType::STAR, 1.0f });
+	pane->AddRow({ RowColumnType::STAR, 1.0f });
+	pane->AddColumn({ RowColumnType::STAR, 1.0f });
+	pane->AddColumn({ RowColumnType::STAR, 1.0f });
+	
+	RowColumnPosition paneContentPosition;
+	paneContentPosition.Row = 0;
+	paneContentPosition.Column = 0;
+
+	Text* t1 = pane->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Top Left");
+
+	paneContentPosition.Column = 1;
+	Text* t2 = pane->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Top Right");
+
+	paneContentPosition.Row = 1;
+	paneContentPosition.Column = 0;
+	Text* t3 = pane->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Bottom Left");
+
+	paneContentPosition.Column = 1;
+	Layout* paneSublayout = pane->AddSubLayout(paneContentPosition);
+	paneSublayout->AddRow({ RowColumnType::STAR, 1.0f });
+	paneSublayout->AddRow({ RowColumnType::STAR, 1.0f });
+	paneSublayout->AddColumn({ RowColumnType::STAR, 1.0f });
+	paneSublayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	paneContentPosition.Row = 0;
+	paneContentPosition.Column = 0;
+	t1 = paneSublayout->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Top Left");
+
+	paneContentPosition.Column = 1;
+	t2 = paneSublayout->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Top Right");
+
+	paneContentPosition.Row = 1;
+	paneContentPosition.Column = 0;
+	t3 = paneSublayout->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Bottom Left");
+
+	paneContentPosition.Column = 1;
+	t3 = paneSublayout->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Bottom Right");
+
 
 	// Pane 2
 	/*
@@ -722,6 +760,10 @@ void UI::LoadDefaultUI() noexcept
 
 void UI::LoadUI(const std::string& fileName) noexcept
 {
+	// Clear any panes that were previously created
+	m_panes.clear();
+
+
 	// Create a new root layout - this will destroy any layout that previously existed
 	m_rootLayout = std::make_unique<Layout>(
 		m_deviceResources, 
@@ -792,8 +834,56 @@ void UI::Render() const noexcept
 	m_deviceResources->EndDraw();
 }
 
+void UI::AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept
+{
+	EG_CORE_ASSERT(m_panesMap.find(name) == m_panesMap.end(), std::format("Pane with name '{}' already exists", name));
+	EG_CORE_ASSERT(name.size() > 0, "Pane name cannot be empty");
+	EG_CORE_ASSERT(pane != nullptr, "Input pane should not be nullptr");
+
+	m_panes.push_back(std::move(pane));
+	m_panesMap[name] = m_panes.back().get();
+}
+Pane* UI::GetPane(const std::string& name) noexcept
+{
+	EG_CORE_ASSERT(name.size() > 0, "Pane search name should not be empty");
+	EG_CORE_ASSERT(m_panesMap.find(name) != m_panesMap.end(), std::format("Pane with name '{}' does not exist", name));
+
+	return m_panesMap[name];
+}
+void UI::RemovePane(const std::string& name) noexcept
+{
+	EG_CORE_ASSERT(name.size() > 0, "Pane search name should not be empty");
+	EG_CORE_ASSERT(m_panesMap.find(name) != m_panesMap.end(), std::format("Pane with name '{}' does not exist", name));
+
+	// We must erase from vector last because it will destroy the unique_ptr for the Pane, but if we just erase from the map
+	// first, then we can't get back the Pane*. So get the Pane* first, then erase it from the map and then remove it from the vector
+	Pane* p = m_panesMap[name];
+	m_panesMap.erase(name);
+	RemovePaneFromVector(p);
+}
 void UI::RemovePane(Pane* pane) noexcept
 {
+	EG_CORE_ASSERT(pane != nullptr, "Input parameter should not be nullptr");
+
+	std::string name = "";
+	for (auto it = m_panesMap.begin(); it != m_panesMap.end(); ++it)
+	{
+		if (it->second == pane)
+		{
+			name = it->first;
+			break;
+		}
+	}
+
+	EG_CORE_ASSERT(name.size() > 0, "Could not remove Pane from m_panesMap because it does not exist.");
+
+	m_panesMap.erase(name);
+	RemovePaneFromVector(pane);
+}
+void UI::RemovePaneFromVector(Pane* pane) noexcept
+{
+	EG_CORE_ASSERT(pane != nullptr, "Input pane should not be nullptr");
+
 	// Get the iterator to the input Pane parameter
 	auto p = std::find_if(m_panes.begin(), m_panes.end(),
 		[&pane](const std::unique_ptr<Pane>& item) -> bool
@@ -814,8 +904,17 @@ void UI::RemovePane(Pane* pane) noexcept
 		m_panes.erase(p);
 	}
 }
+void UI::BringPaneToForeground(const std::string& name) noexcept
+{
+	EG_CORE_ASSERT(name.size() > 0, "Pane search name should not be empty");
+	EG_CORE_ASSERT(m_panesMap.find(name) != m_panesMap.end(), std::format("Pane with name '{}' does not exist", name));
+
+	BringPaneToForeground(m_panesMap[name]);
+}
 void UI::BringPaneToForeground(Pane* pane) noexcept
 {
+	EG_CORE_ASSERT(pane != nullptr, "Input pane should not be nullptr");
+
 	// Get the iterator to the input Pane parameter
 	auto p = std::find_if(m_panes.begin(), m_panes.end(),
 		[&pane](const std::unique_ptr<Pane>& item) -> bool

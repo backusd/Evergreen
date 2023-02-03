@@ -54,17 +54,25 @@ public:
 	ND inline Control* GetControlByName(const std::string& name) const noexcept { return m_rootLayout->GetControlByName(name); }
 	ND inline Control* GetControlByID(unsigned int id) const noexcept { return m_rootLayout->GetControlByID(id); }
 
+	inline void AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
+	ND inline Pane* GetPane(const std::string& name) noexcept;
 	void RemovePane(Pane* pane) noexcept;
+	void RemovePane(const std::string& name) noexcept;
 	void BringPaneToForeground(Pane* pane) noexcept;
+	void BringPaneToForeground(const std::string& name) noexcept;
 	void ClearHandlingControlAndLayout() noexcept;
 
 private:
 	void LoadDefaultUI() noexcept;
 	void LoadErrorUI() noexcept;
+	void RemovePaneFromVector(Pane* pane) noexcept;
 
 	std::shared_ptr<Window>		m_window;
 	std::unique_ptr<Layout>		m_rootLayout;
+
 	std::vector<std::unique_ptr<Pane>> m_panes;
+	std::unordered_map<std::string, Pane*> m_panesMap;
+
 
 	std::filesystem::path		m_jsonRootDirectory;
 

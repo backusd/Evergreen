@@ -26,7 +26,7 @@ public:
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
 		bool includeTitleBar = true,
-		std::unique_ptr<ColorBrush> headerBarBrush = nullptr,
+		std::unique_ptr<ColorBrush> titleBarBrush = nullptr,
 		float titleBarHeight = 20.0f
 	);
 	Pane(const Pane&) = delete;
@@ -86,6 +86,17 @@ public:
 	void SetOnMouseEnteredContentRegionCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredContentRegion = func; }
 	void SetOnMouseExitedContentRegionCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedContentRegion = func; }
 	void SetOnMouseMovedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
+
+	template<class T>
+	T* CreateControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>);
+	template<class T>
+	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>);
+	template<class T, class ... U>
+	T* CreateControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
+	template<class T, class ... U>
+	T* CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>);
+
+	Layout* AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") { return m_contentLayout->AddSubLayout(position, name); }
 
 private:
 	enum class MouseOverDraggableAreaState
@@ -174,5 +185,30 @@ private:
 	static const float edgeSensitivity;
 };
 #pragma warning( pop )
+
+template<class T>
+T* Pane::CreateControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>)
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+	return m_contentLayout->CreateControl(deviceResources);
+}
+template<class T>
+T* Pane::CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>)
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+	return m_contentLayout->CreateControl(position, deviceResources);
+}
+template<class T, class ... U>
+T* Pane::CreateControl(std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>)
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+	return m_contentLayout->CreateControl<T>(deviceResources, std::forward<U>(args)...);
+}
+template<class T, class ... U>
+T* Pane::CreateControl(const RowColumnPosition& position, std::shared_ptr<DeviceResources> deviceResources, U&& ... args) noexcept requires (std::is_base_of_v<Control, T>)
+{
+	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
+	return m_contentLayout->CreateControl<T>(position, deviceResources, std::forward<U>(args)...);
+}
 
 }
