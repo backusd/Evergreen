@@ -53,6 +53,7 @@ public:
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
 
 	ND inline Layout* GetTitleBarLayout() const noexcept { return m_titleLayout->GetSublayout(0); }
+	ND inline Layout* GetContentLayout() const noexcept { return m_contentLayout.get(); }
 
 	inline void SwitchMinimize() noexcept { m_minimized = !m_minimized; }
 	void SwitchVisible() noexcept;

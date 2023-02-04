@@ -54,7 +54,7 @@ public:
 	ND inline Control* GetControlByName(const std::string& name) const noexcept { return m_rootLayout->GetControlByName(name); }
 	ND inline Control* GetControlByID(unsigned int id) const noexcept { return m_rootLayout->GetControlByID(id); }
 
-	inline void AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
+	inline Pane* AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
 	ND inline Pane* GetPane(const std::string& name) noexcept;
 	void RemovePane(Pane* pane) noexcept;
 	void RemovePane(const std::string& name) noexcept;

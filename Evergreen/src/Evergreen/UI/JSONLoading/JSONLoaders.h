@@ -81,7 +81,8 @@ private:
 	bool LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept;
 	void LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources);
 	void LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
-	
+	void LoadPanes(std::shared_ptr<DeviceResources> deviceResources, Layout* layout);
+
 
 	void LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 	void LoadLayoutRowDefinitions(Layout* layout, json& data);

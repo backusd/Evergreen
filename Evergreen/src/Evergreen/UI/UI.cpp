@@ -5,6 +5,7 @@
 #include "JSONLoading/ControlLoaders/RoundedButtonLoader.h"
 #include "JSONLoading/ControlLoaders/ScrollableLayoutLoader.h"
 #include "JSONLoading/ControlLoaders/TextInputLoader.h"
+#include "JSONLoading/ControlLoaders/PaneLoader.h"
 
 #include <fstream>
 
@@ -30,6 +31,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName); });
 
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
@@ -630,18 +632,22 @@ void UI::LoadDefaultUI() noexcept
 
 	std::unique_ptr<Pane> p = std::make_unique<Pane>(
 		m_deviceResources,
-		this,
-		150.0f, 150.0f, 500.0f, 700.0f,
+		this, // UI*
+		150.0f, // top
+		150.0f, // left
+		500.0f, // height
+		700.0f, // width
 		true, // resizable 
 		true, // relocatable
 		nullptr, // background brush
 		nullptr, // border brush
 		1.0f, // border width
 		true, // includeTitleBar
-		nullptr // TitleBarBrush
+		nullptr, // TitleBarBrush
+		20.0f // TitleBar height
 		);
-	AddPane(std::move(p), "Test Pane");
-	Pane* pane = GetPane("Test Pane");
+	Pane* pane = AddPane(std::move(p), "Test Pane");
+	//Pane* pane = GetPane("Test Pane");
 
 	pane->SetCornerRadius(8.0f);
 
@@ -763,7 +769,6 @@ void UI::LoadUI(const std::string& fileName) noexcept
 	// Clear any panes that were previously created
 	m_panes.clear();
 
-
 	// Create a new root layout - this will destroy any layout that previously existed
 	m_rootLayout = std::make_unique<Layout>(
 		m_deviceResources, 
@@ -774,6 +779,9 @@ void UI::LoadUI(const std::string& fileName) noexcept
 
 	if (!JSONLoaders::LoadUI(m_deviceResources, m_jsonRootDirectory, fileName, m_rootLayout.get()))
 	{
+		// When loading the UI fails, we must also clean up all panes
+		m_panes.clear();
+
 		LoadErrorUI();
 	}
 }
@@ -834,7 +842,7 @@ void UI::Render() const noexcept
 	m_deviceResources->EndDraw();
 }
 
-void UI::AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept
+Pane* UI::AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept
 {
 	EG_CORE_ASSERT(m_panesMap.find(name) == m_panesMap.end(), std::format("Pane with name '{}' already exists", name));
 	EG_CORE_ASSERT(name.size() > 0, "Pane name cannot be empty");
@@ -842,6 +850,7 @@ void UI::AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept
 
 	m_panes.push_back(std::move(pane));
 	m_panesMap[name] = m_panes.back().get();
+	return m_panes.back().get();
 }
 Pane* UI::GetPane(const std::string& name) noexcept
 {

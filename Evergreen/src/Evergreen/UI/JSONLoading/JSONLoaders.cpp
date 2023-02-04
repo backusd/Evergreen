@@ -442,6 +442,9 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 		// Load all the json data under the 'root' key
  		LoadLayoutDetails(deviceResources, rootLayout, m_jsonRoot["root"]);
 
+		// Finally, load all panes
+		LoadPanes(deviceResources, rootLayout);
+
 		// There is a somewhat weird behavior in DirectX reporting memory leaks on application shutdown.
 		// In a DEBUG build, DirectX will report on any DirectX resources that have outstanding reference
 		// counts. However, this check appears to be performed prior to static class instance destruction.
@@ -530,17 +533,22 @@ void JSONLoaders::LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResour
 		{
 			JSON_LOADER_EXCEPTION_IF_FALSE(m_jsonRoot[key]["Type"].is_string(),	"Failed to parse global data for key '{}'. 'Type' field must be a string.\nInvalid value : {}", key, m_jsonRoot[key]["Type"].dump(4));
 
-			std::string styleType = m_jsonRoot[key]["Type"].get<std::string>();
+			std::string typeString = m_jsonRoot[key]["Type"].get<std::string>();
 
-			if (JSONLoaders::IsStyleKey(styleType))
+			if (JSONLoaders::IsStyleKey(typeString))
 			{
 				// Just calling LoadStyle is enough for the style to become cached within JSONLoaders.
 				// Therefore, there is no reason to do anything with the return value.
-				JSONLoaders::LoadStyle(deviceResources, styleType, m_jsonRoot[key], key);
+				JSONLoaders::LoadStyle(deviceResources, typeString, m_jsonRoot[key], key);
 			}
-			else if (styleType.size() > 5 && styleType.substr(styleType.size() - 5, 5).compare("Style") == 0) // If the typeString ends in "Style", warn the user they probably did not set up the StyleLoader correctly
+			else if (typeString.compare("Pane") == 0)
 			{
-				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but did not file a StyleLoader within JSONLoaders. You may have forgotten to call JSONLoaders::AddStyleLoader()", __FILE__, __LINE__, styleType, key);
+				// Ignore Panes
+				continue;
+			}
+			else if (typeString.size() > 5 && typeString.substr(typeString.size() - 5, 5).compare("Style") == 0) // If the typeString ends in "Style", warn the user they probably did not set up the StyleLoader correctly
+			{
+				EG_CORE_WARN("{}:{} - Found global style '{}' for key '{}', but did not file a StyleLoader within JSONLoaders. You may have forgotten to call JSONLoaders::AddStyleLoader()", __FILE__, __LINE__, typeString, key);
 			}
 		}
 	}
@@ -592,6 +600,30 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 		else
 		{
 			EG_CORE_WARN("Attempting to load control: {} (... not yet supported ...)", type);
+		}
+	}
+}
+void JSONLoaders::LoadPanes(std::shared_ptr<DeviceResources> deviceResources, Layout* layout)
+{
+	for (auto& [key, value] : m_jsonRoot.items())
+	{
+		if (m_jsonRoot[key].contains("Type"))
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(m_jsonRoot[key]["Type"].is_string(), "Failed to parse global data for key '{}'. 'Type' field must be a string.\nInvalid value : {}", key, m_jsonRoot[key]["Type"].dump(4));
+
+			std::string typeString = m_jsonRoot[key]["Type"].get<std::string>();
+
+			// Ignore everything that is not of Type 'Pane'
+			if (typeString.compare("Pane") == 0)
+			{
+				ImportJSON(m_jsonRoot[key]);
+
+				// Note: No need to create the control with LoadControl and then subsequently add the control to the UI's list of
+				// Panes. PaneLoader will handle adding the new Pane to the UI list of Panes
+				Control* pane = JSONLoaders::LoadControl(deviceResources, "Pane", layout, m_jsonRoot[key], key);
+				if (pane == nullptr)
+					EG_CORE_ERROR("Failed to load pane with name '{}'.", key);
+			}
 		}
 	}
 }

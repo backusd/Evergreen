@@ -112,13 +112,54 @@
 		"BackgroundBrush": "Blue",
 		"BorderBrush": "Red",
 		"BorderWidth": 3.0,
-		"CornerRadiusX": 15.0,
-		"CornerRadiusY": 25.0,
+		"CornerRadius": 15.0,
 		"IncludeTitleBar": true,
 		"TitleBarBrush": "Green",
 		"TitleBarHeight": 30,
 		"IsMinimized": false,
-		"IsVisible": true
+		"IsVisible": true,
+		"Content": {
+			"RowDefinitions": [
+				{ "Height": "1*" },
+				{ "Height": "1*" },
+				{ "Height": "1*" },
+				{ "Height": "1*" }
+			],
+			"ColumnDefinitions": [ { "Width": "1*" } ],
+
+			"Pane1_Text1": {
+				"Type": "Text",
+				"Row": 0,
+				"Text": "Top Text",
+				"Brush": "White",
+				"FontFamily": "Arial",
+				"FontSize": 10
+			},
+			"Pane1_Text2": {
+				"Type": "Text",
+				"Row": 1,
+				"Text": "Second Text",
+				"Brush": "White",
+				"FontFamily": "Arial",
+				"FontSize": 10
+			},
+			"Pane1_Text3": {
+				"Type": "Text",
+				"Row": 2,
+				"Text": "Third Text",
+				"Brush": "White",
+				"FontFamily": "Arial",
+				"FontSize": 10
+			},
+			"Pane1_Text4": {
+				"Type": "Text",
+				"Row": 3,
+				"Text": "Fourth Text",
+				"Brush": "White",
+				"FontFamily": "Arial",
+				"FontSize": 10
+			}
+		}
 	},
 
 	"Pane2": {
@@ -126,28 +167,29 @@
 		"Title": {
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [
-				{ "Width": "20" },
+				{ "Width": "30" },
 				{ "Width": "1*" }
 			],
-			"HouseText": {
+			"Pane2_HouseText": {
 				"Type": "Text",
 				"Text": "0xE10F",
+				"Brush": "Red",
 				"FontFamily": "Segoe MDL2 Assets",
-				"FontSize": 20,
-				"FontWeight": "Normal",
+				"FontSize": 16,
+				"FontWeight": "Bold",
 				"FontStyle": "Normal",
-				"FontStretch": "Expanded",
+				"FontStretch": "Normal",
 				"TextAlignment": "Center",
 				"ParagraphAlignment": "Center",
 				"WordWrapping": "None"
 			},
-			"TitleText": {
+			"Pane2_TitleText": {
 				"Type": "Text",
 				"Text": "Suck even more weeners",
 				"Column": 1,
 				"Brush": "White",
 				"FontFamily": "Calibri",
-				"FontSize": 18,
+				"FontSize": 12,
 				"FontWeight": "Normal",
 				"FontStyle": "Normal",
 				"FontStretch": "Normal",
@@ -156,7 +198,7 @@
 				"WordWrapping": "None"
 			}
 		},
-		"Top": 50,
+		"Top": 150,
 		"Left": 350,
 		"Height": 100,
 		"Width": 200,
@@ -165,13 +207,37 @@
 		"BackgroundBrush": "Pink",
 		"BorderBrush": "Blue",
 		"BorderWidth": 1.0,
-		"CornerRadiusX": 0.0,
-		"CornerRadiusY": 0.0,
+		"CornerRadiusX": 10.0,
+		"CornerRadiusY": 20.0,
 		"IncludeTitleBar": true,
 		"TitleBarBrush": "Black",
 		"TitleBarHeight": 20,
-		"IsMinimized": false,
-		"IsVisible": true
+		"IsMinimized": true,
+		"IsVisible": true,
+		"Content": {
+			"RowDefinitions": [
+				{ "Height": "1*" },
+				{ "Height": "1*" }
+			],
+			"ColumnDefinitions": [ { "Width": "1*" } ],
+
+			"Pane2_Text1": {
+				"Type": "Text",
+				"Row": 0,
+				"Text": "Top Text",
+				"Brush": "White",
+				"FontFamily": "Arial",
+				"FontSize": 10
+			},
+			"Pane2_Text2": {
+				"Type": "Text",
+				"Row": 1,
+				"Text": "Second Text",
+				"Brush": "White",
+				"FontFamily": "Arial",
+				"FontSize": 10
+			}
+		}
 	},
 
 	"root": {

@@ -1177,7 +1177,8 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	if (!m_visible)
 		return;
 
-	if (RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY()))
+	bool mouseIsOverPane = RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY());
+	if (mouseIsOverPane)
 	{
 		m_ui->BringPaneToForeground(this);
 	}
@@ -1194,6 +1195,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_lastMouseX = e.GetX();
 			m_lastMouseY = e.GetY();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1204,6 +1206,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_lastMouseX = e.GetX();
 			m_lastMouseY = e.GetY();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1214,6 +1217,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_lastMouseX = e.GetX();
 			m_lastMouseY = e.GetY();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1224,6 +1228,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_lastMouseX = e.GetX();
 			m_lastMouseY = e.GetY();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1233,6 +1238,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_mouseRightEdgeState = MouseOverDraggableAreaState::DRAGGING;
 			m_lastMouseX = e.GetX();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1242,6 +1248,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_mouseLeftEdgeState = MouseOverDraggableAreaState::DRAGGING;
 			m_lastMouseX = e.GetX();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1251,6 +1258,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_mouseTopEdgeState = MouseOverDraggableAreaState::DRAGGING;
 			m_lastMouseY = e.GetY();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 
@@ -1260,6 +1268,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 			m_mouseBottomEdgeState = MouseOverDraggableAreaState::DRAGGING;
 			m_lastMouseY = e.GetY();
 			e.Handled(this);
+			m_ui->BringPaneToForeground(this);
 			return;
 		}
 	}
@@ -1280,9 +1289,12 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	if (!e.Handled() && m_titleLayout != nullptr)
 		m_titleLayout->OnMouseButtonPressed(e);
 
-
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseButtonPressed(e);
+
+	// If the click is still not handled, but is over the Pane, just register it as handled
+	if (!e.Handled() && mouseIsOverPane)
+		e.Handled(this);
 }
 void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {

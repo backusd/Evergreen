@@ -199,6 +199,7 @@ public:
 	ND inline const std::vector<Row>& Rows() const noexcept { return m_rows; }
 	ND inline const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
+	ND inline UI* GetUI() noexcept { return m_ui; }
 	ND inline Control* GetControl(unsigned int index) const noexcept;
 	ND inline Layout* GetSublayout(unsigned int index) const noexcept;
 	ND Control* GetControlByName(const std::string& name) const noexcept;
