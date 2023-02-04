@@ -15,12 +15,35 @@
 		"ColumnSpan": 3
 	},
 
-	"FileEditViewTextStyle": {
+	"MenuBarDropDownButtonStyle": {
+		"Type": "TextStyle",
+		"FontFamily": "Calibri",
+		"FontSize": 14,
+		"FontWeight": "UltraLight",
+		"FontStyle": "Normal",
+		"FontStretch": "Normal",
+		"TextAlignment": "Center",
+		"ParagraphAlignment": "Center",
+		"WordWrapping": "None"
+	},
+	"MenuBarDropDownTextContentsStyle": {
 		"Type": "TextStyle",
 		"Brush": "Green",
 		"FontFamily": "Calibri",
-		"FontSize": 18,
-		"FontWeight": "Normal",
+		"FontSize": 14,
+		"FontWeight": "UltraLight",
+		"FontStyle": "Normal",
+		"FontStretch": "Normal",
+		"TextAlignment": "Leading",
+		"ParagraphAlignment": "Center",
+		"WordWrapping": "None"
+	},
+	"MenuBarDropDownIconStyle": {
+		"Type": "TextStyle",
+		"Brush": "Green",
+		"FontFamily": "Segoe MDL2 Assets",
+		"FontSize": 14,
+		"FontWeight": "UltraLight",
 		"FontStyle": "Normal",
 		"FontStretch": "Normal",
 		"TextAlignment": "Center",
@@ -247,19 +270,9 @@
 	"root": {
 		"Brush": "Gray",
 		"RowDefinitions": [
-			{
-				"Height": "50",
-				"BottomAdjustable": true,
-				"MinHeight": "40"
-			},
-			{
-				"Height": "20%",
-				"TopAdjustable": true,
-				"import": "row_max_min"
-			},
-			{
-				"Height": "1*"
-			}
+			{ "Height": "25" },
+			{ "Height": "20%" },
+			{ "Height": "1*" }
 		],
 		"ColumnDefinitions": [
 			{
@@ -277,8 +290,10 @@
 
 		"MenuBarLayout": {
 			"Type": "Layout",
-			"Brush": "Green",
-			"import": "MenuBarLayoutPosition",
+			"Brush": [ 0.16, 0.16, 0.16 ],
+			"Row": 0,
+			"Column": 0,
+			"ColumnSpan": 4,
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [
 				{ "Width": 50 },
@@ -288,146 +303,214 @@
 				{ "Width": 100 },
 				{ "Width": 200 },
 				{ "Width": "1*" },
-				{ "Width": "1*" }
+				{ "Width": 200 }
 			],
 
-			"FileText": {
-				"Type": "Text",
-				"Text": "File",
-				"Style": "FileEditViewTextStyle",
-				"Brush": "White"
-			},
-
-			"EditText": {
-				"Type": "Text",
-				"Text": "Edit",
-				"Column": 1,
-				"Style": "FileEditViewTextStyle",
-				"Brush": "White"
-			},
-
-			"ViewText": {
-				"Type": "Text",
-				"Text": "View",
-				"Column": 2,
-				"Style": "FileEditViewTextStyle",
-				"Brush": "White"
-			},
-
-			"HouseText": {
-				"Type": "Text",
-				"Text": "0xE10F",
-				"Column": 3,
-				"import": "BitmapBrush1",
-				"FontFamily": "Segoe MDL2 Assets",
-				"FontSize": 30,
-				"FontWeight": "Bold",
-				"FontStyle": "Normal",
-				"FontStretch": "Expanded",
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center",
-				"WordWrapping": "None"
-			},
-
-			"TestButton1": {
+			"FileDropDownButton": {
 				"Type": "Button",
-				"Column": 4,
-				"Margin": [ 5, 5, 5, 5 ],
-				"BackgroundBrush": "Black",
-				"BorderBrush": "Yellow",
-				"BorderWidth": 3.0,
-
+				"Row": 0,
+				"Column": 0,
+				"Margin": [ 5, 1, 0, 1 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"BorderWidth": 0.0,
 				"Content": {
 					"Type": "Text",
-					"Text": "Test Button 1",
+					"Text": "File",
 					"Brush": "White",
-					"FontFamily": "Arial",
-					"FontSize": 12
+					"Style": "MenuBarDropDownButtonStyle"
 				},
-
-				"OnMouseEnter": "TestButtonOnMouseEnter",
-				"OnMouseLeave": "TestButtonOnMouseLeave",
-				"OnMouseMoved": "TestButtonOnMouseMoved",
-				"OnMouseLButtonDown": "TestButtonOnMouseLButtonDown",
-				"OnMouseLButtonUp": "TestButtonOnMouseLButtonUp",
-				"OnClick": "TestButtonOnClick"
+				"OnMouseEnter": "MenuBarDropDownButtonOnMouseEnter",
+				"OnMouseLeave": "MenuBarDropDownButtonOnMouseLeave",
+				"OnMouseLButtonDown": "MenuBarDropDownButtonOnMouseLButtonDown",
+				"OnMouseLButtonUp": "MenuBarDropDownButtonOnMouseLButtonUp",
+				"OnClick": "FileDropDownButtonOnClick"
 			},
-
-			"TestButton2": {
-				"Type": "Button",
-				"Column": 5,
-				"Margin": [ 5, 5, 5, 5 ],
-				"BackgroundBrush": "Blue",
-				"BorderBrush": "Red",
-				"BorderWidth": 3.0,
-
+			"FileDropDownPane": {
+				"Type": "Pane",
+				"Top": 24,
+				"Left": 5,
+				"Height": 140,
+				"Width": 250,
+				"Resizable": false,
+				"Relocatable": false,
+				"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+				"BorderWidth": 0.0,
+				"IncludeTitleBar": false,
+				"IsMinimized": false,
+				"IsVisible": false,
 				"Content": {
-					"Type": "Layout",
-					"RowDefinitions": [ { "Height": "1*" } ],
+					"RowDefinitions": [
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": 5 }
+					],
 					"ColumnDefinitions": [
-						{ "Width": "1*" },
+						{ "Width": 30 },
 						{ "Width": "1*" }
 					],
 
-					"Button2Text": {
+					"FileDropDownNewText": {
 						"Type": "Text",
-						"Text": "Test Button 2",
+						"Row": 0,
+						"Column": 1,
+						"Text": "New",
 						"Brush": "White",
-						"FontFamily": "Arial",
-						"FontSize": 10
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDownNewIcon": {
+						"Type": "Text",
+						"Row": 0,
+						"Column": 0,
+						"Text": "0xE710",
+						"Brush": "White",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+					"FileDropDownOpenText": {
+						"Type": "Text",
+						"Row": 1,
+						"Column": 1,
+						"Text": "Open",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDownOpenIcon": {
+						"Type": "Text",
+						"Row": 1,
+						"Column": 0,
+						"Text": "0xE8E5",
+						"Brush": "White",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+					"FileDropDownSaveText": {
+						"Type": "Text",
+						"Row": 2,
+						"Column": 1,
+						"Text": "Save",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDownSaveIcon": {
+						"Type": "Text",
+						"Row": 2,
+						"Column": 0,
+						"Text": "0xE74E",
+						"Brush": "White",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+
+					"FileDropDownSaveAsText": {
+						"Type": "Text",
+						"Row": 3,
+						"Column": 1,
+						"Text": "Save As",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDownSaveAsIcon": {
+						"Type": "Text",
+						"Row": 3,
+						"Column": 0,
+						"Text": "0xE792",
+						"Brush": "White",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+					"FileDropDownCloseText": {
+						"Type": "Text",
+						"Row": 4,
+						"Column": 1,
+						"Text": "Close",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDownCloseIcon": {
+						"Type": "Text",
+						"Row": 4,
+						"Column": 0,
+						"Text": "0xE8BB",
+						"Brush": "White",
+						"Style": "MenuBarDropDownIconStyle"
 					}
-				},
-
-				"OnMouseEnter": "TestButton2OnMouseEnter",
-				"OnMouseLeave": "TestButton2OnMouseLeave",
-				"OnMouseMoved": "TestButton2OnMouseMoved",
-				"OnMouseLButtonDown": "TestButton2OnMouseLButtonDown",
-				"OnMouseLButtonUp": "TestButton2OnMouseLButtonUp",
-				"OnClick": "TestButton2OnClick"
-			},
-
-			"TestButton3": {
-				"Type": "RoundedButton",
-				"Column": 6,
-				"Margin": [ 5, 5, 5, 5 ],
-				"BackgroundBrush": "Blue",
-				"BorderBrush": "Red",
-				"BorderWidth": 3.0,
-				"CornerRadiusX": 15.0,
-				"CornerRadiusY": 25.0,
-
-				"Content": {
-					"Type": "Text",
-					"Text": "Test Button 3",
-					"Brush": "Black",
-					"FontFamily": "Arial",
-					"FontSize": 12
 				}
 			},
 
-			"TextInput1": {
+
+
+
+
+			"EditDropDownButton": {
+				"Type": "Button",
+				"Row": 0,
+				"Column": 1,
+				"Margin": [ 0, 1, 0, 1 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"BorderWidth": 0.0,
+				"Content": {
+					"Type": "Text",
+					"Text": "Edit",
+					"Brush": "White",
+					"Style": "MenuBarDropDownButtonStyle"
+				},
+				"OnMouseEnter": "MenuBarDropDownButtonOnMouseEnter",
+				"OnMouseLeave": "MenuBarDropDownButtonOnMouseLeave",
+				"OnMouseLButtonDown": "MenuBarDropDownButtonOnMouseLButtonDown",
+				"OnMouseLButtonUp": "MenuBarDropDownButtonOnMouseLButtonUp",
+				"OnClick": "EditDropDownButtonOnClick"
+			},
+
+			"ViewDropDownButton": {
+				"Type": "Button",
+				"Row": 0,
+				"Column": 2,
+				"Margin": [ 0, 1, 0, 1 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"BorderWidth": 0.0,
+				"Content": {
+					"Type": "Text",
+					"Text": "View",
+					"Brush": "White",
+					"Style": "MenuBarDropDownButtonStyle"
+				},
+				"OnMouseEnter": "MenuBarDropDownButtonOnMouseEnter",
+				"OnMouseLeave": "MenuBarDropDownButtonOnMouseLeave",
+				"OnMouseLButtonDown": "MenuBarDropDownButtonOnMouseLButtonDown",
+				"OnMouseLButtonUp": "MenuBarDropDownButtonOnMouseLButtonUp",
+				"OnClick": "ViewDropDownButtonOnClick"
+			},
+
+
+
+
+
+			"SearchTextInput": {
 				"Type": "TextInput",
 				"Column": 7,
-				"Margin": [ 5, 5, 5, 5 ],
-				"BackgroundBrush": "Gray",
-				"BorderBrush": "Blue",
-				"BorderWidth": 3.0,
-				"PlaceholderText": "Input Text Here",
+				"Margin": [ 5, 1, 5, 1 ],
+				"BackgroundBrush": [ 0.26, 0.26, 0.26 ],
+				"BorderBrush": "White",
+				"BorderWidth": 1.0,
+				"PlaceholderText": "Search",
 				"PlaceholderTextBrush": "LightGray",
 				"PlaceholderTextStyle": {
 					"FontFamily": "Calibri",
-					"FontSize": 18,
-					"FontWeight": "Bold",
+					"FontSize": 12,
+					"FontWeight": "Normal",
 					"FontStyle": "Normal",
 					"FontStretch": "Normal",
-					"TextAlignment": "Center",
+					"TextAlignment": "Leading",
 					"ParagraphAlignment": "Center",
 					"WordWrapping": "None"
 				},
-				"InputTextBrush": "Pink",
+				"InputTextBrush": "LightGray",
 				"InputTextStyle": {
 					"FontFamily": "Calibri",
-					"FontSize": 18,
+					"FontSize": 12,
 					"FontWeight": "Normal",
 					"FontStyle": "Normal",
 					"FontStretch": "Normal",
@@ -452,12 +535,12 @@
 					"SearchIcon": {
 						"Type": "Text",
 						"Text": "0xE721",
-						"Brush": "Black",
+						"Brush": "LightGray",
 						"FontFamily": "Segoe MDL2 Assets",
-						"FontSize": 24,
-						"FontWeight": "Bold",
+						"FontSize": 12,
+						"FontWeight": "Normal",
 						"FontStyle": "Normal",
-						"FontStretch": "Expanded",
+						"FontStretch": "Normal",
 						"TextAlignment": "Center",
 						"ParagraphAlignment": "Center",
 						"WordWrapping": "None"

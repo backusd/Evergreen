@@ -18,6 +18,12 @@ public:
 private:
 	void SetCallbacks()
 	{
+		// MenuBar Callbacks
+		SetFileDropDownCallbacks();
+		SetEditDropDownCallbacks();
+		SetViewDropDownCallbacks();
+
+
 		// Pane
 		JSONLoaders::AddControlFunction("Pane1_OnMouseEnteredTitleBar", [](Control* control, Event& e)
 			{
@@ -314,6 +320,93 @@ private:
 
 			}
 		);
+	}
+
+	// MenuBar Callbacks
+	void SetFileDropDownCallbacks()
+	{
+		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseEnter", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				button->BackgroundBrush(
+					std::move(
+						std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.35f, 0.35f, 0.35f))
+					)
+				);
+			}
+		);
+		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLeave", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				button->BackgroundBrush(
+					std::move(
+						std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f))
+					)
+				);			
+			}
+		);
+		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLButtonDown", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				button->BackgroundBrush(
+					std::move(
+						std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.25f, 0.25f, 0.25f))
+					)
+				);				
+			}
+		);
+		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLButtonUp", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
+				// OnMouseLeave event will fire and set the background color anyways)
+
+				if (button->MouseIsOver())
+				{
+					button->BackgroundBrush(
+						std::move(
+							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.35f, 0.35, 0.35f))
+						)
+					);
+				}
+			}
+		);
+
+		// File
+		JSONLoaders::AddControlFunction("FileDropDownButtonOnClick", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				Pane* pane = button->GetUI()->GetPane("FileDropDownPane");
+				pane->SwitchVisible();
+			}
+		);
+
+		// Edit
+		JSONLoaders::AddControlFunction("EditDropDownButtonOnClick", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				//Pane* pane = button->GetUI()->GetPane("FileDropDownPane");
+				//pane->SwitchVisible();
+			}
+		);
+
+		// View
+		JSONLoaders::AddControlFunction("ViewDropDownButtonOnClick", [](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				//Pane* pane = button->GetUI()->GetPane("FileDropDownPane");
+				//pane->SwitchVisible();
+			}
+		);
+	}
+
+	void SetEditDropDownCallbacks()
+	{
+
+	}
+	void SetViewDropDownCallbacks()
+	{
+
 	}
 };
 

@@ -16,6 +16,7 @@
 	//                                        Row/Column
 	"a": {
 		"Layout": {
+			"Brush": "Gray", // Background color - See Brushes.json for details on using a color brush
 			"RowDefinitions": [
 				{
 					"Height": "1*" // Declare a single Row that spans the entire height of the Layout
