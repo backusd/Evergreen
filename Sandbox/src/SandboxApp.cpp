@@ -18,6 +18,45 @@ public:
 private:
 	void SetCallbacks()
 	{
+		// Pane
+		JSONLoaders::AddControlFunction("Pane1_OnMouseEnteredTitleBar", [](Control* control, Event& e)
+			{
+				Pane* pane = static_cast<Pane*>(control);
+				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
+				pane->SetTitleBarBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("Pane1_OnMouseExitedTitleBar", [](Control* control, Event& e)
+			{
+				Pane* pane = static_cast<Pane*>(control);
+				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f));
+				pane->SetTitleBarBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("Pane1_OnMouseEnteredContentRegion", [](Control* control, Event& e)
+			{
+				Pane* pane = static_cast<Pane*>(control);
+				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
+				pane->SetBackgroundBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("Pane1_OnMouseExitedContentRegion", [](Control* control, Event& e)
+			{
+				Pane* pane = static_cast<Pane*>(control);
+				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DarkGray));
+				pane->SetBackgroundBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("Pane1_OnMouseMoved", [](Control* control, Event& e)
+			{
+				Pane* pane = static_cast<Pane*>(control);
+				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+
+				std::string newTitle = std::format("x: {}, y: {}", mme.GetX(), mme.GetY());
+				pane->ClearTitleBarLayoutAndAddTitle(newTitle);
+			}
+		);
+
 		// TextInput
 		JSONLoaders::AddControlFunction("TextInput1_OnMouseEntered", [](Control* control, Event& e)
 			{

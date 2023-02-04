@@ -53,7 +53,7 @@ private:
 	void ParseIsVisible(Pane* pane, json& data);
 
 	void ParseTitle(Pane* pane, json& data);
-	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
+	void ParseContent(Pane* pane, json& data);
 	
 	void ParseOnMouseEnteredTitleBar(Pane* pane, json& data);
 	void ParseOnMouseExitedTitleBar(Pane* pane, json& data);
