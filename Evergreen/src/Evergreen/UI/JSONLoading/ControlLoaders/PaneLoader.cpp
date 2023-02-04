@@ -233,7 +233,7 @@ float PaneLoader::ParseTitleBarHeight(json& data)
 		return height;
 	}
 
-	return 0.0f;
+	return 20.0f;
 }
 
 void PaneLoader::ParseCornerRadius(Pane* pane, json& data)

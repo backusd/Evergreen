@@ -1,0 +1,99 @@
+{
+	// Basics: Declare a Pane control by specifying the name of the control and specify the Type as "Pane"
+	// NOTE: Because a Pane is not a child control of a layout, we allow for Panes to be declared outside of 
+	//       the "root" layout in the json file. However, because a Pane may be associated with a control that
+	//       lives in the root layout, we also allow a Pane to be declared anywhere within the root layout so
+	//       that it may be declared in proximity to the associated control. For example, in the case of a drop
+	//       down effect, we may want the drop down Pane to be declared next to the Button that will control
+	//       the visibility of the drop down Pane.
+	"Pane1": {
+		"Type": "Pane",
+		"Title": "Suck weeners", // (optional) - Title that will appear in the title bar of the Pane.
+		//                                     - Title is required if 'IncludeTitleBar' is true
+		//                                     - Can either specify a string or a json object that represents a Layout (see next Pane example below)
+		//
+		// Row/Column/RowSpan/ColumnSpan/Margin - NOTE: These keys are NOT valid for a Pane control
+		"Top": 50, // Top position of the Pane
+		"Left": 50, // Left position of the Pane
+		"Height": 200, // Height of the Pane
+		"Width": 250, // Width of the Pane
+		"Resizable": true, // (optional) Bool for whether or not the Pane can be resized. Default is true.
+		"Relocatable": true, // (optional) Bool for whether or not the Pane can be relocated. Default is true.
+		"BackgroundBrush": "Blue", // (optional) Background color - See Brushes.json for details on using a color brush. Default is Dark Gray
+		"BorderBrush": "Red", // (optional) Border color - See Brushes.json for details on using a color brush. Default is Black
+		"BorderWidth": 3.0, // (optional) Border width - default will be 0
+		"CornerRadius": 15.0, // (optional) Corner radius for the entire Pane - default is 0
+		//                                  Can alternatively specify 'CornerRadiusX' and 'CornerRadiusY'. See next Pane example below.
+		"IncludeTitleBar": true, // (optional) Bool for whether or not to include a Title Bar. Default is true. (If true, 'Title' key is required.)
+		"TitleBarBrush": "Green", // (optional) Title Bar background color - See Brushes.json for details on using a color brush. Default is [0.2, 0.2, 0.2]
+		"TitleBarHeight": 30, // (optional) Height of Title Bar - Default is 20
+		"IsMinimized": false, // (optional) Bool for whether the content region is minimized - Default is false
+		"IsVisible": true, // (optional) Bool for whether the entire Pane is visible - Default is true
+
+		// Pane Content: Must be a json object that represents a Layout (See Layout.json for how to specify a Layout)
+		"Content": {
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [ { "Width": "1*" } ],
+
+			"..."
+
+		},
+
+		// On* callbacks: Specify functions to execute when the Pane triggers certain events.
+		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
+		//                can be set by calling JSONLoaders::AddControlFunction()
+		"OnMouseEnteredTitleBar": "Pane1_OnMouseEnteredTitleBar",
+		"OnMouseExitedTitleBar": "Pane1_OnMouseExitedTitleBar",
+		"OnMouseEnteredContentRegion": "Pane1_OnMouseEnteredContentRegion",
+		"OnMouseExitedContentRegion": "Pane1_OnMouseExitedContentRegion",
+		"OnMouseMoved": "Pane1_OnMouseMoved"
+	},
+
+
+	// Second Example with 'Title' being a Layout
+	"Pane2": {
+		"Type": "Pane",
+
+		// Pane Title: Must be a either a string or a json object that represents a Layout (See Layout.json for how to specify a Layout)
+		"Title": {
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [
+				{ "Width": "30" },
+				{ "Width": "1*" }
+			],
+			"Pane2_HouseText": {
+				"Type": "Text",
+				"Text": "0xE10F",
+				"Brush": "Red",
+				"FontFamily": "Segoe MDL2 Assets",
+				"FontSize": 16,
+				"FontWeight": "Bold",
+				"FontStyle": "Normal",
+				"FontStretch": "Normal",
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
+			},
+			"Pane2_TitleText": {
+				"Type": "Text",
+				"Text": "Suck even more weeners",
+				"Column": 1,
+				"Brush": "White",
+				"FontFamily": "Calibri",
+				"FontSize": 12,
+				"FontWeight": "Normal",
+				"FontStyle": "Normal",
+				"FontStretch": "Normal",
+				"TextAlignment": "Leading",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
+			}
+		},
+
+		// Example of using 'CornerRadiusX' and 'CornerRadiusY' instead of 'CornerRadius'
+		"CornerRadiusX": 15.0,
+		"CornerRadiusY": 20.0,
+	
+		...
+	}
+}

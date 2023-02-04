@@ -313,5 +313,6 @@
     <None Include="src\Evergreen\UI\json-examples\RoundedButton.json" />
     <None Include="src\Evergreen\UI\json-examples\ScrollableLayout.json" />
     <None Include="src\Evergreen\UI\json-examples\TextInput.json" />
+    <None Include="src\Evergreen\UI\json-examples\Pane.json" />
   </ItemGroup>
 </Project>
