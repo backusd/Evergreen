@@ -327,22 +327,57 @@ private:
 	{
 		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseEnter", [](Control* control, Event& e)
 			{
-				Button* button = static_cast<Button*>(control);
-				button->BackgroundBrush(
-					std::move(
-						std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.35f, 0.35f, 0.35f))
-					)
-				);
+				Button* button = static_cast<Button*>(control);	
+				Pane* filePane = button->GetUI()->GetPane("FileDropDownPane");
+
+				if (!filePane->GetVisible())
+				{
+					button->BackgroundBrush(
+						std::move(
+							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.35f, 0.35f, 0.35f))
+						)
+					);
+				}
 			}
 		);
 		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLeave", [](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);
-				button->BackgroundBrush(
-					std::move(
-						std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f))
-					)
-				);			
+				Pane* filePane = button->GetUI()->GetPane("FileDropDownPane");
+
+				// First check if the mouse is now over the Edit button
+				Button* editButton = static_cast<Button*>(button->GetUI()->GetControlByName("EditDropDownButton"));
+				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+				if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				{
+					filePane->SetVisible(false);
+					button->BackgroundBrush(
+						std::move(
+							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f))
+						)
+					);
+
+					Pane* editPane = button->GetUI()->GetPane("EditDropDownPane");
+					editPane->SetVisible(true);
+					return;
+				}
+
+				if (filePane->GetVisible())
+				{
+					button->BackgroundBrush(
+						std::move(
+							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.25f, 0.25f, 0.25f))
+						)
+					);
+				}
+				else
+				{
+					button->BackgroundBrush(
+						std::move(
+							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f))
+						)
+					);
+				}		
 			}
 		);
 		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLButtonDown", [](Control* control, Event& e)

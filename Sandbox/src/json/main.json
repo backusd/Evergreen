@@ -330,7 +330,7 @@
 				"Top": 24,
 				"Left": 5,
 				"Height": 140,
-				"Width": 250,
+				"Width": 200,
 				"Resizable": false,
 				"Relocatable": false,
 				"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
@@ -462,6 +462,120 @@
 				"OnMouseLButtonDown": "MenuBarDropDownButtonOnMouseLButtonDown",
 				"OnMouseLButtonUp": "MenuBarDropDownButtonOnMouseLButtonUp",
 				"OnClick": "EditDropDownButtonOnClick"
+			},
+			"EditDropDownPane": {
+				"Type": "Pane",
+				"Top": 24,
+				"Left": 50,
+				"Height": 140,
+				"Width": 200,
+				"Resizable": false,
+				"Relocatable": false,
+				"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+				"BorderWidth": 0.0,
+				"IncludeTitleBar": false,
+				"IsMinimized": false,
+				"IsVisible": false,
+				"Content": {
+					"RowDefinitions": [
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": "1*" },
+						{ "Height": 5 }
+					],
+					"ColumnDefinitions": [
+						{ "Width": 30 },
+						{ "Width": "1*" }
+					],
+
+					"FileDropDown_New": {
+						"Type": "Text",
+						"Row": 0,
+						"Column": 1,
+						"Text": "New",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDown_NewIcon": {
+						"Type": "Text",
+						"Row": 0,
+						"Column": 0,
+						"Text": "0xE710",
+						"Brush": "Lime",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+					"FileDropDown_Open": {
+						"Type": "Text",
+						"Row": 1,
+						"Column": 1,
+						"Text": "Open",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDown_OpenIcon": {
+						"Type": "Text",
+						"Row": 1,
+						"Column": 0,
+						"Text": "0xE8E5",
+						"Brush": "Fuchsia",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+					"FileDropDown_Save": {
+						"Type": "Text",
+						"Row": 2,
+						"Column": 1,
+						"Text": "Save",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDown_SaveIcon": {
+						"Type": "Text",
+						"Row": 2,
+						"Column": 0,
+						"Text": "0xE74E",
+						"Brush": "DodgerBlue",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+
+					"FileDropDown_SaveAs": {
+						"Type": "Text",
+						"Row": 3,
+						"Column": 1,
+						"Text": "Save As",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDown_SaveAsIcon": {
+						"Type": "Text",
+						"Row": 3,
+						"Column": 0,
+						"Text": "0xE792",
+						"Brush": "DodgerBlue",
+						"Style": "MenuBarDropDownIconStyle"
+					},
+
+					"FileDropDown_Close": {
+						"Type": "Text",
+						"Row": 4,
+						"Column": 1,
+						"Text": "Close",
+						"Brush": "White",
+						"Style": "MenuBarDropDownTextContentsStyle"
+					},
+					"FileDropDown_CloseIcon": {
+						"Type": "Text",
+						"Row": 4,
+						"Column": 0,
+						"Text": "0xE8BB",
+						"Brush": "Red",
+						"Style": "MenuBarDropDownIconStyle"
+					}
+				}
 			},
 
 			"ViewDropDownButton": {

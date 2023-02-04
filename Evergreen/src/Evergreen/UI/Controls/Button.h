@@ -65,8 +65,10 @@ public:
 
 	ND inline bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 
-protected:
 	ND virtual bool ContainsPoint(float x, float y) const noexcept;
+
+protected:
+	
 	virtual void ButtonChanged();
 
 	virtual void OnMarginChanged() override;
