@@ -28,6 +28,7 @@ public:
 
 protected:
 	std::unique_ptr<UI> m_ui;
+	std::shared_ptr<DeviceResources> m_deviceResources;
 
 private:
 	void Update() noexcept;
@@ -53,7 +54,6 @@ private:
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
 	std::shared_ptr<Window> m_window;
-	std::shared_ptr<DeviceResources> m_deviceResources;
 };
 #pragma warning( pop )
 

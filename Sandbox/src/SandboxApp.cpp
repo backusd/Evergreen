@@ -19,9 +19,7 @@ private:
 	void SetCallbacks()
 	{
 		// MenuBar Callbacks
-		SetFileDropDownCallbacks();
-		SetEditDropDownCallbacks();
-		SetViewDropDownCallbacks();
+		SetMenuBarCallbacks();
 
 
 		// Pane
@@ -323,126 +321,257 @@ private:
 	}
 
 	// MenuBar Callbacks
-	void SetFileDropDownCallbacks()
+	void SetMenuBarCallbacks()
 	{
-		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseEnter", [](Control* control, Event& e)
+		// File ----------------------------------------------------------------------------------------------
+		JSONLoaders::AddControlFunction("FileDropDownButtonOnMouseEnter", [this](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);	
-				Pane* filePane = button->GetUI()->GetPane("FileDropDownPane");
+				Pane* filePane = m_ui->GetPane("FileDropDownPane");
 
-				if (!filePane->GetVisible())
-				{
-					button->BackgroundBrush(
-						std::move(
-							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.35f, 0.35f, 0.35f))
-						)
-					);
-				}
+				D2D1_COLOR_F color = filePane->GetVisible() ? m_menuBarButtonColorPaneOpen : m_menuBarButtonColorMouseOverPaneClosed;
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
 			}
 		);
-		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLeave", [](Control* control, Event& e)
+		JSONLoaders::AddControlFunction("FileDropDownButtonOnMouseLeave", [this](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);
-				Pane* filePane = button->GetUI()->GetPane("FileDropDownPane");
+				Pane* filePane = m_ui->GetPane("FileDropDownPane");
 
-				// First check if the mouse is now over the Edit button
-				Button* editButton = static_cast<Button*>(button->GetUI()->GetControlByName("EditDropDownButton"));
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-				if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
-				{
-					filePane->SetVisible(false);
-					button->BackgroundBrush(
-						std::move(
-							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f))
-						)
-					);
-
-					Pane* editPane = button->GetUI()->GetPane("EditDropDownPane");
-					editPane->SetVisible(true);
-					return;
-				}
-
+				// First if the file pane is visible, check if the mouse is now over the Edit button
 				if (filePane->GetVisible())
 				{
-					button->BackgroundBrush(
-						std::move(
-							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.25f, 0.25f, 0.25f))
-						)
-					);
+					Button* editButton = static_cast<Button*>(m_ui->GetControlByName("EditDropDownButton"));
+					MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+					if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
+					{
+						filePane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+
+						Pane* editPane = m_ui->GetPane("EditDropDownPane");
+						editPane->SetVisible(true);
+					}
+					else
+					{
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					}
 				}
 				else
 				{
-					button->BackgroundBrush(
-						std::move(
-							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f))
-						)
-					);
-				}		
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+				}	
 			}
 		);
-		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLButtonDown", [](Control* control, Event& e)
+		JSONLoaders::AddControlFunction("FileDropDownButtonOnMouseLButtonDown", [this](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);
-				button->BackgroundBrush(
-					std::move(
-						std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.25f, 0.25f, 0.25f))
-					)
-				);				
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
 			}
 		);
-		JSONLoaders::AddControlFunction("MenuBarDropDownButtonOnMouseLButtonUp", [](Control* control, Event& e)
+		JSONLoaders::AddControlFunction("FileDropDownButtonOnClick", [this](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);
-				// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
-				// OnMouseLeave event will fire and set the background color anyways)
+				Pane* filePane = m_ui->GetPane("FileDropDownPane");
+				filePane->SwitchVisible();
 
-				if (button->MouseIsOver())
+				if (filePane->GetVisible())
 				{
-					button->BackgroundBrush(
-						std::move(
-							std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.35f, 0.35, 0.35f))
-						)
-					);
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				}
+				else if (button->MouseIsOver())
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
 				}
 			}
 		);
 
-		// File
-		JSONLoaders::AddControlFunction("FileDropDownButtonOnClick", [](Control* control, Event& e)
+		// Edit ----------------------------------------------------------------------------------------------
+		JSONLoaders::AddControlFunction("EditDropDownButtonOnMouseEnter", [this](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);
-				Pane* pane = button->GetUI()->GetPane("FileDropDownPane");
-				pane->SwitchVisible();
+				Pane* editPane = m_ui->GetPane("EditDropDownPane");
+
+				D2D1_COLOR_F color = editPane->GetVisible() ? m_menuBarButtonColorPaneOpen : m_menuBarButtonColorMouseOverPaneClosed;
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
+			}
+		);
+		JSONLoaders::AddControlFunction("EditDropDownButtonOnMouseLeave", [this](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				Pane* editPane = m_ui->GetPane("EditDropDownPane");
+
+				// First if the edit pane is visible, check if the mouse is now over the File button or View Button
+				if (editPane->GetVisible())
+				{
+					Button* fileButton = static_cast<Button*>(m_ui->GetControlByName("FileDropDownButton"));
+					Button* viewButton = static_cast<Button*>(m_ui->GetControlByName("ViewDropDownButton"));
+					MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+					if (fileButton->ContainsPoint(mme.GetX(), mme.GetY()))
+					{
+						editPane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+
+						Pane* filePane = m_ui->GetPane("FileDropDownPane");
+						filePane->SetVisible(true);
+					}
+					else if (viewButton->ContainsPoint(mme.GetX(), mme.GetY()))
+					{
+						editPane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+
+						Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
+						viewPane->SetVisible(true);
+					}
+					else
+					{
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					}
+				}
+				else
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+				}
+			}
+		);
+		JSONLoaders::AddControlFunction("EditDropDownButtonOnMouseLButtonDown", [this](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+			}
+		);
+		JSONLoaders::AddControlFunction("EditDropDownButtonOnClick", [this](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				Pane* editPane = m_ui->GetPane("EditDropDownPane");
+				editPane->SwitchVisible();
+
+				if (editPane->GetVisible())
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				}
+				else if (button->MouseIsOver())
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				}
 			}
 		);
 
-		// Edit
-		JSONLoaders::AddControlFunction("EditDropDownButtonOnClick", [](Control* control, Event& e)
+		// View ----------------------------------------------------------------------------------------------
+		JSONLoaders::AddControlFunction("ViewDropDownButtonOnMouseEnter", [this](Control* control, Event& e)
 			{
 				Button* button = static_cast<Button*>(control);
-				//Pane* pane = button->GetUI()->GetPane("FileDropDownPane");
-				//pane->SwitchVisible();
+				Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
+
+				D2D1_COLOR_F color = viewPane->GetVisible() ? m_menuBarButtonColorPaneOpen : m_menuBarButtonColorMouseOverPaneClosed;
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
+			}
+		);
+		JSONLoaders::AddControlFunction("ViewDropDownButtonOnMouseLeave", [this](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
+
+				// First if the view pane is visible, check if the mouse is now over the Edit button
+				if (viewPane->GetVisible())
+				{
+					Button* editButton = static_cast<Button*>(m_ui->GetControlByName("EditDropDownButton"));
+					MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+					if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
+					{
+						viewPane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+
+						Pane* editPane = m_ui->GetPane("EditDropDownPane");
+						editPane->SetVisible(true);
+					}
+					else
+					{
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					}
+				}
+				else
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+				}
+			}
+		);
+		JSONLoaders::AddControlFunction("ViewDropDownButtonOnMouseLButtonDown", [this](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+			}
+		);
+		JSONLoaders::AddControlFunction("ViewDropDownButtonOnClick", [this](Control* control, Event& e)
+			{
+				Button* button = static_cast<Button*>(control);
+				Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
+				viewPane->SwitchVisible();
+
+				if (viewPane->GetVisible())
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				}
+				else if (button->MouseIsOver())
+				{
+					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				}
 			}
 		);
 
-		// View
-		JSONLoaders::AddControlFunction("ViewDropDownButtonOnClick", [](Control* control, Event& e)
+		// Pane ----------------------------------------------------------------------------------------------
+		JSONLoaders::AddControlFunction("MenuBarDropDownPaneOnMouseExitedContentRegion", [this](Control* control, Event& e)
 			{
-				Button* button = static_cast<Button*>(control);
-				//Pane* pane = button->GetUI()->GetPane("FileDropDownPane");
-				//pane->SwitchVisible();
+				Pane* pane = static_cast<Pane*>(control);
+				Pane* filePane = m_ui->GetPane("FileDropDownPane");
+				Pane* editPane = m_ui->GetPane("EditDropDownPane");
+				Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
+				Button* fileButton = static_cast<Button*>(m_ui->GetControlByName("FileDropDownButton"));
+				Button* editButton = static_cast<Button*>(m_ui->GetControlByName("EditDropDownButton"));
+				Button* viewButton = static_cast<Button*>(m_ui->GetControlByName("ViewDropDownButton"));
+				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+
+				if (fileButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				{
+					if (filePane != pane)
+					{
+						pane->SetVisible(false);
+						filePane->SetVisible(true);
+
+						if (pane == editPane)
+						{
+							editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						}
+						else if (pane == viewPane)
+						{
+							viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						}
+					}
+				}
+				else if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				{
+					if (editPane != pane)
+					{
+						pane->SetVisible(false);
+						editPane->SetVisible(true);
+
+						if (pane == filePane)
+						{
+							fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						}
+						else if (pane == viewPane)
+						{
+							viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						}
+					}
+				}
 			}
 		);
 	}
 
-	void SetEditDropDownCallbacks()
-	{
+	const D2D1_COLOR_F m_menuBarButtonColorDefault = D2D1::ColorF(0.16f, 0.16f, 0.16f);
+	const D2D1_COLOR_F m_menuBarButtonColorMouseOverPaneClosed = D2D1::ColorF(0.35f, 0.35f, 0.35f);
+	const D2D1_COLOR_F m_menuBarButtonColorPaneOpen = D2D1::ColorF(0.25f, 0.25f, 0.25f);
 
-	}
-	void SetViewDropDownCallbacks()
-	{
-
-	}
 };
 
 

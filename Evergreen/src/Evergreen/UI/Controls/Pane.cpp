@@ -96,6 +96,10 @@ void Pane::InitializeLayoutWithoutTitleBar()
 		nullptr,
 		"Pane_Content_Layout"
 	);
+
+	// To ensure the content Rect can be properly calulated, if there is no title bar
+	// Make sure the title bar height is set to 0
+	m_titleBarHeight = 0.0f;
 }
 void Pane::CreateTitleBarLayout()
 {
@@ -1118,6 +1122,8 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 	if (!m_minimized)
 	{
 		bool mouseIsOverContentRect = RectContainsPoint(ContentRect(), e.GetX(), e.GetY());
+
+		D2D1_RECT_F cr = ContentRect();
 
 		if (m_mouseContentRegionState == MouseOverDraggableAreaState::NOT_OVER)
 		{
