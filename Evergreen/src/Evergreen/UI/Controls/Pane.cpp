@@ -1463,11 +1463,11 @@ void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 }
 
 
-bool Pane::RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept
+bool Pane::RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) const noexcept
 {
 	return rect.left <= x && rect.right >= x && rect.top <= y && rect.bottom >= y;
 }
-bool Pane::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y)
+bool Pane::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y) const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
@@ -1481,6 +1481,16 @@ bool Pane::RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y)
 	BOOL b;
 	m_roundedRect->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
 	return static_cast<bool>(b);
+}
+
+bool Pane::ContainsPoint(float x, float y) const
+{
+	if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
+	{
+		return RectContainsPoint(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), x, y);
+	}
+
+	return RectContainsPoint(m_allowedRegion, x, y);
 }
 
 }

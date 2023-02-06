@@ -351,9 +351,15 @@ private:
 						Pane* editPane = m_ui->GetPane("EditDropDownPane");
 						editPane->SetVisible(true);
 					}
-					else
+					else if (filePane->ContainsPoint(mme.GetX(), mme.GetY()))
 					{
 						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					}
+					else
+					{
+						// Mouse is not over the button or pane, so close the pane
+						filePane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 					}
 				}
 				else
@@ -422,9 +428,15 @@ private:
 						Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
 						viewPane->SetVisible(true);
 					}
-					else
+					else if (editPane->ContainsPoint(mme.GetX(), mme.GetY()))
 					{
 						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					}
+					else
+					{
+						// Mouse is not over the button or pane, so close the pane
+						editPane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 					}
 				}
 				else
@@ -484,9 +496,15 @@ private:
 						Pane* editPane = m_ui->GetPane("EditDropDownPane");
 						editPane->SetVisible(true);
 					}
-					else
+					else if (viewPane->ContainsPoint(mme.GetX(), mme.GetY()))
 					{
 						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					}
+					else
+					{
+						// Mouse is not over the button or pane, so close the pane
+						viewPane->SetVisible(false);
+						button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 					}
 				}
 				else
@@ -563,6 +581,34 @@ private:
 							viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 						}
 					}
+				}
+				else if (viewButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				{
+					if (viewPane != pane)
+					{
+						pane->SetVisible(false);
+						viewPane->SetVisible(true);
+
+						if (pane == filePane)
+						{
+							fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						}
+						else if (pane == editPane)
+						{
+							editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						}
+					}
+				}
+				else
+				{
+					// Mouse is not over pane or menu bar button, so collapse it
+					pane->SetVisible(false);
+					if (pane == filePane)
+						fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					else if (pane == editPane)
+						editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					else if (pane == viewPane)
+						viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 				}
 			}
 		);

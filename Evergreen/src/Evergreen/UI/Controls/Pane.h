@@ -99,6 +99,8 @@ public:
 
 	Layout* AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed") { return m_contentLayout->AddSubLayout(position, name); }
 
+	ND virtual bool ContainsPoint(float x, float y) const;
+
 private:
 	enum class MouseOverDraggableAreaState
 	{
@@ -118,10 +120,7 @@ private:
 	void OnAllowedRegionChanged() override;
 
 	ND inline D2D1_RECT_F TitleRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top, m_allowedRegion.right, m_allowedRegion.top + m_titleBarHeight); }
-	ND inline D2D1_RECT_F ContentRect() const noexcept 
-	{ 
-		return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top + m_titleBarHeight, m_allowedRegion.right, m_allowedRegion.bottom); 
-	}
+	ND inline D2D1_RECT_F ContentRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top + m_titleBarHeight, m_allowedRegion.right, m_allowedRegion.bottom); }
 	ND inline D2D1_RECT_F RightEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.right - edgeSensitivity, m_allowedRegion.top, m_allowedRegion.right + edgeSensitivity, m_allowedRegion.bottom); }
 	ND inline D2D1_RECT_F LeftEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left - edgeSensitivity, m_allowedRegion.top, m_allowedRegion.left + edgeSensitivity, m_allowedRegion.bottom); }
 	ND inline D2D1_RECT_F TopEdgeRect() const noexcept { return D2D1::RectF(m_allowedRegion.left, m_allowedRegion.top - edgeSensitivity, m_allowedRegion.right, m_allowedRegion.top + edgeSensitivity); }
@@ -131,8 +130,8 @@ private:
 	ND inline D2D1_RECT_F BottomRightCornerRect() const noexcept { return D2D1::RectF(m_allowedRegion.right - edgeSensitivity, m_allowedRegion.bottom - edgeSensitivity, m_allowedRegion.right + edgeSensitivity, m_allowedRegion.bottom + edgeSensitivity); }
 	ND inline D2D1_RECT_F BottomLeftCornerRect() const noexcept { return D2D1::RectF(m_allowedRegion.left - edgeSensitivity, m_allowedRegion.bottom - edgeSensitivity, m_allowedRegion.left + edgeSensitivity, m_allowedRegion.bottom + edgeSensitivity); }
 
-	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) noexcept;
-	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y);
+	ND inline bool RectContainsPoint(const D2D1_RECT_F& rect, float x, float y) const noexcept;
+	ND bool RectContainsPoint(const D2D1_ROUNDED_RECT& rect, float x, float y) const;
 
 	void ForceMouseToBeNotOverTitleAndContent(MouseMoveEvent& e) noexcept;
 
