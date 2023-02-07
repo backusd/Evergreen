@@ -232,6 +232,15 @@ public:
 	ND inline float Right() const noexcept { return m_left + m_width; }
 	ND inline float Bottom() const noexcept { return m_top + m_height; }
 
+	inline void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; UpdateLayout(); }
+	inline void Margin(float left, float top, float right, float bottom) noexcept;
+	inline void MarginLeft(float left) noexcept { m_margin.Left = left; UpdateLayout(); }
+	inline void MarginTop(float top) noexcept { m_margin.Top = top; UpdateLayout(); }
+	inline void MarginRight(float right) noexcept { m_margin.Right = right; UpdateLayout(); }
+	inline void MarginBottom(float bottom) noexcept { m_margin.Bottom = bottom; UpdateLayout(); }
+	ND inline const Evergreen::Margin& Margin() const noexcept { return m_margin; }
+
+
 private:
 	void UpdateLayout() noexcept;
 	void UpdateRows() noexcept;
@@ -261,6 +270,8 @@ private:
 	std::vector<RowColumnDefinition> m_rowDefinitions;
 	std::vector<RowColumnDefinition> m_columnDefinitions;
 	std::string						 m_name;
+
+	Evergreen::Margin				 m_margin;
 
 	bool							m_adjustingLayout;
 	std::optional<unsigned int>		m_columnIndexBeingAdjusted;

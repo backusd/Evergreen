@@ -137,7 +137,8 @@ Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui, float t
 	m_adjustingLayout(false),
 	m_deviceResources(deviceResources),
 	m_ui(ui),
-	m_backgroundBrush(std::move(backgroundBrush))
+	m_backgroundBrush(std::move(backgroundBrush)),
+	m_margin({ 0.0f, 0.0f, 0.0f, 0.0f })
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(ui != nullptr, "No UI");
@@ -237,31 +238,44 @@ void Layout::UpdateRows() noexcept
 	if (m_rowDefinitions.size() == 0)
 		return;
 
-	// Get the total fixed & percent height
-	float totalFixedHeight = GetTotalFixedSize(m_rowDefinitions, m_height);
-	if (totalFixedHeight > m_height)
+	float availableHeight = m_height - (m_margin.Top + m_margin.Bottom);
+	float availableWidth = m_width - (m_margin.Left + m_margin.Right);
+	if (availableHeight < 0.0f)
 	{
-		EG_CORE_ERROR("{}:{} - Layout (name: {}) has row definitions FIXED + PERCENT sizing ({}) greater than the available height", __FILE__, __LINE__, m_name, totalFixedHeight, m_height);
+		EG_CORE_ERROR("{}:{} - Layout (name: {}) has more top + bottom margin ({} + {} = {}) than total height ({})", __FILE__, __LINE__, m_name, m_margin.Top, m_margin.Bottom, m_margin.Top + m_margin.Bottom, m_height);
+		return;
+	}
+	if (availableWidth < 0.0f)
+	{
+		EG_CORE_ERROR("{}:{} - Layout (name: {}) has more left + right margin ({} + {} = {}) than total width ({})", __FILE__, __LINE__, m_name, m_margin.Right, m_margin.Left, m_margin.Right + m_margin.Left, m_width);
+		return;
+	}
+
+	// Get the total fixed & percent height
+	float totalFixedHeight = GetTotalFixedSize(m_rowDefinitions, availableHeight);
+	if (totalFixedHeight > availableHeight)
+	{
+		EG_CORE_ERROR("{}:{} - Layout (name: {}) has row definitions FIXED + PERCENT sizing ({}) greater than the available height ({})", __FILE__, __LINE__, m_name, totalFixedHeight, availableHeight);
 		EG_CORE_ERROR("    Unable to add all the rows... Removing last row and trying again");
 		m_rowDefinitions.pop_back();
 		UpdateRows();
 	}
 
-	float totalStarHeight = m_height - totalFixedHeight;
+	float totalStarHeight = availableHeight - totalFixedHeight;
 
 	// Compute the height of a single star
 	float totalStars = GetTotalStars(m_rowDefinitions);
 	float singleStarHeight = totalStars > 0.0f ? totalStarHeight / totalStars : 0.0f;
 
 	// Create the new rows (use the layout left and width, but compute new top and height for each row)
-	float top = m_top;
+	float top = m_top + m_margin.Top;
 	float height = 0.0f;
 	for (unsigned int iii = 0; iii < m_rowDefinitions.size(); ++iii)
 	{
 		switch (m_rowDefinitions[iii].Type)
 		{
 		case RowColumnType::FIXED:		height = m_rowDefinitions[iii].Value; break;
-		case RowColumnType::PERCENT:	height = (m_rowDefinitions[iii].Value * m_height); break;
+		case RowColumnType::PERCENT:	height = (m_rowDefinitions[iii].Value * availableHeight); break;
 		case RowColumnType::STAR:		height = (m_rowDefinitions[iii].Value * singleStarHeight); break;
 		default:
 			EG_CORE_ERROR("{}:{} - Layout (name: {}) has unrecognized RowColumnType", __FILE__, __LINE__, m_name);
@@ -269,13 +283,13 @@ void Layout::UpdateRows() noexcept
 		}
 
 		if (iii >= m_rows.size())
-			m_rows.emplace_back(top, m_left, m_width, height);
+			m_rows.emplace_back(top, m_left + m_margin.Left, availableWidth, height);
 		else
 		{
 			m_rows[iii].Top(top);
 			m_rows[iii].Height(height);
-			m_rows[iii].Left(m_left);
-			m_rows[iii].Width(m_width);
+			m_rows[iii].Left(m_left + m_margin.Left);
+			m_rows[iii].Width(availableWidth);
 		}
 
 		top += height;
@@ -284,7 +298,7 @@ void Layout::UpdateRows() noexcept
 	// For each row, now update the parent layout height and star height
 	for (Row& row : m_rows)
 	{
-		row.ParentLayoutHeight(m_height);
+		row.ParentLayoutHeight(availableHeight);
 		row.StarHeight(singleStarHeight);
 	}
 
@@ -298,31 +312,47 @@ void Layout::UpdateColumns() noexcept
 	if (m_columnDefinitions.size() == 0)
 		return;
 
-	// Get the total fixed & percent height
-	float totalFixedWidth = GetTotalFixedSize(m_columnDefinitions, m_width);
-	if (totalFixedWidth > m_width)
+	float availableHeight = m_height - (m_margin.Top + m_margin.Bottom);
+	float availableWidth = m_width - (m_margin.Left + m_margin.Right);
+	if (availableHeight < 0.0f)
 	{
-		EG_CORE_ERROR("{}:{} - Layout (name: {}) has column definitions FIXED + PERCENT sizing ({}) greater than the available width", __FILE__, __LINE__, m_name, totalFixedWidth, m_width);
+		EG_CORE_ERROR("{}:{} - Layout (name: {}) has more top + bottom margin ({} + {} = {}) than total height ({})", __FILE__, __LINE__, m_name, m_margin.Top, m_margin.Bottom, m_margin.Top + m_margin.Bottom, m_height);
+		return;
+	}
+	if (availableWidth < 0.0f)
+	{
+		EG_CORE_ERROR("{}:{} - Layout (name: {}) has more left + right margin ({} + {} = {}) than total width ({})", __FILE__, __LINE__, m_name, m_margin.Right, m_margin.Left, m_margin.Right + m_margin.Left, m_width);
+		return;
+	}
+
+	if (m_margin.Left > 1.0f)
+		int iii = 0;
+
+	// Get the total fixed & percent height
+	float totalFixedWidth = GetTotalFixedSize(m_columnDefinitions, availableWidth);
+	if (totalFixedWidth > availableWidth)
+	{
+		EG_CORE_ERROR("{}:{} - Layout (name: {}) has column definitions FIXED + PERCENT sizing ({}) greater than the available width ({})", __FILE__, __LINE__, m_name, totalFixedWidth, availableWidth);
 		EG_CORE_ERROR("    Unable to add all the column... Removing last column and trying again");
 		m_columnDefinitions.pop_back();
 		UpdateColumns();
 	}
 
-	float totalStarWidth = m_width - totalFixedWidth;
+	float totalStarWidth = availableWidth - totalFixedWidth;
 
 	// Compute the width of a single star
 	float totalStars = GetTotalStars(m_columnDefinitions);
 	float singleStarWidth = totalStars > 0.0f ? totalStarWidth / totalStars : 0.0f;
 
 	// Create the new columns (use the layout top and height, but compute new left and width for each column)
-	float left = m_left;
+	float left = m_left + m_margin.Left;
 	float width = 0.0f;
 	for (unsigned int iii = 0; iii < m_columnDefinitions.size(); ++iii)
 	{
 		switch (m_columnDefinitions[iii].Type)
 		{
 		case RowColumnType::FIXED:		width = m_columnDefinitions[iii].Value; break;
-		case RowColumnType::PERCENT:	width = (m_columnDefinitions[iii].Value * m_width); break;
+		case RowColumnType::PERCENT:	width = (m_columnDefinitions[iii].Value * availableWidth); break;
 		case RowColumnType::STAR:		width = (m_columnDefinitions[iii].Value * singleStarWidth); break;
 		default:
 			EG_CORE_ERROR("{}:{} - Layout (name: {}) has unrecognized RowColumnType", __FILE__, __LINE__, m_name);
@@ -330,13 +360,13 @@ void Layout::UpdateColumns() noexcept
 		}
 
 		if (iii >= m_columns.size())
-			m_columns.emplace_back(m_top, left, width, m_height);
+			m_columns.emplace_back(m_top + m_margin.Top, left, width, availableHeight);
 		else
 		{
 			m_columns[iii].Left(left);
 			m_columns[iii].Width(width);
-			m_columns[iii].Top(m_top);
-			m_columns[iii].Height(m_height);
+			m_columns[iii].Top(m_top + m_margin.Top);
+			m_columns[iii].Height(availableHeight);
 		}
 
 		left += width;
@@ -345,7 +375,7 @@ void Layout::UpdateColumns() noexcept
 	// For each column, now update the parent layout width and star width
 	for (Column& column : m_columns)
 	{
-		column.ParentLayoutWidth(m_width);
+		column.ParentLayoutWidth(availableWidth);
 		column.StarWidth(singleStarWidth);
 	}
 
@@ -438,6 +468,15 @@ void Layout::ClearContents() noexcept
 	ClearColumns();
 }
 
+void Layout::Margin(float left, float top, float right, float bottom) noexcept
+{
+	m_margin.Left = left;
+	m_margin.Top = top;
+	m_margin.Right = right;
+	m_margin.Bottom = bottom;
+	UpdateLayout();
+}
+
 void Layout::Update() noexcept
 {
 	for (const std::unique_ptr<Control>& control : m_controls)
@@ -455,12 +494,30 @@ void Layout::Render() const noexcept
 	auto context = m_deviceResources->D2DDeviceContext();
 
 	if (m_backgroundBrush != nullptr)
-		context->FillRectangle(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height), m_backgroundBrush->Get());
+	{
+		if (m_margin.Top > 10.0f)
+			int iii = 0;
+
+		context->FillRectangle(
+			D2D1::RectF(
+				m_left + m_margin.Left, 
+				m_top + m_margin.Top, 
+				m_left + m_width - m_margin.Right, 
+				m_top + m_height - m_margin.Bottom
+			), 
+			m_backgroundBrush->Get()
+		);
+	}
 
 	if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
 	{
 		context->DrawRectangle(
-			D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height),
+			D2D1::RectF(
+				m_left + m_margin.Left,
+				m_top + m_margin.Top,
+				m_left + m_width - m_margin.Right,
+				m_top + m_height - m_margin.Bottom
+			),
 			m_borderBrush->Get(),
 			m_borderWidth
 		);

@@ -271,37 +271,38 @@
 		"Brush": "Gray",
 		"RowDefinitions": [
 			{ "Height": "25" },
-			{ "Height": "20%" },
 			{ "Height": "1*" }
 		],
 		"ColumnDefinitions": [
 			{
-				"Width": "20%",
+				"Width": 300,
 				"RightAdjustable": true,
-				"MinWidth": "10%"
+				"MinWidth": 100,
+				"MaxWidth": 400
 			},
 			{
-				"Width": "30",
-				"LeftAdjustable": true
+				"Width": "1*",
+				"LeftAdjustable": true,
+				"RightAdjustable": true
 			},
-			{ "Width": "2*" },
-			{ "Width": "1*" }
+			{
+				"Width": 300,
+				"LeftAdjustable": true,
+				"MinWidth": 100,
+				"MaxWidth": 400
+			}
 		],
 
 		"MenuBarLayout": {
 			"Type": "Layout",
 			"Brush": [ 0.16, 0.16, 0.16 ],
-			"Row": 0,
-			"Column": 0,
-			"ColumnSpan": 4,
+			"ColumnSpan": 3,
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": 50 },
 				{ "Width": 50 },
-				{ "Width": 100 },
-				{ "Width": 200 },
 				{ "Width": "1*" },
 				{ "Width": 200 }
 			],
@@ -347,95 +348,145 @@
 						{ "Height": "1*" },
 						{ "Height": 3 }
 					],
-					"ColumnDefinitions": [
-						{ "Width": 30 },
-						{ "Width": "1*" }
-					],
 
-					"FileDropDown_New": {
-						"Type": "Text",
-						"Row": 0,
-						"Column": 1,
-						"Text": "New",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+					"FileDropDown_NewButton": {
+						"Type": "Button",
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "FileDropDown_NewButton_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+							"FileDropDown_NewIcon": {
+								"Type": "Text",
+								"Text": "0xE710",
+								"Brush": "Lime",
+								"Style": "MenuBarDropDownIconStyle"
+							},
+							"FileDropDown_NewText": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "New",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					},
-					"FileDropDown_NewIcon": {
-						"Type": "Text",
-						"Row": 0,
-						"Column": 0,
-						"Text": "0xE710",
-						"Brush": "Lime",
-						"Style": "MenuBarDropDownIconStyle"
-					},
-
-					"FileDropDown_Open": {
-						"Type": "Text",
+					"FileDropDown_OpenButton": {
+						"Type": "Button",
 						"Row": 1,
-						"Column": 1,
-						"Text": "Open",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "FileDropDown_OpenButton_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+							"FileDropDown_OpenIcon": {
+								"Type": "Text",
+								"Text": "0xE8E5",
+								"Brush": "Fuchsia",
+								"Style": "MenuBarDropDownIconStyle"
+							},
+							"FileDropDown_OpenText": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Open",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					},
-					"FileDropDown_OpenIcon": {
-						"Type": "Text",
-						"Row": 1,
-						"Column": 0,
-						"Text": "0xE8E5",
-						"Brush": "Fuchsia",
-						"Style": "MenuBarDropDownIconStyle"
-					},
-
-					"FileDropDown_Save": {
-						"Type": "Text",
+					"FileDropDown_SaveButton": {
+						"Type": "Button",
 						"Row": 2,
-						"Column": 1,
-						"Text": "Save",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "FileDropDown_SaveButton_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+							"FileDropDown_SaveIcon": {
+								"Type": "Text",
+								"Text": "0xE74E",
+								"Brush": "DodgerBlue",
+								"Style": "MenuBarDropDownIconStyle"
+							},
+							"FileDropDown_SaveText": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Save",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					},
-					"FileDropDown_SaveIcon": {
-						"Type": "Text",
-						"Row": 2,
-						"Column": 0,
-						"Text": "0xE74E",
-						"Brush": "DodgerBlue",
-						"Style": "MenuBarDropDownIconStyle"
-					},
-
-
-					"FileDropDown_SaveAs": {
-						"Type": "Text",
+					"FileDropDown_SaveAsButton": {
+						"Type": "Button",
 						"Row": 3,
-						"Column": 1,
-						"Text": "Save As",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "FileDropDown_SaveAsButton_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+							"FileDropDown_SaveAsIcon": {
+								"Type": "Text",
+								"Text": "0xE792",
+								"Brush": "DodgerBlue",
+								"Style": "MenuBarDropDownIconStyle"
+							},
+							"FileDropDown_SaveAsText": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Save As",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					},
-					"FileDropDown_SaveAsIcon": {
-						"Type": "Text",
-						"Row": 3,
-						"Column": 0,
-						"Text": "0xE792",
-						"Brush": "DodgerBlue",
-						"Style": "MenuBarDropDownIconStyle"
-					},
-
-					"FileDropDown_Close": {
-						"Type": "Text",
+					"FileDropDown_CloseButton": {
+						"Type": "Button",
 						"Row": 4,
-						"Column": 1,
-						"Text": "Close",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
-					},
-					"FileDropDown_CloseIcon": {
-						"Type": "Text",
-						"Row": 4,
-						"Column": 0,
-						"Text": "0xE8BB",
-						"Brush": "Red",
-						"Style": "MenuBarDropDownIconStyle"
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "FileDropDown_SaveAsButton_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+							"FileDropDown_CloseIcon": {
+								"Type": "Text",
+								"Text": "0xE8BB",
+								"Brush": "Red",
+								"Style": "MenuBarDropDownIconStyle"
+							},
+							"FileDropDown_CloseText": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Close",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					}
 				}
 			},
@@ -478,27 +529,52 @@
 						{ "Height": "1*" },
 						{ "Height": 3 }
 					],
-					"ColumnDefinitions": [
-						{ "Width": 30 },
-						{ "Width": "1*" }
-					],
 
-					"EditDropDown_Edit1": {
-						"Type": "Text",
-						"Row": 0,
-						"Column": 1,
-						"Text": "Edit 1",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+					"EditDropDown_Edit1Button": {
+						"Type": "Button",
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "EditDropDown_Edit1Button_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+
+							"EditDropDown_Edit1Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Edit 1",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					},
 
-					"EditDropDown_Edit2": {
-						"Type": "Text",
+					"EditDropDown_Edit2Button": {
+						"Type": "Button",
 						"Row": 1,
-						"Column": 1,
-						"Text": "Edit 2",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "EditDropDown_Edit2Button_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+
+							"EditDropDown_Edit2Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Edit 2",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					}
 				}
 			},
@@ -541,37 +617,59 @@
 						{ "Height": "1*" },
 						{ "Height": 3 }
 					],
-					"ColumnDefinitions": [
-						{ "Width": 30 },
-						{ "Width": "1*" }
-					],
 
-					"ViewDropDown_View1": {
-						"Type": "Text",
-						"Row": 0,
-						"Column": 1,
-						"Text": "View 1",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+					"ViewDropDown_View1Button": {
+						"Type": "Button",
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "ViewDropDown_View1Button_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+
+							"ViewDropDown_View1Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "View 1",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					},
 
-					"ViewDropDown_View2": {
-						"Type": "Text",
+					"ViewDropDown_View2Button": {
+						"Type": "Button",
 						"Row": 1,
-						"Column": 1,
-						"Text": "View 2",
-						"Brush": "White",
-						"Style": "MenuBarDropDownTextContentsStyle"
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "ViewDropDown_View2Button_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+
+							"ViewDropDown_View2Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "View 2",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
 					}
 				}
 			},
 
-
-
-
 			"SearchTextInput": {
 				"Type": "TextInput",
-				"Column": 7,
+				"Column": 5,
 				"Margin": [ 5, 1, 5, 1 ],
 				"BackgroundBrush": [ 0.26, 0.26, 0.26 ],
 				"BorderBrush": "White",
@@ -628,137 +726,57 @@
 					}
 				}
 			}
-
 		},
 
-		"ScrollableLayoutExample": {
-			"Type": "ScrollableLayout",
+		"LeftPanelLayout": {
+			"Type": "Layout",
 			"Row": 1,
-			"Column": 0,
-			"RowSpan": 2,
+			"Margin": [ 3, 3, 0, 3 ],
+			"Brush": [ 0.16, 0.16, 0.16 ],
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [ { "Width": "1*" } ]
+		},
+
+
+		"MiddleLayout": {
+			"Type": "Layout",
+			"Row": 1,
+			"Column": 1,
 			"RowDefinitions": [
 				{
-					"Height": "150",
-					"BottomAdjustable": true,
-					"MinHeight": "40"
+					"Height": "1*",
+					"BottomAdjustable": true
 				},
 				{
-					"Height": "150",
+					"Height": 200,
 					"TopAdjustable": true,
-					"MaxHeight": 200
-				},
-				{ "Height": "150" },
-				{ "Height": "150" },
-				{ "Height": "150" },
-				{ "Height": "150" },
-				{ "Height": "150" }
+					"MinHeight": 100,
+					"MaxHeight": 300
+				}
 			],
-			"ColumnDefinitions": [
-				{ "Width": "450" }
-			],
-			"ScrollVertical": true,
-			"ScrollHorizontal": true,
-			"BackgroundBrush": "Pink",
-			"BorderBrush": "Purple",
-			"BorderWidth": 2.0,
+			"ColumnDefinitions": [ { "Width": "1*" } ],
 
-			"VerticalScrollBarCornerRadiusX": 3.0,
-			"VerticalScrollBarCornerRadiusY": 3.0,
-			"VerticalScrollBarEnabled": true,
-			"VerticalScrollBarHiddenWhenNotOver": true,
-			"VerticalScrollBarWidth": 10.0,
-			"VerticalScrollBarRegionWidth": 12.0,
-			"VerticalScrollBarBrush": "White",
-			"VerticalScrollBarHoveredBrush": "Gray",
-			"VerticalScrollBarDraggingBrush": "Green",
-
-			"HorizontalScrollBarCornerRadius": 3.0,
-			"HorizontalScrollBarEnabled": true,
-			"HorizontalScrollBarHiddenWhenNotOver": true,
-			"HorizontalScrollBarHeight": 10.0,
-			"HorizontalScrollBarRegionHeight": 12.0,
-			"HorizontalScrollBarBrush": "White",
-			"HorizontalScrollBarHoveredBrush": "Gray",
-			"HorizontalScrollBarDraggingBrush": "Green",
-
-			"TextControl1": {
-				"Type": "Text",
-				"Text": "Some long text string",
-				"Row": 0,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
-			},
-
-			"TextControl2": {
-				"Type": "Text",
-				"Text": "Some long text string",
+			"BottomMiddleLayout": {
+				"Type": "Layout",
 				"Row": 1,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
-			},
+				"Margin": [ 3, 3, 3, 3 ],
+				"Brush": [ 0.16, 0.16, 0.16 ],
+				"RowDefinitions": [ { "Height": "1*" } ],
+				"ColumnDefinitions": [ { "Width": "1*" } ]
 
-			"TextControl3": {
-				"Type": "Text",
-				"Text": "Some long text string",
-				"Row": 2,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
-			},
-
-			"TextControl4": {
-				"Type": "Text",
-				"Text": "Some long text string",
-				"Row": 3,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
-			},
-
-			"TextControl5": {
-				"Type": "Text",
-				"Text": "Some long text string",
-				"Row": 4,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
-			},
-
-			"TextControl6": {
-				"Type": "Text",
-				"Text": "Some long text string",
-				"Row": 5,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
-			},
-
-			"TextControl7": {
-				"Type": "Text",
-				"Text": "Some long text string",
-				"Row": 6,
-				"Brush": "Black",
-				"FontFamily": "Calibri",
-				"FontSize": 20,
-				"TextAlignment": "Center",
-				"ParagraphAlignment": "Center"
 			}
+		},
 
-
+		"RightPanelLayout": {
+			"Type": "Layout",
+			"Row": 1,
+			"Column": 2,
+			"Margin": [ 0, 3, 3, 3 ],
+			"Brush": [ 0.16, 0.16, 0.16 ],
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [ { "Width": "1*" } ]
 		}
+
+
 	}
 }

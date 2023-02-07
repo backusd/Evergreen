@@ -103,6 +103,7 @@
     <None Include="src\json\button_details.json" />
     <None Include="src\json\main.json" />
     <None Include="src\json\row_min.json" />
+    <None Include="src\json\ScrollableLayout_Example.json" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="evergreen-image-1.jpg" />

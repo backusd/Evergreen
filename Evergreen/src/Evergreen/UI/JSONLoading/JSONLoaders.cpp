@@ -565,6 +565,9 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 	LoadLayoutRowDefinitions(layout, data);
 	LoadLayoutColumnDefinitions(layout, data);
 
+	// Load Margin
+	LoadLayoutMargin(layout, data);
+
 	// Now iterate over the controls and sublayouts within the layout
 	for (auto& [key, value] : data.items())
 	{
@@ -576,7 +579,8 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 			key.compare("RowSpan") == 0 ||
 			key.compare("ColumnSpan") == 0 ||
 			key.compare("RowDefinitions") == 0 ||
-			key.compare("ColumnDefinitions") == 0)
+			key.compare("ColumnDefinitions") == 0 ||
+			key.compare("Margin") == 0)
 			continue;
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(data[key].contains("Type"), "Control or sub-layout has no 'Type' definition: {}", data[key].dump(4));
@@ -808,6 +812,50 @@ void JSONLoaders::LoadLayoutColumnDefinitions(Layout* layout, json& data)
 	{
 		// Add a single column that spans the layout
 		layout->AddColumn({ RowColumnType::STAR, 1.0f });
+	}
+}
+void JSONLoaders::LoadLayoutMargin(Layout* layout, json& data)
+{
+	if (data.contains("Margin"))
+	{
+		Margin margin{ 0 };
+		json& marginData = data["Margin"];
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(marginData.is_array(), "Layout with name: '{}'. 'Margin' value must be an array. Invalid data: {}", layout->Name(), data.dump(4));
+
+		for (auto& marginValue : marginData)
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(marginValue.is_number(), "Layout with name: '{}'. 'Margin' array values must be numbers. Invalid data: {}", layout->Name(), data.dump(4));
+		}
+
+		if (marginData.size() == 1)
+		{
+			margin.Bottom = marginData[0].get<float>();
+			margin.Left = margin.Bottom;
+			margin.Right = margin.Bottom;
+			margin.Top = margin.Bottom;
+		}
+		else if (marginData.size() == 2)
+		{
+			margin.Left = marginData[0].get<float>();
+			margin.Right = margin.Left;
+
+			margin.Top = marginData[1].get<float>();
+			margin.Bottom = margin.Top;
+		}
+		else if (marginData.size() == 4)
+		{
+			margin.Left = marginData[0].get<float>();
+			margin.Top = marginData[1].get<float>();
+			margin.Right = marginData[2].get<float>();
+			margin.Bottom = marginData[3].get<float>();
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION("Layout with name: '{}'. 'Margin' array must have 1, 2, or 4 values. Invalid data: {}", layout->Name(), data.dump(4));
+		}
+
+		layout->Margin(margin);
 	}
 }
 void JSONLoaders::LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
