@@ -85,6 +85,8 @@ protected:
 	virtual void OnMarginChanged() {}
 	virtual void OnAllowedRegionChanged() {}
 
+	ND inline bool AllowedRegionContainsPoint(float x, float y) const noexcept;
+
 	std::string							m_name;
 	unsigned int						m_id;
 	std::shared_ptr<DeviceResources>	m_deviceResources;

@@ -15,6 +15,7 @@
 #include "Controls/ScrollableLayout.h"
 #include "Controls/TextInput.h"
 #include "Controls/Pane.h"
+#include "Controls/Slider.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -51,8 +52,8 @@ public:
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
 
-	ND inline Control* GetControlByName(const std::string& name) const noexcept { return m_rootLayout->GetControlByName(name); }
-	ND inline Control* GetControlByID(unsigned int id) const noexcept { return m_rootLayout->GetControlByID(id); }
+	ND inline Control* GetControlByName(const std::string& name) const noexcept;
+	ND inline Control* GetControlByID(unsigned int id) const noexcept;
 
 	inline Pane* AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
 	ND inline Pane* GetPane(const std::string& name) noexcept;

@@ -30,6 +30,7 @@
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\Slider.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\TextInput.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.h" />

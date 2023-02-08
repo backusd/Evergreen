@@ -1493,4 +1493,19 @@ bool Pane::ContainsPoint(float x, float y) const
 	return RectContainsPoint(m_allowedRegion, x, y);
 }
 
+Control* Pane::GetControlByName(const std::string& name) noexcept
+{
+	if (m_name.compare(name) == 0)
+		return this;
+
+	return m_contentLayout->GetControlByName(name);
+}
+Control* Pane::GetControlByID(unsigned int id) noexcept
+{
+	if (m_id == id)
+		return this;
+
+	return m_contentLayout->GetControlByID(id);
+}
+
 }

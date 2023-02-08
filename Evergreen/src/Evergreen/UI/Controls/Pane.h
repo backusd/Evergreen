@@ -36,6 +36,9 @@ public:
 	void Update() noexcept override;
 	void Render() const noexcept override;
 
+	ND virtual Control* GetControlByName(const std::string& name) noexcept override;
+	ND virtual Control* GetControlByID(unsigned int id) noexcept override;
+
 	inline Row* AddRow(RowColumnDefinition definition);
 	inline Column* AddColumn(RowColumnDefinition definition);
 

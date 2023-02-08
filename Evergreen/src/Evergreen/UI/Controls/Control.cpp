@@ -61,5 +61,10 @@ void Control::AllowedRegionBottom(float bottom) noexcept
 	OnAllowedRegionChanged();
 }
 
+bool Control::AllowedRegionContainsPoint(float x, float y) const noexcept
+{
+	return m_allowedRegion.left <= x && m_allowedRegion.right >= x && m_allowedRegion.top <= y && m_allowedRegion.bottom >= y;
+}
+
 
 }

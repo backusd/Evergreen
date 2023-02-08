@@ -740,28 +740,37 @@ void UI::LoadDefaultUI() noexcept
 	t3 = paneSublayout->CreateControl<Text>(paneContentPosition, m_deviceResources, L"Bottom Right");
 
 
-	// Pane 2
-	/*
-	pane = std::make_unique<Pane>(
+	// Slider ======================================================================================
+	RowColumnPosition sliderPosition;
+	sliderPosition.Row = 1;
+	sliderPosition.Column = 1;
+
+	//std::unique_ptr<SolidColorBrush> tiBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::WhiteSmoke));
+
+	Evergreen::Margin sliderMargin = { 10.0f, 0.0f, 10.0f, 0.0f };
+
+	Slider<float>* slider = sublayout->CreateControl<Slider<float>>(
+		sliderPosition,
 		m_deviceResources,
-		this,
-		50.0f, 50.0f, 100.0f, 100.0f,
-		true, true,
-		nullptr, nullptr, 1.0f,
-		true, nullptr
+		0.0f, // min
+		10.0f, // max
+		5.0f, // initial
+		sliderMargin
 		);
+	slider->Name("Slider");
 
-	pane->AddRow({ RowColumnType::STAR, 1.0f });
-	pane->AddColumn({ RowColumnType::STAR, 1.0f });
+	sliderPosition.Row = 2;
+	Slider<int>* slider2 = sublayout->CreateControl<Slider<int>>(
+		sliderPosition,
+		m_deviceResources,
+		0, // min
+		10, // max
+		5, // initial
+		sliderMargin
+	);
+	slider2->Name("Slider2");
+	slider2->SetValueFormatString(L"{}");
 
-	titleLayout = pane->GetTitleBarLayout();
-	titleLayout->AddRow({ RowColumnType::STAR, 1.0f });
-	titleLayout->AddColumn({ RowColumnType::STAR, 1.0f });
-
-	pane->ClearTitleBarLayoutAndAddTitle("Second Pane");
-
-	m_panes.push_back(std::move(pane));
-	*/
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept
@@ -1135,5 +1144,30 @@ void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 	m_rootLayout->OnMouseScrolledHorizontal(e);
 }
 
+
+Control* UI::GetControlByName(const std::string& name) const noexcept 
+{ 
+	Control* c = nullptr;
+	for (const auto& pane : m_panes)
+	{
+		c = pane->GetControlByName(name);
+		if (c != nullptr)
+			return c;
+	}
+
+	return m_rootLayout->GetControlByName(name); 
+}
+Control* UI::GetControlByID(unsigned int id) const noexcept 
+{ 
+	Control* c = nullptr;
+	for (const auto& pane : m_panes)
+	{
+		c = pane->GetControlByID(id);
+		if (c != nullptr)
+			return c;
+	}
+
+	return m_rootLayout->GetControlByID(id); 
+}
 
 }
