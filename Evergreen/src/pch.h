@@ -10,6 +10,7 @@
 #include <optional>
 #include <filesystem>
 #include <algorithm>
+#include <type_traits>
 
 
 #define WIN32_LEAN_AND_MEAN

@@ -180,7 +180,7 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Controls\Slider.h">
+    <ClInclude Include="src\Evergreen\UI\Controls\SliderFloat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -303,6 +303,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\SliderFloat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

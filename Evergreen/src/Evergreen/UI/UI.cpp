@@ -749,7 +749,7 @@ void UI::LoadDefaultUI() noexcept
 
 	Evergreen::Margin sliderMargin = { 10.0f, 0.0f, 10.0f, 0.0f };
 
-	Slider<float>* slider = sublayout->CreateControl<Slider<float>>(
+	SliderFloat* slider = sublayout->CreateControl<SliderFloat>(
 		sliderPosition,
 		m_deviceResources,
 		0.0f, // min
@@ -757,9 +757,10 @@ void UI::LoadDefaultUI() noexcept
 		5.0f, // initial
 		sliderMargin
 		);
-	slider->Name("Slider");
+	slider->Name("Slider Float #1");
 
 	sliderPosition.Row = 2;
+	/*
 	Slider<int>* slider2 = sublayout->CreateControl<Slider<int>>(
 		sliderPosition,
 		m_deviceResources,
@@ -770,7 +771,7 @@ void UI::LoadDefaultUI() noexcept
 	);
 	slider2->Name("Slider2");
 	slider2->SetValueFormatString(L"{}");
-
+	*/
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

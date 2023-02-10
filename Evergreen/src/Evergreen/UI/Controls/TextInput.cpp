@@ -245,7 +245,11 @@ void TextInput::OnAllowedRegionChanged()
 	// Reset the text margin and vertical bar
 	m_marginLeft = m_originalMarginLeft;
 	m_text->MarginLeft(m_marginLeft);
-	m_nextCharIndex = 0;
+
+	// I suppose it is probably possible that the size of the input string could change
+	// as the allowed region changes. So to be safe, just set the nextCharIndex to the end
+	// of the current string
+	m_nextCharIndex = static_cast<unsigned int>(m_inputText.size());
 
 	// Update the location of the vertical bar
 	UpdateVerticalBar();
@@ -280,7 +284,6 @@ void TextInput::SetTextToInput() noexcept
 	m_text->SetColorBrush(std::move(m_inputTextBrush->Duplicate()));
 	m_text->SetTextStyle(std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(m_inputTextStyle->Duplicate().release()))));
 
-	m_drawVerticalBar = true;
 	UpdateVerticalBar();
 }
 

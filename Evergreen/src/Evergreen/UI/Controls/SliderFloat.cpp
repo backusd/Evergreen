@@ -1,129 +1,13 @@
-#pragma once
 #include "pch.h"
-#include "Control.h"
-#include "Evergreen/UI/Brushes.h"
-#include "Evergreen/UI/Controls/Text.h"
-#include "Evergreen/UI/Controls/TextInput.h"
-#include "Evergreen/UI/Controls/Slider.h"
+#include "SliderFloat.h"
 
 namespace Evergreen
 {
-// Drop this warning because the private members are not accessible by the client application, but 
-// the compiler will complain that they don't have a DLL interface
-// See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
-#pragma warning( push )
-#pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
-template<typename T>
-class Slider : public Control
-{
-public:
-	Slider(std::shared_ptr<DeviceResources> deviceResources,
-		UI* ui,
-		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
-		T minValue = 0, T maxValue = 1, T initialValue = 0,
-		const Evergreen::Margin& margin = { 0 }) noexcept;
-	Slider(const Slider&) noexcept = delete; // Just delete for now until there is a good use case
-	void operator=(const Slider&) noexcept = delete;
-	virtual ~Slider() noexcept override {}
-
-	// Inherited from Control
-	virtual void Update() noexcept override {}
-	virtual void Render() const noexcept override;
-
-	// Event Handling
-	void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-	void OnChar(CharEvent& e) noexcept override { m_valueTextInputOnRight->OnChar(e); }
-	void OnKeyPressed(KeyPressedEvent& e) noexcept override { m_valueTextInputOnRight->OnKeyPressed(e); }
-	void OnKeyReleased(KeyReleasedEvent& e) noexcept override { m_valueTextInputOnRight->OnKeyReleased(e); }
-	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseScrolledVertical(e); }
-	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseScrolledHorizontal(e); }
-	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseButtonDoubleClick(e); }
-
-	void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; }
-
-protected:
-	enum class MouseOverCircleState
-	{
-		NOT_OVER,
-		OVER,
-		DRAGGING
-	};
-
-	void SliderChanged();
-	void OnMarginChanged() override;
-	void OnAllowedRegionChanged() override;
-
-	ND float ValueToPixel() const noexcept;
-	ND T PixelToValue(float pixel) const noexcept;
-
-	ND inline bool CircleContainsPoint(float x, float y) const noexcept;
-
-	ND inline D2D1_RECT_F GetMinTextAllowedRegion() const noexcept;
-	ND inline D2D1_RECT_F GetMaxTextAllowedRegion() const noexcept;
-	ND inline D2D1_RECT_F GetValueTextOnRightAllowedRegion() const noexcept;
-	ND inline D2D1_RECT_F GetPopUpRect() const noexcept;
-
-	void UpdateValueTexts();
-
-	T m_minValue;
-	T m_maxValue;
-	T m_value;
-
-	float m_lineLeftX;
-	float m_lineRightX;
-	float m_lineY;
-	float m_lineWidth;
-
-	float m_circlePositionX;
-	float m_circleRadius;
-	float m_circleRadius2;
-
-	bool m_fillLineRight; // If false, it will just outline the right side
-
-	std::unique_ptr<ColorBrush> m_lineBrushLeft;
-	std::unique_ptr<ColorBrush> m_lineBrushRight;
-	std::unique_ptr<ColorBrush> m_circleBrush;
-	std::unique_ptr<ColorBrush> m_circleBrush2;
-
-	MouseOverCircleState m_mouseOverCircleState;
-
-	std::unique_ptr<Text> m_minText;
-	float m_minTextXOffset;
-	float m_minTextYOffset;
-	std::unique_ptr<Text> m_maxText;
-	float m_maxTextXOffset;
-	float m_maxTextYOffset;
-	bool m_showMinMaxTextValues;
-
-	// Value format
-	std::wstring m_valueFormatString;
-
-	// Value TextInput On Right
-	std::unique_ptr<TextInput> m_valueTextInputOnRight;
-	bool m_showValueRightOfSlider;
-	float m_valueTextOnRightAllowedWidth;
-
-	// Value Text On Pop Up
-	std::unique_ptr<Text> m_valueTextOnPopUp;
-	bool m_showValueAsPopUpWhenSliding;
-	std::unique_ptr<ColorBrush> m_popUpBackgroundBrush;
-	std::unique_ptr<ColorBrush> m_popUpBorderBrush;
-	float m_popUpBorderWidth;
-	float m_popUpCornerRadiusX;
-	float m_popUpCornerRadiusY;
-	float m_popUpHeight;
-	float m_popUpWidth;
-};
-#pragma warning( pop )
-
-template<typename T>
-Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
-				UI* ui,
-				const D2D1_RECT_F& allowedRegion,
-				T minValue, T maxValue, T initialValue,
-				const Evergreen::Margin& margin) noexcept :
+SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
+						UI* ui,
+						const D2D1_RECT_F& allowedRegion,
+						float minValue, float maxValue, float initialValue,
+						const Evergreen::Margin& margin) noexcept :
 	Control(deviceResources, ui, allowedRegion, margin),
 	m_minValue(minValue),
 	m_maxValue(maxValue),
@@ -147,7 +31,9 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 	m_valueFormatString(L"{:.2f}"),
 	m_valueTextInputOnRight(nullptr),
 	m_showValueRightOfSlider(true),
-	m_valueTextOnRightAllowedWidth(50.0f),
+	m_marginRightOfSlider(50.0f),
+	m_valueTextInputOnRightWidth(40.0f),
+	m_valueTextInputOnRightHeight(25.0f),
 	m_valueTextOnPopUp(nullptr),
 	m_showValueAsPopUpWhenSliding(true),
 	m_popUpBackgroundBrush(nullptr),
@@ -191,7 +77,7 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-	);
+		);
 	m_minText = std::make_unique<Text>(
 		m_deviceResources,
 		m_ui,
@@ -199,7 +85,7 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		std::format(L"{}", m_minValue),
 		nullptr,
 		std::move(minValueTextStyle)
-	);
+		);
 
 	// Max Text
 	std::unique_ptr<TextStyle> maxValueTextStyle = std::make_unique<TextStyle>(
@@ -213,7 +99,7 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_TRAILING,
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_NEAR,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-	);
+		);
 	m_maxText = std::make_unique<Text>(
 		m_deviceResources,
 		m_ui,
@@ -221,7 +107,7 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		std::format(L"{}", m_maxValue),
 		nullptr,
 		std::move(maxValueTextStyle)
-	);
+		);
 
 	// Value Text On Right
 	std::unique_ptr<TextStyle> valueTextInputOnRightTextStyle = std::make_unique<TextStyle>(
@@ -235,7 +121,7 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_LEADING,
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-	);
+		);
 	m_valueTextInputOnRight = std::make_unique<TextInput>(
 		m_deviceResources,
 		m_ui,
@@ -245,11 +131,50 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		nullptr, // placeholder style
 		nullptr, // input text brush
 		std::move(valueTextInputOnRightTextStyle), // input text style
-		std::move(std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f))), // background brush
-		nullptr, // border brush
-		0.0f // border width
-	);
+		std::move(std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray))), // background brush
+		std::move(std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray))), // border brush
+		1.0f // border width
+		);
 	m_valueTextInputOnRight->SetInputText(std::format(L"{}", m_value));
+	m_valueTextInputOnRight->SetOnEnterKeyCallback(
+		[this](Control* control, Event& e)
+		{
+			TextInput* ti = static_cast<TextInput*>(control);
+			std::wstring text = ti->GetInputText();
+			if (text.size() == 0)
+			{
+				this->UpdateValueTexts(); // Just reset the text to whatever it was previously
+				return;
+			}
+
+			try
+			{
+				float value = std::stof(text);
+				if (value < this->GetMinimumValue())
+				{
+					EG_CORE_WARN("{}:{} - SliderFloat with name '{}': Ignoring input value ({}) because it is less than minimum allowed value ({})", __FILE__, __LINE__, this->Name(), value, this->GetMinimumValue());
+					this->UpdateValueTexts(); // Just reset the text to whatever it was previously
+				}
+				else if (value > this->GetMaximumValue())
+				{
+					EG_CORE_WARN("{}:{} - SliderFloat with name '{}': Ignoring input value ({}) because it is greater than maximum allowed value ({})", __FILE__, __LINE__, this->Name(), value, this->GetMaximumValue());
+					this->UpdateValueTexts(); // Just reset the text to whatever it was previously
+				}
+				else
+				{
+					this->SetValue(value);
+				}
+			}
+			catch (const std::invalid_argument& ex) {
+				EG_CORE_WARN("{}:{} - SliderFloat with name '{}': caught std::invalid_argument exception with message: {}", __FILE__, __LINE__, this->Name(), ex.what());
+				this->UpdateValueTexts(); // Just reset the text to whatever it was previously
+			}
+			catch (const std::out_of_range& ex) {
+				EG_CORE_WARN("{}:{} - SliderFloat with name '{}': caught std::out_of_range exception with message: {}", __FILE__, __LINE__, this->Name(), ex.what());
+				this->UpdateValueTexts(); // Just reset the text to whatever it was previously
+			}
+		}
+	);
 
 
 
@@ -265,7 +190,7 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER,
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-	);
+		);
 	m_valueTextOnPopUp = std::make_unique<Text>(
 		m_deviceResources,
 		m_ui,
@@ -273,26 +198,33 @@ Slider<T>::Slider(std::shared_ptr<DeviceResources> deviceResources,
 		std::format(L"{}", m_value),
 		nullptr,
 		std::move(valueTextOnPopUpTextStyle)
-	);
+		);
 }
 
-template<typename T>
-D2D1_RECT_F Slider<T>::GetMinTextAllowedRegion() const noexcept
+	
+D2D1_RECT_F SliderFloat::GetMinTextAllowedRegion() const noexcept
 {
 	return D2D1::RectF(m_lineLeftX + m_minTextXOffset, m_lineY + m_minTextYOffset, m_allowedRegion.right, m_allowedRegion.bottom);
 }
-template<typename T>
-D2D1_RECT_F Slider<T>::GetMaxTextAllowedRegion() const noexcept
+	
+D2D1_RECT_F SliderFloat::GetMaxTextAllowedRegion() const noexcept
 {
 	return D2D1::RectF(m_allowedRegion.left, m_lineY + m_maxTextYOffset, m_lineRightX - m_maxTextXOffset, m_allowedRegion.bottom);
 }
-template<typename T>
-D2D1_RECT_F Slider<T>::GetValueTextOnRightAllowedRegion() const noexcept
+	
+D2D1_RECT_F SliderFloat::GetValueTextOnRightAllowedRegion() const noexcept
 {
-	return D2D1::RectF(m_allowedRegion.right - m_valueTextOnRightAllowedWidth, m_allowedRegion.top, m_allowedRegion.right, m_allowedRegion.bottom);
+	float halfHeight = m_valueTextInputOnRightHeight / 2;
+	float left = m_lineRightX + 5.0f;
+	return D2D1::RectF(
+		left,
+		m_lineY - halfHeight,
+		left + m_valueTextInputOnRightWidth,
+		m_lineY + halfHeight
+	);
 }
-template<typename T>
-D2D1_RECT_F Slider<T>::GetPopUpRect() const noexcept
+	
+D2D1_RECT_F SliderFloat::GetPopUpRect() const noexcept
 {
 	float halfWidth = m_popUpWidth / 2;
 
@@ -304,9 +236,16 @@ D2D1_RECT_F Slider<T>::GetPopUpRect() const noexcept
 	);
 }
 
-
-template<typename T>
-void Slider<T>::UpdateValueTexts()
+	
+void SliderFloat::SetValue(float value) noexcept
+{
+	m_value = value;
+	m_circlePositionX = ValueToPixel();
+	UpdateValueTexts();
+	m_valueTextOnPopUp->AllowedRegion(GetPopUpRect());
+}
+	
+void SliderFloat::UpdateValueTexts()
 {
 	// I guess you need to use std::vformat in order to pass a variable as the format parameter...
 	std::wstring str = std::vformat(m_valueFormatString, std::make_wformat_args(m_value));
@@ -314,21 +253,21 @@ void Slider<T>::UpdateValueTexts()
 	m_valueTextOnPopUp->SetText(str);
 }
 
-template<typename T>
-void Slider<T>::SliderChanged()
+	
+void SliderFloat::SliderChanged()
 {
 	m_lineLeftX = m_allowedRegion.left + m_margin.Left;
-	m_lineRightX = m_showValueRightOfSlider ? m_allowedRegion.right - m_margin.Right - m_valueTextOnRightAllowedWidth : m_allowedRegion.right - m_margin.Right;
+	m_lineRightX = m_showValueRightOfSlider ? m_allowedRegion.right - m_margin.Right - m_marginRightOfSlider : m_allowedRegion.right - m_margin.Right;
 	m_lineY = m_allowedRegion.top + ((m_allowedRegion.bottom - m_allowedRegion.top) / 2);
 	m_circlePositionX = ValueToPixel();
 }
-template<typename T>
-void Slider<T>::OnMarginChanged()
+	
+void SliderFloat::OnMarginChanged()
 {
 	SliderChanged();
 }
-template<typename T>
-void Slider<T>::OnAllowedRegionChanged()
+	
+void SliderFloat::OnAllowedRegionChanged()
 {
 	EG_CORE_ASSERT(m_lineBrushLeft != nullptr, "No line brush left");
 	EG_CORE_ASSERT(m_lineBrushRight != nullptr, "No line brush right");
@@ -347,8 +286,8 @@ void Slider<T>::OnAllowedRegionChanged()
 
 	SliderChanged();
 }
-template<typename T>
-float Slider<T>::ValueToPixel() const noexcept
+	
+float SliderFloat::ValueToPixel() const noexcept
 {
 	if (m_value <= m_minValue)
 		return m_lineLeftX;
@@ -359,8 +298,8 @@ float Slider<T>::ValueToPixel() const noexcept
 	float pixelPerValue = (m_lineRightX - m_lineLeftX) / static_cast<float>(m_maxValue - m_minValue);
 	return static_cast<float>(m_value - m_minValue) * pixelPerValue + m_lineLeftX;
 }
-template<typename T>
-T Slider<T>::PixelToValue(float pixel) const noexcept
+	
+float SliderFloat::PixelToValue(float pixel) const noexcept
 {
 	if (pixel < m_lineLeftX)
 		return m_minValue;
@@ -369,11 +308,11 @@ T Slider<T>::PixelToValue(float pixel) const noexcept
 		return m_maxValue;
 
 	float valuePerPixel = static_cast<float>(m_maxValue - m_minValue) / (m_lineRightX - m_lineLeftX);
-	return static_cast<T>(valuePerPixel * (pixel - m_lineLeftX) + m_minValue);
+	return valuePerPixel * (pixel - m_lineLeftX) + m_minValue;
 }
 
-template<typename T>
-void Slider<T>::Render() const noexcept
+	
+void SliderFloat::Render() const noexcept
 {
 	//EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 
@@ -440,14 +379,14 @@ void Slider<T>::Render() const noexcept
 			if (m_popUpBorderWidth > 0.0f)
 				context->DrawRectangle(rect, m_popUpBorderBrush->Get(), m_popUpBorderWidth);
 		}
-		
+
 
 		m_valueTextOnPopUp->Render();
 	}
 }
 
-template<typename T>
-void Slider<T>::OnMouseMove(MouseMoveEvent& e) noexcept
+	
+void SliderFloat::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	switch (m_mouseOverCircleState)
 	{
@@ -477,7 +416,7 @@ void Slider<T>::OnMouseMove(MouseMoveEvent& e) noexcept
 		else
 		{
 			m_circlePositionX = e.GetX();
-			T newValue = PixelToValue(m_circlePositionX);
+			float newValue = PixelToValue(m_circlePositionX);
 			if (newValue != m_value)
 			{
 				m_value = newValue;
@@ -517,8 +456,8 @@ void Slider<T>::OnMouseMove(MouseMoveEvent& e) noexcept
 
 	m_valueTextInputOnRight->OnMouseMove(e);
 }
-template<typename T>
-void Slider<T>::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+	
+void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::OVER && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
@@ -530,8 +469,8 @@ void Slider<T>::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 
 	m_valueTextInputOnRight->OnMouseButtonPressed(e);
 }
-template<typename T>
-void Slider<T>::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+	
+void SliderFloat::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::DRAGGING && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
@@ -544,13 +483,12 @@ void Slider<T>::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 	m_valueTextInputOnRight->OnMouseButtonReleased(e);
 }
 
-template<typename T>
-bool Slider<T>::CircleContainsPoint(float x, float y) const noexcept
+	
+bool SliderFloat::CircleContainsPoint(float x, float y) const noexcept
 {
 	float delX = m_circlePositionX - x;
 	float delY = m_lineY - y;
 	float distance = std::sqrtf((delX * delX) + (delY * delY));
 	return distance <= m_circleRadius;
 }
-
 }

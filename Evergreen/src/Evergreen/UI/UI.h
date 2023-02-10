@@ -15,7 +15,7 @@
 #include "Controls/ScrollableLayout.h"
 #include "Controls/TextInput.h"
 #include "Controls/Pane.h"
-#include "Controls/Slider.h"
+#include "Controls/SliderFloat.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
