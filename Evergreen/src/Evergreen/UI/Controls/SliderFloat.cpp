@@ -63,7 +63,10 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 		m_popUpBorderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::DarkBlue));
 
 
-	SliderChanged();
+	m_lineLeftX = m_allowedRegion.left + m_margin.Left;
+	m_lineRightX = m_showValueRightOfSlider ? m_allowedRegion.right - m_margin.Right - m_marginRightOfSlider : m_allowedRegion.right - m_margin.Right;
+	m_lineY = m_allowedRegion.top + ((m_allowedRegion.bottom - m_allowedRegion.top) / 2);
+	m_circlePositionX = ValueToPixel();
 
 	// Min Text
 	std::unique_ptr<TextStyle> minValueTextStyle = std::make_unique<TextStyle>(
@@ -199,6 +202,8 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 		nullptr,
 		std::move(valueTextOnPopUpTextStyle)
 		);
+
+
 }
 
 	
@@ -206,12 +211,10 @@ D2D1_RECT_F SliderFloat::GetMinTextAllowedRegion() const noexcept
 {
 	return D2D1::RectF(m_lineLeftX + m_minTextXOffset, m_lineY + m_minTextYOffset, m_allowedRegion.right, m_allowedRegion.bottom);
 }
-	
 D2D1_RECT_F SliderFloat::GetMaxTextAllowedRegion() const noexcept
 {
 	return D2D1::RectF(m_allowedRegion.left, m_lineY + m_maxTextYOffset, m_lineRightX - m_maxTextXOffset, m_allowedRegion.bottom);
 }
-	
 D2D1_RECT_F SliderFloat::GetValueTextOnRightAllowedRegion() const noexcept
 {
 	float halfHeight = m_valueTextInputOnRightHeight / 2;
@@ -223,7 +226,6 @@ D2D1_RECT_F SliderFloat::GetValueTextOnRightAllowedRegion() const noexcept
 		m_lineY + halfHeight
 	);
 }
-	
 D2D1_RECT_F SliderFloat::GetPopUpRect() const noexcept
 {
 	float halfWidth = m_popUpWidth / 2;
@@ -237,13 +239,6 @@ D2D1_RECT_F SliderFloat::GetPopUpRect() const noexcept
 }
 
 	
-void SliderFloat::SetValue(float value) noexcept
-{
-	m_value = value;
-	m_circlePositionX = ValueToPixel();
-	UpdateValueTexts();
-	m_valueTextOnPopUp->AllowedRegion(GetPopUpRect());
-}
 	
 void SliderFloat::UpdateValueTexts()
 {
@@ -252,21 +247,26 @@ void SliderFloat::UpdateValueTexts()
 	m_valueTextInputOnRight->SetInputText(str);
 	m_valueTextOnPopUp->SetText(str);
 }
-
-	
 void SliderFloat::SliderChanged()
 {
 	m_lineLeftX = m_allowedRegion.left + m_margin.Left;
 	m_lineRightX = m_showValueRightOfSlider ? m_allowedRegion.right - m_margin.Right - m_marginRightOfSlider : m_allowedRegion.right - m_margin.Right;
 	m_lineY = m_allowedRegion.top + ((m_allowedRegion.bottom - m_allowedRegion.top) / 2);
 	m_circlePositionX = ValueToPixel();
+
+	// Update Text locations
+	m_minText->AllowedRegion(GetMinTextAllowedRegion());
+	m_maxText->AllowedRegion(GetMaxTextAllowedRegion());
+	m_valueTextInputOnRight->AllowedRegion(GetValueTextOnRightAllowedRegion());
+	m_valueTextOnPopUp->AllowedRegion(GetPopUpRect());
+
+	UpdateValueTexts();
 }
 	
 void SliderFloat::OnMarginChanged()
 {
 	SliderChanged();
-}
-	
+}	
 void SliderFloat::OnAllowedRegionChanged()
 {
 	EG_CORE_ASSERT(m_lineBrushLeft != nullptr, "No line brush left");
@@ -277,12 +277,7 @@ void SliderFloat::OnAllowedRegionChanged()
 	m_lineBrushLeft->SetDrawRegion(m_allowedRegion);
 	m_lineBrushRight->SetDrawRegion(m_allowedRegion);
 	m_circleBrush->SetDrawRegion(m_allowedRegion);
-
-	// Update Text locations
-	m_minText->AllowedRegion(GetMinTextAllowedRegion());
-	m_maxText->AllowedRegion(GetMaxTextAllowedRegion());
-	m_valueTextInputOnRight->AllowedRegion(GetValueTextOnRightAllowedRegion());
-	m_valueTextOnPopUp->AllowedRegion(GetPopUpRect());
+	m_circleBrush2->SetDrawRegion(m_allowedRegion);
 
 	SliderChanged();
 }
@@ -298,7 +293,6 @@ float SliderFloat::ValueToPixel() const noexcept
 	float pixelPerValue = (m_lineRightX - m_lineLeftX) / static_cast<float>(m_maxValue - m_minValue);
 	return static_cast<float>(m_value - m_minValue) * pixelPerValue + m_lineLeftX;
 }
-	
 float SliderFloat::PixelToValue(float pixel) const noexcept
 {
 	if (pixel < m_lineLeftX)
@@ -385,7 +379,170 @@ void SliderFloat::Render() const noexcept
 	}
 }
 
+
+
+
+void SliderFloat::SetMinimumValue(float minimum) noexcept
+{ 
+	m_minValue = minimum;
+
+	if (m_minValue >= m_maxValue)
+	{
+		// Only register a warning here because the user may call SetMaximumValue after this and set it to an appropriate value
+		EG_CORE_WARN("{}:{} - SliderFloat: New minimum value ({}) is greater than or equal to current maximum value ({}).", __FILE__, __LINE__, minimum, m_maxValue);
+		return;
+	}
 	
+	if (m_value < minimum)
+	{
+		EG_CORE_WARN("{}:{} - SliderFloat: Current value ({}) is less than the new minimum value ({}). Setting current value to new minimum.", __FILE__, __LINE__, m_value, minimum);
+		m_value = minimum;
+	}
+
+	SliderChanged();
+}
+void SliderFloat::SetMaximumValue(float maximum) noexcept
+{
+	m_maxValue = maximum;
+
+	if (maximum <= m_minValue)
+	{
+		// Only register a warning here because the user may call SetMinimumValue after this and set it to an appropriate value
+		EG_CORE_WARN("{}:{} - SliderFloat: New maximum value ({}) is less than or equal to current minimum value ({}).", __FILE__, __LINE__, maximum, m_minValue);
+		return;
+	}
+
+	if (m_value > maximum)
+	{
+		EG_CORE_WARN("{}:{} - SliderFloat: Current value ({}) is greater than the new maximum value ({}). Setting current value to new maximum.", __FILE__, __LINE__, m_value, maximum);
+		m_value = maximum;
+	}
+	
+	SliderChanged();
+}
+void SliderFloat::SetMiniumAndMaximumValues(float minimum, float maximum) noexcept
+{
+	m_minValue = minimum;
+	m_maxValue = maximum;
+
+	if (minimum > maximum)
+	{
+		EG_CORE_ERROR("{}:{} - SliderFloat: New maximum value ({}) must be greater than new minimum value ({}). IGNORING this change.", __FILE__, __LINE__, maximum, minimum);
+		return;
+	}
+
+	if (m_value < minimum)
+	{
+		EG_CORE_WARN("{}:{} - SliderFloat: Current value ({}) is less than the new minimum value ({}). Setting current value to new minimum.", __FILE__, __LINE__, m_value, minimum);
+		m_value = minimum;
+	}
+	else if (m_value > maximum)
+	{
+		EG_CORE_WARN("{}:{} - SliderFloat: Current value ({}) is greater than the new maximum value ({}). Setting current value to new maximum.", __FILE__, __LINE__, m_value, maximum);
+		m_value = maximum;
+	}
+
+	SliderChanged();
+}
+void SliderFloat::SetTextInputHeight(float height) noexcept
+{
+	if (height <= 0.0f)
+	{
+		EG_CORE_ERROR("{}:{} - SliderFloat: TextInput height must be greater than 0. IGNORING value ({}).", __FILE__, __LINE__, height);
+		return;
+	}
+	m_valueTextInputOnRightHeight = height;
+	SliderChanged();
+}
+void SliderFloat::SetTextInputWidth(float width) noexcept
+{
+	if (width <= 0.0f)
+	{
+		EG_CORE_ERROR("{}:{} - SliderFloat: TextInput width must be greater than 0. IGNORING value ({}).", __FILE__, __LINE__, width);
+		return;
+	}
+	m_valueTextInputOnRightWidth = width;
+	SliderChanged();
+}
+void SliderFloat::SetTextInputHeightAndWidth(float height, float width) noexcept
+{
+	if (height <= 0.0f)
+	{
+		EG_CORE_ERROR("{}:{} - SliderFloat: TextInput height must be greater than 0. IGNORING value ({}).", __FILE__, __LINE__, height);
+	}
+	else
+	{
+		m_valueTextInputOnRightHeight = height;
+	}
+
+	if (width <= 0.0f)
+	{
+		EG_CORE_ERROR("{}:{} - SliderFloat: TextInput width must be greater than 0. IGNORING value ({}).", __FILE__, __LINE__, width);
+	}
+	else
+	{
+		m_valueTextInputOnRightWidth = width;
+	}
+
+	SliderChanged();
+}
+void SliderFloat::SetLineBrushLeft(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	EG_CORE_ASSERT(brush != nullptr, "Brush cannot be nullptr");
+	m_lineBrushLeft = std::move(brush); 
+	m_lineBrushLeft->SetDrawRegion(m_allowedRegion); 
+}
+void SliderFloat::SetLineBrushRight(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	EG_CORE_ASSERT(brush != nullptr, "Brush cannot be nullptr");
+	m_lineBrushRight = std::move(brush); 
+	m_lineBrushRight->SetDrawRegion(m_allowedRegion); 
+}
+void SliderFloat::SetCircleBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{ 
+	EG_CORE_ASSERT(brush != nullptr, "Brush cannot be nullptr");
+	m_circleBrush = std::move(brush);
+	m_circleBrush->SetDrawRegion(m_allowedRegion); 
+}
+void SliderFloat::SetCircleBrushOuter(std::unique_ptr<ColorBrush> brush) noexcept 
+{
+	EG_CORE_ASSERT(brush != nullptr, "Brush cannot be nullptr");
+	m_circleBrush2 = std::move(brush); 
+	m_circleBrush2->SetDrawRegion(m_allowedRegion);
+}
+void SliderFloat::SetPopUpBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{
+	EG_CORE_ASSERT(brush != nullptr, "Brush cannot be nullptr");
+	m_popUpBackgroundBrush = std::move(brush); 
+	m_popUpBackgroundBrush->SetDrawRegion(m_allowedRegion); 
+}
+void SliderFloat::SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept 
+{
+	EG_CORE_ASSERT(brush != nullptr, "Brush cannot be nullptr");
+	m_popUpBorderBrush = std::move(brush); 
+	m_popUpBorderBrush->SetDrawRegion(m_allowedRegion); 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void SliderFloat::OnMouseMove(MouseMoveEvent& e) noexcept
 {
 	switch (m_mouseOverCircleState)
@@ -456,7 +613,6 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e) noexcept
 
 	m_valueTextInputOnRight->OnMouseMove(e);
 }
-	
 void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::OVER && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
@@ -469,7 +625,6 @@ void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 
 	m_valueTextInputOnRight->OnMouseButtonPressed(e);
 }
-	
 void SliderFloat::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::DRAGGING && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)

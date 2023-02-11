@@ -39,11 +39,67 @@ public:
 	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseScrolledHorizontal(e); }
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseButtonDoubleClick(e); }
 
-	float GetMinimumValue() const noexcept { return m_minValue; }
-	float GetMaximumValue() const noexcept { return m_maxValue; }
+	ND inline float GetMinimumValue() const noexcept { return m_minValue; }
+	ND inline float GetMaximumValue() const noexcept { return m_maxValue; }
+	ND inline float GetValue() const noexcept { return m_value; }
+	ND inline float GetLineWidth() const noexcept { return m_lineWidth; }
+	ND inline float GetCircleRadius() const noexcept { return m_circleRadius; }
+	ND inline float GetCircleRadiusOuter() const noexcept { return m_circleRadius2; }
+	ND inline bool GetFillLineOnRightSide() const noexcept { return m_fillLineRight; }
+	ND inline ColorBrush* GetLineBrushLeft() const noexcept { return m_lineBrushLeft.get(); }
+	ND inline ColorBrush* GetLineBrushRight() const noexcept { return m_lineBrushRight.get(); }
+	ND inline ColorBrush* GetCircleBrush() const noexcept { return m_circleBrush.get(); }
+	ND inline ColorBrush* GetCircleBrushOuter() const noexcept { return m_circleBrush2.get(); }
+	ND inline float GetMinTextXOffset() const noexcept { return m_minTextXOffset; }
+	ND inline float GetMinTextYOffset() const noexcept { return m_minTextYOffset; }
+	ND inline float GetMaxTextXOffset() const noexcept { return m_maxTextXOffset; }
+	ND inline float GetMaxTextYOffset() const noexcept { return m_maxTextYOffset; }
+	ND inline bool GetShowMinMaxTextValues() const noexcept { return m_showMinMaxTextValues; }
+	ND inline bool GetShowValueRightOfSlider() const noexcept { return m_showValueRightOfSlider; }
+	ND inline float GetMarginRightOfSlider() const noexcept { return m_marginRightOfSlider; }
+	ND inline float GetTextInputHeight() const noexcept { return m_valueTextInputOnRightHeight; }
+	ND inline float GetTextInputWidth() const noexcept { return m_valueTextInputOnRightWidth; }
+	ND inline bool GetShowValueAsPopUpWhenSliding() const noexcept { return m_showValueAsPopUpWhenSliding; }
+	ND inline ColorBrush* GetPopUpBackgroundBrush() const noexcept { return m_popUpBackgroundBrush.get(); }
+	ND inline ColorBrush* GetPopUpBorderBrush() const noexcept { return m_popUpBorderBrush.get(); }
+	ND inline float GetPopUpBorderWidth() const noexcept { return m_popUpBorderWidth; }
+	ND inline float GetPopUpCornerRadiusX() const noexcept{ return m_popUpCornerRadiusX; }
+	ND inline float GetPopUpCornerRadiusY() const noexcept{ return m_popUpCornerRadiusY; }
+	ND inline float GetPopUpHeight() const noexcept { return m_popUpHeight; }
+	ND inline float GetPopUpWidth() const noexcept { return m_popUpWidth; }
 
-	void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; }
-	void SetValue(float value) noexcept;
+	void SetMinimumValue(float minimum) noexcept;
+	void SetMaximumValue(float maximum) noexcept;
+	void SetMiniumAndMaximumValues(float minimum, float maximum) noexcept;
+	void SetValue(float value) noexcept { m_value = value; SliderChanged(); }
+	inline void SetLineWidth(float width) noexcept { m_lineWidth = width; }
+	inline void SetCircleRadius(float radius) noexcept { m_circleRadius = radius; m_valueTextOnPopUp->AllowedRegion(GetPopUpRect()); }
+	inline void SetCircleRadiusOuter(float radius) noexcept { m_circleRadius2 = radius; }
+	inline void SetFillLineOnRightSide(bool fill) noexcept { m_fillLineRight = fill; }
+	inline void SetLineBrushLeft(std::unique_ptr<ColorBrush> brush) noexcept;
+	inline void SetLineBrushRight(std::unique_ptr<ColorBrush> brush) noexcept;
+	inline void SetCircleBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	inline void SetCircleBrushOuter(std::unique_ptr<ColorBrush> brush) noexcept;
+	inline void SetMinTextXOffset(float offset) noexcept { m_minTextXOffset = offset; m_minText->AllowedRegion(GetMinTextAllowedRegion()); }
+	inline void SetMinTextYOffset(float offset) noexcept { m_minTextYOffset = offset; m_minText->AllowedRegion(GetMinTextAllowedRegion()); }
+	inline void SetMaxTextXOffset(float offset) noexcept { m_maxTextXOffset = offset; m_maxText->AllowedRegion(GetMaxTextAllowedRegion()); }
+	inline void SetMaxTextYOffset(float offset) noexcept { m_maxTextYOffset = offset; m_maxText->AllowedRegion(GetMaxTextAllowedRegion()); }
+	inline void SetShowMinMaxTextValues(bool show) noexcept { m_showMinMaxTextValues = show; }
+	inline void SetShowValueRightOfSlider(bool show) noexcept { m_showValueRightOfSlider = show; SliderChanged(); }
+	void SetTextInputHeight(float height) noexcept;
+	void SetTextInputWidth(float width) noexcept;
+	void SetTextInputHeightAndWidth(float height, float width) noexcept;
+	inline void SetShowValueAsPopUpWhenSliding(bool show) noexcept { m_showValueAsPopUpWhenSliding = show; }
+	inline void SetPopUpBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	inline void SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	inline void SetPopUpBorderWidth(float width) noexcept { m_popUpBorderWidth = width; }
+	inline void SetPopUpCornerRadiusX(float radius) noexcept { m_popUpCornerRadiusX = radius; }
+	inline void SetPopUpCornerRadiusY(float radius) noexcept { m_popUpCornerRadiusY = radius; }
+	inline void SetPopUpHeight(float height) noexcept { m_popUpHeight = height; SliderChanged(); }
+	inline void SetPopUpWidth(float width) noexcept { m_popUpWidth = width; SliderChanged(); }
+
+	inline void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; UpdateValueTexts();  }
+	
 
 protected:
 	enum class MouseOverCircleState
