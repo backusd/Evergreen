@@ -65,10 +65,10 @@ public:
 	inline void ActivateForTextInput() noexcept { m_textInputControlIsSelected = true; }
 
 	ND inline const std::wstring& GetPlaceholderText() const noexcept { return m_placeholderText; }
-	ND inline const TextStyle* GetPlaceholderTextStyle() const noexcept { return m_placeholderTextStyle.get(); }
+	ND inline TextStyle* GetPlaceholderTextStyle() const noexcept { return m_placeholderTextStyle.get(); }
 	ND inline const ColorBrush* GetPlaceholderTextBrush() const noexcept { return m_placeholderTextBrush.get(); }
 	ND inline const std::wstring& GetInputText() const noexcept { return m_inputText; }
-	ND inline const TextStyle* GetInputTextStyle() const noexcept { return m_inputTextStyle.get(); }
+	ND inline TextStyle* GetInputTextStyle() const noexcept { return m_inputTextStyle.get(); }
 	ND inline const ColorBrush* GetInputTextBrush() const noexcept { return m_inputTextBrush.get(); }
 	ND inline const ColorBrush* GetBackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
 	ND inline const ColorBrush* GetBorderBrush() const noexcept { return m_borderBrush.get(); }

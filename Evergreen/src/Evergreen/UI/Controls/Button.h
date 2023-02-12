@@ -56,12 +56,12 @@ public:
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
 	void BorderWidth(float width) noexcept { m_borderWidth = width; }
 
-	void SetOnMouseEnteredCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEntered = func; }
-	void SetOnMouseExitedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExited = func; }
-	void SetOnMouseMovedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
-	void SetOnMouseLButtonDownCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonDown = func; }
-	void SetOnMouseLButtonUpCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonUp = func; }
-	void SetOnClickCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnClick = func; }
+	inline void SetOnMouseEnteredCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEntered = func; }
+	inline void SetOnMouseExitedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExited = func; }
+	inline void SetOnMouseMovedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
+	inline void SetOnMouseLButtonDownCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonDown = func; }
+	inline void SetOnMouseLButtonUpCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseLButtonUp = func; }
+	inline void SetOnClickCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnClick = func; }
 
 	ND inline bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 

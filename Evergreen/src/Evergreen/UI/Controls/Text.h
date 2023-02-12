@@ -49,7 +49,11 @@ public:
 	ND unsigned int Size() const noexcept { return static_cast<unsigned int>(m_text.size()); }
 
 
-	void SetText(const std::wstring& text) noexcept { m_text = text; TextChanged(); }
+	void SetText(const std::wstring& text) noexcept 
+	{ 
+		m_text = text; 
+		TextChanged(); 
+	}
 	void SetTextStyle(std::unique_ptr<TextStyle> style) noexcept;
 	void SetColorBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_colorBrush = std::move(brush); }
 

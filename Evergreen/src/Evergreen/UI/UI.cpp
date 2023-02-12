@@ -772,6 +772,56 @@ void UI::LoadDefaultUI() noexcept
 	slider2->Name("Slider2");
 	slider2->SetValueFormatString(L"{}");
 	*/
+
+
+	RowColumnPosition sliderCheckPosition;
+	sliderCheckPosition.Row = 2;
+	sliderCheckPosition.Column = 1;
+	Text* sliderCheck = sublayout->CreateControl<Text>(sliderCheckPosition, m_deviceResources, L"Slider Check");
+
+	slider->SetOnValueChangedCallback(
+		[sliderCheck](Control* c, Event& e)
+		{
+			SliderFloat* slider = static_cast<SliderFloat*>(c);
+			SliderFloatValueChangedEvent& evnt = dynamic_cast<SliderFloatValueChangedEvent&>(e);
+
+			sliderCheck->SetText(std::format(L"{}", evnt.GetValue()));
+		}
+	);
+
+	slider->SetOnMouseEnteredCircleCallback(
+		[sliderCheck](Control* c, Event& e)
+		{
+			SliderFloat* slider = static_cast<SliderFloat*>(c);
+
+			std::unique_ptr<Evergreen::ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Red));
+			slider->SetLineBrushLeft(std::move(brush));
+		}
+	);
+	slider->SetOnMouseExitedCircleCallback(
+		[sliderCheck](Control* c, Event& e)
+		{
+			SliderFloat* slider = static_cast<SliderFloat*>(c);
+
+			std::unique_ptr<Evergreen::ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
+			slider->SetLineBrushLeft(std::move(brush));
+		}
+	);
+
+	slider->SetOnBeginDraggingCallback(
+		[sliderCheck](Control* c, Event& e)
+		{
+			SliderFloat* slider = static_cast<SliderFloat*>(c);
+			slider->SetFillLineOnRightSide(true);
+		}
+	);
+	slider->SetOnStoppedDraggingCallback(
+		[sliderCheck](Control* c, Event& e)
+		{
+			SliderFloat* slider = static_cast<SliderFloat*>(c);
+			slider->SetFillLineOnRightSide(false);
+		}
+	);
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

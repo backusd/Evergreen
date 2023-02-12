@@ -7,6 +7,32 @@
 
 namespace Evergreen
 {
+// Mouse Moved Event -----------------------------------------------------------
+class EVERGREEN_API SliderFloatValueChangedEvent : public Event
+{
+public:
+	SliderFloatValueChangedEvent(float value) noexcept : m_value(value)
+	{}
+	SliderFloatValueChangedEvent(const SliderFloatValueChangedEvent&) = delete;
+	void operator=(const SliderFloatValueChangedEvent&) = delete;
+
+	inline float GetValue() const noexcept { return m_value; }
+
+	std::string ToString() const noexcept override { return std::format("SliderFloatValueChangedEvent: {}", m_value); }
+
+	// Event Class Category
+	virtual int GetCategoryFlags() const noexcept override { return EventCategory::None; }
+
+	// Event class type
+	static EventType GetStaticType() noexcept { return EventType::None; }
+	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	virtual const char* GetName() const noexcept override { return "SliderFloatValueChanged"; }
+
+private:
+	float m_value;
+};
+
+
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -67,39 +93,58 @@ public:
 	ND inline float GetPopUpCornerRadiusY() const noexcept{ return m_popUpCornerRadiusY; }
 	ND inline float GetPopUpHeight() const noexcept { return m_popUpHeight; }
 	ND inline float GetPopUpWidth() const noexcept { return m_popUpWidth; }
+	ND inline bool IsSliderDragging() const noexcept { return m_mouseOverCircleState == MouseOverCircleState::DRAGGING; }
+	ND inline TextStyle* GetMinTextStyle() const noexcept { return m_minText->GetTextStyle(); }
+	ND inline TextStyle* GetMaxTextStyle() const noexcept { return m_maxText->GetTextStyle(); }
+	ND inline TextStyle* GetTextInputStyle() const noexcept { return m_valueTextInputOnRight->GetInputTextStyle(); }
+	ND inline TextStyle* GetPopUpTextStyle() const noexcept { return m_valueTextOnPopUp->GetTextStyle(); }
 
 	void SetMinimumValue(float minimum) noexcept;
 	void SetMaximumValue(float maximum) noexcept;
 	void SetMiniumAndMaximumValues(float minimum, float maximum) noexcept;
-	void SetValue(float value) noexcept { m_value = value; SliderChanged(); }
+	void SetValue(float value) noexcept;
 	inline void SetLineWidth(float width) noexcept { m_lineWidth = width; }
 	inline void SetCircleRadius(float radius) noexcept { m_circleRadius = radius; m_valueTextOnPopUp->AllowedRegion(GetPopUpRect()); }
 	inline void SetCircleRadiusOuter(float radius) noexcept { m_circleRadius2 = radius; }
 	inline void SetFillLineOnRightSide(bool fill) noexcept { m_fillLineRight = fill; }
-	inline void SetLineBrushLeft(std::unique_ptr<ColorBrush> brush) noexcept;
-	inline void SetLineBrushRight(std::unique_ptr<ColorBrush> brush) noexcept;
-	inline void SetCircleBrush(std::unique_ptr<ColorBrush> brush) noexcept;
-	inline void SetCircleBrushOuter(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetLineBrushLeft(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetLineBrushRight(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetCircleBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetCircleBrushOuter(std::unique_ptr<ColorBrush> brush) noexcept;
 	inline void SetMinTextXOffset(float offset) noexcept { m_minTextXOffset = offset; m_minText->AllowedRegion(GetMinTextAllowedRegion()); }
 	inline void SetMinTextYOffset(float offset) noexcept { m_minTextYOffset = offset; m_minText->AllowedRegion(GetMinTextAllowedRegion()); }
 	inline void SetMaxTextXOffset(float offset) noexcept { m_maxTextXOffset = offset; m_maxText->AllowedRegion(GetMaxTextAllowedRegion()); }
 	inline void SetMaxTextYOffset(float offset) noexcept { m_maxTextYOffset = offset; m_maxText->AllowedRegion(GetMaxTextAllowedRegion()); }
 	inline void SetShowMinMaxTextValues(bool show) noexcept { m_showMinMaxTextValues = show; }
 	inline void SetShowValueRightOfSlider(bool show) noexcept { m_showValueRightOfSlider = show; SliderChanged(); }
+	inline void SetMarginRightOfSlider(float margin) noexcept { m_marginRightOfSlider = margin; SliderChanged(); }
 	void SetTextInputHeight(float height) noexcept;
 	void SetTextInputWidth(float width) noexcept;
 	void SetTextInputHeightAndWidth(float height, float width) noexcept;
 	inline void SetShowValueAsPopUpWhenSliding(bool show) noexcept { m_showValueAsPopUpWhenSliding = show; }
-	inline void SetPopUpBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
-	inline void SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetPopUpBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
+	void SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	inline void SetPopUpBorderWidth(float width) noexcept { m_popUpBorderWidth = width; }
 	inline void SetPopUpCornerRadiusX(float radius) noexcept { m_popUpCornerRadiusX = radius; }
 	inline void SetPopUpCornerRadiusY(float radius) noexcept { m_popUpCornerRadiusY = radius; }
 	inline void SetPopUpHeight(float height) noexcept { m_popUpHeight = height; SliderChanged(); }
 	inline void SetPopUpWidth(float width) noexcept { m_popUpWidth = width; SliderChanged(); }
+	inline void SetMinTextBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_minText->SetColorBrush(std::move(brush)); }
+	inline void SetMinTextStyle(std::unique_ptr<TextStyle> style) noexcept { m_minText->SetTextStyle(std::move(style)); }
+	inline void SetMaxTextBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_maxText->SetColorBrush(std::move(brush)); }
+	inline void SetMaxTextStyle(std::unique_ptr<TextStyle> style) noexcept { m_maxText->SetTextStyle(std::move(style)); }
+	inline void SetTextInputTextBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_valueTextInputOnRight->SetInputTextBrush(std::move(brush)); }
+	inline void SetTextInputTextStyle(std::unique_ptr<TextStyle> style) noexcept { m_valueTextInputOnRight->SetInputTextStyle(std::move(style)); }
+	inline void SetPopUpTextBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_valueTextOnPopUp->SetColorBrush(std::move(brush)); }
+	inline void SetPopUpTextStyle(std::unique_ptr<TextStyle> style) noexcept { m_valueTextOnPopUp->SetTextStyle(std::move(style)); }
 
 	inline void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; UpdateValueTexts();  }
 	
+	inline void SetOnMouseEnteredCircleCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredCircle = func; }
+	inline void SetOnMouseExitedCircleCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedCircle = func; }
+	inline void SetOnBeginDraggingCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnBeginDragging = func; }
+	inline void SetOnStoppedDraggingCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnStoppedDragging = func; }
+	inline void SetOnValueChangedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnValueChanged = func; }
 
 protected:
 	enum class MouseOverCircleState
@@ -125,6 +170,12 @@ protected:
 
 	void UpdateValueTexts();
 
+	std::function<void(Control*, Event&)> m_OnMouseEnteredCircle = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnMouseExitedCircle = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnBeginDragging = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnStoppedDragging = [](Control*, Event&) {};
+	std::function<void(Control*, Event&)> m_OnValueChanged = [](Control*, Event&) {};
+
 	float m_minValue;
 	float m_maxValue;
 	float m_value;
@@ -146,6 +197,7 @@ protected:
 	std::unique_ptr<ColorBrush> m_circleBrush2;
 
 	MouseOverCircleState m_mouseOverCircleState;
+	bool m_mouseIsOverCircle; // Necessary to have this so we can track this separately when dragging
 
 	std::unique_ptr<Text> m_minText;
 	float m_minTextXOffset;
