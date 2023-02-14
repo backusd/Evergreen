@@ -879,7 +879,67 @@
 			"Margin": [ 0, 3, 3, 3 ],
 			"Brush": [ 0.16, 0.16, 0.16 ],
 			"RowDefinitions": [ { "Height": "1*" } ],
-			"ColumnDefinitions": [ { "Width": "1*" } ]
+			"ColumnDefinitions": [ { "Width": "1*" } ],
+
+			"SliderFloatExample": {
+				"Type": "SliderFloat",
+				"id": 223,
+				"Margin": [ 10, 0, 10, 0 ],
+				"Row": 0,
+				"Column": 0,
+				"RowSpan": 1,
+				"ColumnSpan": 1,
+
+				"MinimumValue": 2.0,
+				"MaximumValue": 12.0,
+				"Value": 10.0,
+
+				"LineWidth": 6.0,
+				"LineBrushLeft": "Purple",
+				"LineBrushRight": "Purple",
+				"FillLineOnRightSide": false,
+
+				"CircleRadius": 5.0,
+				"CircleRadiusOuter": 10.0,
+				"CircleBrush": "Purple",
+				"CircleBrushOuter": [ 1.0, 0.0, 1.0, 0.3 ],
+
+				"ValueFormatString": "{:.2f}",
+				"ShowMinMaxTextValues": true,
+				"MinTextXYOffset": [ 10, 5 ],
+				"MinTextBrush": "White",
+				"MinTextStyle": "SliderFloatTextStyle",
+
+				"MaxTextXYOffset": [ 10, 10 ],
+				"MaxTextBrush": "White",
+				"MaxTextStyle": "SliderFloatTextStyle",
+
+				"MarginRightOfSlider": 45.0,
+				"ShowTextInputOnRight": true,
+				"TextInputHeight": 20.0,
+				"TextInputWidth": 40.0,
+				"TextInputTextBrush": "White",
+				"TextInputTextStyle": "SliderFloatTextStyle",
+				"TextInputBackgroundBrush": "Gray",
+				"TextInputBorderBrush": "Black",
+				"TextInputBorderWidth": 0.0,
+
+				"ShowPopUpValueWhenSliding": true,
+				"PopUpBackgroundBrush": "LightPurple",
+				"PopUpBorderBrush": "Purple",
+				"PopUpBorderWidth": 2,
+				"PopUpCornerRadius": 5,
+				"PopUpHeight": 30,
+				"PopUpWidth": 35,
+				"PopUpTextBrush": "Black",
+				"PopUpTextStyle": "SliderFloatTextStyle",
+
+				"OnMouseEnteredCircle": "SliderFloatExample_OnMouseEnteredCircle",
+				"OnMouseExitedCircle": "SliderFloatExample_OnMouseExitedCircle",
+				"OnBeginDragging": "SliderFloatExample_OnBeginDragging",
+				"OnStoppedDragging": "SliderFloatExample_OnStoppedDragging",
+				"OnValueChanged": "SliderFloatExample_OnValueChanged"
+			}
 		}
 
 

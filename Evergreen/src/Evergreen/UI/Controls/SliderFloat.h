@@ -85,6 +85,7 @@ public:
 	ND inline float GetMarginRightOfSlider() const noexcept { return m_marginRightOfSlider; }
 	ND inline float GetTextInputHeight() const noexcept { return m_valueTextInputOnRightHeight; }
 	ND inline float GetTextInputWidth() const noexcept { return m_valueTextInputOnRightWidth; }
+	ND inline TextInput* GetTextInput() const noexcept { return m_valueTextInputOnRight.get(); }
 	ND inline bool GetShowValueAsPopUpWhenSliding() const noexcept { return m_showValueAsPopUpWhenSliding; }
 	ND inline ColorBrush* GetPopUpBackgroundBrush() const noexcept { return m_popUpBackgroundBrush.get(); }
 	ND inline ColorBrush* GetPopUpBorderBrush() const noexcept { return m_popUpBorderBrush.get(); }
@@ -120,11 +121,15 @@ public:
 	inline void SetMarginRightOfSlider(float margin) noexcept { m_marginRightOfSlider = margin; SliderChanged(); }
 	void SetTextInputHeight(float height) noexcept;
 	void SetTextInputWidth(float width) noexcept;
-	void SetTextInputHeightAndWidth(float height, float width) noexcept;
+	void SetTextInputHeightAndWidth(float height, float width) noexcept;	
+	inline void SetTextInputBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_valueTextInputOnRight->SetBackgroundBrush(std::move(brush)); }
+	inline void SetTextInputBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_valueTextInputOnRight->SetBorderBrush(std::move(brush)); }
+	inline void SetTextInputBorderWidth(float width) noexcept { m_valueTextInputOnRight->SetBorderWidth(width); }
 	inline void SetShowValueAsPopUpWhenSliding(bool show) noexcept { m_showValueAsPopUpWhenSliding = show; }
 	void SetPopUpBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	void SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	inline void SetPopUpBorderWidth(float width) noexcept { m_popUpBorderWidth = width; }
+	inline void SetPopUpCornerRadius(float radiusX, float radiusY) noexcept { m_popUpCornerRadiusX = radiusX; m_popUpCornerRadiusY = radiusY; }
 	inline void SetPopUpCornerRadiusX(float radius) noexcept { m_popUpCornerRadiusX = radius; }
 	inline void SetPopUpCornerRadiusY(float radius) noexcept { m_popUpCornerRadiusY = radius; }
 	inline void SetPopUpHeight(float height) noexcept { m_popUpHeight = height; SliderChanged(); }

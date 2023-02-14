@@ -6,6 +6,7 @@
 #include "JSONLoading/ControlLoaders/ScrollableLayoutLoader.h"
 #include "JSONLoading/ControlLoaders/TextInputLoader.h"
 #include "JSONLoading/ControlLoaders/PaneLoader.h"
+#include "JSONLoading/ControlLoaders/SliderFloatLoader.h"
 
 #include <fstream>
 
@@ -32,6 +33,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("SliderFloat", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return SliderFloatLoader::Load(deviceResources, parentLayout, data, controlName); });
 
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });

@@ -36,6 +36,7 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderFloatLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextInputLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Pane.h" />
     <ClInclude Include="src\Evergreen\UI\Utils\ColorHelper.h" />
@@ -84,6 +85,7 @@
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderFloatLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextInputLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Pane.cpp" />
     <ClCompile Include="src\Evergreen\UI\Utils\ColorHelper.cpp" />
