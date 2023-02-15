@@ -15,6 +15,18 @@
 		"ColumnSpan": 3
 	},
 
+	"SliderFloatTextStyle": {
+		"Type": "TextStyle",
+		"FontFamily": "Calibri",
+		"FontSize": 14,
+		"FontWeight": "Bold",
+		"FontStyle": "Italic",
+		"FontStretch": "Normal",
+		"TextAlignment": "Leading",
+		"ParagraphAlignment": "Near",
+		"WordWrapping": "None"
+	},
+
 	"MenuBarDropDownButtonStyle": {
 		"Type": "TextStyle",
 		"FontFamily": "Calibri",
@@ -910,7 +922,7 @@
 				"MinTextBrush": "White",
 				"MinTextStyle": "SliderFloatTextStyle",
 
-				"MaxTextXYOffset": [ 10, 10 ],
+				"MaxTextXYOffset": [ 10, 5 ],
 				"MaxTextBrush": "White",
 				"MaxTextStyle": "SliderFloatTextStyle",
 
@@ -925,7 +937,7 @@
 				"TextInputBorderWidth": 0.0,
 
 				"ShowPopUpValueWhenSliding": true,
-				"PopUpBackgroundBrush": "LightPurple",
+				"PopUpBackgroundBrush": "Pink",
 				"PopUpBorderBrush": "Purple",
 				"PopUpBorderWidth": 2,
 				"PopUpCornerRadius": 5,

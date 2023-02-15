@@ -1,0 +1,92 @@
+{
+	// Basics:	Declare a SliderFloat control by specifying the name of the control and specify the Type as "SliderFloat"
+	//					See example below for available attributes
+	"SliderFloatExample": {
+		"Type": "SliderFloat",
+		"id": 223, // Unique integer associated with this control
+		"Margin": [ 10, 0, 10, 0 ], // Specify margin in order: left/top/right/bottom
+		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 0,
+		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 1,
+
+		"MinimumValue": 2.0, // Minimum value the slider is allowed to take (MUST be less than 'MaximumValue')
+		"MaximumValue": 12.0, // Maximum value the slider is allowed to take (MUST be greater than 'MinimumValue')
+		"Value": 10.0, // Initial value the slider will be (MUST be in the range [MinimumValue, MaximumValue])
+
+		"LineWidth": 6.0, // (optional) Height of the horizontal line for the slider
+		"LineBrushLeft": "Purple", // (optional) Color of the line left of the slider circle - See Brushes.json for details on using a color brush
+		"LineBrushRight": "Purple", // (optional) Color of the line right of the slider circle - See Brushes.json for details on using a color brush
+		"FillLineOnRightSide": false, // (optional) True -> The line to the right of the slider circle will be filled in. False -> the line to the right of the slider circle will just be outlined
+
+		"CircleRadius": 5.0, // (optional) Specify the radius of the main circle that can be dragged
+		"CircleRadiusOuter": 10.0, // (optional) Specify the radius of an outer circle that will appear when the mouse is over the main circle
+		//																			 This is used to create the effect where an outer circle with some transparency sits behind the main circle
+		"CircleBrush": "Purple", // (optional) Color of the slider circle - See Brushes.json for details on using a color brush
+		"CircleBrushOuter": [ 1.0, 0.0, 1.0, 0.3 ], // (optional) Color of the outer slider circle - See Brushes.json for details on using a color brush
+
+		"ValueFormatString": "{:.2f}", // (optional) Format used by std::format to display the slider values
+		"ShowMinMaxTextValues": true, // (optional) True -> Displays Min and Max values for the slider. False -> hides min/max values
+		"MinTextXYOffset": [ 10, 5 ], // (optional) Offset values to help in positioning the Minimum Text below the slider. 
+		//																					First value is number of pixels to pad the left side of the text from the left edge of the slider 
+		//																					Second value is number of pixels to pad the top of the text from the bottom of the slider 
+		"MinTextBrush": "White", // (optional) Color of the text showing the minimum slider value - See Brushes.json for details on using a color brush
+		"MinTextStyle": { // (optional) Specify the TextStyle to use for text that displays the Minimum value - See Text.json for complete options
+			//														NOTE: You can either specify a TextStyle json object OR a string to a globally stored TextStyle - See Text.json for details on globally stored TextStyles
+			//														NOTE: In order to allow for a single global TextStyle to be used for all 4 possible Text values (min/max/text input/pop up), the 'TextAlignment' and 'ParagraphAlignment'
+			//																	fields are ignored. For the MinTextStyle, it is forced be left & top aligned.
+			"Type": "TextStyle",
+			"FontFamily": "Calibri",
+			"FontSize": 14,
+			"FontWeight": "Bold",
+			"FontStyle": "Italic",
+			"FontStretch": "Normal",
+			"TextAlignment": "Leading",
+			"ParagraphAlignment": "Near",
+			"WordWrapping": "None"
+		},
+
+		"MaxTextXYOffset": [ 10, 10 ], // (optional) Offset values to help in positioning the Maximum Text below the slider.
+		//																					 First value is number of pixels to pad the right side of the text from the right edge of the slider 
+		//																					 Second value is number of pixels to pad the top of the text from the bottom of the slider
+		"MaxTextBrush": "White", // (optional) Color of the text showing the maximum slider value - See Brushes.json for details on using a color brush
+		"MaxTextStyle": "Some_Global_TextStyle", // (optional) Specify the TextStyle to use for text that displays the Maximum value - See Text.json for complete options
+		//																										 NOTE: You can either specify a TextStyle json object OR a string to a globally stored TextStyle - See Text.json for details on globally stored TextStyles
+		//																										 NOTE: In order to allow for a single global TextStyle to be used for all 4 possible Text values (min/max/text input/pop up), the 'TextAlignment' and 'ParagraphAlignment'
+		//																									 				 fields are ignored. For the MaxTextStyle, it is forced be right & top aligned.
+		"MarginRightOfSlider": 45.0, // (optional) Specifies the number of pixels the slider should leave on the right side to leave room for the TextInput
+		"ShowTextInputOnRight": true, // (optional) True -> Show the TextInput control on the right side of the slider
+		"TextInputHeight": 20.0, // (optional) Specify the height of the TextInput control
+		"TextInputWidth": 40.0, // (optional) Specify the height of the TextInput control
+		"TextInputTextBrush": "White", // (optional) Color of the text showing the current slider value - See Brushes.json for details on using a color brush
+		"TextInputTextStyle": "Some_Global_TextStyle", // (optional) Specify the TextStyle to use for text that displays the current value - See Text.json for complete options
+		//																													 NOTE: You can either specify a TextStyle json object OR a string to a globally stored TextStyle - See Text.json for details on globally stored TextStyles
+		//																													 NOTE: In order to allow for a single global TextStyle to be used for all 4 possible Text values (min/max/text input/pop up), the 'TextAlignment' and 'ParagraphAlignment'
+		//																									 							 fields are ignored. For the TextInputTextStyle, it is forced be left aligned & vertically centered
+		"TextInputBackgroundBrush": "Gray", // (optional) Color of the TextInput control's background - See Brushes.json for details on using a color brush
+		"TextInputBorderBrush": "Black", // (optional) Color of the TextInput control's border - See Brushes.json for details on using a color brush
+		"TextInputBorderWidth": 0.0, // (optional) Specify the border width of the TextInput control
+
+		"ShowPopUpValueWhenSliding": true, // (optional) True -> Show the Pop Up with the slider value when the user is sliding the slider
+		"PopUpBackgroundBrush": "Pink", // (optional) Color of the Pop Up background - See Brushes.json for details on using a color brush
+		"PopUpBorderBrush": "Purple", // (optional) Color of the Pop Up border - See Brushes.json for details on using a color brush
+		"PopUpBorderWidth": 2, // (optional) Specify the border width of the Pop Up rect
+		"PopUpCornerRadius": 5, // (optional) Specify the corner radius of the Pop Up rect
+		"PopUpHeight": 30, // (optional) Specify the height of the Pop Up rect
+		"PopUpWidth": 35, // (optional) Specify the width of the Pop Up rect
+		"PopUpTextBrush": "Black", // (optional) Color of the Pop Up text that displays the current slider value - See Brushes.json for details on using a color brush
+		"PopUpTextStyle": "Some_Global_TextStyle", // (optional) Specify the TextStyle to use for text that displays the current value - See Text.json for complete options
+		//																											 NOTE: You can either specify a TextStyle json object OR a string to a globally stored TextStyle - See Text.json for details on globally stored TextStyles
+		//																											 NOTE: In order to allow for a single global TextStyle to be used for all 4 possible Text values (min/max/text input/pop up), the 'TextAlignment' and 'ParagraphAlignment'
+		//																									 					 fields are ignored. For the PopUpTextStyle, it is forced be centered vertically and horizontally
+
+		// On* callbacks: Specify functions to execute when the slider triggers certain events.
+		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
+		//                can be set by calling JSONLoaders::AddControlFunction()
+		"OnMouseEnteredCircle": "SliderFloatExample_OnMouseEnteredCircle",
+		"OnMouseExitedCircle": "SliderFloatExample_OnMouseExitedCircle",
+		"OnBeginDragging": "SliderFloatExample_OnBeginDragging",
+		"OnStoppedDragging": "SliderFloatExample_OnStoppedDragging",
+		"OnValueChanged": "SliderFloatExample_OnValueChanged"
+	}
+}

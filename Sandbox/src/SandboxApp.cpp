@@ -25,6 +25,43 @@ private:
 		SetMenuBarViewDropDownCallbacks();
 
 
+		// TESTING ================================================================================
+		// SliderFloat
+		JSONLoaders::AddControlFunction("SliderFloatExample_OnMouseEnteredCircle", [](Control* control, Event& e)
+			{
+				SliderFloat* slider = static_cast<SliderFloat*>(control);
+				std::unique_ptr<Evergreen::SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Red));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("SliderFloatExample_OnMouseExitedCircle", [](Control* control, Event& e)
+			{
+				SliderFloat* slider = static_cast<SliderFloat*>(control);
+				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("SliderFloatExample_OnBeginDragging", [](Control* control, Event& e)
+			{
+				SliderFloat* slider = static_cast<SliderFloat*>(control);
+				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("SliderFloatExample_OnStoppedDragging", [](Control* control, Event& e)
+			{
+				SliderFloat* slider = static_cast<SliderFloat*>(control);
+				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddControlFunction("SliderFloatExample_OnValueChanged", [](Control* control, Event& e)
+			{
+				SliderFloat* slider = static_cast<SliderFloat*>(control);
+				EG_TRACE("Slider: {}", slider->GetValue());
+			}
+		);
+
 		// Pane
 		JSONLoaders::AddControlFunction("Pane1_OnMouseEnteredTitleBar", [](Control* control, Event& e)
 			{

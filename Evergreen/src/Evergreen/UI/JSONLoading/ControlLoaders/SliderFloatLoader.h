@@ -66,21 +66,22 @@ private:
 	void ParseTextInputBorderBrush(SliderFloat* slider, json& data);
 	void ParseTextInputBorderWidth(SliderFloat* slider, json& data);
 
+	void ParseShowPopUpValueWhenSliding(SliderFloat* slider, json& data);
+	void ParsePopUpBackgroundBrush(SliderFloat* slider, json& data);
+	void ParsePopUpBorderBrush(SliderFloat* slider, json& data);
+	void ParsePopUpBorderWidth(SliderFloat* slider, json& data);
+	void ParsePopUpCornerRadius(SliderFloat* slider, json& data);
+	void ParsePopUpHeight(SliderFloat* slider, json& data);
+	void ParsePopUpWidth(SliderFloat* slider, json& data);
+	void ParsePopUpTextBrush(SliderFloat* slider, json& data);
+	void ParsePopUpTextStyle(SliderFloat* slider, json& data);
 
+	void ParseOnMouseEnteredCircle(SliderFloat* slider, json& data);
+	void ParseOnMouseExitedCircle(SliderFloat* slider, json& data);
+	void ParseOnBeginDragging(SliderFloat* slider, json& data);
+	void ParseOnStoppedDragging(SliderFloat* slider, json& data);
+	void ParseOnValueChanged(SliderFloat* slider, json& data);
 
-	/*
-	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
-	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
-	float ParseBorderWidth(json& data);
-	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
-
-	void ParseOnMouseEntered(Button* button, json& data);
-	void ParseOnMouseExited(Button* button, json& data);
-	void ParseOnMouseMoved(Button* button, json& data);
-	void ParseOnMouseLButtonDown(Button* button, json& data);
-	void ParseOnMouseLButtonUp(Button* button, json& data);
-	void ParseOnClick(Button* button, json& data);
-	*/
 };
 #pragma warning( pop )
 

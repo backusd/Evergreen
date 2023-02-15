@@ -24,18 +24,23 @@ Control* SliderFloatLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	JSON_LOADER_EXCEPTION_IF_FALSE(min < max, "SliderFloat control with name '{}': 'MinimumValue' ({}) must be less than 'MaximumValue' ({}). Invalid SliderFloat object: {}", m_name, min, max, data.dump(4));
 	JSON_LOADER_EXCEPTION_IF_FALSE(min <= value && value <= max, "SliderFloat control with name '{}': 'Value' ({}) must be >= 'MinimumValue' ({}) and <= 'MaximumValue' ({}). Invalid SliderFloat object: {}", m_name, value, min, max, data.dump(4));
 
-		
-	/*
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
-	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
-	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick" };
+	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
+	"MinimumValue",	"MaximumValue",	"Value",
+	"LineWidth", "LineBrushLeft", "LineBrushRight", "FillLineOnRightSide",
+	"CircleRadius", "CircleRadiusOuter", "CircleBrush", "CircleBrushOuter", 
+	"ValueFormatString", "ShowMinMaxTextValues", "MinTextXYOffset", "MinTextBrush", "MinTextStyle",
+	"MaxTextXYOffset", "MaxTextBrush", "MaxTextStyle", 
+	"MarginRightOfSlider", "ShowTextInputOnRight", "TextInputHeight", "TextInputWidth", "TextInputTextBrush",
+	"TextInputTextStyle", "TextInputBackgroundBrush", "TextInputBorderBrush", "TextInputBorderWidth",
+	"ShowPopUpValueWhenSliding", "PopUpBackgroundBrush", "PopUpBorderBrush", "PopUpBorderWidth", "PopUpCornerRadius",
+	"PopUpHeight", "PopUpWidth", "PopUpTextBrush", "PopUpTextStyle",
+	"OnMouseEnteredCircle", "OnMouseExitedCircle", "OnBeginDragging", "OnStoppedDragging", "OnValueChanged" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
-			EG_CORE_WARN("{}:{} - Button control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+			EG_CORE_WARN("{}:{} - SliderFloat control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
 	}
-	*/
 
 	// Create the new Text control
 	SliderFloat* slider = parent->CreateControl<SliderFloat>(
@@ -80,6 +85,21 @@ Control* SliderFloatLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	ParseTextInputBorderBrush(slider, data);
 	ParseTextInputBorderWidth(slider, data);
 
+	ParseShowPopUpValueWhenSliding(slider, data);
+	ParsePopUpBackgroundBrush(slider, data);
+	ParsePopUpBorderBrush(slider, data);
+	ParsePopUpBorderWidth(slider, data);
+	ParsePopUpCornerRadius(slider, data);
+	ParsePopUpHeight(slider, data);
+	ParsePopUpWidth(slider, data);
+	ParsePopUpTextBrush(slider, data);
+	ParsePopUpTextStyle(slider, data);
+
+	ParseOnMouseEnteredCircle(slider, data);
+	ParseOnMouseExitedCircle(slider, data);
+	ParseOnBeginDragging(slider, data);
+	ParseOnStoppedDragging(slider, data);
+	ParseOnValueChanged(slider, data);
 
 	return slider;
 }
@@ -225,6 +245,32 @@ void SliderFloatLoader::ParseMinTextStyle(SliderFloat* slider, json& data)
 {
 	EG_CORE_ASSERT(slider != nullptr, "No slider");
 
+	// Must parse out the name of the TextStyle before you can call JSONLoaders::LoadStyle
+	std::string stylename;
+	if (data.contains("MinTextStyle"))
+	{
+		if (data["MinTextStyle"].is_string())
+		{
+			stylename = data["MinTextStyle"].get<std::string>();
+			JSON_LOADER_EXCEPTION_IF_FALSE(stylename.size() > 0, "SliderFloat control with name '{}': 'MinTextStyle' field cannot be an empty string.", m_name);
+		}
+		else if (data["MinTextStyle"].is_object())
+		{
+			stylename = m_name + "_MinValue_TextStyle";
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION("SliderFloat control with name '{}': 'MinTextStyle' field must be a string or an object. Invalid value: {}", m_name, data["MinTextStyle"].dump(4));
+		}
+
+		std::unique_ptr<Style> style = JSONLoaders::LoadStyle(slider->GetDeviceResources(), "TextStyle", data["MinTextStyle"], stylename);
+		EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
+		std::unique_ptr<TextStyle> textStyle = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(style.release())));
+		// Force the text to be left aligned and vertically at the top
+		textStyle->TextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+		textStyle->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+		slider->SetMinTextStyle(std::move(textStyle));
+	}
 }
 
 void SliderFloatLoader::ParseMaxTextXYOffset(SliderFloat* slider, json& data)
@@ -251,6 +297,32 @@ void SliderFloatLoader::ParseMaxTextStyle(SliderFloat* slider, json& data)
 {
 	EG_CORE_ASSERT(slider != nullptr, "No slider");
 
+	// Must parse out the name of the TextStyle before you can call JSONLoaders::LoadStyle
+	std::string stylename;
+	if (data.contains("MaxTextStyle"))
+	{
+		if (data["MaxTextStyle"].is_string())
+		{
+			stylename = data["MaxTextStyle"].get<std::string>();
+			JSON_LOADER_EXCEPTION_IF_FALSE(stylename.size() > 0, "SliderFloat control with name '{}': 'MaxTextStyle' field cannot be an empty string.", m_name);
+		}
+		else if (data["MaxTextStyle"].is_object())
+		{
+			stylename = m_name + "_MaxValue_TextStyle";
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION("SliderFloat control with name '{}': 'MaxTextStyle' field must be a string or an object. Invalid value: {}", m_name, data["MaxTextStyle"].dump(4));
+		}
+
+		std::unique_ptr<Style> style = JSONLoaders::LoadStyle(slider->GetDeviceResources(), "TextStyle", data["MaxTextStyle"], stylename);
+		EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
+		std::unique_ptr<TextStyle> textStyle = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(style.release())));
+		// Force the text to be right aligned and vertically at the top
+		textStyle->TextAlignment(DWRITE_TEXT_ALIGNMENT_TRAILING);
+		textStyle->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
+		slider->SetMaxTextStyle(std::move(textStyle));
+	}
 }
 
 void SliderFloatLoader::ParseMarginRightOfSlider(SliderFloat* slider, json& data)
@@ -307,6 +379,32 @@ void SliderFloatLoader::ParseTextInputTextStyle(SliderFloat* slider, json& data)
 {
 	EG_CORE_ASSERT(slider != nullptr, "No slider");
 
+	// Must parse out the name of the TextStyle before you can call JSONLoaders::LoadStyle
+	std::string stylename;
+	if (data.contains("TextInputTextStyle"))
+	{
+		if (data["TextInputTextStyle"].is_string())
+		{
+			stylename = data["TextInputTextStyle"].get<std::string>();
+			JSON_LOADER_EXCEPTION_IF_FALSE(stylename.size() > 0, "SliderFloat control with name '{}': 'TextInputTextStyle' field cannot be an empty string.", m_name);
+		}
+		else if (data["TextInputTextStyle"].is_object())
+		{
+			stylename = m_name + "_TextInput_TextStyle";
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION("SliderFloat control with name '{}': 'TextInputTextStyle' field must be a string or an object. Invalid value: {}", m_name, data["TextInputTextStyle"].dump(4));
+		}
+
+		std::unique_ptr<Style> style = JSONLoaders::LoadStyle(slider->GetDeviceResources(), "TextStyle", data["TextInputTextStyle"], stylename);
+		EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
+		std::unique_ptr<TextStyle> textStyle = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(style.release())));
+		// Force the text to be left aligned and vertically centered
+		textStyle->TextAlignment(DWRITE_TEXT_ALIGNMENT_LEADING);
+		textStyle->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+		slider->SetTextInputTextStyle(std::move(textStyle));
+	}
 }
 void SliderFloatLoader::ParseTextInputBackgroundBrush(SliderFloat* slider, json& data)
 {
@@ -336,6 +434,185 @@ void SliderFloatLoader::ParseTextInputBorderWidth(SliderFloat* slider, json& dat
 	}
 }
 
+void SliderFloatLoader::ParseShowPopUpValueWhenSliding(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("ShowPopUpValueWhenSliding"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["ShowPopUpValueWhenSliding"].is_boolean(), "SliderFloat control with name '{}': 'ShowPopUpValueWhenSliding' value must be a boolean. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		slider->SetShowValueAsPopUpWhenSliding(data["ShowPopUpValueWhenSliding"].get<bool>());
+	}
+}
+void SliderFloatLoader::ParsePopUpBackgroundBrush(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpBackgroundBrush"))
+	{
+		slider->SetPopUpBackgroundBrush(std::move(JSONLoaders::LoadBrush(slider->GetDeviceResources(), data["PopUpBackgroundBrush"])));
+	}
+}
+void SliderFloatLoader::ParsePopUpBorderBrush(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpBorderBrush"))
+	{
+		slider->SetPopUpBorderBrush(std::move(JSONLoaders::LoadBrush(slider->GetDeviceResources(), data["PopUpBorderBrush"])));
+	}
+}
+void SliderFloatLoader::ParsePopUpBorderWidth(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpBorderWidth"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["PopUpBorderWidth"].is_number(), "SliderFloat control with name '{}': 'PopUpBorderWidth' value must be a number. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		float width = data["PopUpBorderWidth"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "SliderFloat control with name '{}': 'PopUpBorderWidth' value ({}) must be >= 0. Invalid SliderFloat object: {}", m_name, width, data.dump(4));
+		slider->SetPopUpBorderWidth(width);
+	}
+}
+void SliderFloatLoader::ParsePopUpCornerRadius(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpCornerRadius"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(!data.contains("PopUpCornerRadiusX"), "SliderFloat control with name '{}': When 'PopUpCornerRadius' field is used, it is invalid to also include 'CornerRadiusX'. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		JSON_LOADER_EXCEPTION_IF_FALSE(!data.contains("PopUpCornerRadiusY"), "SliderFloat control with name '{}': When 'PopUpCornerRadius' field is used, it is invalid to also include 'CornerRadiusY'. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["PopUpCornerRadius"].is_number(), "SliderFloat control with name '{}': 'PopUpCornerRadius' value must be a number. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		float radius = data["PopUpCornerRadius"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(radius >= 0.0f, "SliderFloat control with name '{}': 'PopUpCornerRadius' must be greater than or equal to 0. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		slider->SetPopUpCornerRadius(radius);
+	}
+	else if (data.contains("PopUpCornerRadiusX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("PopUpCornerRadiusY"), "SliderFloat control with name '{}': When 'PopUpCornerRadiusX' field is used, 'PopUpCornerRadiusY' is also required. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["PopUpCornerRadiusX"].is_number(), "SliderFloat control with name '{}': 'PopUpCornerRadiusX' value must be a number. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["PopUpCornerRadiusY"].is_number(), "SliderFloat control with name '{}': 'PopUpCornerRadiusY' value must be a number. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		float radiusX = data["PopUpCornerRadiusX"].get<float>();
+		float radiusY = data["PopUpCornerRadiusY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(radiusX >= 0.0f, "SliderFloat control with name '{}': 'PopUpCornerRadiusX' must be greater than or equal to 0. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		JSON_LOADER_EXCEPTION_IF_FALSE(radiusY >= 0.0f, "SliderFloat control with name '{}': 'PopUpCornerRadiusY' must be greater than or equal to 0. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		slider->SetPopUpCornerRadius(radiusX, radiusY);
+	}
+	else
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(!data.contains("PopUpCornerRadiusY"), "Pane control with name '{}': When 'PopUpCornerRadiusY' field is used, 'PopUpCornerRadiusX' is also required. Invalid SliderFloat object: {}", m_name, data.dump(4));
+	}
+}
+void SliderFloatLoader::ParsePopUpHeight(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpHeight"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["PopUpHeight"].is_number(), "SliderFloat control with name '{}': 'PopUpHeight' value must be a number. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		float height = data["PopUpHeight"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(height > 0.0f, "SliderFloat control with name '{}': 'PopUpHeight' value ({}) must be > 0. Invalid SliderFloat object: {}", m_name, height, data.dump(4));
+		slider->SetPopUpHeight(height);
+	}
+}
+void SliderFloatLoader::ParsePopUpWidth(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpWidth"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["PopUpWidth"].is_number(), "SliderFloat control with name '{}': 'PopUpWidth' value must be a number. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		float width = data["PopUpWidth"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(width > 0.0f, "SliderFloat control with name '{}': 'PopUpWidth' value ({}) must be > 0. Invalid SliderFloat object: {}", m_name, width, data.dump(4));
+		slider->SetPopUpWidth(width);
+	}
+}
+void SliderFloatLoader::ParsePopUpTextBrush(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("PopUpTextBrush"))
+	{
+		slider->SetPopUpTextBrush(std::move(JSONLoaders::LoadBrush(slider->GetDeviceResources(), data["PopUpTextBrush"])));
+	}
+}
+void SliderFloatLoader::ParsePopUpTextStyle(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
 
+	// Must parse out the name of the TextStyle before you can call JSONLoaders::LoadStyle
+	std::string stylename;
+	if (data.contains("PopUpTextStyle"))
+	{
+		if (data["PopUpTextStyle"].is_string())
+		{
+			stylename = data["PopUpTextStyle"].get<std::string>();
+			JSON_LOADER_EXCEPTION_IF_FALSE(stylename.size() > 0, "SliderFloat control with name '{}': 'PopUpTextStyle' field cannot be an empty string.", m_name);
+		}
+		else if (data["PopUpTextStyle"].is_object())
+		{
+			stylename = m_name + "_PopUp_TextStyle";
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION("SliderFloat control with name '{}': 'PopUpTextStyle' field must be a string or an object. Invalid value: {}", m_name, data["PopUpTextStyle"].dump(4));
+		}
 
+		std::unique_ptr<Style> style = JSONLoaders::LoadStyle(slider->GetDeviceResources(), "TextStyle", data["PopUpTextStyle"], stylename);
+		EG_CORE_ASSERT(style != nullptr, "Not allowed to return nullptr. Should have thrown exception");
+		std::unique_ptr<TextStyle> textStyle = std::move(std::unique_ptr<TextStyle>(static_cast<TextStyle*>(style.release())));
+		// Force the text to be centered horizontally and vertically
+		textStyle->TextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
+		textStyle->ParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER);
+		slider->SetPopUpTextStyle(std::move(textStyle));
+	}
+}
+
+void SliderFloatLoader::ParseOnMouseEnteredCircle(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("OnMouseEnteredCircle"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnteredCircle"].is_string(), "SliderFloat control with name '{}': 'OnMouseEnteredCircle' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		std::string key = data["OnMouseEnteredCircle"].get<std::string>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnMouseEnteredCircle' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnMouseEnteredCircleCallback(JSONLoaders::GetControlFunction(key));
+	}
+}
+void SliderFloatLoader::ParseOnMouseExitedCircle(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("OnMouseExitedCircle"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExitedCircle"].is_string(), "SliderFloat control with name '{}': 'OnMouseExitedCircle' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		std::string key = data["OnMouseExitedCircle"].get<std::string>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnMouseExitedCircle' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnMouseExitedCircleCallback(JSONLoaders::GetControlFunction(key));
+	}
+}
+void SliderFloatLoader::ParseOnBeginDragging(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("OnBeginDragging"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnBeginDragging"].is_string(), "SliderFloat control with name '{}': 'OnBeginDragging' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		std::string key = data["OnBeginDragging"].get<std::string>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnBeginDragging' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnBeginDraggingCallback(JSONLoaders::GetControlFunction(key));
+	}
+}
+void SliderFloatLoader::ParseOnStoppedDragging(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("OnStoppedDragging"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnStoppedDragging"].is_string(), "SliderFloat control with name '{}': 'OnStoppedDragging' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		std::string key = data["OnStoppedDragging"].get<std::string>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnStoppedDragging' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnStoppedDraggingCallback(JSONLoaders::GetControlFunction(key));
+	}
+}
+void SliderFloatLoader::ParseOnValueChanged(SliderFloat* slider, json& data)
+{
+	EG_CORE_ASSERT(slider != nullptr, "No slider");
+	if (data.contains("OnValueChanged"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnValueChanged"].is_string(), "SliderFloat control with name '{}': 'OnValueChanged' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
+		std::string key = data["OnValueChanged"].get<std::string>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnValueChanged' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnValueChangedCallback(JSONLoaders::GetControlFunction(key));
+	}
+}
 }

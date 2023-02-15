@@ -144,8 +144,10 @@ void ScrollableLayout::Render() const noexcept
 
 Row* ScrollableLayout::AddRow(RowColumnDefinition definition)
 {
+#ifdef _DEBUG
 	// Disable the layout check because adding an intermediate row that is adjustable will cause unnecessary errors
 	m_layout->DisableLayoutCheck();
+#endif
 
 	if (m_canScrollVertical)
 	{
@@ -160,14 +162,18 @@ Row* ScrollableLayout::AddRow(RowColumnDefinition definition)
 
 	ScrollableLayoutChanged();
 
+#ifdef _DEBUG
 	m_layout->EnableLayoutCheck(); // Layout check must be re-enabled
+#endif
 
 	return row;
 }
 Column* ScrollableLayout::AddColumn(RowColumnDefinition definition)
 {
+#ifdef _DEBUG
 	// Disable the layout check because adding an intermediate column that is adjustable will cause unnecessary errors
 	m_layout->DisableLayoutCheck();
+#endif
 
 	if (m_canScrollHorizontal)
 	{
@@ -182,7 +188,9 @@ Column* ScrollableLayout::AddColumn(RowColumnDefinition definition)
 
 	ScrollableLayoutChanged();
 
+#ifdef _DEBUG
 	m_layout->EnableLayoutCheck(); // Layout check must be re-enabled
+#endif
 
 	return column;
 }

@@ -3,6 +3,7 @@
 	//					See example below for available attributes
 	"ButtonName": {
 		"Type": "Button",
+		"id": 22, // Unique integer associated with this control
 		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
 		"Column": 1,
 		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy

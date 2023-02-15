@@ -38,7 +38,7 @@ private:
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
 #pragma warning( push )
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
-class SliderFloat : public Control
+class EVERGREEN_API SliderFloat : public Control
 {
 public:
 	SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
@@ -129,6 +129,7 @@ public:
 	void SetPopUpBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	void SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	inline void SetPopUpBorderWidth(float width) noexcept { m_popUpBorderWidth = width; }
+	inline void SetPopUpCornerRadius(float radius) noexcept { m_popUpCornerRadiusX = radius; m_popUpCornerRadiusY = radius; }
 	inline void SetPopUpCornerRadius(float radiusX, float radiusY) noexcept { m_popUpCornerRadiusX = radiusX; m_popUpCornerRadiusY = radiusY; }
 	inline void SetPopUpCornerRadiusX(float radius) noexcept { m_popUpCornerRadiusX = radius; }
 	inline void SetPopUpCornerRadiusY(float radius) noexcept { m_popUpCornerRadiusY = radius; }
