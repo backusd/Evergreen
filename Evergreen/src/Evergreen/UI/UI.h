@@ -51,9 +51,10 @@ public:
 	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
-
-	ND inline Control* GetControlByName(const std::string& name) const noexcept;
-	ND inline Control* GetControlByID(unsigned int id) const noexcept;
+	template <class T>
+	ND inline T* GetControlByName(const std::string& name) const noexcept;
+	template <class T>
+	ND inline T* GetControlByID(unsigned int id) const noexcept;
 
 	inline Pane* AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
 	ND inline Pane* GetPane(const std::string& name) noexcept;
@@ -88,6 +89,32 @@ private:
 };
 #pragma warning( pop )
 
+template <class T>
+T* UI::GetControlByName(const std::string& name) const noexcept
+{
+	Control* c = nullptr;
+	for (const auto& pane : m_panes)
+	{
+		c = pane->GetControlByName(name);
+		if (c != nullptr)
+			return static_cast<T*>(c);
+	}
+
+	return m_rootLayout->GetControlByName<T>(name);
+}
+template <class T>
+T* UI::GetControlByID(unsigned int id) const noexcept
+{
+	Control* c = nullptr;
+	for (const auto& pane : m_panes)
+	{
+		c = pane->GetControlByID(id);
+		if (c != nullptr)
+			return static_cast<T*>(c);
+	}
+
+	return m_rootLayout->GetControlByID<T>(id);
+}
 
 }
 

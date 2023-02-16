@@ -552,8 +552,7 @@ void UI::LoadDefaultUI() noexcept
 	tiRightButton->SetOnClickCallback(
 		[this](Control* b, Event& e)
 		{
-			Control* _textInput = this->GetControlByName("TextInputControl");
-			TextInput* textInput = static_cast<TextInput*>(_textInput);
+			TextInput* textInput = this->GetControlByName<TextInput>("TextInputControl");
 
 			static int iii = 0;
 			textInput->SetInputText(std::format(L"{}", ++iii));
@@ -1195,32 +1194,6 @@ void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 	}
 
 	m_rootLayout->OnMouseScrolledHorizontal(e);
-}
-
-
-Control* UI::GetControlByName(const std::string& name) const noexcept 
-{ 
-	Control* c = nullptr;
-	for (const auto& pane : m_panes)
-	{
-		c = pane->GetControlByName(name);
-		if (c != nullptr)
-			return c;
-	}
-
-	return m_rootLayout->GetControlByName(name); 
-}
-Control* UI::GetControlByID(unsigned int id) const noexcept 
-{ 
-	Control* c = nullptr;
-	for (const auto& pane : m_panes)
-	{
-		c = pane->GetControlByID(id);
-		if (c != nullptr)
-			return c;
-	}
-
-	return m_rootLayout->GetControlByID(id); 
 }
 
 }

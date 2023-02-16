@@ -204,6 +204,12 @@ public:
 	ND inline Layout* GetSublayout(unsigned int index) const noexcept;
 	ND Control* GetControlByName(const std::string& name) const noexcept;
 	ND Control* GetControlByID(unsigned int id) const noexcept;
+	template<class T>
+	ND T* GetControlByName(const std::string& name) const noexcept requires(std::is_base_of_v<Control, T>);
+	template<class T>
+	ND T* GetControlByID(unsigned int id) const noexcept requires (std::is_base_of_v<Control, T>);
+
+
 
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;
@@ -348,6 +354,44 @@ T* Layout::CreateControl(const RowColumnPosition& position, std::shared_ptr<Devi
 	return (T*)m_controls.back().get();
 }
 
+template<class T>
+T* Layout::GetControlByName(const std::string& name) const noexcept requires (std::is_base_of_v<Control, T>)
+{
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		Control* found = control->GetControlByName(name);
+		if (found != nullptr)
+			return static_cast<T*>(found);
+	}
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		T* found = sublayout->GetControlByName<T>(name);
+		if (found != nullptr)
+			return found;
+	}
+
+	return nullptr;
+}
+template<class T>
+T* Layout::GetControlByID(unsigned int id) const noexcept requires (std::is_base_of_v<Control, T>)
+{
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		Control* found = control->GetControlByID(id);
+		if (found != nullptr)
+			return static_cast<T*>(found);
+	}
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
+	{
+		T* found = sublayout->GetControlByID<T>(id);
+		if (found != nullptr)
+			return found;
+	}
+
+	return nullptr;
+}
 
 } // namespace Evergreen
 

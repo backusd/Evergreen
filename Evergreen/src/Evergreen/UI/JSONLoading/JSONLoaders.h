@@ -4,13 +4,30 @@
 #include "Evergreen/Log.h"
 #include "Evergreen/UI/Layout.h"
 #include "Evergreen/UI/Styles/Style.h"
-#include "Evergreen/UI/Controls/Control.h"
+#include "Evergreen/UI/Controls.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/Exceptions/JSONLoadersException.h"
 #include "Evergreen/Events/Event.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
+
+#define CONTROL_EVENT_MAP(control, evnt) public:                                                                                               \
+                                         static void AddCallback(const std::string& key, std::function<void(control*, evnt&)> func) noexcept   \
+                                         {                                                                                                     \
+                                             Get().AddCallbackImpl(key, func);                                                                 \
+                                         }                                                                                                     \
+                                         private:                                                                                              \
+                                         void AddCallbackImpl(const std::string& key, std::function<void(control*, evnt&)> func) noexcept      \
+                                         {                                                                                                     \
+                                         	m_map##control##evnt[key] = func;                                                                  \
+                                         }                                                                                                     \
+                                         template<>                                                                                            \
+                                         std::function<void(control*, evnt&)> GetCallbackImpl(const std::string& key)                          \
+                                         {                                                                                                     \
+                                         	return m_map##control##evnt[key];                                                                  \
+                                         }                                                                                                     \
+                                         std::unordered_map<std::string, std::function<void(control*, evnt&)>> m_map##control##evnt
 
 namespace Evergreen
 {
@@ -23,8 +40,7 @@ class EVERGREEN_API JSONLoaders
 {
 	using ControlLoaderFn = std::function<Control*(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)>;
 	using StyleLoaderFn = std::function<std::unique_ptr<Style>(std::shared_ptr<DeviceResources>, json&, const std::string&)>;
-
-
+	
 public:
 	JSONLoaders(const JSONLoaders&) = delete;
 	void operator=(const JSONLoaders&) = delete;
@@ -55,6 +71,31 @@ public:
 	static std::function<void(Control*, Event&)> GetControlFunction(const std::string& key) { return Get().GetControlFunctionImpl(key); }
 
 	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
+
+
+
+
+
+public:
+	template <class C, class E>
+	static std::function<void(C*, E&)> GetCallback(const std::string& key) { return Get().GetCallbackImpl<C, E>(key); }
+
+private:
+	template<class C, class E>
+	std::function<void(C*, E&)> GetCallbackImpl(const std::string& key)
+	{
+		EG_CORE_ERROR("No functions map for Control and Event combination. Key: {}", key);
+		std::terminate();
+	}
+
+	CONTROL_EVENT_MAP(Button, MouseMoveEvent); 
+	CONTROL_EVENT_MAP(Button, MouseButtonPressedEvent);
+	CONTROL_EVENT_MAP(Button, MouseButtonReleasedEvent);
+
+
+
+
+
 private:
 	JSONLoaders() noexcept = default;
 
