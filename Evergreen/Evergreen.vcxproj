@@ -132,6 +132,7 @@
     <None Include="src\Evergreen\UI\json-examples\RoundedButton.json" />
     <None Include="src\Evergreen\UI\json-examples\ScrollableLayout.json" />
     <None Include="src\Evergreen\UI\json-examples\SliderFloat.json" />
+    <None Include="src\Evergreen\UI\json-examples\SliderInt.json" />
     <None Include="src\Evergreen\UI\json-examples\Text.json" />
     <None Include="src\Evergreen\UI\json-examples\TextInput.json" />
   </ItemGroup>

@@ -1,0 +1,4 @@
+{
+	// SliderInt is the exactly same as SliderFloat, except the min/max/value fields will parse the corresponding value
+	// as an int, so if you specify a decimal value, the decimal part will be dropped
+}

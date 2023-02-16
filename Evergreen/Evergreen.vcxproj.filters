@@ -339,5 +339,6 @@
     <None Include="src\Evergreen\UI\json-examples\TextInput.json" />
     <None Include="src\Evergreen\UI\json-examples\Pane.json" />
     <None Include="src\Evergreen\UI\json-examples\SliderFloat.json" />
+    <None Include="src\Evergreen\UI\json-examples\SliderInt.json" />
   </ItemGroup>
 </Project>
