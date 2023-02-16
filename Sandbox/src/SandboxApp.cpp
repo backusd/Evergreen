@@ -65,6 +65,42 @@ private:
 			}
 		);
 
+		// SliderInt
+		JSONLoaders::AddCallback("SliderFloatExample_OnMouseEnteredCircle",
+			[](SliderInt* slider, MouseMoveEvent& e)
+			{
+				std::unique_ptr<Evergreen::SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Red));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddCallback("SliderFloatExample_OnMouseExitedCircle",
+			[](SliderInt* slider, MouseMoveEvent& e)
+			{
+				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddCallback("SliderFloatExample_OnBeginDragging",
+			[](SliderInt* slider, MouseButtonPressedEvent& e)
+			{
+				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddCallback("SliderFloatExample_OnStoppedDragging",
+			[](SliderInt* slider, MouseButtonReleasedEvent& e)
+			{
+				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
+				slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddCallback("SliderFloatExample_OnValueChanged",
+			[](SliderInt* slider, SliderIntValueChangedEvent& e)
+			{
+				EG_TRACE("Slider: {}", slider->GetValue());
+			}
+		);
+
 		// Pane
 		JSONLoaders::AddCallback("Pane1_OnMouseEnteredTitleBar", 
 			[](Pane* pane, MouseMoveEvent& e)

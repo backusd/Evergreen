@@ -92,6 +92,10 @@ private:
 	CONTROL_EVENT_MAP(SliderFloat, MouseButtonPressedEvent);
 	CONTROL_EVENT_MAP(SliderFloat, MouseButtonReleasedEvent);
 	CONTROL_EVENT_MAP(SliderFloat, SliderFloatValueChangedEvent);
+	CONTROL_EVENT_MAP(SliderInt, MouseMoveEvent);
+	CONTROL_EVENT_MAP(SliderInt, MouseButtonPressedEvent);
+	CONTROL_EVENT_MAP(SliderInt, MouseButtonReleasedEvent);
+	CONTROL_EVENT_MAP(SliderInt, SliderIntValueChangedEvent);
 	CONTROL_EVENT_MAP(TextInput, MouseMoveEvent);
 	CONTROL_EVENT_MAP(TextInput, MouseButtonPressedEvent);
 	CONTROL_EVENT_MAP(TextInput, MouseButtonReleasedEvent);

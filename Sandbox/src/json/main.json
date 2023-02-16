@@ -894,7 +894,7 @@
 			"ColumnDefinitions": [ { "Width": "1*" } ],
 
 			"SliderFloatExample": {
-				"Type": "SliderFloat",
+				"Type": "SliderInt",
 				"id": 223,
 				"Margin": [ 10, 0, 10, 0 ],
 				"Row": 0,
@@ -902,9 +902,9 @@
 				"RowSpan": 1,
 				"ColumnSpan": 1,
 
-				"MinimumValue": 2.0,
-				"MaximumValue": 12.0,
-				"Value": 10.0,
+				"MinimumValue": 2,
+				"MaximumValue": 12,
+				"Value": 10,
 
 				"LineWidth": 6.0,
 				"LineBrushLeft": "Purple",
@@ -916,7 +916,7 @@
 				"CircleBrush": "Purple",
 				"CircleBrushOuter": [ 1.0, 0.0, 1.0, 0.3 ],
 
-				"ValueFormatString": "{:.2f}",
+				"ValueFormatString": "{}",
 				"ShowMinMaxTextValues": true,
 				"MinTextXYOffset": [ 10, 5 ],
 				"MinTextBrush": "White",
