@@ -81,8 +81,8 @@
 		//																									 					 fields are ignored. For the PopUpTextStyle, it is forced be centered vertically and horizontally
 
 		// On* callbacks: Specify functions to execute when the slider triggers certain events.
-		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
-		//                can be set by calling JSONLoaders::AddControlFunction()
+		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
+		//                can be set by calling JSONLoaders::AddCallback()
 		"OnMouseEnteredCircle": "SliderFloatExample_OnMouseEnteredCircle",
 		"OnMouseExitedCircle": "SliderFloatExample_OnMouseExitedCircle",
 		"OnBeginDragging": "SliderFloatExample_OnBeginDragging",

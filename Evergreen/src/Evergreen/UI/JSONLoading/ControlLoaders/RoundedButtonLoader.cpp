@@ -188,12 +188,11 @@ void RoundedButtonLoader::ParseOnMouseEntered(RoundedButton* button, json& data)
 	if (data.contains("OnMouseEnter"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnter"].is_string(), "RoundedButton control with name '{}': 'OnMouseEnter' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseEnter"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseEnter' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
-
-		button->SetOnMouseEnteredCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<Button, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RoundedButton control with name '{}': 'OnMouseEnter' callback not found for key '{}'. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+		button->SetOnMouseEnteredCallback(callback);
 	}
 }
 void RoundedButtonLoader::ParseOnMouseExited(RoundedButton* button, json& data)
@@ -203,12 +202,11 @@ void RoundedButtonLoader::ParseOnMouseExited(RoundedButton* button, json& data)
 	if (data.contains("OnMouseLeave"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLeave"].is_string(), "RoundedButton control with name '{}': 'OnMouseLeave' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseLeave"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
-
-		button->SetOnMouseExitedCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<Button, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RoundedButton control with name '{}': 'OnMouseLeave' callback not found for key '{}'. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+		button->SetOnMouseExitedCallback(callback);
 	}
 }
 void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, json& data)
@@ -218,12 +216,11 @@ void RoundedButtonLoader::ParseOnMouseMoved(RoundedButton* button, json& data)
 	if (data.contains("OnMouseMoved"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseMoved"].is_string(), "RoundedButton control with name '{}': 'OnMouseMoved' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseMoved"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
-
-		button->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<Button, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RoundedButton control with name '{}': 'OnMouseMoved' callback not found for key '{}'. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+		button->SetOnMouseMovedCallback(callback);
 	}
 }
 void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, json& data)
@@ -233,12 +230,11 @@ void RoundedButtonLoader::ParseOnMouseLButtonDown(RoundedButton* button, json& d
 	if (data.contains("OnMouseLButtonDown"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonDown"].is_string(), "RoundedButton control with name '{}': 'OnMouseLButtonDown' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseLButtonDown"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLButtonDown' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
-
-		button->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<Button, MouseButtonPressedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RoundedButton control with name '{}': 'OnMouseLButtonDown' callback not found for key '{}'. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+		button->SetOnMouseLButtonDownCallback(callback);
 	}
 }
 void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, json& data)
@@ -248,12 +244,11 @@ void RoundedButtonLoader::ParseOnMouseLButtonUp(RoundedButton* button, json& dat
 	if (data.contains("OnMouseLButtonUp"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonUp"].is_string(), "RoundedButton control with name '{}': 'OnMouseLButtonUp' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseLButtonUp"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnMouseLButtonUp' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
-
-		button->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<Button, MouseButtonReleasedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RoundedButton control with name '{}': 'OnMouseLButtonUp' callback not found for key '{}'. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+		button->SetOnMouseLButtonUpCallback(callback);
 	}
 }
 void RoundedButtonLoader::ParseOnClick(RoundedButton* button, json& data)
@@ -263,12 +258,11 @@ void RoundedButtonLoader::ParseOnClick(RoundedButton* button, json& data)
 	if (data.contains("OnClick"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnClick"].is_string(), "RoundedButton control with name '{}': 'OnClick' value must be a string. Invalid RoundedButton object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnClick"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "RoundedButton control with name '{}': 'OnClick' value ('{}') does not exist in the functions map. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
-
-		button->SetOnClickCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<Button, MouseButtonReleasedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RoundedButton control with name '{}': 'OnClick' callback not found for key '{}'. Invalid RoundedButton object: {}", m_name, key, data.dump(4));
+		button->SetOnClickCallback(callback);
 	}
 }
 

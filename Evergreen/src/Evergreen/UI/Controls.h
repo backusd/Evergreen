@@ -4,3 +4,6 @@
 #include "Controls/Button.h"
 #include "Controls/RoundedButton.h"
 #include "Controls/SliderFloat.h"
+#include "Controls/Pane.h"
+#include "Controls/ScrollableLayout.h"
+#include "Controls/TextInput.h"

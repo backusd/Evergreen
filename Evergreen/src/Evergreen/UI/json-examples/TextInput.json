@@ -31,8 +31,8 @@
 		"VerticalBarWidth": 2.0, // (optional) vertical bar width - Should be >= 0
 
 		// On* callbacks: Specify functions to execute when the control triggers certain events.
-		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
-		//                can be set by calling JSONLoaders::AddControlFunction(). Each one of these are OPTIONAL
+		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
+		//                can be set by calling JSONLoaders::AddCallback(). Each one of these are OPTIONAL
 		"OnMouseEntered": "TextInput_OnMouseEntered",
 		"OnMouseExited": "TextInput_OnMouseExited",
 		"OnMouseMoved": "TextInput_OnMouseMoved",
@@ -54,7 +54,7 @@
 				"Text": "0xE721",
 				"Brush": "Black",
 				"FontFamily": "Segoe MDL2 Assets",
-				...
+				"..."
 			}
 		}
 	}

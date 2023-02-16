@@ -567,8 +567,10 @@ void SliderFloatLoader::ParseOnMouseEnteredCircle(SliderFloat* slider, json& dat
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnteredCircle"].is_string(), "SliderFloat control with name '{}': 'OnMouseEnteredCircle' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseEnteredCircle"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnMouseEnteredCircle' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
-		slider->SetOnMouseEnteredCircleCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<SliderFloat, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "SliderFloat control with name '{}': 'OnMouseEnteredCircle' callback not found for key '{}'. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnMouseEnteredCircleCallback(callback);
 	}
 }
 void SliderFloatLoader::ParseOnMouseExitedCircle(SliderFloat* slider, json& data)
@@ -578,8 +580,10 @@ void SliderFloatLoader::ParseOnMouseExitedCircle(SliderFloat* slider, json& data
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExitedCircle"].is_string(), "SliderFloat control with name '{}': 'OnMouseExitedCircle' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseExitedCircle"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnMouseExitedCircle' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
-		slider->SetOnMouseExitedCircleCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<SliderFloat, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "SliderFloat control with name '{}': 'OnMouseExitedCircle' callback not found for key '{}'. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnMouseExitedCircleCallback(callback);
 	}
 }
 void SliderFloatLoader::ParseOnBeginDragging(SliderFloat* slider, json& data)
@@ -589,8 +593,10 @@ void SliderFloatLoader::ParseOnBeginDragging(SliderFloat* slider, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnBeginDragging"].is_string(), "SliderFloat control with name '{}': 'OnBeginDragging' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
 		std::string key = data["OnBeginDragging"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnBeginDragging' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
-		slider->SetOnBeginDraggingCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<SliderFloat, MouseButtonPressedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "SliderFloat control with name '{}': 'SetOnBeginDraggingCallback' callback not found for key '{}'. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnBeginDraggingCallback(callback);
 	}
 }
 void SliderFloatLoader::ParseOnStoppedDragging(SliderFloat* slider, json& data)
@@ -600,8 +606,10 @@ void SliderFloatLoader::ParseOnStoppedDragging(SliderFloat* slider, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnStoppedDragging"].is_string(), "SliderFloat control with name '{}': 'OnStoppedDragging' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
 		std::string key = data["OnStoppedDragging"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnStoppedDragging' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
-		slider->SetOnStoppedDraggingCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<SliderFloat, MouseButtonReleasedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "SliderFloat control with name '{}': 'OnStoppedDragging' callback not found for key '{}'. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnStoppedDraggingCallback(callback);
 	}
 }
 void SliderFloatLoader::ParseOnValueChanged(SliderFloat* slider, json& data)
@@ -611,8 +619,10 @@ void SliderFloatLoader::ParseOnValueChanged(SliderFloat* slider, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnValueChanged"].is_string(), "SliderFloat control with name '{}': 'OnValueChanged' value must be a string. Invalid SliderFloat object: {}", m_name, data.dump(4));
 		std::string key = data["OnValueChanged"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "SliderFloat control with name '{}': 'OnValueChanged' value ('{}') does not exist in the functions map. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
-		slider->SetOnValueChangedCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<SliderFloat, SliderFloatValueChangedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "SliderFloat control with name '{}': 'OnValueChanged' callback not found for key '{}'. Invalid SliderFloat object: {}", m_name, key, data.dump(4));
+		slider->SetOnValueChangedCallback(callback);
 	}
 }
 }

@@ -40,8 +40,8 @@
 		},
 
 		// On* callbacks: Specify functions to execute when the Pane triggers certain events.
-		//                Each value must be a string and exist as a key in JSONLoaders::m_functionsMap, which
-		//                can be set by calling JSONLoaders::AddControlFunction()
+		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
+		//                can be set by calling JSONLoaders::AddCallback()
 		"OnMouseEnteredTitleBar": "Pane1_OnMouseEnteredTitleBar",
 		"OnMouseExitedTitleBar": "Pane1_OnMouseExitedTitleBar",
 		"OnMouseEnteredContentRegion": "Pane1_OnMouseEnteredContentRegion",

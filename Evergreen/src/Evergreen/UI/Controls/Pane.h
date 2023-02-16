@@ -85,11 +85,11 @@ public:
 	ND inline bool GetMinimized() const noexcept { return m_minimized; }
 	ND inline bool GetVisible() const noexcept { return m_visible; }
 
-	void SetOnMouseEnteredTitleBarCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredTitleBar = func; }
-	void SetOnMouseExitedTitleBarCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedTitleBar = func; }
-	void SetOnMouseEnteredContentRegionCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseEnteredContentRegion = func; }
-	void SetOnMouseExitedContentRegionCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseExitedContentRegion = func; }
-	void SetOnMouseMovedCallback(std::function<void(Control*, Event& e)> func) noexcept { m_OnMouseMoved = func; }
+	void SetOnMouseEnteredTitleBarCallback(std::function<void(Pane*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEnteredTitleBar = func; }
+	void SetOnMouseExitedTitleBarCallback(std::function<void(Pane*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExitedTitleBar = func; }
+	void SetOnMouseEnteredContentRegionCallback(std::function<void(Pane*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEnteredContentRegion = func; }
+	void SetOnMouseExitedContentRegionCallback(std::function<void(Pane*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExitedContentRegion = func; }
+	void SetOnMouseMovedCallback(std::function<void(Pane*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
 
 	template<class T>
 	T* CreateControl(std::shared_ptr<DeviceResources> deviceResources) noexcept requires (std::is_base_of_v<Control, T>);
@@ -138,15 +138,15 @@ private:
 
 	void ForceMouseToBeNotOverTitleAndContent(MouseMoveEvent& e) noexcept;
 
-	std::function<void(Control*, Event&)> m_OnMouseEnteredTitleBar = [](Control*, Event&) {};
-	std::function<void(Control*, Event&)> m_OnMouseExitedTitleBar = [](Control*, Event&) {};
-	std::function<void(Control*, Event&)> m_OnMouseEnteredContentRegion = [](Control*, Event&) {};
-	std::function<void(Control*, Event&)> m_OnMouseExitedContentRegion = [](Control*, Event&) {};
-	std::function<void(Control*, Event&)> m_OnMouseMoved = [](Control*, Event&) {};
+	std::function<void(Pane*, MouseMoveEvent&)> m_OnMouseEnteredTitleBar = [](Pane*, MouseMoveEvent&) {};
+	std::function<void(Pane*, MouseMoveEvent&)> m_OnMouseExitedTitleBar = [](Pane*, MouseMoveEvent&) {};
+	std::function<void(Pane*, MouseMoveEvent&)> m_OnMouseEnteredContentRegion = [](Pane*, MouseMoveEvent&) {};
+	std::function<void(Pane*, MouseMoveEvent&)> m_OnMouseExitedContentRegion = [](Pane*, MouseMoveEvent&) {};
+	std::function<void(Pane*, MouseMoveEvent&)> m_OnMouseMoved = [](Pane*, MouseMoveEvent&) {};
 	// I can't think of use cases for these so I'm only going to implement what is currently necessary
-	//std::function<void(Control*, Event&)> m_OnMouseLButtonDown = [](Control*, Event&) {};
-	//std::function<void(Control*, Event&)> m_OnMouseLButtonUp = [](Control*, Event&) {};
-	//std::function<void(Control*, Event&)> m_OnClick = [](Control*, Event&) {};
+	//std::function<void(Pane*, MouseButtonPressedEvent&)> m_OnMouseLButtonDown = [](Pane*, MouseButtonPressedEvent&) {};
+	//std::function<void(Pane*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](Pane*, MouseButtonReleasedEvent&) {};
+	//std::function<void(Pane*, MouseButtonReleasedEvent&)> m_OnClick = [](Pane*, MouseButtonReleasedEvent&) {};
 
 	MouseOverDraggableAreaState m_mouseTitleBarState;
 	MouseOverDraggableAreaState m_mouseContentRegionState; // Note, the content region is not actually draggable. We only use this for OVER/NOT_OVER

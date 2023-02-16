@@ -56,7 +56,7 @@ public:
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
 	void BorderWidth(float width) noexcept { m_borderWidth = width; }
 
-	inline void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
+	inline virtual void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
 	inline void SetOnMouseExitedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
 	inline void SetOnMouseMovedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
 	inline void SetOnMouseLButtonDownCallback(std::function<void(Button*, MouseButtonPressedEvent& e)> func) noexcept { m_OnMouseLButtonDown = func; }
@@ -74,12 +74,12 @@ protected:
 	virtual void OnMarginChanged() override;
 	virtual void OnAllowedRegionChanged() override;
 
-	std::function<void(Button*, MouseMoveEvent&)> m_OnMouseEntered = [](Control*, Event&) {};
-	std::function<void(Button*, MouseMoveEvent&)> m_OnMouseExited = [](Control*, Event&) {};
-	std::function<void(Button*, MouseMoveEvent&)> m_OnMouseMoved = [](Control*, Event&) {};
-	std::function<void(Button*, MouseButtonPressedEvent&)> m_OnMouseLButtonDown = [](Control*, Event&) {};
-	std::function<void(Button*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](Control*, Event&) {};
-	std::function<void(Button*, MouseButtonReleasedEvent&)> m_OnClick = [](Control*, Event&) {};
+	std::function<void(Button*, MouseMoveEvent&)> m_OnMouseEntered = [](Button*, MouseMoveEvent&) {};
+	std::function<void(Button*, MouseMoveEvent&)> m_OnMouseExited = [](Button*, MouseMoveEvent&) {};
+	std::function<void(Button*, MouseMoveEvent&)> m_OnMouseMoved = [](Button*, MouseMoveEvent&) {};
+	std::function<void(Button*, MouseButtonPressedEvent&)> m_OnMouseLButtonDown = [](Button*, MouseButtonPressedEvent&) {};
+	std::function<void(Button*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](Button*, MouseButtonReleasedEvent&) {};
+	std::function<void(Button*, MouseButtonReleasedEvent&)> m_OnClick = [](Button*, MouseButtonReleasedEvent&) {};
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;

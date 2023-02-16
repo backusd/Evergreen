@@ -152,9 +152,6 @@ void ButtonLoader::ParseOnMouseEntered(Button* button, json& data)
 
 		std::string key = data["OnMouseEnter"].get<std::string>();
 
-		//JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseEnter' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
-		//button->SetOnMouseEnteredCallback(JSONLoaders::GetControlFunction(key));
-
 		auto callback = JSONLoaders::GetCallback<Button, MouseMoveEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnMouseEnter' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
 		button->SetOnMouseEnteredCallback(callback);
@@ -169,9 +166,6 @@ void ButtonLoader::ParseOnMouseExited(Button* button, json& data)
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLeave"].is_string(), "Button control with name '{}': 'OnMouseLeave' value must be a string. Invalid Button object: {}", m_name, data.dump(4));
 
 		std::string key = data["OnMouseLeave"].get<std::string>();
-
-		//JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLeave' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
-		//button->SetOnMouseExitedCallback(JSONLoaders::GetControlFunction(key));
 
 		auto callback = JSONLoaders::GetCallback<Button, MouseMoveEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnMouseLeave' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
@@ -188,9 +182,6 @@ void ButtonLoader::ParseOnMouseMoved(Button* button, json& data)
 
 		std::string key = data["OnMouseMoved"].get<std::string>();
 
-		//JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
-		//button->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
-
 		auto callback = JSONLoaders::GetCallback<Button, MouseMoveEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnMouseMoved' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
 		button->SetOnMouseMovedCallback(callback);
@@ -205,9 +196,6 @@ void ButtonLoader::ParseOnMouseLButtonDown(Button* button, json& data)
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonDown"].is_string(), "Button control with name '{}': 'OnMouseLButtonDown' value must be a string. Invalid Button object: {}", m_name, data.dump(4));
 
 		std::string key = data["OnMouseLButtonDown"].get<std::string>();
-
-		//JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLButtonDown' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
-		//button->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
 
 		auto callback = JSONLoaders::GetCallback<Button, MouseButtonPressedEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnMouseLButtonDown' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
@@ -224,9 +212,6 @@ void ButtonLoader::ParseOnMouseLButtonUp(Button* button, json& data)
 
 		std::string key = data["OnMouseLButtonUp"].get<std::string>();
 
-		//JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnMouseLButtonUp' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
-		//button->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
-
 		auto callback = JSONLoaders::GetCallback<Button, MouseButtonReleasedEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnMouseLButtonUp' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
 		button->SetOnMouseLButtonUpCallback(callback);
@@ -241,9 +226,6 @@ void ButtonLoader::ParseOnClick(Button* button, json& data)
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnClick"].is_string(), "Button control with name '{}': 'OnClick' value must be a string. Invalid Button object: {}", m_name, data.dump(4));
 
 		std::string key = data["OnClick"].get<std::string>();
-
-		//JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Button control with name '{}': 'OnClick' value ('{}') does not exist in the functions map. Invalid Button object: {}", m_name, key, data.dump(4));
-		//button->SetOnClickCallback(JSONLoaders::GetControlFunction(key));
 
 		auto callback = JSONLoaders::GetCallback<Button, MouseButtonReleasedEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnClick' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));

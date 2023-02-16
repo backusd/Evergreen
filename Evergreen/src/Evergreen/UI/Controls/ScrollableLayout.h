@@ -173,7 +173,6 @@ private:
 	std::unique_ptr<ColorBrush> m_horizontalScrollBarBrushHovered;
 	std::unique_ptr<ColorBrush> m_horizontalScrollBarBrushDragging;
 	std::unique_ptr<ColorBrush> m_horizontalScrollBarRegionBrush;
-
 };
 #pragma warning( pop )
 

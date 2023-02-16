@@ -30,141 +30,135 @@ private:
 
 		// TESTING ================================================================================
 		// SliderFloat
-		JSONLoaders::AddControlFunction("SliderFloatExample_OnMouseEnteredCircle", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("SliderFloatExample_OnMouseEnteredCircle", 
+			[](SliderFloat* slider, MouseMoveEvent& e)
 			{
-				SliderFloat* slider = static_cast<SliderFloat*>(control);
 				std::unique_ptr<Evergreen::SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Red));
 				slider->SetCircleBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("SliderFloatExample_OnMouseExitedCircle", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("SliderFloatExample_OnMouseExitedCircle", 
+			[](SliderFloat* slider, MouseMoveEvent& e)
 			{
-				SliderFloat* slider = static_cast<SliderFloat*>(control);
 				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Purple));
 				slider->SetCircleBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("SliderFloatExample_OnBeginDragging", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("SliderFloatExample_OnBeginDragging", 
+			[](SliderFloat* slider, MouseButtonPressedEvent& e)
 			{
-				SliderFloat* slider = static_cast<SliderFloat*>(control);
 				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Green));
 				slider->SetCircleBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("SliderFloatExample_OnStoppedDragging", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("SliderFloatExample_OnStoppedDragging", 
+			[](SliderFloat* slider, MouseButtonReleasedEvent& e)
 			{
-				SliderFloat* slider = static_cast<SliderFloat*>(control);
 				std::unique_ptr<ColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
 				slider->SetCircleBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("SliderFloatExample_OnValueChanged", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("SliderFloatExample_OnValueChanged", 
+			[](SliderFloat* slider, SliderFloatValueChangedEvent& e)
 			{
-				SliderFloat* slider = static_cast<SliderFloat*>(control);
 				EG_TRACE("Slider: {}", slider->GetValue());
 			}
 		);
 
 		// Pane
-		JSONLoaders::AddControlFunction("Pane1_OnMouseEnteredTitleBar", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("Pane1_OnMouseEnteredTitleBar", 
+			[](Pane* pane, MouseMoveEvent& e)
 			{
-				Pane* pane = static_cast<Pane*>(control);
 				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
 				pane->SetTitleBarBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("Pane1_OnMouseExitedTitleBar", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("Pane1_OnMouseExitedTitleBar",
+			[](Pane* pane, MouseMoveEvent& e)
 			{
-				Pane* pane = static_cast<Pane*>(control);
 				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f));
 				pane->SetTitleBarBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("Pane1_OnMouseEnteredContentRegion", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("Pane1_OnMouseEnteredContentRegion",
+			[](Pane* pane, MouseMoveEvent& e)
 			{
-				Pane* pane = static_cast<Pane*>(control);
 				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White));
 				pane->SetBackgroundBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("Pane1_OnMouseExitedContentRegion", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("Pane1_OnMouseExitedContentRegion",
+			[](Pane* pane, MouseMoveEvent& e)
 			{
-				Pane* pane = static_cast<Pane*>(control);
 				std::unique_ptr<SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(pane->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DarkGray));
 				pane->SetBackgroundBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("Pane1_OnMouseMoved", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("Pane1_OnMouseMoved",
+			[](Pane* pane, MouseMoveEvent& e)
 			{
-				Pane* pane = static_cast<Pane*>(control);
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-
-				std::string newTitle = std::format("x: {}, y: {}", mme.GetX(), mme.GetY());
+				std::string newTitle = std::format("x: {}, y: {}", e.GetX(), e.GetY());
 				pane->ClearTitleBarLayoutAndAddTitle(newTitle);
 			}
 		);
 
 		// TextInput
-		JSONLoaders::AddControlFunction("TextInput1_OnMouseEntered", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnMouseEntered", 
+			[](TextInput* textInput, MouseMoveEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
 				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
 				textInput->SetBackgroundBrush(std::move(bkgdBrush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnMouseExited", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnMouseExited", 
+			[](TextInput* textInput, MouseMoveEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
 				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
 				textInput->SetBackgroundBrush(std::move(bkgdBrush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnMouseMoved", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnMouseMoved", 
+			[](TextInput* textInput, MouseMoveEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnMouseLButtonDown", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnMouseLButtonDown", 
+			[](TextInput* textInput, MouseButtonPressedEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
 				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Coral));
 				textInput->SetBackgroundBrush(std::move(bkgdBrush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnMouseLButtonUp", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnMouseLButtonUp", 
+			[](TextInput* textInput, MouseButtonReleasedEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
 				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
 				textInput->SetBackgroundBrush(std::move(bkgdBrush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnClick", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnClick", 
+			[](TextInput* textInput, MouseButtonReleasedEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
-
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnEnterKey", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnEnterKey", 
+			[](TextInput* textInput, CharEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
 				std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue));
 				textInput->SetBackgroundBrush(std::move(bkgdBrush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TextInput1_OnInputTextChanged", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TextInput1_OnInputTextChanged", 
+			[](TextInput* textInput, CharEvent& e)
 			{
-				TextInput* textInput = static_cast<TextInput*>(control);
-
 			}
 		);
 
 
 		// Test Button
-		JSONLoaders::AddControlFunction("TestButtonOnMouseEnter", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButtonOnMouseEnter", 
+			[](Button* button, MouseMoveEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
-				// button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DarkOrange))));
-			
 				float c = 0.35f;
 				std::vector<D2D1_GRADIENT_STOP> stops{ 
 					{0.0f, D2D1::ColorF(c, c, c)}, 
@@ -195,72 +189,66 @@ private:
 				button->BackgroundBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButtonOnMouseLeave", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButtonOnMouseLeave", 
+			[](Button* button, MouseMoveEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);	
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Black))));
 			}
 		);		
-		JSONLoaders::AddControlFunction("TestButtonOnMouseMoved", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButtonOnMouseMoved", 
+			[](Button* button, MouseMoveEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
 				D2D1_RECT_F rect = button->AllowedRegion();
 
 				float height = rect.bottom - rect.top;
 				float width = rect.right - rect.left;
 				float halfLength = std::max(height, width);
 
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-
-				float centerX = mme.GetX();
-				float centerY = mme.GetY();
+				float centerX = e.GetX();
+				float centerY = e.GetY();
 
 				RadialBrush* backgroundBrush = static_cast<RadialBrush*>(button->BackgroundBrush());
 				backgroundBrush->SetDrawRegion(
 					D2D1::RectF(centerX - halfLength, centerY - halfLength, centerX + halfLength, centerY + halfLength)
 				);
 
-
-				/*
-
-
-				float centerX = rect.left + ((rect.right - rect.left) / 2.0f);
-				float centerY = rect.top + ((rect.bottom - rect.top) / 2.0f);
-
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-				
-				RadialBrush* backgroundBrush = static_cast<RadialBrush*>(button->BackgroundBrush());
-				backgroundBrush->GradientOriginOffset(D2D1::Point2F(mme.GetX() - centerX, mme.GetY() - centerY));
-
-				
-				
-				D2D1_RECT_F rect = button->AllowedRegion();
-				float centerX = rect.left + ((rect.right - rect.left) / 2.0f);
-				float centerY = rect.top + ((rect.bottom - rect.top) / 2.0f);
-
-				D2D1_POINT_2F mouseLocation = button->MouseLocation();
-
-				std::unique_ptr<RadialBrush> brush = std::make_unique<RadialBrush>(
-					button->GetDeviceResources(), 
-					D2D1::ColorF(D2D1::ColorF::Gainsboro),
-					D2D1::ColorF(D2D1::ColorF::Black),
-					D2D1::Point2F(mouseLocation.x - centerX, mouseLocation.y - centerY)
-				);
-
-				button->BackgroundBrush(std::move(brush));
-				*/
-				// button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Orange))));
+//				float centerX = rect.left + ((rect.right - rect.left) / 2.0f);
+//				float centerY = rect.top + ((rect.bottom - rect.top) / 2.0f);
+//
+//				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
+//				
+//				RadialBrush* backgroundBrush = static_cast<RadialBrush*>(button->BackgroundBrush());
+//				backgroundBrush->GradientOriginOffset(D2D1::Point2F(mme.GetX() - centerX, mme.GetY() - centerY));
+//
+//				
+//				
+//				D2D1_RECT_F rect = button->AllowedRegion();
+//				float centerX = rect.left + ((rect.right - rect.left) / 2.0f);
+//				float centerY = rect.top + ((rect.bottom - rect.top) / 2.0f);
+//
+//				D2D1_POINT_2F mouseLocation = button->MouseLocation();
+//
+//				std::unique_ptr<RadialBrush> brush = std::make_unique<RadialBrush>(
+//					button->GetDeviceResources(), 
+//					D2D1::ColorF(D2D1::ColorF::Gainsboro),
+//					D2D1::ColorF(D2D1::ColorF::Black),
+//					D2D1::Point2F(mouseLocation.x - centerX, mouseLocation.y - centerY)
+//				);
+//
+//				button->BackgroundBrush(std::move(brush));
+//
+//				//button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Orange))));
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButtonOnMouseLButtonDown", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButtonOnMouseLButtonDown", 
+			[](Button* button, MouseButtonPressedEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
 				// button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Peru))));
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButtonOnMouseLButtonUp", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButtonOnMouseLButtonUp", 
+			[](Button* button, MouseButtonReleasedEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
 				// Only need to change the background color if the mouse is still over the button (because if the mouse leaves the button area, the
 				// OnMouseLeave event will fire and set the background color anyways)
 				
@@ -270,18 +258,16 @@ private:
 				//}
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButtonOnClick", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButtonOnClick", 
+			[](Button* button, MouseButtonReleasedEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
-
 			}
 		);
 
 		// Test Button 2
-		JSONLoaders::AddControlFunction("TestButton2OnMouseEnter", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButton2OnMouseEnter", 
+			[](Button* button, MouseMoveEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
-
 				std::vector<D2D1_GRADIENT_STOP> stops{
 					{0.0f, D2D1::ColorF(D2D1::ColorF::Pink)},
 					{0.2f, D2D1::ColorF(D2D1::ColorF::Blue)},
@@ -311,25 +297,23 @@ private:
 				button->BackgroundBrush(std::move(brush));
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButton2OnMouseLeave", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButton2OnMouseLeave", 
+			[](Button* button, MouseMoveEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Blue))));
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButton2OnMouseMoved", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButton2OnMouseMoved", 
+			[](Button* button, MouseMoveEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
 				D2D1_RECT_F rect = button->AllowedRegion();
 
 				float height = rect.bottom - rect.top;
 				float width = rect.right - rect.left;
 				float halfLength = std::max(height, width);
 
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-
-				float centerX = mme.GetX();
-				float centerY = mme.GetY();
+				float centerX = e.GetX();
+				float centerY = e.GetY();
 
 				RadialBrush* backgroundBrush = static_cast<RadialBrush*>(button->BackgroundBrush());
 				backgroundBrush->SetDrawRegion(
@@ -338,22 +322,19 @@ private:
 
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButton2OnMouseLButtonDown", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButton2OnMouseLButtonDown", 
+			[](Button* button, MouseButtonPressedEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
-
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButton2OnMouseLButtonUp", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButton2OnMouseLButtonUp", 
+			[](Button* button, MouseButtonReleasedEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
-
 			}
 		);
-		JSONLoaders::AddControlFunction("TestButton2OnClick", [](Control* control, Event& e)
+		JSONLoaders::AddCallback("TestButton2OnClick", 
+			[](Button* button, MouseButtonReleasedEvent& e)
 			{
-				Button* button = static_cast<Button*>(control);
-
 			}
 		);
 
@@ -572,18 +553,17 @@ private:
 		);
 
 		// Pane ----------------------------------------------------------------------------------------------
-		JSONLoaders::AddControlFunction("MenuBarDropDownPaneOnMouseExitedContentRegion", [this](Control* control, Event& e)
+		JSONLoaders::AddCallback("MenuBarDropDownPaneOnMouseExitedContentRegion", 
+			[this](Pane* pane, MouseMoveEvent& e)
 			{
-				Pane* pane = static_cast<Pane*>(control);
 				Pane* filePane = m_ui->GetPane("FileDropDownPane");
 				Pane* editPane = m_ui->GetPane("EditDropDownPane");
 				Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
 				Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
 				Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
 				Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
 
-				if (fileButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				if (fileButton->ContainsPoint(e.GetX(), e.GetY()))
 				{
 					if (filePane != pane)
 					{
@@ -600,7 +580,7 @@ private:
 						}
 					}
 				}
-				else if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				else if (editButton->ContainsPoint(e.GetX(), e.GetY()))
 				{
 					if (editPane != pane)
 					{
@@ -617,7 +597,7 @@ private:
 						}
 					}
 				}
-				else if (viewButton->ContainsPoint(mme.GetX(), mme.GetY()))
+				else if (viewButton->ContainsPoint(e.GetX(), e.GetY()))
 				{
 					if (viewPane != pane)
 					{

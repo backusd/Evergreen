@@ -320,8 +320,10 @@ void PaneLoader::ParseOnMouseEnteredTitleBar(Pane* pane, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnteredTitleBar"].is_string(), "Pane control with name '{}': 'OnMouseEnteredTitleBar' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseEnteredTitleBar"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Pane control with name '{}': 'OnMouseEnteredTitleBar' value ('{}') does not exist in the functions map. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseEnteredTitleBarCallback(JSONLoaders::GetControlFunction(key));
+		
+		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseEnteredTitleBar' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
+		pane->SetOnMouseEnteredTitleBarCallback(callback);
 	}
 }
 void PaneLoader::ParseOnMouseExitedTitleBar(Pane* pane, json& data)
@@ -332,8 +334,10 @@ void PaneLoader::ParseOnMouseExitedTitleBar(Pane* pane, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExitedTitleBar"].is_string(), "Pane control with name '{}': 'OnMouseExitedTitleBar' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseExitedTitleBar"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Pane control with name '{}': 'OnMouseExitedTitleBar' value ('{}') does not exist in the functions map. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseExitedTitleBarCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseExitedTitleBar' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
+		pane->SetOnMouseExitedTitleBarCallback(callback);
 	}
 }
 void PaneLoader::ParseOnMouseEnteredContentRegion(Pane* pane, json& data)
@@ -344,8 +348,10 @@ void PaneLoader::ParseOnMouseEnteredContentRegion(Pane* pane, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnteredContentRegion"].is_string(), "Pane control with name '{}': 'OnMouseEnteredContentRegion' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseEnteredContentRegion"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Pane control with name '{}': 'OnMouseEnteredContentRegion' value ('{}') does not exist in the functions map. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseEnteredContentRegionCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseEnteredContentRegion' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
+		pane->SetOnMouseEnteredContentRegionCallback(callback);
 	}
 }
 void PaneLoader::ParseOnMouseExitedContentRegion(Pane* pane, json& data)
@@ -356,8 +362,10 @@ void PaneLoader::ParseOnMouseExitedContentRegion(Pane* pane, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExitedContentRegion"].is_string(), "Pane control with name '{}': 'OnMouseExitedContentRegion' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseExitedContentRegion"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Pane control with name '{}': 'OnMouseExitedContentRegion' value ('{}') does not exist in the functions map. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseExitedContentRegionCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseExitedContentRegion' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
+		pane->SetOnMouseExitedContentRegionCallback(callback);
 	}
 }
 void PaneLoader::ParseOnMouseMoved(Pane* pane, json& data)
@@ -368,8 +376,10 @@ void PaneLoader::ParseOnMouseMoved(Pane* pane, json& data)
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseMoved"].is_string(), "Pane control with name '{}': 'OnMouseMoved' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
 		std::string key = data["OnMouseMoved"].get<std::string>();
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "Pane control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
+
+		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseMoved' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
+		pane->SetOnMouseMovedCallback(callback);
 	}
 }
 

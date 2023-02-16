@@ -66,10 +66,6 @@ public:
 
 	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
 
-	static void AddControlFunction(const std::string& key, std::function<void(Control*, Event&)> func) noexcept { Get().AddControlFunctionImpl(key, func); }
-	static bool ControlFunctionKeyExists(const std::string& key) noexcept { return Get().ControlFunctionKeyExistsImpl(key); }
-	static std::function<void(Control*, Event&)> GetControlFunction(const std::string& key) { return Get().GetControlFunctionImpl(key); }
-
 	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
 
 
@@ -91,6 +87,16 @@ private:
 	CONTROL_EVENT_MAP(Button, MouseMoveEvent); 
 	CONTROL_EVENT_MAP(Button, MouseButtonPressedEvent);
 	CONTROL_EVENT_MAP(Button, MouseButtonReleasedEvent);
+	CONTROL_EVENT_MAP(Pane, MouseMoveEvent);
+	CONTROL_EVENT_MAP(SliderFloat, MouseMoveEvent);
+	CONTROL_EVENT_MAP(SliderFloat, MouseButtonPressedEvent);
+	CONTROL_EVENT_MAP(SliderFloat, MouseButtonReleasedEvent);
+	CONTROL_EVENT_MAP(SliderFloat, SliderFloatValueChangedEvent);
+	CONTROL_EVENT_MAP(TextInput, MouseMoveEvent);
+	CONTROL_EVENT_MAP(TextInput, MouseButtonPressedEvent);
+	CONTROL_EVENT_MAP(TextInput, MouseButtonReleasedEvent);
+	CONTROL_EVENT_MAP(TextInput, CharEvent);
+
 
 
 
@@ -136,23 +142,14 @@ private:
 
 	void ImportJSONImpl(json& data);
 
-
 	bool IsControlKeyImpl(const std::string& controlKey) const noexcept { return m_controlLoaders.find(controlKey) != m_controlLoaders.end(); }
 	bool IsStyleKeyImpl(const std::string& styleKey) const noexcept { return m_styleLoaders.find(styleKey) != m_styleLoaders.end(); }
-
-	void AddControlFunctionImpl(const std::string& key, std::function<void(Control*, Event&)> func) noexcept { m_functionsMap[key] = func; }
-	bool ControlFunctionKeyExistsImpl(const std::string& key) noexcept { return m_functionsMap.contains(key); }
-	std::function<void(Control*, Event&)> GetControlFunctionImpl(const std::string& key) { return m_functionsMap[key]; }
-
 
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;
 
 	// Keep a cache of styles that have been parsed for quick lookup
 	std::unordered_map<std::string, std::unique_ptr<Style>> m_stylesCache;
-
-	// Map of function callbacks
-	std::unordered_map<std::string, std::function<void(Control*, Event&)>> m_functionsMap;
 
 	json					m_jsonRoot;
 	std::filesystem::path	m_jsonRootDirectory;

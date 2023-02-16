@@ -257,12 +257,11 @@ void TextInputLoader::ParseOnMouseEnter(TextInput* textInput, json& data)
 	if (data.contains("OnMouseEntered"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEntered"].is_string(), "TextInput control with name '{}': 'OnMouseEntered' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseEntered"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnMouseEntered' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnMouseEnteredCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseEnter' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnMouseEnteredCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnMouseExited(TextInput* textInput, json& data)
@@ -272,12 +271,11 @@ void TextInputLoader::ParseOnMouseExited(TextInput* textInput, json& data)
 	if (data.contains("OnMouseExited"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExited"].is_string(), "TextInput control with name '{}': 'OnMouseExited' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseExited"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnMouseExited' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnMouseExitedCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseExited' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnMouseExitedCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnMouseMoved(TextInput* textInput, json& data)
@@ -287,12 +285,11 @@ void TextInputLoader::ParseOnMouseMoved(TextInput* textInput, json& data)
 	if (data.contains("OnMouseMoved"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseMoved"].is_string(), "TextInput control with name '{}': 'OnMouseMoved' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseMoved"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnMouseMoved' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnMouseMovedCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, MouseMoveEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseMoved' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnMouseMovedCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnMouseLButtonDown(TextInput* textInput, json& data)
@@ -302,12 +299,11 @@ void TextInputLoader::ParseOnMouseLButtonDown(TextInput* textInput, json& data)
 	if (data.contains("OnMouseLButtonDown"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonDown"].is_string(), "TextInput control with name '{}': 'OnMouseLButtonDown' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseLButtonDown"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnMouseLButtonDown' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnMouseLButtonDownCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, MouseButtonPressedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseLButtonDown' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnMouseLButtonDownCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnMouseLButtonUp(TextInput* textInput, json& data)
@@ -317,12 +313,11 @@ void TextInputLoader::ParseOnMouseLButtonUp(TextInput* textInput, json& data)
 	if (data.contains("OnMouseLButtonUp"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonUp"].is_string(), "TextInput control with name '{}': 'OnMouseLButtonUp' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnMouseLButtonUp"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnMouseLButtonUp' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnMouseLButtonUpCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, MouseButtonReleasedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseLButtonUp' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnMouseLButtonUpCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnClick(TextInput* textInput, json& data)
@@ -332,12 +327,11 @@ void TextInputLoader::ParseOnClick(TextInput* textInput, json& data)
 	if (data.contains("OnClick"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnClick"].is_string(), "TextInput control with name '{}': 'OnClick' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnClick"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnClick' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnClickCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, MouseButtonReleasedEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnClick' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnClickCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnEnterKey(TextInput* textInput, json& data)
@@ -347,12 +341,11 @@ void TextInputLoader::ParseOnEnterKey(TextInput* textInput, json& data)
 	if (data.contains("OnEnterKey"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnEnterKey"].is_string(), "TextInput control with name '{}': 'OnEnterKey' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnEnterKey"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnEnterKey' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnEnterKeyCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, CharEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnEnterKey' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnEnterKeyCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnInputTextChanged(TextInput* textInput, json& data)
@@ -362,12 +355,11 @@ void TextInputLoader::ParseOnInputTextChanged(TextInput* textInput, json& data)
 	if (data.contains("OnInputTextChanged"))
 	{
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnInputTextChanged"].is_string(), "TextInput control with name '{}': 'OnInputTextChanged' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-
 		std::string key = data["OnInputTextChanged"].get<std::string>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::ControlFunctionKeyExists(key), "TextInput control with name '{}': 'OnInputTextChanged' value ('{}') does not exist in the functions map. Invalid TextInput object: {}", m_name, key, data.dump(4));
-
-		textInput->SetOnInputTextChangedCallback(JSONLoaders::GetControlFunction(key));
+		auto callback = JSONLoaders::GetCallback<TextInput, CharEvent>(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnInputTextChanged' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
+		textInput->SetOnInputTextChangedCallback(callback);
 	}
 }
 
