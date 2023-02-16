@@ -15,6 +15,8 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	EG_CORE_ASSERT(ui != nullptr, "No UI");
 
 	m_name = name;
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
+
 
 	// Pane is special in that row/column positioning and margin doesn't make sense
 	// So if the user included them, just log a warning message and delete that piece of data

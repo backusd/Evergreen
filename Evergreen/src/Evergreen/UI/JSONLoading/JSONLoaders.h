@@ -64,6 +64,7 @@ public:
 	static bool IsControlKey(const std::string& controlKey) noexcept { return Get().IsControlKeyImpl(controlKey); }
 	static bool IsStyleKey(const std::string& styleKey) noexcept { return Get().IsStyleKeyImpl(styleKey); }
 
+	static void AddControlName(const std::string& name) { Get().AddControlNameImpl(name); }
 	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
 
 	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
@@ -149,11 +150,17 @@ private:
 	bool IsControlKeyImpl(const std::string& controlKey) const noexcept { return m_controlLoaders.find(controlKey) != m_controlLoaders.end(); }
 	bool IsStyleKeyImpl(const std::string& styleKey) const noexcept { return m_styleLoaders.find(styleKey) != m_styleLoaders.end(); }
 
+	void AddControlNameImpl(const std::string& name);
+
+
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;
 
 	// Keep a cache of styles that have been parsed for quick lookup
 	std::unordered_map<std::string, std::unique_ptr<Style>> m_stylesCache;
+
+	// Keep a list of all control names so that we can ensure control names are unique
+	std::vector<std::string> m_controlNames;
 
 	json					m_jsonRoot;
 	std::filesystem::path	m_jsonRootDirectory;

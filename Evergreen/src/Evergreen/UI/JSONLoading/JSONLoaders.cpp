@@ -469,42 +469,31 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 	{
 		EG_CORE_ERROR("Failed to load UI file '{}'", rootFile);
 		EG_CORE_ERROR("Caught JSONLoadersException with message:\n{}", ex.what());
-
-		m_jsonRoot = {};
-		return false;
 	}
 	catch (const BaseException& ex)
 	{
 		EG_CORE_ERROR("Failed to load UI file '{}'", rootFile);
 		EG_CORE_ERROR("Caught BaseException with message:\n{}", ex.what());
-
-		m_jsonRoot = {};
-		return false;
 	}
 	catch (json::parse_error& e)
 	{
 		EG_CORE_ERROR("Failed to load UI file '{}'", rootFile);
 		EG_CORE_ERROR("Caught json::parse_error:\n{}", e.what());
-		
-		m_jsonRoot = {};
-		return false;
 	}
 	catch (const std::exception& ex)
 	{
 		EG_CORE_ERROR("Failed to load UI file '{}'", rootFile);
 		EG_CORE_ERROR("Caught std::exception with message:\n{}", ex.what());
-
-		m_jsonRoot = {};
-		return false;
 	}
 	catch (...)
 	{
 		EG_CORE_ERROR("Failed to load UI file '{}'", rootFile);
 		EG_CORE_ERROR("{}", "Caught unidentified exception");
-
-		m_jsonRoot = {};
-		return false;
 	}
+
+	m_controlNames.clear();
+	m_jsonRoot = {};
+	return false;
 }
 json JSONLoaders::LoadJSONFile(std::filesystem::path filePath)
 {
@@ -987,6 +976,19 @@ std::tuple<RowColumnType, float> JSONLoaders::ParseRowColumnTypeAndSizeImpl(json
 	}
 
 	JSON_LOADER_EXCEPTION("Height/Width value must be either a number or a string.\nLayout Name: {}\nInvalid value: {}", layoutName, data.dump(4));
+}
+
+void JSONLoaders::AddControlNameImpl(const std::string& name)
+{
+	for (const std::string& n : m_controlNames)
+	{
+		if (n.compare(name) == 0)
+		{
+			JSON_LOADER_EXCEPTION("Cannot duplicate control names. Offending name: {}", name);
+		}
+	}
+
+	m_controlNames.push_back(name);
 }
 
 }

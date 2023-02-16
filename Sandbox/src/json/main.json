@@ -952,6 +952,7 @@
 				"OnStoppedDragging": "SliderFloatExample_OnStoppedDragging",
 				"OnValueChanged": "SliderFloatExample_OnValueChanged"
 			}
+
 		}
 
 

@@ -9,6 +9,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
 
 	RowColumnPosition rowCol;
 	Margin margin;
