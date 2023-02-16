@@ -456,6 +456,11 @@ void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 			Window::SetCursor(Cursor::I_BEAM);
 			m_OnMouseEntered(this, e);
 		}
+		else if (m_textInputControlIsSelected)
+		{
+			// The TextInput is selected so just continue to capture the mouse
+			e.Handled(this);
+		}
 
 		break;
 	case MouseOverState::OVER:

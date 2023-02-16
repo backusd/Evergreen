@@ -1019,10 +1019,27 @@ void UI::OnChar(CharEvent& e) noexcept
 		m_keyboardHandlingLayout->OnChar(e);
 	}
 	
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnChar(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnChar(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1042,10 +1059,27 @@ void UI::OnKeyPressed(KeyPressedEvent& e) noexcept
 		m_keyboardHandlingLayout->OnKeyPressed(e);
 	}
 
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnKeyPressed(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnKeyPressed(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1065,10 +1099,27 @@ void UI::OnKeyReleased(KeyReleasedEvent& e) noexcept
 		m_keyboardHandlingLayout->OnKeyReleased(e);
 	}
 
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnKeyReleased(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnKeyReleased(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1095,10 +1146,27 @@ void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 		m_mouseHandlingLayout->OnMouseMove(e);
 	}
 
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnMouseMove(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseMove(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1118,10 +1186,27 @@ void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		m_mouseHandlingLayout->OnMouseButtonPressed(e);
 	}
 
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnMouseButtonPressed(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseButtonPressed(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1141,10 +1226,27 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		m_mouseHandlingLayout->OnMouseButtonReleased(e);
 	}
 
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnMouseButtonReleased(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseButtonReleased(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1164,10 +1266,27 @@ void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 		m_mouseHandlingLayout->OnMouseButtonDoubleClick(e);
 	}
 
-	for (const auto& pane : m_panes)
+	if (!e.Handled())
 	{
-		if (!e.Handled())
-			pane->OnMouseButtonDoubleClick(e);
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseButtonDoubleClick(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	if (!e.Handled())
@@ -1179,20 +1298,72 @@ void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 
 void UI::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 {
-	for (const auto& pane : m_panes)
+	if (m_mouseHandlingControl != nullptr)
 	{
-		if (!e.Handled())
-			pane->OnMouseScrolledVertical(e);
+		m_mouseHandlingControl->OnMouseScrolledVertical(e);
+	}
+	else if (m_mouseHandlingLayout != nullptr)
+	{
+		m_mouseHandlingLayout->OnMouseScrolledVertical(e);
+	}
+
+	if (!e.Handled())
+	{
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseScrolledVertical(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	m_rootLayout->OnMouseScrolledVertical(e);
 }
 void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 {
-	for (const auto& pane : m_panes)
+	if (m_mouseHandlingControl != nullptr)
 	{
-		if (!e.Handled())
-			pane->OnMouseScrolledHorizontal(e);
+		m_mouseHandlingControl->OnMouseScrolledHorizontal(e);
+	}
+	else if (m_mouseHandlingLayout != nullptr)
+	{
+		m_mouseHandlingLayout->OnMouseScrolledHorizontal(e);
+	}
+
+	if (!e.Handled())
+	{
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseScrolledHorizontal(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
 	}
 
 	m_rootLayout->OnMouseScrolledHorizontal(e);
