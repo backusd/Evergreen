@@ -825,6 +825,58 @@ void UI::LoadDefaultUI() noexcept
 			slider->SetFillLineOnRightSide(false);
 		}
 	);
+
+	// RadioButton =====================================================================
+	RowColumnPosition rbPosition;
+	rbPosition.Row = 2;
+	rbPosition.Column = 1;
+
+	RadioButton* rb = sublayout->CreateControl<RadioButton>(
+		rbPosition,
+		m_deviceResources, 
+		true, // isChecked
+		6.0f, // outerRadius
+		3.0f, // innerRadius
+		nullptr, // outerBrush
+		nullptr // innerBrush
+	);
+
+	rb->SetOnMouseEnteredCallback(
+		[](RadioButton* rb, MouseMoveEvent& e)
+		{
+			EG_CORE_INFO("ENTERED: {}, {}", e.GetX(), e.GetY());
+		}
+	);
+	rb->SetOnMouseExitedCallback(
+		[](RadioButton* rb, MouseMoveEvent& e)
+		{
+			EG_CORE_INFO("EXITED: {}, {}", e.GetX(), e.GetY());
+		}
+	);
+	rb->SetOnMouseMovedCallback(
+		[](RadioButton* rb, MouseMoveEvent& e)
+		{
+			EG_CORE_INFO("MOVED: {}, {}", e.GetX(), e.GetY());
+		}
+	);
+	rb->SetOnMouseLButtonDownCallback(
+		[](RadioButton* rb, MouseButtonPressedEvent& e)
+		{
+			EG_CORE_INFO("LButton PRESSED: {}, {}", e.GetX(), e.GetY());
+		}
+	);
+	rb->SetOnMouseLButtonUpCallback(
+		[](RadioButton* rb, MouseButtonReleasedEvent& e)
+		{
+			EG_CORE_INFO("LButton RELEASED: {}, {}", e.GetX(), e.GetY());
+		}
+	);
+	rb->SetOnIsCheckedChanged(
+		[](RadioButton* rb, RadioButtonIsCheckedChangedEvent& e)
+		{
+			EG_CORE_INFO("Check Changed: {}", e.IsChecked());
+		}
+	);
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

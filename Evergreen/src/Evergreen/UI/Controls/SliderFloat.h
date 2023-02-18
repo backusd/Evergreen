@@ -7,7 +7,6 @@
 
 namespace Evergreen
 {
-// Mouse Moved Event -----------------------------------------------------------
 class EVERGREEN_API SliderFloatValueChangedEvent : public Event
 {
 public:

@@ -28,6 +28,7 @@
     <ClInclude Include="src\Evergreen\Log.h" />
     <ClInclude Include="src\Evergreen\UI\Controls.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\RadioButton.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\SliderFloat.h" />
@@ -79,6 +80,7 @@
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Controls\RadioButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\ScrollableLayout.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\SliderFloat.cpp" />

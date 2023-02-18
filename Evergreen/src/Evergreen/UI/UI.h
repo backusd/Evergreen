@@ -10,13 +10,7 @@
 #include "JSONLoading/ControlLoaders/ControlLoader.h"
 #include "JSONLoading/StyleLoaders/TextStyleLoader.h"
 #include "JSONLoading/JSONLoaders.h"
-#include "Controls/Button.h"
-#include "Controls/RoundedButton.h"
-#include "Controls/ScrollableLayout.h"
-#include "Controls/TextInput.h"
-#include "Controls/Pane.h"
-#include "Controls/SliderFloat.h"
-#include "Controls/SliderInt.h"
+#include "Controls.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
