@@ -7,9 +7,9 @@ class Sandbox : public Evergreen::Application
 public:
 	Sandbox() noexcept
 	{
-		//SetCallbacks();
-		//m_ui->SetUIRoot("src/json/");
-		//m_ui->LoadUI("main.json");
+		SetCallbacks();
+		m_ui->SetUIRoot("src/json/");
+		m_ui->LoadUI("main.json");
 	}
 	~Sandbox() noexcept override
 	{
@@ -29,6 +29,40 @@ private:
 
 
 		// TESTING ================================================================================
+		// RadioButton
+		JSONLoaders::AddCallback("RadioButtonExample_OnMouseEntered",
+			[](RadioButton* rb, MouseMoveEvent& e)
+			{
+				//std::unique_ptr<Evergreen::SolidColorBrush> brush = std::make_unique<Evergreen::SolidColorBrush>(slider->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Red));
+				//slider->SetCircleBrush(std::move(brush));
+			}
+		);
+		JSONLoaders::AddCallback("RadioButtonExample_OnMouseExited",
+			[](RadioButton* rb, MouseMoveEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("RadioButtonExample_OnMouseMoved",
+			[](RadioButton* rb, MouseMoveEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("RadioButtonExample_OnMouseLButtonDown",
+			[](RadioButton* rb, MouseButtonPressedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("RadioButtonExample_OnMouseLButtonUp",
+			[](RadioButton* rb, MouseButtonReleasedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("RadioButtonExample_OnIsCheckedChanged",
+			[](RadioButton* rb, RadioButtonIsCheckedChangedEvent& e)
+			{
+			}
+		);
+		
 		// SliderFloat
 		JSONLoaders::AddCallback("SliderFloatExample_OnMouseEnteredCircle", 
 			[](SliderFloat* slider, MouseMoveEvent& e)

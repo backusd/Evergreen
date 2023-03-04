@@ -103,7 +103,6 @@ protected:
 	std::function<void(RadioButton*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](RadioButton*, MouseButtonReleasedEvent&) {};
 	std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent&)> m_OnIsCheckedChanged = [](RadioButton*, RadioButtonIsCheckedChangedEvent&) {};
 
-
 	bool						m_isChecked;
 	std::unique_ptr<ColorBrush> m_innerBrush;
 	std::unique_ptr<ColorBrush> m_outerBrush;

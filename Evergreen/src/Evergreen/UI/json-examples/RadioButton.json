@@ -1,0 +1,32 @@
+{
+	// Basics:	Declare a RadioButton control by specifying the name of the control and specify the Type as "RadioButton"
+	//					See example below for available attributes
+	"RadioButtonExample": {
+		"Type": "RadioButton",
+		"id": 223, // (optional) Unique integer associated with this control
+		"Margin": [ 0, 0, 0, 0 ], // (optional) Specify margin in order: left/top/right/bottom
+		"Row": 0, // (optional) Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 0,
+		"RowSpan": 1, // (optional) RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 1,
+
+		"IsChecked": false, // (optional) Boolean for whether the RadioButton is checked - Default is false
+
+		"InnerRadius": 3, // (optional) Radius for the inner circle that will appear when the RadioButton is checked - Default is 3
+		"OuterRadius": 6, // (optional) Radius for the outer circle that will always be visible - Default is 6
+
+		"InnerBrush": "Purple", // (optional) Inner circle color - See Brushes.json for details on using a color brush
+		"OuterBrush": "Purple", // (optional) Outer circle color - See Brushes.json for details on using a color brush
+		"OuterBrushLineWidth": 1.5, // (optional) Line width for the outer circle - Default is 1.5
+
+		// On* callbacks: Specify functions to execute when the RadioButton triggers certain events.
+		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
+		//                can be set by calling JSONLoaders::AddCallback()
+		"OnMouseEntered": "RadioButtonExample_OnMouseEntered",
+		"OnMouseExited": "RadioButtonExample_OnMouseExited",
+		"OnMouseMoved": "RadioButtonExample_OnMouseMoved",
+		"OnMouseLButtonDown": "RadioButtonExample_OnMouseLButtonDown",
+		"OnMouseLButtonUp": "RadioButtonExample_OnMouseLButtonUp",
+		"OnIsCheckedChanged": "RadioButtonExample_OnIsCheckedChanged"
+	}
+}

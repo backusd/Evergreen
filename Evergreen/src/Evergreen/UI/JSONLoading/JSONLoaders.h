@@ -101,6 +101,10 @@ private:
 	CONTROL_EVENT_MAP(TextInput, MouseButtonPressedEvent);
 	CONTROL_EVENT_MAP(TextInput, MouseButtonReleasedEvent);
 	CONTROL_EVENT_MAP(TextInput, CharEvent);
+	CONTROL_EVENT_MAP(RadioButton, MouseMoveEvent);
+	CONTROL_EVENT_MAP(RadioButton, MouseButtonPressedEvent);
+	CONTROL_EVENT_MAP(RadioButton, MouseButtonReleasedEvent);
+	CONTROL_EVENT_MAP(RadioButton, RadioButtonIsCheckedChangedEvent);
 
 
 

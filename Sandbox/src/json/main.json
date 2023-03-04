@@ -15,18 +15,6 @@
 		"ColumnSpan": 3
 	},
 
-	"SliderFloatTextStyle": {
-		"Type": "TextStyle",
-		"FontFamily": "Calibri",
-		"FontSize": 14,
-		"FontWeight": "Bold",
-		"FontStyle": "Italic",
-		"FontStretch": "Normal",
-		"TextAlignment": "Leading",
-		"ParagraphAlignment": "Near",
-		"WordWrapping": "None"
-	},
-
 	"MenuBarDropDownButtonStyle": {
 		"Type": "TextStyle",
 		"FontFamily": "Calibri",
@@ -893,64 +881,30 @@
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [ { "Width": "1*" } ],
 
-			"SliderFloatExample": {
-				"Type": "SliderInt",
+			"RadioButtonExample": {
+				"Type": "RadioButton",
 				"id": 223,
-				"Margin": [ 10, 0, 10, 0 ],
+				"Margin": [ 0, 0, 0, 0 ],
 				"Row": 0,
 				"Column": 0,
 				"RowSpan": 1,
 				"ColumnSpan": 1,
 
-				"MinimumValue": 2,
-				"MaximumValue": 12,
-				"Value": 10,
+				"IsChecked": false,
 
-				"LineWidth": 6.0,
-				"LineBrushLeft": "Purple",
-				"LineBrushRight": "Purple",
-				"FillLineOnRightSide": false,
+				"InnerRadius": 3,
+				"OuterRadius": 6,
 
-				"CircleRadius": 5.0,
-				"CircleRadiusOuter": 10.0,
-				"CircleBrush": "Purple",
-				"CircleBrushOuter": [ 1.0, 0.0, 1.0, 0.3 ],
+				"InnerBrush": "Purple",
+				"OuterBrush": "Purple",
+				"OuterBrushLineWidth": 1.5,
 
-				"ValueFormatString": "{}",
-				"ShowMinMaxTextValues": true,
-				"MinTextXYOffset": [ 10, 5 ],
-				"MinTextBrush": "White",
-				"MinTextStyle": "SliderFloatTextStyle",
-
-				"MaxTextXYOffset": [ 10, 5 ],
-				"MaxTextBrush": "White",
-				"MaxTextStyle": "SliderFloatTextStyle",
-
-				"MarginRightOfSlider": 45.0,
-				"ShowTextInputOnRight": true,
-				"TextInputHeight": 20.0,
-				"TextInputWidth": 40.0,
-				"TextInputTextBrush": "White",
-				"TextInputTextStyle": "SliderFloatTextStyle",
-				"TextInputBackgroundBrush": "Gray",
-				"TextInputBorderBrush": "Black",
-				"TextInputBorderWidth": 0.0,
-
-				"ShowPopUpValueWhenSliding": true,
-				"PopUpBackgroundBrush": "Pink",
-				"PopUpBorderBrush": "Purple",
-				"PopUpBorderWidth": 2,
-				"PopUpCornerRadius": 5,
-				"PopUpHeight": 30,
-				"PopUpWidth": 35,
-				"PopUpTextBrush": "Black",
-				"PopUpTextStyle": "SliderFloatTextStyle",
-
-				"OnMouseEnteredCircle": "SliderFloatExample_OnMouseEnteredCircle",
-				"OnMouseExitedCircle": "SliderFloatExample_OnMouseExitedCircle",
-				"OnBeginDragging": "SliderFloatExample_OnBeginDragging",
-				"OnStoppedDragging": "SliderFloatExample_OnStoppedDragging",
-				"OnValueChanged": "SliderFloatExample_OnValueChanged"
+				"OnMouseEntered": "RadioButtonExample_OnMouseEntered",
+				"OnMouseExited": "RadioButtonExample_OnMouseExited",
+				"OnMouseMoved": "RadioButtonExample_OnMouseMoved",
+				"OnMouseLButtonDown": "RadioButtonExample_OnMouseLButtonDown",
+				"OnMouseLButtonUp": "RadioButtonExample_OnMouseLButtonUp",
+				"OnIsCheckedChanged": "RadioButtonExample_OnIsCheckedChanged"
 			}
 
 		}

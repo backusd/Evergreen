@@ -195,6 +195,9 @@
     <ClInclude Include="src\Evergreen\UI\Controls\RadioButton.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -332,6 +335,9 @@
     <ClCompile Include="src\Evergreen\UI\Controls\RadioButton.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Evergreen\UI\json-examples\Brushes.json" />
@@ -346,5 +352,6 @@
     <None Include="src\Evergreen\UI\json-examples\Pane.json" />
     <None Include="src\Evergreen\UI\json-examples\SliderFloat.json" />
     <None Include="src\Evergreen\UI\json-examples\SliderInt.json" />
+    <None Include="src\Evergreen\UI\json-examples\RadioButton.json" />
   </ItemGroup>
 </Project>
