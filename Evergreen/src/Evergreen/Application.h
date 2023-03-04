@@ -30,6 +30,10 @@ protected:
 	std::unique_ptr<UI> m_ui;
 	std::shared_ptr<DeviceResources> m_deviceResources;
 
+	// Virtual functions so the client application can update & render to viewports 
+	virtual void OnUpdate() {}
+	virtual void OnRender() {}
+
 private:
 	void Update() noexcept;
 	void Render() noexcept;

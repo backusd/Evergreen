@@ -15,6 +15,16 @@ public:
 	{
 	}
 
+protected:
+	void OnUpdate() override 
+	{
+
+	}
+	void OnRender() override
+	{
+
+	}
+
 private:
 	void SetCallbacks()
 	{

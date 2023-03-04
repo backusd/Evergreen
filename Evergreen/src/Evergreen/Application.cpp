@@ -55,6 +55,10 @@ int Application::Run() noexcept
 
 void Application::Update() noexcept
 {
+	// Call the virtual method first so we can update the simulation, or whatever the
+	// client code is needing to update, before we update the window/UI
+	OnUpdate();
+
 	m_window->OnUpdate();
 	m_ui->Update();
 }
@@ -66,6 +70,10 @@ void Application::Render() noexcept
 	//	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
 
 	m_deviceResources->ClearBackground(D2D1::ColorF(D2D1::ColorF::Lavender));
+
+	// Before rendering the UI, call the virtual OnRender method so we can render the simulation, 
+	// or whatever the client code is needs to render, before we render the UI on top of it
+	OnRender();
 	
 	m_ui->Render();
 }
