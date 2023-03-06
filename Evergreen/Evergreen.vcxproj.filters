@@ -198,6 +198,12 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Controls\Viewport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ViewportLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -336,6 +342,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\Viewport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ViewportLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

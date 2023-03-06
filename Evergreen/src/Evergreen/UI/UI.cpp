@@ -9,6 +9,7 @@
 #include "JSONLoading/ControlLoaders/SliderFloatLoader.h"
 #include "JSONLoading/ControlLoaders/SliderIntLoader.h"
 #include "JSONLoading/ControlLoaders/RadioButtonLoader.h"
+#include "JSONLoading/ControlLoaders/ViewportLoader.h"
 
 #include <fstream>
 
@@ -38,6 +39,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	JSONLoaders::AddControlLoader("SliderFloat", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return SliderFloatLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("SliderInt", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return SliderIntLoader::Load(deviceResources, parentLayout, data, controlName); });
 	JSONLoaders::AddControlLoader("RadioButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return RadioButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("Viewport", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ViewportLoader::Load(deviceResources, parentLayout, data, controlName); });
 
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
@@ -879,6 +881,22 @@ void UI::LoadDefaultUI() noexcept
 			EG_CORE_INFO("Check Changed: {}", e.IsChecked());
 		}
 	);
+
+	// =====================================================================================
+	// Viewport
+	RowColumnPosition vpPosition;
+	vpPosition.Row = 1;
+	vpPosition.Column = 1;
+
+	Viewport* vp = m_rootLayout->CreateControl<Viewport>(
+		vpPosition,
+		m_deviceResources
+	);
+	Layout* vpLayout = vp->GetLayout();
+	vpLayout->AddRow({ RowColumnType::STAR, 1.0f });
+	vpLayout->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	Text* vpText = vpLayout->CreateControl<Text>(m_deviceResources, L"Viewport");
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

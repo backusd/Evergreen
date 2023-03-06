@@ -39,6 +39,70 @@ private:
 
 
 		// TESTING ================================================================================
+		// Viewport
+		JSONLoaders::AddCallback("ViewportExample_OnChar",
+			[](Viewport* vp, CharEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnKeyPressed",
+			[](Viewport* vp, KeyPressedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnKeyReleased",
+			[](Viewport* vp, KeyReleasedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseEntered",
+			[](Viewport* vp, MouseMoveEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseExited",
+			[](Viewport* vp, MouseMoveEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseMoved",
+			[](Viewport* vp, MouseMoveEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseScrolledVertical",
+			[](Viewport* vp, MouseScrolledEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseScrolledHorizontal",
+			[](Viewport* vp, MouseScrolledEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseButtonPressed",
+			[](Viewport* vp, MouseButtonPressedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnMouseButtonReleased",
+			[](Viewport* vp, MouseButtonReleasedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnClick",
+			[](Viewport* vp, MouseButtonReleasedEvent& e)
+			{
+			}
+		);
+		JSONLoaders::AddCallback("ViewportExample_OnDoubleClick",
+			[](Viewport* vp, MouseButtonDoubleClickEvent& e)
+			{
+			}
+		);
+		 
+		 
+		
 		// RadioButton
 		JSONLoaders::AddCallback("RadioButtonExample_OnMouseEntered",
 			[](RadioButton* rb, MouseMoveEvent& e)

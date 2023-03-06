@@ -105,6 +105,14 @@ private:
 	CONTROL_EVENT_MAP(RadioButton, MouseButtonPressedEvent);
 	CONTROL_EVENT_MAP(RadioButton, MouseButtonReleasedEvent);
 	CONTROL_EVENT_MAP(RadioButton, RadioButtonIsCheckedChangedEvent);
+	CONTROL_EVENT_MAP(Viewport, CharEvent);
+	CONTROL_EVENT_MAP(Viewport, KeyPressedEvent);
+	CONTROL_EVENT_MAP(Viewport, KeyReleasedEvent);
+	CONTROL_EVENT_MAP(Viewport, MouseMoveEvent);
+	CONTROL_EVENT_MAP(Viewport, MouseButtonPressedEvent);
+	CONTROL_EVENT_MAP(Viewport, MouseButtonReleasedEvent);
+	CONTROL_EVENT_MAP(Viewport, MouseScrolledEvent);
+	CONTROL_EVENT_MAP(Viewport, MouseButtonDoubleClickEvent);
 
 
 

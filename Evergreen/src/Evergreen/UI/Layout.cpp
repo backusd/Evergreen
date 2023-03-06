@@ -808,6 +808,37 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 	}
 	else
 	{
+		if (m_columnIndexBeingAdjusted.has_value())
+		{
+			// Mouse was previously over an adjustable column border, but check to make sure that is still the case
+			m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
+			if (!m_columnIndexBeingAdjusted.has_value())
+				Window::SetCursor(Cursor::ARROW);
+			else
+				return;
+		}
+		else if (m_rowIndexBeingAdjusted.has_value())
+		{
+			// Mouse was previously over an adjustable row border, but check to make sure that is still the case
+			m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
+			if (!m_rowIndexBeingAdjusted.has_value())
+				Window::SetCursor(Cursor::ARROW);
+			else
+				return;
+		}
+		else if (m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY()))
+		{
+			// Mouse is newly over an adjustable column border -> update the cursor
+			Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
+			return;
+		}
+		else if (m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY()))
+		{
+			// Mouse is newly over an adjustable row border -> update the cursor
+			Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
+			return;
+		}
+
 		// Not adjusting layout so pass to sublayouts and see if it gets handled
 		for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
 		{
@@ -820,31 +851,6 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 			control->OnMouseMove(e);
 			if (e.Handled())
 				return;
-		}
-
-		if (m_columnIndexBeingAdjusted.has_value())
-		{
-			// Mouse was previously over an adjustable column border, but check to make sure that is still the case
-			m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY());
-			if (!m_columnIndexBeingAdjusted.has_value())
-				Window::SetCursor(Cursor::ARROW);
-		}
-		else if (m_rowIndexBeingAdjusted.has_value())
-		{
-			// Mouse was previously over an adjustable row border, but check to make sure that is still the case
-			m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY());
-			if (!m_rowIndexBeingAdjusted.has_value())
-				Window::SetCursor(Cursor::ARROW);
-		}
-		else if (m_columnIndexBeingAdjusted = MouseOverAdjustableColumn(e.GetX(), e.GetY()))
-		{
-			// Mouse is newly over an adjustable column border -> update the cursor
-			Window::SetCursor(Cursor::DOUBLE_ARROW_EW);
-		}
-		else if (m_rowIndexBeingAdjusted = MouseOverAdjustableRow(e.GetX(), e.GetY()))
-		{
-			// Mouse is newly over an adjustable row border -> update the cursor
-			Window::SetCursor(Cursor::DOUBLE_ARROW_NS);
 		}
 	}
 }

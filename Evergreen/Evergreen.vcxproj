@@ -34,6 +34,7 @@
     <ClInclude Include="src\Evergreen\UI\Controls\SliderFloat.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\SliderInt.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\TextInput.h" />
+    <ClInclude Include="src\Evergreen\UI\Controls\Viewport.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.h" />
@@ -43,6 +44,7 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderIntLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextInputLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Pane.h" />
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ViewportLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Utils\ColorHelper.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes\BitmapBrush.h" />
     <ClInclude Include="src\Evergreen\UI\Brushes.h" />
@@ -87,6 +89,7 @@
     <ClCompile Include="src\Evergreen\UI\Controls\SliderFloat.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\SliderInt.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\TextInput.cpp" />
+    <ClCompile Include="src\Evergreen\UI\Controls\Viewport.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.cpp" />
@@ -96,6 +99,7 @@
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderIntLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\TextInputLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Pane.cpp" />
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ViewportLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\Utils\ColorHelper.cpp" />
     <ClCompile Include="src\Evergreen\UI\Brushes\BitmapBrush.cpp" />
     <ClCompile Include="src\Evergreen\UI\Brushes\ColorBrush.cpp" />

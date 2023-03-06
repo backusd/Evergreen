@@ -861,6 +861,41 @@
 			],
 			"ColumnDefinitions": [ { "Width": "1*" } ],
 
+			"MainViewport": {
+				"Type": "Viewport",
+				"id": 69,
+				"Margin": [ 0, 0, 0, 0 ],
+				"Row": 0,
+				"Column": 0,
+				"RowSpan": 1,
+				"ColumnSpan": 1,
+
+				"OnChar": "ViewportExample_OnChar",
+				"OnKeyPressed": "ViewportExample_OnKeyPressed",
+				"OnKeyReleased": "ViewportExample_OnKeyReleased",
+				"OnMouseEntered": "ViewportExample_OnMouseEntered",
+				"OnMouseExited": "ViewportExample_OnMouseExited",
+				"OnMouseMoved": "ViewportExample_OnMouseMoved",
+				"OnMouseScrolledVertical": "ViewportExample_OnMouseScrolledVertical",
+				"OnMouseScrolledHorizontal": "ViewportExample_OnMouseScrolledHorizontal",
+				"OnMouseButtonPressed": "ViewportExample_OnMouseButtonPressed",
+				"OnMouseButtonReleased": "ViewportExample_OnMouseButtonReleased",
+				"OnClick": "ViewportExample_OnClick",
+				"OnDoubleClick": "ViewportExample_OnDoubleClick",
+
+				"Content": {
+					"Type": "Layout",
+					"RowDefinitions": [ { "Height": "1*" } ],
+					"ColumnDefinitions": [ { "Width": "1*" } ],
+
+					"ViewportText": {
+						"Type": "Text",
+						"Text": "My Viewport",
+						"Brush": "White"
+					}
+				}
+			},
+
 			"BottomMiddleLayout": {
 				"Type": "Layout",
 				"Row": 1,

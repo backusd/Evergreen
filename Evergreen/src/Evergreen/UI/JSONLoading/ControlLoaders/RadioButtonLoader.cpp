@@ -37,7 +37,7 @@ Control* RadioButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
-			EG_CORE_WARN("{}:{} - Button control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+			EG_CORE_WARN("{}:{} - RadioButton control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
 	}
 
 	// Create the new Text control
