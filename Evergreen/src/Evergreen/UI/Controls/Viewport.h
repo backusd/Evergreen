@@ -91,7 +91,6 @@ protected:
 	bool m_mouseRButtonDown;
 	bool m_mouseX1ButtonDown;
 	bool m_mouseX2ButtonDown;
-
 };
 #pragma warning( pop )
 

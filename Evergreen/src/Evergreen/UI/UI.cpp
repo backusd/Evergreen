@@ -27,7 +27,12 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_mouseHandlingControl(nullptr),
 	m_mouseHandlingLayout(nullptr),
 	m_keyboardHandlingControl(nullptr),
-	m_keyboardHandlingLayout(nullptr)
+	m_keyboardHandlingLayout(nullptr),
+	m_mouseLButtonDown(false),
+	m_mouseMButtonDown(false),
+	m_mouseRButtonDown(false),
+	m_mouseX1ButtonDown(false),
+	m_mouseX2ButtonDown(false)
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
@@ -1206,8 +1211,50 @@ void UI::OnWindowResize(WindowResizeEvent& e) noexcept
 }
 void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 {
-	if (m_panes.size() == 0)
-		int iii = 0;
+	// If no mouse buttons are in use, we need to first test if the mouse is now over a pane
+	// Because even if the mouseHandlingControl is not nullptr, we might be over a pane now that resides on top
+	// of the mouseHandlingControl
+	if (m_panes.size() > 0 && !(m_mouseLButtonDown || m_mouseMButtonDown || m_mouseRButtonDown || m_mouseX1ButtonDown || m_mouseX2ButtonDown))
+	{
+		const size_t initialPaneCount = m_panes.size();
+		for (const auto& pane : m_panes)
+		{
+			if (!e.Handled())
+				pane->OnMouseMove(e);
+
+			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
+			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
+			// control may be within the Pane, so we cannot safely keep it as the handling control. Best thing to do here is just
+			// null out the handling pointers and return
+			if (m_panes.size() != initialPaneCount)
+			{
+				m_mouseHandlingControl = nullptr;
+				m_mouseHandlingLayout = nullptr;
+				m_keyboardHandlingControl = nullptr;
+				m_keyboardHandlingLayout = nullptr;
+				return;
+			}
+		}
+
+		if (!e.Handled())
+		{
+			if (m_mouseHandlingControl != nullptr)
+			{
+				m_mouseHandlingControl->OnMouseMove(e);
+			}
+			else if (m_mouseHandlingLayout != nullptr)
+			{
+				m_mouseHandlingLayout->OnMouseMove(e);
+			}
+		}
+
+		if (!e.Handled())
+			m_rootLayout->OnMouseMove(e);
+
+		m_mouseHandlingControl = e.HandlingControl();
+		m_mouseHandlingLayout = e.HandlingLayout();
+		return;
+	}
 
 	if (m_mouseHandlingControl != nullptr)
 	{
@@ -1249,6 +1296,15 @@ void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 }
 void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 {
+	switch (e.GetMouseButton())
+	{
+	case Evergreen::MOUSE_BUTTON::EG_LBUTTON: m_mouseLButtonDown = true; break;
+	case Evergreen::MOUSE_BUTTON::EG_MBUTTON: m_mouseMButtonDown = true; break;
+	case Evergreen::MOUSE_BUTTON::EG_RBUTTON: m_mouseRButtonDown = true; break;
+	case Evergreen::MOUSE_BUTTON::EG_XBUTTON1: m_mouseX1ButtonDown = true; break;
+	case Evergreen::MOUSE_BUTTON::EG_XBUTTON2: m_mouseX2ButtonDown = true; break;
+	}
+
 	if (m_mouseHandlingControl != nullptr)
 	{
 		m_mouseHandlingControl->OnMouseButtonPressed(e);
@@ -1289,6 +1345,15 @@ void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 }
 void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 {
+	switch (e.GetMouseButton())
+	{
+	case Evergreen::MOUSE_BUTTON::EG_LBUTTON: m_mouseLButtonDown = false; break;
+	case Evergreen::MOUSE_BUTTON::EG_MBUTTON: m_mouseMButtonDown = false; break;
+	case Evergreen::MOUSE_BUTTON::EG_RBUTTON: m_mouseRButtonDown = false; break;
+	case Evergreen::MOUSE_BUTTON::EG_XBUTTON1: m_mouseX1ButtonDown = false; break;
+	case Evergreen::MOUSE_BUTTON::EG_XBUTTON2: m_mouseX2ButtonDown = false; break;
+	}
+
 	if (m_mouseHandlingControl != nullptr)
 	{
 		m_mouseHandlingControl->OnMouseButtonReleased(e);

@@ -81,6 +81,13 @@ private:
 
 	Control* m_keyboardHandlingControl;
 	Layout*  m_keyboardHandlingLayout;
+
+	// Keep track of which mouse buttons are in use
+	bool m_mouseLButtonDown;
+	bool m_mouseMButtonDown;
+	bool m_mouseRButtonDown;
+	bool m_mouseX1ButtonDown;
+	bool m_mouseX2ButtonDown;
 };
 #pragma warning( pop )
 
