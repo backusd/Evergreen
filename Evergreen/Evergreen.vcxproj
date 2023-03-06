@@ -144,6 +144,7 @@
     <None Include="src\Evergreen\UI\json-examples\SliderInt.json" />
     <None Include="src\Evergreen\UI\json-examples\Text.json" />
     <None Include="src\Evergreen\UI\json-examples\TextInput.json" />
+    <None Include="src\Evergreen\UI\json-examples\Viewport.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

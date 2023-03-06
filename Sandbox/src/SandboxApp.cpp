@@ -22,7 +22,85 @@ protected:
 	}
 	void OnRender() override
 	{
+		auto context = m_deviceResources->D3DDeviceContext();
+		auto device = m_deviceResources->D3DDevice();
 
+		struct Vertex
+		{
+			float x;
+			float y;
+		};
+
+		const Vertex vertices[] =
+		{
+			{ 0.0f,0.5f },
+			{ 0.5f,-0.5f },
+			{ -0.5f,-0.5f },
+		};
+		Microsoft::WRL::ComPtr<ID3D11Buffer> pVertexBuffer;
+		D3D11_BUFFER_DESC bd = {};
+		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		bd.Usage = D3D11_USAGE_DEFAULT;
+		bd.CPUAccessFlags = 0u;
+		bd.MiscFlags = 0u;
+		bd.ByteWidth = sizeof(vertices);
+		bd.StructureByteStride = sizeof(Vertex);
+		D3D11_SUBRESOURCE_DATA sd = {};
+		sd.pSysMem = vertices;
+		device->CreateBuffer(&bd, &sd, &pVertexBuffer);
+
+		// Bind vertex buffer to pipeline
+		const UINT stride = sizeof(Vertex);
+		const UINT offset = 0u;
+		context->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset);
+
+		// create pixel shader
+		Microsoft::WRL::ComPtr<ID3D11PixelShader> pPixelShader;
+		Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
+		D3DReadFileToBlob(L"PixelShader.cso", &pBlob);
+		device->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader);
+
+		// bind pixel shader
+		context->PSSetShader(pPixelShader.Get(), nullptr, 0u);
+
+		// create vertex shader
+		Microsoft::WRL::ComPtr<ID3D11VertexShader> pVertexShader;
+		D3DReadFileToBlob(L"VertexShader.cso", &pBlob);
+		device->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader);
+
+		// bind vertex shader
+		context->VSSetShader(pVertexShader.Get(), nullptr, 0u);
+
+		// input (vertex) layout (2d position only)
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> pInputLayout;
+		const D3D11_INPUT_ELEMENT_DESC ied[] =
+		{
+			{ "Position",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
+		};
+		device->CreateInputLayout(
+			ied, 
+			(UINT)std::size(ied),
+			pBlob->GetBufferPointer(),
+			pBlob->GetBufferSize(),
+			&pInputLayout
+		);
+
+		// bind vertex layout
+		context->IASetInputLayout(pInputLayout.Get());
+
+		// bind render target
+		ID3D11RenderTargetView* const targets[1] = { m_deviceResources->BackBufferRenderTargetView() };
+		context->OMSetRenderTargets(1u, targets, m_deviceResources->DepthStencilView());
+
+		// Set primitive topology to triangle list (groups of 3 vertices)
+		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		// configure viewport
+		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
+		context->RSSetViewports(1, &vp->GetViewport());
+
+		// GFX_THROW_INFO_ONLY(pContext->Draw((UINT)std::size(vertices), 0u));
+		context->Draw((UINT)std::size(vertices), 0u);
 	}
 
 private:

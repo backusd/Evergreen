@@ -365,5 +365,6 @@
     <None Include="src\Evergreen\UI\json-examples\SliderFloat.json" />
     <None Include="src\Evergreen\UI\json-examples\SliderInt.json" />
     <None Include="src\Evergreen\UI\json-examples\RadioButton.json" />
+    <None Include="src\Evergreen\UI\json-examples\Viewport.json" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,38 @@
+{
+	// Basics:	Declare a Viewport control by specifying the name of the control and specify the Type as "Viewport"
+	//					See example below for available attributes
+	"MainViewport": {
+		"Type": "Viewport",
+		"id": 12, // (optional) Unique integer associated with this control
+		"Margin": [ 0, 0, 0, 0 ], // (optional) Specify margin in order: left/top/right/bottom
+		"Row": 0, // (optional) Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 0,
+		"RowSpan": 1, // (optional) RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 1,
+
+		// On* callbacks: Specify functions to execute when the Viewport triggers certain events.
+		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
+		//                can be set by calling JSONLoaders::AddCallback()
+		"OnChar": "ViewportExample_OnChar",
+		"OnKeyPressed": "ViewportExample_OnKeyPressed",
+		"OnKeyReleased": "ViewportExample_OnKeyReleased",
+		"OnMouseEntered": "ViewportExample_OnMouseEntered",
+		"OnMouseExited": "ViewportExample_OnMouseExited",
+		"OnMouseMoved": "ViewportExample_OnMouseMoved",
+		"OnMouseScrolledVertical": "ViewportExample_OnMouseScrolledVertical",
+		"OnMouseScrolledHorizontal": "ViewportExample_OnMouseScrolledHorizontal",
+		"OnMouseButtonPressed": "ViewportExample_OnMouseButtonPressed",
+		"OnMouseButtonReleased": "ViewportExample_OnMouseButtonReleased",
+		"OnClick": "ViewportExample_OnClick",
+		"OnDoubleClick": "ViewportExample_OnDoubleClick",
+
+		// Content: Must be a json object with the 'Type' key having the value 'Layout' (See Layout.json for how to specify a Layout)
+		//          The Layout can house any number of different controls that will be rendered ON TOP OF the 3D scene rendered to the Viewport
+		"Content": {
+			"Type": "Layout",
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [ { "Width": "1*" } ],
+			...
+		}
+	}
+}

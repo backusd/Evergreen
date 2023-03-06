@@ -29,7 +29,6 @@ DeviceResourcesDX11::DeviceResourcesDX11(Window* window) :
 	m_dxgiSwapChain(nullptr),
 	m_d3dRenderTargetView(nullptr),
 	m_d3dDepthStencilView(nullptr),
-	m_viewport(CD3D11_VIEWPORT(0.0f, 0.0f, 0.0f, 0.0f)),
 	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
 	m_dpiScale(96.0f)
 {
@@ -86,7 +85,6 @@ void DeviceResourcesDX11::CreateDeviceIndependentResources()
 		)
 	);
 }
-
 void DeviceResourcesDX11::CreateDeviceDependentResources()
 {
 	// This flag adds support for surfaces with a different color channel ordering
@@ -189,8 +187,8 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources()
 		throw WINDOW_LAST_EXCEPT();
 	}
 
-	float height = static_cast<float>(rect.bottom);
-	float width = static_cast<float>(rect.right);
+	float height = static_cast<float>(rect.bottom - rect.top);
+	float width = static_cast<float>(rect.right - rect.left);
 
 	CreateWindowSizeDependentResources(width, height);
 }

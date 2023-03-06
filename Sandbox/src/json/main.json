@@ -373,7 +373,6 @@
 	},
 
 	"root": {
-		"Brush": "Gray",
 		"RowDefinitions": [
 			{ "Height": "25" },
 			{ "Height": "1*" }

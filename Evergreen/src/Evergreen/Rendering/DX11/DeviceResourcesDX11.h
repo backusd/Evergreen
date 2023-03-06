@@ -38,15 +38,14 @@ public:
 	ND inline ID2D1DeviceContext6*	D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
 	ND inline ID2D1Bitmap1*			D2DBitmap() const { return m_d2dBitmap.Get(); }
 
-	/*
-	static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
+	
+	//static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
 
-	static D3D11_VIEWPORT GetViewport() noexcept { return Get().m_viewport; }
-	static ID3D11Device5* D3DDevice() noexcept { return Get().m_d3dDevice.Get(); }
-	static ID3D11DeviceContext4* D3DDeviceContext() noexcept { return Get().m_d3dDeviceContext.Get(); }
-	static ID3D11DepthStencilView* DepthStencilView() noexcept { return Get().m_d3dDepthStencilView.Get(); }
-	static ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return Get().m_d3dRenderTargetView.Get(); }
-	*/
+	//D3D11_VIEWPORT GetViewport() noexcept { return Get().m_viewport; }
+	ID3D11Device5* D3DDevice() noexcept { return m_d3dDevice.Get(); }
+	ID3D11DeviceContext4* D3DDeviceContext() noexcept { return m_d3dDeviceContext.Get(); }
+	ID3D11DepthStencilView* DepthStencilView() noexcept { return m_d3dDepthStencilView.Get(); }
+	ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return m_d3dRenderTargetView.Get(); }	
 
 	ND inline float DIPSToPixels(float dips) const noexcept { return dips * m_dpiScale; }
 	ND inline float PixelsToDIPS(float pixels) const noexcept { return pixels / m_dpiScale; }
@@ -100,7 +99,7 @@ private:
 	// Microsoft::WRL::ComPtr<ID3D11RasterizerState> solidRasterState;
 	// Microsoft::WRL::ComPtr<ID3D11RasterizerState> wireframeRasterState;
 
-	D3D11_VIEWPORT m_viewport;
+	// D3D11_VIEWPORT m_viewport;
 
 	// Cached device properties
 	D3D_FEATURE_LEVEL m_d3dFeatureLevel;
