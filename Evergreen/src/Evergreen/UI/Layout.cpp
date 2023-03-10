@@ -523,7 +523,7 @@ void Layout::Render() const noexcept
 		);
 	}
 
-	DrawBorders();
+	// DrawBorders();
 
 	for (const std::unique_ptr<Control>& control : m_controls)
 		control->Render();

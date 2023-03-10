@@ -10,6 +10,7 @@ public:
 	DeviceResourcesException(unsigned int line, const char* file) noexcept;
 	DeviceResourcesException(const DeviceResourcesException&) = delete;
 	void operator=(const DeviceResourcesException&) = delete;
+	virtual ~DeviceResourcesException() noexcept override {}
 
 	const char* GetType() const noexcept override;
 };

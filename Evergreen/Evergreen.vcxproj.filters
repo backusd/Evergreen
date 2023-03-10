@@ -204,6 +204,18 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ViewportLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DeviceResourcesExceptionDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DX12Helper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DxgiInfoManagerDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DeviceResourcesDX12.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -348,6 +360,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ViewportLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesExceptionDX12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\Rendering\DX12\DxgiInfoManagerDX12.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

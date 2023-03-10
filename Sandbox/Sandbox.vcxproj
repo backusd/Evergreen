@@ -55,14 +55,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EG_DX11;EG_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EG_DX12;EG_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\vendor\nlohmann</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\vendor\nlohmann;$(SolutionDir)Evergreen\vendor\DirectX-Headers\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,14 +75,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EG_DX11;EG_ENABLE_ASSERTS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EG_DX12;EG_ENABLE_ASSERTS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\vendor\nlohmann</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\vendor\nlohmann;$(SolutionDir)Evergreen\vendor\DirectX-Headers\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

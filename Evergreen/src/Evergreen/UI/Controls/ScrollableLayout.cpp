@@ -81,7 +81,7 @@ void ScrollableLayout::Render() const noexcept
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 
-	ID2D1DeviceContext6* context = m_deviceResources->D2DDeviceContext();
+	auto context = m_deviceResources->D2DDeviceContext();
 
 	// Only allow drawing within the background rect.
 	context->PushAxisAlignedClip(m_backgroundRect, D2D1_ANTIALIAS_MODE_PER_PRIMITIVE);

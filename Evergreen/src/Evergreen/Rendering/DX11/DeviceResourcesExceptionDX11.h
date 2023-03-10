@@ -12,6 +12,7 @@ public:
 	DeviceResourcesExceptionDX11(unsigned int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs = {}) noexcept;
 	DeviceResourcesExceptionDX11(const DeviceResourcesExceptionDX11&) = delete;
 	void operator=(const DeviceResourcesExceptionDX11&) = delete;
+	virtual ~DeviceResourcesExceptionDX11() noexcept override {}
 
 	const char* what() const noexcept override;
 

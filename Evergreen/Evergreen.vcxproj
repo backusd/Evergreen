@@ -26,6 +26,10 @@
     <ClInclude Include="src\Evergreen\Exceptions\JSONLoadersException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\WindowException.h" />
     <ClInclude Include="src\Evergreen\Log.h" />
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DeviceResourcesDX12.h" />
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DeviceResourcesExceptionDX12.h" />
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DX12Helper.h" />
+    <ClInclude Include="src\Evergreen\Rendering\DX12\DxgiInfoManagerDX12.h" />
     <ClInclude Include="src\Evergreen\UI\Controls.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\RadioButton.h" />
@@ -82,6 +86,9 @@
     <ClCompile Include="src\Evergreen\Exceptions\JSONLoadersException.cpp" />
     <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
+    <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesDX12.cpp" />
+    <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesExceptionDX12.cpp" />
+    <ClCompile Include="src\Evergreen\Rendering\DX12\DxgiInfoManagerDX12.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\RadioButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp" />
@@ -191,14 +198,14 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EG_BUILD_DLL;EG_DX11;EG_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EG_BUILD_DLL;EG_DX12;EG_ENABLE_ASSERTS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <Optimization>Disabled</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\nlohmann</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\nlohmann;$(SolutionDir)Evergreen\vendor\DirectX-Headers\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -216,14 +223,14 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>EG_BUILD_DLL;EG_DX11;EG_ENABLE_ASSERTS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EG_BUILD_DLL;EG_DX12;EG_ENABLE_ASSERTS;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\nlohmann</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Evergreen\vendor\spdlog\include;$(SolutionDir)Evergreen\src;$(SolutionDir)Evergreen\vendor\nlohmann;$(SolutionDir)Evergreen\vendor\DirectX-Headers\include</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>

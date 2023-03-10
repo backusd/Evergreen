@@ -49,7 +49,21 @@
 
 #elif EG_DX12
 
-	#define GFX_THROW_NOINFO(hrcall)
+	#define GFX_THROW_NOINFO(hrcall) { HRESULT hr; if( FAILED( hr = (hrcall) ) ) throw DeviceResourcesExceptionDX12( __LINE__,__FILE__,hr ); }
+
+	#if defined(_DEBUG)
+		#define INFOMAN DxgiInfoManagerDX12& infoManager = DeviceResourcesDX12::GetInfoManager();
+
+		#define GFX_EXCEPT(hr) DeviceResourcesExceptionDX12( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+		#define GFX_THROW_INFO(hrcall) { HRESULT hr; INFOMAN infoManager.Set(); if( FAILED( hr = (hrcall) ) ) throw GFX_EXCEPT(hr); }
+		// #define GFX_DEVICE_REMOVED_EXCEPT(hr) { INFOMAN DeviceRemovedExceptionDX11( __LINE__,__FILE__,(hr),infoManager.GetMessages() ) }
+		#define GFX_THROW_INFO_ONLY(call) { INFOMAN infoManager.Set(); call; {auto v = infoManager.GetMessages(); if(!v.empty()) {throw InfoException( __LINE__,__FILE__,v);}}}
+	#else
+		#define GFX_EXCEPT(hr) DeviceResourcesExceptionDX12( __LINE__,__FILE__,(hr) )
+		#define GFX_THROW_INFO(hrcall) { HRESULT hr; if( FAILED( hr = (hrcall) ) ) std::terminate(); }
+		// #define GFX_DEVICE_REMOVED_EXCEPT(hr) DeviceRemovedExceptionDX11( __LINE__,__FILE__,(hr) )
+		#define GFX_THROW_INFO_ONLY(call) call;
+	#endif
 
 #elif EG_OPENGL
 

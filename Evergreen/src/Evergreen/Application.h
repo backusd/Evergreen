@@ -9,6 +9,12 @@
 #include "Evergreen/Window/Window.h"
 #include "Rendering/DeviceResources.h"
 
+// See: https://learn.microsoft.com/en-us/cpp/c-runtime-library/debug-versions-of-heap-allocation-functions?view=msvc-170
+#if defined(DEBUG) || defined(_DEBUG)
+	#define _CRTDBG_MAP_ALLOC
+	#include <crtdbg.h>
+#endif
+
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 
