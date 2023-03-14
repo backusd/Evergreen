@@ -46,7 +46,7 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Title", "Top", "Left", "Height", "Width", "Resizable",
 	"Relocatable", "BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadius", "CornerRadiusX", "CornerRadiusY", 
 	"IncludeTitleBar", "TitleBarBrush", "TitleBarHeight", "IsMinimized", "IsVisible", "Content", "OnMouseEnteredTitleBar", 
-	"OnMouseExitedTitleBar", "OnMouseEnteredContentRegion", "OnMouseExitedContentRegion", "OnMouseMoved" };
+	"OnMouseExitedTitleBar", "OnMouseEnteredContentRegion", "OnMouseExitedContentRegion", "OnMouseMoved", "OnUpdate"};
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -88,6 +88,8 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	ParseOnMouseEnteredContentRegion(pane, data);
 	ParseOnMouseExitedContentRegion(pane, data);
 	ParseOnMouseMoved(pane, data);
+
+	ParseOnUpdateCallback(pane, data);
 
 	return pane;
 }

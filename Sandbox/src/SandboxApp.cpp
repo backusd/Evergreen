@@ -16,7 +16,7 @@ public:
 	}
 
 protected:
-	void OnUpdate() override 
+	void OnUpdate(const Timer& timer) override 
 	{
 
 	}
@@ -161,6 +161,18 @@ private:
 
 
 		// TESTING ================================================================================
+		// Text::OnUpdate
+		JSONLoaders::AddOnUpdateCallback("SetFPSText",
+			[](Control* c, const Timer& timer)
+			{
+				Text* text = static_cast<Text*>(c);
+				text->SetText(std::format(L"{}", timer.GetFramesPerSecond()));
+			}
+		);
+		
+		
+		
+		
 		// Viewport
 		JSONLoaders::AddCallback("ViewportExample_OnChar",
 			[](Viewport* vp, CharEvent& e)

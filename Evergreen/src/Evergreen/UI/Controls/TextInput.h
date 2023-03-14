@@ -33,7 +33,6 @@ public:
 	ND inline Layout* GetRightColumnLayout() const noexcept;
 
 	// Inherited from Control
-	void Update() noexcept override {}
 	void Render() const noexcept override;
 
 	ND virtual Control* GetControlByName(const std::string& name) noexcept override;

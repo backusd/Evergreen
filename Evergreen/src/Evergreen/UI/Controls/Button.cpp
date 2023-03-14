@@ -34,6 +34,11 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	ButtonChanged();
 }
 
+void Button::OnUpdate(const Timer& timer) noexcept
+{
+	m_layout->Update(timer);
+}
+
 void Button::Render() const noexcept
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");

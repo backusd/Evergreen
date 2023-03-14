@@ -477,13 +477,13 @@ void Layout::Margin(float left, float top, float right, float bottom) noexcept
 	UpdateLayout();
 }
 
-void Layout::Update() noexcept
+void Layout::Update(const Timer& timer) noexcept
 {
 	for (const std::unique_ptr<Control>& control : m_controls)
-		control->Update();
+		control->Update(timer);
 
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
-		sublayout->Update();
+		sublayout->Update(timer);
 }
 void Layout::Render() const noexcept
 {

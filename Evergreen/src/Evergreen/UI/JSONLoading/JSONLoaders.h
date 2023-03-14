@@ -69,8 +69,8 @@ public:
 
 	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
 
-
-
+	static std::function<void(Control*, const Timer&)> GetOnUpdateCallback(const std::string& key) { return Get().GetOnUpdateCallbackImpl(key); }
+	static void AddOnUpdateCallback(const std::string& key, std::function<void(Control*, const Timer&)> fn) { Get().AddOnUpdateCallbackImpl(key, fn); }
 
 
 public:
@@ -115,7 +115,16 @@ private:
 	CONTROL_EVENT_MAP(Viewport, MouseButtonDoubleClickEvent);
 
 
+	std::unordered_map<std::string, std::function<void(Control*, const Timer&)>> m_onUpdateCallbacksMap;
 
+	inline std::function<void(Control*, const Timer&)> GetOnUpdateCallbackImpl(const std::string& key)
+	{
+		return m_onUpdateCallbacksMap[key];
+	}
+	inline void AddOnUpdateCallbackImpl(const std::string& key, std::function<void(Control*, const Timer&)> fn)
+	{
+		m_onUpdateCallbacksMap[key] = fn;
+	}
 
 
 

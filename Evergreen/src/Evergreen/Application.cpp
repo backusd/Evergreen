@@ -47,20 +47,25 @@ int Application::Run() noexcept
 			return *ecode;
 		}
 
-		Update();
+		m_timer.Tick([&]()
+			{
+				Update(m_timer);
+			}
+		);
+
 		Render();
 		Present();
 	}
 }
 
-void Application::Update() noexcept
+void Application::Update(const Timer& timer) noexcept
 {
 	// Call the virtual method first so we can update the simulation, or whatever the
 	// client code is needing to update, before we update the window/UI
-	OnUpdate();
+	OnUpdate(timer);
 
-	m_window->OnUpdate();
-	m_ui->Update();
+	m_window->OnUpdate(timer);
+	m_ui->Update(timer);
 }
 
 void Application::Render() noexcept

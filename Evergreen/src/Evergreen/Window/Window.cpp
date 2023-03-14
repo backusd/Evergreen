@@ -135,7 +135,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 
 
 
-void Window::OnUpdate() noexcept
+void Window::OnUpdate(const Timer& timer) noexcept
 {
 	// ... Update + Render + Present ... ??
 }

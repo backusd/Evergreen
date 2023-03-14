@@ -915,8 +915,8 @@
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [ { "Width": "1*" } ],
 
-			"RadioButtonExample": {
-				"Type": "RadioButton",
+			"Text_FPS": {
+				"Type": "Text",
 				"id": 223,
 				"Margin": [ 0, 0, 0, 0 ],
 				"Row": 0,
@@ -924,21 +924,21 @@
 				"RowSpan": 1,
 				"ColumnSpan": 1,
 
-				"IsChecked": false,
+				"Text": "0.0",
+				"Brush": "White",
 
-				"InnerRadius": 3,
-				"OuterRadius": 6,
+				"FontFamily": "Calibri",
+				"FontSize": 30,
+				"FontWeight": "Normal",
+				"FontStyle": "Normal", 
+				"FontStretch": "Normal", 
+				"TextAlignment": "Center", 
+				"ParagraphAlignment": "Near",
+				"WordWrapping": "None",
 
-				"InnerBrush": "Purple",
-				"OuterBrush": "Purple",
-				"OuterBrushLineWidth": 1.5,
+				"OnUpdate": "SetFPSText"
 
-				"OnMouseEntered": "RadioButtonExample_OnMouseEntered",
-				"OnMouseExited": "RadioButtonExample_OnMouseExited",
-				"OnMouseMoved": "RadioButtonExample_OnMouseMoved",
-				"OnMouseLButtonDown": "RadioButtonExample_OnMouseLButtonDown",
-				"OnMouseLButtonUp": "RadioButtonExample_OnMouseLButtonUp",
-				"OnIsCheckedChanged": "RadioButtonExample_OnIsCheckedChanged"
+
 			}
 
 		}

@@ -16,7 +16,12 @@
 		"FontStretch": "Expanded", // Allowed values: Condensed, Expanded, ExtraCondensed, Medium, Normal, SemiCondensed, SemiExpanded, UltraCondensed, UltraExpanded, Undefined
 		"TextAlignment": "Center", // Allowed values: Center, Justified, Leading, Trailing
 		"ParagraphAlignment": "Center", // Allowed values: Center, Far, Near
-		"WordWrapping": "None" // Allowed values: Character, EmergencyBreak, None, Word, Wrap
+		"WordWrapping": "None", // Allowed values: Character, EmergencyBreak, None, Word, Wrap
+
+		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
+		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
+		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
+		"OnUpdate": "TextExample_OnUpdate"
 	},
 
 	// TextStyle: If more than one Text control will use the same font styling values, we can create a global TextStyle and reference it in the Text control

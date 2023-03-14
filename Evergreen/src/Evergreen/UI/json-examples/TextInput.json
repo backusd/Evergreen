@@ -42,6 +42,11 @@
 		"OnEnterKey": "TextInput_OnEnterKey",
 		"OnInputTextChanged": "TextInput_OnInputTextChanged",
 
+		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
+		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
+		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
+		"OnUpdate": "TextInput_OnUpdate",
+
 		// Right Side Layout: If the user wishes, a layout can be inserted into the control that will reside immediately
 		//                    to the right of the text input area. This is achieved by created a second column within the
 		//                    contol's layout and creating a sublayout within row 0 column 1. The user can place whatever

@@ -38,7 +38,7 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadiusX", "CornerRadiusY", "Content", "OnMouseEnter",
-	"OnMouseMoved", "OnMouseLeave", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick" };
+	"OnMouseMoved", "OnMouseLeave", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate"};
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -59,6 +59,8 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	ParseOnMouseLButtonDown(button, data);
 	ParseOnMouseLButtonUp(button, data);
 	ParseOnClick(button, data);
+
+	ParseOnUpdateCallback(button, data);
 
 	return button;
 }

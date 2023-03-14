@@ -62,6 +62,7 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\StyleLoaders\TextStyleLoader.h" />
     <ClInclude Include="src\Evergreen\UI\Utils\FontFamily.h" />
     <ClInclude Include="src\Evergreen\UI\Styles\Style.h" />
+    <ClInclude Include="src\Evergreen\Utils\Timer.h" />
     <ClInclude Include="src\Evergreen\Window\TranslateErrorCode.h" />
     <ClInclude Include="src\Evergreen\Window\WindowsMessageMap.h" />
     <ClInclude Include="src\Evergreen\Window\Window.h" />

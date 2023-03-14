@@ -26,13 +26,18 @@
 		"OnClick": "ViewportExample_OnClick",
 		"OnDoubleClick": "ViewportExample_OnDoubleClick",
 
+		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
+		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
+		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
+		"OnUpdate": "ViewportExample_OnUpdate",
+
 		// Content: Must be a json object with the 'Type' key having the value 'Layout' (See Layout.json for how to specify a Layout)
 		//          The Layout can house any number of different controls that will be rendered ON TOP OF the 3D scene rendered to the Viewport
 		"Content": {
 			"Type": "Layout",
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [ { "Width": "1*" } ],
-			...
+			"..."
 		}
 	}
 }

@@ -46,7 +46,12 @@
 		"OnMouseExitedTitleBar": "Pane1_OnMouseExitedTitleBar",
 		"OnMouseEnteredContentRegion": "Pane1_OnMouseEnteredContentRegion",
 		"OnMouseExitedContentRegion": "Pane1_OnMouseExitedContentRegion",
-		"OnMouseMoved": "Pane1_OnMouseMoved"
+		"OnMouseMoved": "Pane1_OnMouseMoved",
+
+		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
+		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
+		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
+		"OnUpdate": "Pane1_OnUpdate"
 	},
 
 

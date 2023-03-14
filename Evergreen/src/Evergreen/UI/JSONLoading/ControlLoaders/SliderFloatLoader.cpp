@@ -37,7 +37,8 @@ Control* SliderFloatLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	"TextInputTextStyle", "TextInputBackgroundBrush", "TextInputBorderBrush", "TextInputBorderWidth",
 	"ShowPopUpValueWhenSliding", "PopUpBackgroundBrush", "PopUpBorderBrush", "PopUpBorderWidth", "PopUpCornerRadius",
 	"PopUpHeight", "PopUpWidth", "PopUpTextBrush", "PopUpTextStyle",
-	"OnMouseEnteredCircle", "OnMouseExitedCircle", "OnBeginDragging", "OnStoppedDragging", "OnValueChanged" };
+	"OnMouseEnteredCircle", "OnMouseExitedCircle", "OnBeginDragging", "OnStoppedDragging", "OnValueChanged",
+	"OnUpdate" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -102,6 +103,8 @@ Control* SliderFloatLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	ParseOnBeginDragging(slider, data);
 	ParseOnStoppedDragging(slider, data);
 	ParseOnValueChanged(slider, data);
+
+	ParseOnUpdateCallback(slider, data);
 
 	return slider;
 }

@@ -70,9 +70,10 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	OnAllowedRegionChanged();
 }
 
-void ScrollableLayout::Update() noexcept
+void ScrollableLayout::OnUpdate(const Timer& timer) noexcept
 {
-
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	m_layout->Update(timer);
 }
 void ScrollableLayout::Render() const noexcept
 {

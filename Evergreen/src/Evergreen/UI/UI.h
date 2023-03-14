@@ -11,6 +11,7 @@
 #include "JSONLoading/StyleLoaders/TextStyleLoader.h"
 #include "JSONLoading/JSONLoaders.h"
 #include "Controls.h"
+#include "Evergreen/Utils/Timer.h"
 
 #include <nlohmann/json.hpp>
 using json = nlohmann::json;
@@ -32,7 +33,7 @@ public:
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
 	
-	void Update() noexcept;
+	void Update(const Timer& timer) noexcept;
 	void Render() const noexcept;
 
 	void OnChar(CharEvent& e) noexcept;

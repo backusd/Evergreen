@@ -44,13 +44,18 @@
 		"HorizontalScrollBarHoveredBrush": "Gray",
 		"HorizontalScrollBarDraggingBrush": "Green",
 
+		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
+		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
+		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
+		"OnUpdate": "ScrollableLayout_OnUpdate",
 
-		"ExampleControl1": {	// Specify the controls you want added to the layout
+
+		"ExampleControl1": { // Specify the controls you want added to the layout
 			"Type": "Text",
-			...
+			"..."
 		},
 
-		...
+		"..."
 	},
 
 

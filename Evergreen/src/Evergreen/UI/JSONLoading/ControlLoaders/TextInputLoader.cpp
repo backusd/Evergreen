@@ -56,7 +56,7 @@ Control* TextInputLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResour
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "PlaceholderText", "PlaceholderTextBrush", "PlaceholderTextStyle", 
 	"InputTextBrush", "InputTextStyle", "VerticalBarBrush", "VerticalBarWidth", "OnMouseEntered", "OnMouseExited",
 	"OnMouseMoved", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnEnterKey", "OnInputTextChanged", 
-	"RightSideLayoutColumnWidth", "RightSideLayout"};
+	"RightSideLayoutColumnWidth", "RightSideLayout", "OnUpdate" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -95,6 +95,8 @@ Control* TextInputLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResour
 	ParseOnInputTextChanged(textInput, data);
 
 	ParseRightSideLayout(textInput, data);
+
+	ParseOnUpdateCallback(textInput, data);
 
 	return textInput;
 }

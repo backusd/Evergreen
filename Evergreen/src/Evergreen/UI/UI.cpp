@@ -962,9 +962,9 @@ void UI::LoadErrorUI() noexcept
 	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), std::move(style));
 }
 
-void UI::Update() noexcept
+void UI::Update(const Timer& timer) noexcept
 {
-	m_rootLayout->Update();
+	m_rootLayout->Update(timer);
 }
 
 void UI::Render() const noexcept

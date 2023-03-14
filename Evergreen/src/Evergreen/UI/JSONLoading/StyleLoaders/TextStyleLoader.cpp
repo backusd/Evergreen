@@ -50,9 +50,9 @@ std::unique_ptr<Style> TextStyleLoader::LoadImpl(std::shared_ptr<DeviceResources
 		EG_CORE_WARN("{}:{} - TextStyle with name '{}': 'Locale' field not yet supported", __FILE__, __LINE__, m_name);
 
 	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan",
+	constexpr std::array recognizedKeys{ "Type", "id", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"Style", "Brush", "FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
-	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale" };
+	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale", "OnUpdate" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())

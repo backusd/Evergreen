@@ -51,7 +51,6 @@ public:
 	virtual ~SliderInt() noexcept override {}
 
 	// Inherited from Control
-	virtual void Update() noexcept override {}
 	virtual void Render() const noexcept override;
 
 	// Event Handling

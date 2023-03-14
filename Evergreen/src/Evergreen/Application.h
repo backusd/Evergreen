@@ -8,6 +8,7 @@
 #include "UI/UI.h"
 #include "Evergreen/Window/Window.h"
 #include "Rendering/DeviceResources.h"
+#include "Evergreen/Utils/Timer.h"
 
 // See: https://learn.microsoft.com/en-us/cpp/c-runtime-library/debug-versions-of-heap-allocation-functions?view=msvc-170
 #if defined(DEBUG) || defined(_DEBUG)
@@ -35,13 +36,14 @@ public:
 protected:
 	std::unique_ptr<UI> m_ui;
 	std::shared_ptr<DeviceResources> m_deviceResources;
+	Timer m_timer;
 
 	// Virtual functions so the client application can update & render to viewports 
-	virtual void OnUpdate() {}
+	virtual void OnUpdate(const Timer& timer) {}
 	virtual void OnRender() {}
 
 private:
-	void Update() noexcept;
+	void Update(const Timer& timer) noexcept;
 	void Render() noexcept;
 	void Present() noexcept;
 

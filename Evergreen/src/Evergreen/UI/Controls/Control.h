@@ -3,6 +3,7 @@
 #include "Evergreen/Core.h"
 #include "Evergreen/Log.h"
 #include "Evergreen/Rendering/DeviceResources.h"
+#include "Evergreen/Utils/Timer.h"
 
 namespace Evergreen
 {
@@ -32,7 +33,10 @@ public:
 	void operator=(const Control& control) noexcept = delete;
 	virtual ~Control() noexcept {}
 
-	virtual void Update() noexcept = 0;
+	void Update(const Timer& timer) noexcept { OnUpdate(timer); m_CustomOnUpdateCallback(this, timer); }
+protected:
+	virtual void OnUpdate(const Timer& timer) noexcept {}
+public:
 	virtual void Render() const = 0;
 
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
@@ -61,6 +65,7 @@ public:
 	void AllowedRegionRight(float right) noexcept;
 	void AllowedRegionTop(float top) noexcept;
 	void AllowedRegionBottom(float bottom) noexcept;
+	void SetOnUpdateCallback(std::function<void(Control*, const Timer&)> fn) noexcept { m_CustomOnUpdateCallback = fn; }
 
 	ND inline const std::string& Name() const noexcept { return m_name; }
 	ND inline unsigned int ID() const noexcept { return m_id; }
@@ -92,6 +97,8 @@ protected:
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;	
 	UI*									m_ui;
+
+	std::function<void(Control*, const Timer&)> m_CustomOnUpdateCallback = [](Control*, const Timer&) {};
 
 	// Allowed region should be set by the parent layout
 	D2D1_RECT_F							m_allowedRegion;

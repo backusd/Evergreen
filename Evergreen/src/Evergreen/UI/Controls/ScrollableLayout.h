@@ -28,7 +28,7 @@ public:
 	void operator=(const ScrollableLayout&) noexcept = delete;
 	virtual ~ScrollableLayout() noexcept override {}
 
-	void Update() noexcept override;
+	void OnUpdate(const Timer& timer) noexcept override;
 	void Render() const noexcept override;
 
 	ND virtual Control* GetControlByName(const std::string& name) noexcept override;

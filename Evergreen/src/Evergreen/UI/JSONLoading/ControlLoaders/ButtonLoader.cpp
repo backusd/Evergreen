@@ -33,7 +33,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
-	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick"};
+	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate"};
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -55,6 +55,8 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	ParseOnMouseLButtonDown(button, data);
 	ParseOnMouseLButtonUp(button, data);
 	ParseOnClick(button, data);
+
+	ParseOnUpdateCallback(button, data);
 
 	return button;
 }

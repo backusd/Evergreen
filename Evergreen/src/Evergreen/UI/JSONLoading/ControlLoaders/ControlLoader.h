@@ -3,6 +3,7 @@
 #include "Evergreen/Core.h"
 #include "Evergreen/Log.h"
 #include "Evergreen/UI/Layout.h"
+#include "Evergreen/UI/JSONLoading/JSONLoaders.h"
 #include "Evergreen/Exceptions/JSONLoadersException.h"
 
 #include <nlohmann/json.hpp>
@@ -29,6 +30,7 @@ protected:
 	RowColumnPosition ParseRowColumnPosition(json& data);
 	Margin ParseMargin(json& data);
 	unsigned int ParseID(json& data);
+	void ParseOnUpdateCallback(Control* control, json& data);
 
 	std::string m_name;
 

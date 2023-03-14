@@ -33,7 +33,8 @@ Control* RadioButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"IsChecked", "InnerRadius", "OuterRadius", "InnerBrush", "OuterBrush", "OuterBrushLineWidth",
-	"OnMouseEntered", "OnMouseExited", "OnMouseMoved", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnIsCheckedChanged" };
+	"OnMouseEntered", "OnMouseExited", "OnMouseMoved", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnIsCheckedChanged",
+	"OnUpdate" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -64,6 +65,8 @@ Control* RadioButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	ParseOnMouseLButtonDown(rb, data);
 	ParseOnMouseLButtonUp(rb, data);
 	ParseOnIsCheckedChanged(rb, data);
+
+	ParseOnUpdateCallback(rb, data);
 
 	return rb;
 }

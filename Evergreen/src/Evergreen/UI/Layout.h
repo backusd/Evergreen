@@ -6,6 +6,7 @@
 #include "Evergreen/UI/Controls/Control.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/Exceptions/BaseException.h"
+#include "Evergreen/Utils/Timer.h"
 
 
 #define LAYOUT_EXCEPTION(fmt, ...) throw Evergreen::LayoutException(__LINE__, __FILE__, std::format(fmt, __VA_ARGS__))
@@ -225,7 +226,7 @@ public:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
 
-	void Update() noexcept;
+	void Update(const Timer& timer) noexcept;
 	void Render() const noexcept;
 	void DrawBorders() const noexcept;
 

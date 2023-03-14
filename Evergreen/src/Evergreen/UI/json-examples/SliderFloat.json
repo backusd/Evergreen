@@ -87,6 +87,11 @@
 		"OnMouseExitedCircle": "SliderFloatExample_OnMouseExitedCircle",
 		"OnBeginDragging": "SliderFloatExample_OnBeginDragging",
 		"OnStoppedDragging": "SliderFloatExample_OnStoppedDragging",
-		"OnValueChanged": "SliderFloatExample_OnValueChanged"
+		"OnValueChanged": "SliderFloatExample_OnValueChanged",
+
+		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
+		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
+		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
+		"OnUpdate": "SliderFloatExample_OnUpdate"
 	}
 }
