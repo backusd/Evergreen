@@ -91,11 +91,26 @@ void DeviceResourcesDX11::CreateDeviceDependentResources()
 	// than the API default. It is required for compatibility with Direct2D
 	UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
+	// "Use this flag if your application will only call methods of Direct3D 11 interfaces from a single thread. By default, the ID3D11Device object is thread-safe.
+	//  By using this flag, you can increase performance.However, if you use this flag and your application calls methods of Direct3D 11 interfaces from multiple threads, undefined behavior might result."
+	//creationFlags |= D3D11_CREATE_DEVICE_SINGLETHREADED;
+
+	// "Use this flag if the device will produce GPU workloads that take more than two seconds to complete, and you want the operating system to allow them to successfully finish. If this flag is not set, the 
+	//  operating system performs timeout detection and recovery when it detects a GPU packet that took more than two seconds to execute. If this flag is set, the operating system allows such a long running 
+	//  packet to execute without resetting the GPU. We recommend not to set this flag if your device needs to be highly responsive so that the operating system can detect and recover from GPU timeouts. We 
+	//  recommend to set this flag if your device needs to perform time consuming background tasks such as compute, image recognition, and video encoding to allow such tasks to successfully finish."
+	if (!m_gpuTimeoutEnabled)
+		creationFlags |= D3D11_CREATE_DEVICE_DISABLE_GPU_TIMEOUT;
+
 #if defined(_DEBUG)
 	if (SdkLayersAvailable())
 	{
 		// If the project is in a debug build, enable debugging via SDK Layers with this flag
 		creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+
+		// "Causes the device and driver to keep information that you can use for shader debugging. The exact impact from this flag will vary from driver to driver.
+		//  To use this flag, you must have D3D11_1SDKLayers.dll installed; otherwise, device creation fails.The created device supports the debug layer. "
+		//creationFlags |= D3D11_CREATE_DEVICE_DEBUGGABLE; <-- Not sure how handy this is (and not sure how to get the DLL working)
 	}
 #endif
 
@@ -170,9 +185,14 @@ void DeviceResourcesDX11::CreateDeviceDependentResources()
 			m_d2dDevice.ReleaseAndGetAddressOf()
 		)
 	);
+
+	// "Distribute rendering work across multiple threads. Refer to Improving the performance of Direct2D apps for additional notes on the use of this flag."
+	//  See: https://learn.microsoft.com/en-us/windows/win32/direct2d/improving-direct2d-performance
+	//D2D1_DEVICE_CONTEXT_OPTIONS d2dOptions = D2D1_DEVICE_CONTEXT_OPTIONS_ENABLE_MULTITHREADED_OPTIMIZATIONS;
+	D2D1_DEVICE_CONTEXT_OPTIONS d2dOptions = D2D1_DEVICE_CONTEXT_OPTIONS_NONE;
 	GFX_THROW_INFO(
 		m_d2dDevice->CreateDeviceContext(
-			D2D1_DEVICE_CONTEXT_OPTIONS_NONE,
+			d2dOptions,
 			m_d2dDeviceContext.ReleaseAndGetAddressOf()
 		)
 	);
@@ -205,15 +225,22 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 	m_d3dDepthStencilView = nullptr;
 	m_d3dDeviceContext->Flush1(D3D11_CONTEXT_TYPE_ALL, nullptr);
 
+	// NOTE: There are lots of other (very specific) swap chain options that aren't necessary right now
+	UINT swapChainFlags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+
 	// if the swap chain already exists, resize it
 	if (m_dxgiSwapChain.Get() != nullptr)
 	{
+		// Don't use GFX_THROW_INFO because we don't want to immediately throw is the hResult is an error.
+		// Instead, manually call m_infoManager.Set(), do the hResult processing, and manually throw later if necessary
+		m_infoManager.Set();
+
 		HRESULT hRESULT = m_dxgiSwapChain->ResizeBuffers(
 			2, // Double-buffered swap chain
 			lround(width),
 			lround(height),
-			DXGI_FORMAT_B8G8R8A8_UNORM,
-			0
+			m_rtvFormat,
+			swapChainFlags
 		);
 
 		if (hRESULT == DXGI_ERROR_DEVICE_REMOVED || hRESULT == DXGI_ERROR_DEVICE_RESET)
@@ -227,7 +254,8 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 		}
 		else
 		{
-			GFX_THROW_INFO(hRESULT);
+			// Don't use GFX_THROW_INFO - see note above
+			throw DeviceResourcesExceptionDX11(__LINE__, __FILE__, hRESULT, m_infoManager.GetMessages());
 		}
 	}
 	else
@@ -238,8 +266,8 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 		swapChainDesc.Width = static_cast<UINT>(width);					// Match the size of the window
 		swapChainDesc.Height = static_cast<UINT>(height);
-		swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;				// This is the most common swap chain format
-		swapChainDesc.Stereo = false;
+		swapChainDesc.Format = m_rtvFormat;								// This is the most common swap chain format
+		swapChainDesc.Stereo = false;				
 		swapChainDesc.SampleDesc.Count = 1;								// Don't use multi-sampling
 		swapChainDesc.SampleDesc.Quality = 0;
 		swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -405,6 +433,16 @@ void DeviceResourcesDX11::HandleDeviceLost()
 
 	// Must reset the render target because it gets deleted/recreated when we call CreateWindowSizeDependentResources
 	SetRenderTarget();
+}
+
+void DeviceResourcesDX11::EnableGPUTimeout(bool enable)
+{
+	if (m_gpuTimeoutEnabled != enable)
+	{
+		m_gpuTimeoutEnabled = enable;
+
+		// TODO: Finish writing this function (recreate the device, etc.)
+	}
 }
 
 void DeviceResourcesDX11::SetRenderTarget()

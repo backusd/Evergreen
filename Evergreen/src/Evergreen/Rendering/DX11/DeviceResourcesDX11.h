@@ -31,6 +31,8 @@ public:
 	void BeginDraw() noexcept;
 	void EndDraw();
 
+	void EnableGPUTimeout(bool enable);
+
 	ND inline IDWriteFactory7*		DWriteFactory() const { return m_dwriteFactory.Get(); }
 	ND inline IWICImagingFactory2*	WICImagingFactory() const { return m_wicImagingFactory.Get(); }
 	ND inline ID2D1Factory7*		D2DFactory() const { return m_d2dFactory.Get(); }
@@ -73,6 +75,9 @@ private:
 	// DPI scale for the window
 	float m_dpiScale;
 
+	// Enable 2 sec GPU timeout
+	bool m_gpuTimeoutEnabled = true;
+
 	// ==========================================================
 	// Direct 2D drawing components
 	Microsoft::WRL::ComPtr<ID2D1Factory7>		m_d2dFactory;
@@ -95,18 +100,12 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView1>	m_d3dRenderTargetView;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
 
-	// Keep one rasterstate for solid fill and another for wireframe
-	// Microsoft::WRL::ComPtr<ID3D11RasterizerState> solidRasterState;
-	// Microsoft::WRL::ComPtr<ID3D11RasterizerState> wireframeRasterState;
-
-	// D3D11_VIEWPORT m_viewport;
-
 	// Cached device properties
 	D3D_FEATURE_LEVEL m_d3dFeatureLevel;
 
-	// Orientation transforms
-	// D2D1::Matrix3x2F	m_orientationTransform2D;
-	// DirectX::XMFLOAT4X4 m_orientationTransform3D;
+	// Formats
+	const DXGI_FORMAT m_rtvFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
+	const DXGI_FORMAT m_dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 };
 #pragma warning( pop )
 
