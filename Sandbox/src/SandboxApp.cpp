@@ -22,18 +22,6 @@ protected:
 	}
 	void OnRender() override
 	{
-		auto vpControl = m_ui->GetControlByName<Viewport>("MainViewport");
-		D3D11_VIEWPORT vp = vpControl->GetViewport();
-		D3D12_VIEWPORT vp12 = {};
-		vp12.Height = vp.Height;
-		vp12.Width = vp.Width;
-		vp12.TopLeftX = vp.TopLeftX;
-		vp12.TopLeftY = vp.TopLeftY;
-		vp12.MinDepth = vp.MinDepth;
-		vp12.MaxDepth = vp.MaxDepth;
-		m_deviceResources->TestDraw(vp12);
-
-		/*
 		auto context = m_deviceResources->D3DDeviceContext();
 		auto device = m_deviceResources->D3DDevice();
 
@@ -142,6 +130,12 @@ protected:
 		ID3D11RenderTargetView* const targets[1] = { m_deviceResources->BackBufferRenderTargetView() };
 		context->OMSetRenderTargets(1u, targets, m_deviceResources->DepthStencilView());
 
+		float c = 92.0f / 256;
+		float background[4] = { c, 0.0f, c, 1.0f };
+		context->ClearRenderTargetView(m_deviceResources->BackBufferRenderTargetView(), background);
+
+		context->ClearDepthStencilView(m_deviceResources->DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+
 		// Set primitive topology to triangle list (groups of 3 vertices)
 		context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -151,8 +145,6 @@ protected:
 
 		// GFX_THROW_INFO_ONLY(pContext->Draw((UINT)std::size(vertices), 0u));
 		context->Draw((UINT)std::size(vertices), 0u);
-
-		*/
 	}
 
 private:

@@ -53,12 +53,6 @@ public:
 
 	void EnableGPUTimeout(bool enabled);
 
-
-
-
-	ND inline float DIPSToPixels(float dips) const noexcept { return dips * m_dpiScale; }
-	ND inline float PixelsToDIPS(float pixels) const noexcept { return pixels / m_dpiScale; }
-
 #if defined(_DEBUG)
 public:
 	ND inline static DxgiInfoManagerDX12& GetInfoManager() noexcept { return m_infoManager; }
@@ -68,90 +62,11 @@ private:
 
 	
 private:
-//	void CreateDeviceDependentResources();
-//	void CreateDeviceIndependentResources();
-//	void CreateWindowSizeDependentResources();
-//	void CreateWindowSizeDependentResources(float width, float height);
-//	void SetRenderTarget();
-	void HandleDeviceLost();
-
-	// D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const;
-
 	// Keep handle to window
 	HWND m_hWnd;
 
-	// DPI scale for the window
-	float m_dpiScale;
-
-	// ==========================================================
-	// Direct 2D drawing components
-//	Microsoft::WRL::ComPtr<ID2D1Factory7>		m_d2dFactory;
-//	Microsoft::WRL::ComPtr<ID2D1Device6>		m_d2dDevice;
-//	Microsoft::WRL::ComPtr<ID2D1DeviceContext6>	m_d2dDeviceContext;
-//	Microsoft::WRL::ComPtr<ID2D1Bitmap1>		m_d2dBitmap;
-//
-//	Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock1> m_drawingStateBlock;
-//
-//	// Direct Write drawing components
-//	Microsoft::WRL::ComPtr<IDWriteFactory7>		m_dwriteFactory;
-//	Microsoft::WRL::ComPtr<IWICImagingFactory2>	m_wicImagingFactory;
-
-	// ==========================================================
-	// Direct 3D 
-//	Microsoft::WRL::ComPtr<ID3D11Device5>		 m_d3dDevice;
-//	Microsoft::WRL::ComPtr<ID3D11DeviceContext4> m_d3dDeviceContext;
-//	Microsoft::WRL::ComPtr<IDXGISwapChain4>		 m_dxgiSwapChain;
-//
-//	// Direct3D Rendering objects
-//	Microsoft::WRL::ComPtr<ID3D11RenderTargetView1>	m_d3dRenderTargetView;
-//	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
-//
-//	// Cached device properties
-//	D3D_FEATURE_LEVEL m_d3dFeatureLevel;
-
-	// --------------------------------------------------------------------
-	// Set true to use 4X MSAA (§4.1.8).  The default is false.
-/*
-	bool      m_4xMsaaState;    // 4X MSAA enabled
-	UINT      m_4xMsaaQuality;  // quality level of 4X MSAA
-
-	Microsoft::WRL::ComPtr<IDXGIFactory7>	m_dxgiFactory;
-	Microsoft::WRL::ComPtr<IDXGISwapChain4> m_swapChain;
-	Microsoft::WRL::ComPtr<ID3D12Device10>	m_d3dDevice;
-
-	Microsoft::WRL::ComPtr<ID3D12Fence1> m_fence;
-	UINT64 m_currentFence;
-
-	Microsoft::WRL::ComPtr<ID3D12CommandQueue>			m_commandQueue;
-	Microsoft::WRL::ComPtr<ID3D12CommandAllocator>		m_directCmdListAlloc;
-	Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList7>	m_commandList;
-
-	static const int SwapChainBufferCount = 2;
-	int m_currBackBuffer;
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_swapChainBuffer[SwapChainBufferCount];
-	Microsoft::WRL::ComPtr<ID3D12Resource> m_depthStencilBuffer;
-
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
-	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_dsvHeap;
-
-	UINT m_rtvDescriptorSize;
-	UINT m_dsvDescriptorSize;
-	UINT m_cbvSrvUavDescriptorSize;
-
-	D3D_DRIVER_TYPE m_d3dDriverType;
-	DXGI_FORMAT		m_backBufferFormat;
-	DXGI_FORMAT		m_depthStencilFormat;
-*/
-
-//	void LoadPipeline(float width, float height);
-//	void LoadAssets();
-//	void PopulateCommandList();
-//	void WaitForGpu();
-//	void MoveToNextFrame();
-//	void RenderUI();
-
 	void CreateDXGIFactoryAndD3D12Device();
-	void CheckMultiSamplingSupport();
+	// void CheckMultiSamplingSupport(); <-- Can omit this for now. D3D12 does not support multisampling (see comment below)
 	void CreateCommandObjects();
 	void CreateSwapChain(float width, float height);
 	void CreateD3D11On12Device();
@@ -162,6 +77,7 @@ private:
 	void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter, bool requestHighPerformanceAdapter = false);
 	
 	void FlushCommandQueue();
+
 	D3D12_CPU_DESCRIPTOR_HANDLE DepthStencilView() const;
 	D3D12_CPU_DESCRIPTOR_HANDLE CurrentBackBufferView() const;
 	ID3D12Resource* CurrentBackBuffer() const;
@@ -169,7 +85,6 @@ private:
 	static const UINT FrameCount = 2;
 
 	// Pipeline objects.
-	//CD3DX12_VIEWPORT									m_viewport;
 	CD3DX12_RECT										m_scissorRect;
 	Microsoft::WRL::ComPtr<IDXGISwapChain3>				m_swapChain;
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>			m_d3d11DeviceContext;
@@ -199,32 +114,38 @@ private:
 	UINT m_rtvDescriptorSize;
 	UINT m_dsvDescriptorSize;
 	UINT m_cbvSrvUavDescriptorSize;
-//	Microsoft::WRL::ComPtr<ID2D1SolidColorBrush>	m_textBrush;
-//	Microsoft::WRL::ComPtr<IDWriteTextFormat>		m_textFormat;
-//	Microsoft::WRL::ComPtr<ID3D12Resource>			m_vertexBuffer;
-//	D3D12_VERTEX_BUFFER_VIEW						m_vertexBufferView;
 
 	// Synchronization objects.
 	UINT								m_frameIndex;
 	HANDLE								m_fenceEvent;
 	Microsoft::WRL::ComPtr<ID3D12Fence> m_fence;
 	UINT64								m_fenceValue;
-	//UINT64								m_fenceValues[FrameCount];
 
-	DXGI_FORMAT m_backBufferFormat = DXGI_FORMAT_R8G8B8A8_UNORM;
+	DXGI_FORMAT m_backBufferFormat   = DXGI_FORMAT_R8G8B8A8_UNORM;
 	DXGI_FORMAT m_depthStencilFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 
-	//const float m_clearColor[4] = { 0.0f, 0.2f, 0.4f, 1.0f };
+	// NOTE: Multisampling does NOT have native support in D3D12. There are methods to manually
+	//       perform multisampling, but require a fair bit of extra work that I am not going to 
+	//       do at this time.
+	//       See: https://learn.microsoft.com/en-us/windows/win32/api/dxgi/ne-dxgi-dxgi_swap_effect
+	const bool m_4xMsaaState = false;
+	const UINT m_4xMsaaQuality = 0;
 
-	bool      m_4xMsaaState = false;    // 4X MSAA enabled
-	UINT      m_4xMsaaQuality = 0;      // quality level of 4X MSAA
-
-	bool m_enableGPUTimeout = true;
+	// This boolean controls whether the D3D11_CREATE_DEVICE_DISABLE_GPU_TIMEOUT flag is set on m_d3d11DeviceFlags
+	//     "Use this flag if the device will produce GPU workloads that take more than two seconds to complete, 
+	//     and you want the operating system to allow them to successfully finish. If this flag is not set, the 
+	//     operating system performs timeout detection and recovery when it detects a GPU packet that took more 
+	//     than two seconds to execute. If this flag is set, the operating system allows such a long running packet 
+	//     to execute without resetting the GPU. We recommend not to set this flag if your device needs to be 
+	//     highly responsive so that the operating system can detect and recover from GPU timeouts. We recommend to 
+	//     set this flag if your device needs to perform time consuming background tasks such as compute, image 
+	//     recognition, and video encoding to allow such tasks to successfully finish."
+	bool m_enableGPUTimeout;
 
 	float m_aspectRatio;
 
-	UINT m_d3d11DeviceFlags = 0;
-	D2D1_FACTORY_OPTIONS m_d2dFactoryOptions = {};
+	UINT m_d3d11DeviceFlags;
+	D2D1_FACTORY_OPTIONS m_d2dFactoryOptions;
 };
 #pragma warning( pop )
 
