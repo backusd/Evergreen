@@ -40,8 +40,6 @@ public:
 	ND std::optional<int> ProcessMessages() const noexcept;
 	ND LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept override;
 
-	void OnUpdate(const Timer& timer) noexcept;
-
 	ND inline unsigned int GetWidth() const noexcept { return m_width; }
 	ND inline unsigned int GetHeight() const noexcept { return m_height; }
 

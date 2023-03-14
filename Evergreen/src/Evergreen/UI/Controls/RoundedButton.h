@@ -26,7 +26,7 @@ public:
 	virtual ~RoundedButton() noexcept override {}
 
 	// Inherited from Control
-	void Render() const noexcept override;
+	void Render() const override;
 
 	ND inline const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
 

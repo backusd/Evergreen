@@ -59,12 +59,12 @@ void Viewport::OnAllowedRegionChanged()
 	ViewportChanged();
 }
 
-void Viewport::OnUpdate(const Timer& timer) noexcept
+void Viewport::OnUpdate(const Timer& timer)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "Layout is nullptr");
 	m_layout->Update(timer);
 }
-void Viewport::Render() const noexcept 
+void Viewport::Render() const
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "Layout is nullptr");
 	m_layout->Render();

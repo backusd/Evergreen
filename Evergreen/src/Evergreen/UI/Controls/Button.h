@@ -27,8 +27,8 @@ public:
 	virtual ~Button() noexcept override {}
 
 	// Inherited from Control
-	virtual void OnUpdate(const Timer& timer) noexcept override;
-	virtual void Render() const noexcept override;
+	virtual void OnUpdate(const Timer& timer) override;
+	virtual void Render() const override;
 
 	ND virtual Control* GetControlByName(const std::string& name) noexcept override;
 	ND virtual Control* GetControlByID(unsigned int id) noexcept override;

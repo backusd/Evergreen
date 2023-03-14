@@ -444,7 +444,7 @@ void DeviceResourcesDX11::Present()
 		GFX_THROW_INFO(hRESULT)
 }
 
-void DeviceResourcesDX11::BeginDraw()
+void DeviceResourcesDX11::BeginDraw() noexcept
 {
 	m_d2dDeviceContext->SaveDrawingState(m_drawingStateBlock.Get());
 	m_d2dDeviceContext->BeginDraw();

@@ -42,7 +42,7 @@ void Text::SetTextStyle(std::unique_ptr<TextStyle> style) noexcept
 	TextChanged(); 
 }
 
-void Text::Render() const noexcept
+void Text::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_textLayout != nullptr, "TextLayout is nullptr");

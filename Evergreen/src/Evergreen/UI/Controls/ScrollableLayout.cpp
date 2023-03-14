@@ -70,12 +70,12 @@ ScrollableLayout::ScrollableLayout(std::shared_ptr<DeviceResources> deviceResour
 	OnAllowedRegionChanged();
 }
 
-void ScrollableLayout::OnUpdate(const Timer& timer) noexcept
+void ScrollableLayout::OnUpdate(const Timer& timer)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 	m_layout->Update(timer);
 }
-void ScrollableLayout::Render() const noexcept
+void ScrollableLayout::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");

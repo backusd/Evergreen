@@ -317,7 +317,7 @@ int SliderInt::PixelToValue(float pixel) const noexcept
 }
 
 
-void SliderInt::Render() const noexcept
+void SliderInt::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_lineBrushLeft != nullptr, "No line brush left");

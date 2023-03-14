@@ -50,7 +50,7 @@ public:
 	virtual ~SliderFloat() noexcept override {}
 
 	// Inherited from Control
-	virtual void Render() const noexcept override;
+	void Render() const override;
 
 	// Event Handling
 	void OnMouseMove(MouseMoveEvent& e) noexcept override;

@@ -477,7 +477,7 @@ void Layout::Margin(float left, float top, float right, float bottom) noexcept
 	UpdateLayout();
 }
 
-void Layout::Update(const Timer& timer) noexcept
+void Layout::Update(const Timer& timer)
 {
 	for (const std::unique_ptr<Control>& control : m_controls)
 		control->Update(timer);
@@ -485,7 +485,7 @@ void Layout::Update(const Timer& timer) noexcept
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
 		sublayout->Update(timer);
 }
-void Layout::Render() const noexcept
+void Layout::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_rows.size() > 0, "No rows added");

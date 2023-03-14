@@ -33,8 +33,8 @@ public:
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
 	
-	void Update(const Timer& timer) noexcept;
-	void Render() const noexcept;
+	void Update(const Timer& timer);
+	void Render() const;
 
 	void OnChar(CharEvent& e) noexcept;
 	void OnKeyPressed(KeyPressedEvent& e) noexcept;

@@ -28,7 +28,7 @@ public:
 
 	void DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth = 1.0f);
 
-	void BeginDraw();
+	void BeginDraw() noexcept;
 	void EndDraw();
 
 	ND inline IDWriteFactory7*		DWriteFactory() const { return m_dwriteFactory.Get(); }
@@ -42,10 +42,10 @@ public:
 	//static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
 
 	//D3D11_VIEWPORT GetViewport() noexcept { return Get().m_viewport; }
-	ID3D11Device5* D3DDevice() noexcept { return m_d3dDevice.Get(); }
-	ID3D11DeviceContext4* D3DDeviceContext() noexcept { return m_d3dDeviceContext.Get(); }
-	ID3D11DepthStencilView* DepthStencilView() noexcept { return m_d3dDepthStencilView.Get(); }
-	ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return m_d3dRenderTargetView.Get(); }	
+	ND inline ID3D11Device5* D3DDevice() noexcept { return m_d3dDevice.Get(); }
+	ND inline ID3D11DeviceContext4* D3DDeviceContext() noexcept { return m_d3dDeviceContext.Get(); }
+	ND inline ID3D11DepthStencilView* DepthStencilView() noexcept { return m_d3dDepthStencilView.Get(); }
+	ND inline ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return m_d3dRenderTargetView.Get(); }	
 
 	ND inline float DIPSToPixels(float dips) const noexcept { return dips * m_dpiScale; }
 	ND inline float PixelsToDIPS(float pixels) const noexcept { return pixels / m_dpiScale; }

@@ -39,31 +39,31 @@ public:
 	}
 
 	// Get elapsed time since the previous Update call.
-	uint64_t GetElapsedTicks() const noexcept { return m_elapsedTicks; }
-	double GetElapsedSeconds() const noexcept { return TicksToSeconds(m_elapsedTicks); }
+	ND inline uint64_t GetElapsedTicks() const noexcept { return m_elapsedTicks; }
+	ND inline double GetElapsedSeconds() const noexcept { return TicksToSeconds(m_elapsedTicks); }
 
 	// Get total time since the start of the program.
-	uint64_t GetTotalTicks() const noexcept { return m_totalTicks; }
-	double GetTotalSeconds() const noexcept { return TicksToSeconds(m_totalTicks); }
+	ND inline uint64_t GetTotalTicks() const noexcept { return m_totalTicks; }
+	ND inline double GetTotalSeconds() const noexcept { return TicksToSeconds(m_totalTicks); }
 
 	// Get total number of updates since start of the program.
-	uint32_t GetFrameCount() const noexcept { return m_frameCount; }
+	ND inline uint32_t GetFrameCount() const noexcept { return m_frameCount; }
 
 	// Get the current framerate.
-	uint32_t GetFramesPerSecond() const noexcept { return m_framesPerSecond; }
+	ND inline uint32_t GetFramesPerSecond() const noexcept { return m_framesPerSecond; }
 
 	// Set whether to use fixed or variable timestep mode.
-	void SetFixedTimeStep(bool isFixedTimestep) noexcept { m_isFixedTimeStep = isFixedTimestep; }
+	inline void SetFixedTimeStep(bool isFixedTimestep) noexcept { m_isFixedTimeStep = isFixedTimestep; }
 
 	// Set how often to call Update when in fixed timestep mode.
-	void SetTargetElapsedTicks(uint64_t targetElapsed) noexcept { m_targetElapsedTicks = targetElapsed; }
-	void SetTargetElapsedSeconds(double targetElapsed) noexcept { m_targetElapsedTicks = SecondsToTicks(targetElapsed); }
+	inline void SetTargetElapsedTicks(uint64_t targetElapsed) noexcept { m_targetElapsedTicks = targetElapsed; }
+	inline void SetTargetElapsedSeconds(double targetElapsed) noexcept { m_targetElapsedTicks = SecondsToTicks(targetElapsed); }
 
 	// Integer format represents time using 10,000,000 ticks per second.
 	static const uint64_t TicksPerSecond = 10000000;
 
-	static double TicksToSeconds(uint64_t ticks) noexcept { return static_cast<double>(ticks) / TicksPerSecond; }
-	static uint64_t SecondsToTicks(double seconds) noexcept { return static_cast<uint64_t>(seconds * TicksPerSecond); }
+	ND inline static double TicksToSeconds(uint64_t ticks) noexcept { return static_cast<double>(ticks) / TicksPerSecond; }
+	ND inline static uint64_t SecondsToTicks(double seconds) noexcept { return static_cast<uint64_t>(seconds * TicksPerSecond); }
 
 	// After an intentional timing discontinuity (for instance a blocking IO operation)
 	// call this to avoid having the fixed timestep logic attempt a set of catch-up 
@@ -84,7 +84,7 @@ public:
 
 	// Update timer state, calling the specified Update function the appropriate number of times.
 	template<typename TUpdate>
-	void Tick(const TUpdate& update) noexcept
+	void Tick(const TUpdate& update)
 	{
 		// Query the current time.
 		LARGE_INTEGER currentTime;

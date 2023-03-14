@@ -128,7 +128,7 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 	SetTextToPlaceholder();
 }
 
-void TextInput::Render() const noexcept
+void TextInput::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");

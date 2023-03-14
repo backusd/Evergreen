@@ -6,7 +6,7 @@ namespace Evergreen
 {
 #define BIND_EVENT_FN(fn, type) [this](type& e) { this->fn(e); }
 
-Application::Application() noexcept
+Application::Application()
 {
 	// Create main window
 	m_window = std::make_shared<Window>();
@@ -36,7 +36,7 @@ Application::Application() noexcept
 	m_ui = std::make_unique<UI>(m_deviceResources, m_window);
 }
 
-int Application::Run() noexcept
+int Application::Run()
 {
 	while (true)
 	{
@@ -58,17 +58,16 @@ int Application::Run() noexcept
 	}
 }
 
-void Application::Update(const Timer& timer) noexcept
+void Application::Update(const Timer& timer)
 {
 	// Call the virtual method first so we can update the simulation, or whatever the
 	// client code is needing to update, before we update the window/UI
 	OnUpdate(timer);
 
-	m_window->OnUpdate(timer);
 	m_ui->Update(timer);
 }
 
-void Application::Render() noexcept
+void Application::Render()
 {
 	// Must always start the render by clearing the background
 	// NOTE: Do not need to reset the render target - DeviceResources handles that itself
@@ -83,7 +82,7 @@ void Application::Render() noexcept
 	m_ui->Render();
 }
 
-void Application::Present() noexcept
+void Application::Present()
 {
 	m_deviceResources->Present();
 }

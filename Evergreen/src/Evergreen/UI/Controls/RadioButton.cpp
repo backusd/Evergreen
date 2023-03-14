@@ -34,7 +34,7 @@ RadioButton::RadioButton(std::shared_ptr<DeviceResources> deviceResources,
 	RadioButtonChanged();
 }
 
-void RadioButton::Render() const noexcept
+void RadioButton::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_innerBrush != nullptr, "No inner brush");

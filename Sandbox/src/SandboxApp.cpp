@@ -5,18 +5,20 @@ using namespace Evergreen;
 class Sandbox : public Evergreen::Application
 {
 public:
-	Sandbox() noexcept
+	Sandbox()
 	{
 		SetCallbacks();
 		m_ui->SetUIRoot("src/json/");
 		m_ui->LoadUI("main.json");
 	}
-	~Sandbox() noexcept override
-	{
-	}
+	Sandbox(const Sandbox&) = delete;
+	void operator=(const Sandbox&) = delete;
+	~Sandbox() override {}
+	
+	
 
 protected:
-	void OnUpdate(const Timer& timer) override 
+	void OnUpdate(const Timer& timer) override
 	{
 
 	}

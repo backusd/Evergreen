@@ -52,7 +52,7 @@ public:
 	virtual ~RadioButton() noexcept override {}
 
 	// Inherited from Control
-	virtual void Render() const noexcept override;
+	void Render() const override;
 
 	// Event handling
 	virtual void OnMouseMove(MouseMoveEvent& e) noexcept override;

@@ -26,12 +26,12 @@ namespace Evergreen
 class EVERGREEN_API Application
 {
 public:
-	Application() noexcept;
+	Application();
 	Application(const Application&) = delete;
 	void operator=(const Application&) = delete;
-	virtual ~Application() noexcept {};
+	virtual ~Application() {};
 
-	int Run() noexcept;
+	int Run();
 
 protected:
 	std::unique_ptr<UI> m_ui;
@@ -43,9 +43,9 @@ protected:
 	virtual void OnRender() {}
 
 private:
-	void Update(const Timer& timer) noexcept;
-	void Render() noexcept;
-	void Present() noexcept;
+	void Update(const Timer& timer);
+	void Render();
+	void Present();
 
 	void OnWindowResize(WindowResizeEvent& e) noexcept;
 	void OnWindowCreate(WindowCreateEvent& e) noexcept;

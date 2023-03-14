@@ -33,7 +33,7 @@ RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
 	ButtonChanged();
 }
 
-void RoundedButton::Render() const noexcept
+void RoundedButton::Render() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");

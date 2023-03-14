@@ -962,12 +962,12 @@ void UI::LoadErrorUI() noexcept
 	m_rootLayout->CreateControl<Text>(m_deviceResources, text, std::move(brush), std::move(style));
 }
 
-void UI::Update(const Timer& timer) noexcept
+void UI::Update(const Timer& timer)
 {
 	m_rootLayout->Update(timer);
 }
 
-void UI::Render() const noexcept
+void UI::Render() const
 {
 	m_deviceResources->BeginDraw();
 

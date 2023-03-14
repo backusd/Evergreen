@@ -312,7 +312,7 @@ void Pane::ClearTitleBarLayoutAndAddTitle(const std::string& title, std::unique_
 	titleBarSublayout->CreateControl<Text>(m_deviceResources, w_title, std::move(titleBrush), std::move(style), titleMargin);
 }
 
-void Pane::OnUpdate(const Timer& timer) noexcept
+void Pane::OnUpdate(const Timer& timer)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -321,7 +321,7 @@ void Pane::OnUpdate(const Timer& timer) noexcept
 
 	m_contentLayout->Update(timer);
 }
-void Pane::Render() const noexcept
+void Pane::Render() const
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
