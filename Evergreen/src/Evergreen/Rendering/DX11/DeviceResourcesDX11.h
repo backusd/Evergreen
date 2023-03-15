@@ -15,37 +15,48 @@ namespace Evergreen
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API DeviceResourcesDX11
 {
+private:
+	using _IDWriteFactory = IDWriteFactory7;
+	using _IWICImagingFactory = IWICImagingFactory2;
+	using _ID2D1Factory = ID2D1Factory7;
+	using _ID2D1Device = ID2D1Device6;
+	using _ID2D1DeviceContext = ID2D1DeviceContext6;
+	using _ID2D1Bitmap = ID2D1Bitmap1;
+	using _ID2D1DrawingStateBlock = ID2D1DrawingStateBlock1;
+
+	using _ID3D11Device = ID3D11Device5;
+	using _ID3D11DeviceContext = ID3D11DeviceContext4;
+	using _ID3D11DepthStencilView = ID3D11DepthStencilView;
+	using _ID3D11RenderTargetView = ID3D11RenderTargetView1;
+	
+	using _IDXGISwapChain = IDXGISwapChain4;
+	using _IDXGIDevice = IDXGIDevice4;
+	using _IDXGIFactory = IDXGIFactory5;
+
+
 public:
 	DeviceResourcesDX11(Window* window);
 	DeviceResourcesDX11(const DeviceResourcesDX11&) = delete;
 	void operator=(const DeviceResourcesDX11&) = delete;
-
-	void ClearBackground(const D2D1_COLOR_F& color);
-
-	void Present();
+	
 
 	void OnResize(float width, float height);
 
-	void DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth = 1.0f);
-
 	void BeginDraw() noexcept;
 	void EndDraw();
+	void Present();
 
-	ND inline IDWriteFactory7*		DWriteFactory() const { return m_dwriteFactory.Get(); }
-	ND inline IWICImagingFactory2*	WICImagingFactory() const { return m_wicImagingFactory.Get(); }
-	ND inline ID2D1Factory7*		D2DFactory() const { return m_d2dFactory.Get(); }
-	ND inline ID2D1Device6*			D2DDevice() const { return m_d2dDevice.Get(); }
-	ND inline ID2D1DeviceContext6*	D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
-	ND inline ID2D1Bitmap1*			D2DBitmap() const { return m_d2dBitmap.Get(); }
+	ND inline _IDWriteFactory*		DWriteFactory() const { return m_dwriteFactory.Get(); }
+	ND inline _IWICImagingFactory*	WICImagingFactory() const { return m_wicImagingFactory.Get(); }
+	ND inline _ID2D1Factory*		D2DFactory() const { return m_d2dFactory.Get(); }
+	ND inline _ID2D1Device*			D2DDevice() const { return m_d2dDevice.Get(); }
+	ND inline _ID2D1DeviceContext*	D2DDeviceContext() const { return m_d2dDeviceContext.Get(); }
+	ND inline _ID2D1Bitmap*			D2DBitmap() const { return m_d2dBitmap.Get(); }
 
-	
-	//static void SetViewport(D3D11_VIEWPORT viewport) noexcept { Get().SetViewportImpl(viewport); }
-
-	//D3D11_VIEWPORT GetViewport() noexcept { return Get().m_viewport; }
-	ND inline ID3D11Device5* D3DDevice() noexcept { return m_d3dDevice.Get(); }
-	ND inline ID3D11DeviceContext4* D3DDeviceContext() noexcept { return m_d3dDeviceContext.Get(); }
-	ND inline ID3D11DepthStencilView* DepthStencilView() noexcept { return m_d3dDepthStencilView.Get(); }
-	ND inline ID3D11RenderTargetView1* BackBufferRenderTargetView() noexcept { return m_d3dRenderTargetView.Get(); }	
+	ND inline _ID3D11Device* D3DDevice() noexcept { return m_d3dDevice.Get(); }
+	ND inline _ID3D11DeviceContext* D3DDeviceContext() noexcept { return m_d3dDeviceContext.Get(); }
+	ND inline _ID3D11DepthStencilView* DepthStencilView() noexcept { return m_d3dDepthStencilView.Get(); }
+	ND inline _ID3D11RenderTargetView* BackBufferRenderTargetView() noexcept { return m_d3dRenderTargetView.Get(); }
 
 	ND inline float DIPSToPixels(float dips) const noexcept { return dips * m_dpiScale; }
 	ND inline float PixelsToDIPS(float pixels) const noexcept { return pixels / m_dpiScale; }
@@ -78,25 +89,25 @@ private:
 
 	// ==========================================================
 	// Direct 2D drawing components
-	Microsoft::WRL::ComPtr<ID2D1Factory7>		m_d2dFactory;
-	Microsoft::WRL::ComPtr<ID2D1Device6>		m_d2dDevice;
-	Microsoft::WRL::ComPtr<ID2D1DeviceContext6>	m_d2dDeviceContext;
-	Microsoft::WRL::ComPtr<ID2D1Bitmap1>		m_d2dBitmap;
+	Microsoft::WRL::ComPtr<_ID2D1Factory>		m_d2dFactory;
+	Microsoft::WRL::ComPtr<_ID2D1Device>		m_d2dDevice;
+	Microsoft::WRL::ComPtr<_ID2D1DeviceContext>	m_d2dDeviceContext;
+	Microsoft::WRL::ComPtr<_ID2D1Bitmap>		m_d2dBitmap;
 
-	Microsoft::WRL::ComPtr<ID2D1DrawingStateBlock1> m_drawingStateBlock;
+	Microsoft::WRL::ComPtr<_ID2D1DrawingStateBlock> m_drawingStateBlock;
 
 	// Direct Write drawing components
-	Microsoft::WRL::ComPtr<IDWriteFactory7>		m_dwriteFactory;
-	Microsoft::WRL::ComPtr<IWICImagingFactory2>	m_wicImagingFactory;
+	Microsoft::WRL::ComPtr<_IDWriteFactory>		m_dwriteFactory;
+	Microsoft::WRL::ComPtr<_IWICImagingFactory>	m_wicImagingFactory;
 
 	// Direct3D objects
-	Microsoft::WRL::ComPtr<ID3D11Device5>		 m_d3dDevice;
-	Microsoft::WRL::ComPtr<ID3D11DeviceContext4> m_d3dDeviceContext;
-	Microsoft::WRL::ComPtr<IDXGISwapChain4>		 m_dxgiSwapChain;
+	Microsoft::WRL::ComPtr<_ID3D11Device>		 m_d3dDevice;
+	Microsoft::WRL::ComPtr<_ID3D11DeviceContext> m_d3dDeviceContext;
+	Microsoft::WRL::ComPtr<_IDXGISwapChain>		 m_dxgiSwapChain;
 
 	// Direct3D Rendering objects
-	Microsoft::WRL::ComPtr<ID3D11RenderTargetView1>	m_d3dRenderTargetView;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
+	Microsoft::WRL::ComPtr<_ID3D11RenderTargetView>	m_d3dRenderTargetView;
+	Microsoft::WRL::ComPtr<_ID3D11DepthStencilView>	m_d3dDepthStencilView;
 
 	// Cached device properties
 	D3D_FEATURE_LEVEL m_d3dFeatureLevel;

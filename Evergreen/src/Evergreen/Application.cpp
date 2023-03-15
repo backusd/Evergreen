@@ -69,12 +69,6 @@ void Application::Update(const Timer& timer)
 
 void Application::Render()
 {
-	// Must always start the render by clearing the background
-	// NOTE: Do not need to reset the render target - DeviceResources handles that itself
-	//	m_deviceResources->ClearBackground({1.0f, 1.0f, 0.0f, 1.0f});
-
-	// m_deviceResources->ClearBackground(D2D1::ColorF(D2D1::ColorF::Black));
-
 	// Before rendering the UI, call the virtual OnRender method so we can render the simulation, 
 	// or whatever the client code is needs to render, before we render the UI on top of it
 	OnRender();

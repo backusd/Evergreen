@@ -62,7 +62,7 @@ void DeviceResourcesDX11::CreateDeviceIndependentResources()
 	GFX_THROW_INFO(
 		D2D1CreateFactory(
 			D2D1_FACTORY_TYPE_SINGLE_THREADED,
-			__uuidof(ID2D1Factory7),
+			__uuidof(_ID2D1Factory),
 			&options,
 			(void**)m_d2dFactory.ReleaseAndGetAddressOf()
 		)
@@ -71,7 +71,7 @@ void DeviceResourcesDX11::CreateDeviceIndependentResources()
 	GFX_THROW_INFO(
 		DWriteCreateFactory(
 			DWRITE_FACTORY_TYPE_SHARED,
-			__uuidof(IDWriteFactory7),
+			__uuidof(_IDWriteFactory),
 			reinterpret_cast<IUnknown**>(m_dwriteFactory.ReleaseAndGetAddressOf())
 		)
 	);
@@ -173,11 +173,10 @@ void DeviceResourcesDX11::CreateDeviceDependentResources()
 
 	// Store pointers to the Direct3D 11.3 API device and immediate context
 	GFX_THROW_INFO(device.As(&m_d3dDevice));
-
 	GFX_THROW_INFO(context.As(&m_d3dDeviceContext));
 
 	// Create the Direct2D device object and a corresponding context
-	ComPtr<IDXGIDevice4> dxgiDevice;
+	ComPtr<_IDXGIDevice> dxgiDevice;
 	GFX_THROW_INFO(m_d3dDevice.As(&dxgiDevice));
 	GFX_THROW_INFO(
 		m_d2dFactory->CreateDevice(
@@ -415,17 +414,6 @@ void DeviceResourcesDX11::SetRenderTarget()
 	)
 }
 
-void DeviceResourcesDX11::ClearBackground(const D2D1_COLOR_F& color)
-{
-	GFX_THROW_INFO_ONLY(
-		m_d3dDeviceContext->ClearDepthStencilView(m_d3dDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0)
-	)
-
-	GFX_THROW_INFO_ONLY(
-		m_d3dDeviceContext->ClearRenderTargetView(m_d3dRenderTargetView.Get(), (float*)&color)
-	)
-}
-
 void DeviceResourcesDX11::Present()
 {
 	DXGI_PRESENT_PARAMETERS parameters = { 0 };
@@ -458,25 +446,6 @@ void DeviceResourcesDX11::EndDraw()
 	}
 
 	m_d2dDeviceContext->RestoreDrawingState(m_drawingStateBlock.Get());
-}
-
-void DeviceResourcesDX11::DrawLine(float x0, float y0, float x1, float y1, const D2D1_COLOR_F& color, float strokeWidth)
-{
-	ComPtr<ID2D1SolidColorBrush> brush;
-	GFX_THROW_INFO(
-		m_d2dDeviceContext->CreateSolidColorBrush(
-			color,
-			brush.ReleaseAndGetAddressOf()
-		)
-	)
-
-	GFX_THROW_INFO_ONLY(
-		m_d2dDeviceContext->DrawLine(
-			{ x0, y0 },
-			{ x1, y1 },
-			brush.Get(), 
-			strokeWidth)
-	)
 }
 
 

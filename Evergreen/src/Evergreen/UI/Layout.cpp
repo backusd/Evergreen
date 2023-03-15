@@ -523,33 +523,11 @@ void Layout::Render() const
 		);
 	}
 
-	//DrawBorders();
-
 	for (const std::unique_ptr<Control>& control : m_controls)
 		control->Render();
 
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
 		sublayout->Render();
-}
-void Layout::DrawBorders() const noexcept
-{
-	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
-
-	for (const Row& row : m_rows)
-	{
-		m_deviceResources->DrawLine(row.Left(), row.Top(), row.Right(), row.Top(), D2D1::ColorF(D2D1::ColorF::Red));
-		m_deviceResources->DrawLine(row.Left(), row.Top(), row.Left(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
-		m_deviceResources->DrawLine(row.Left(), row.Bottom(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
-		m_deviceResources->DrawLine(row.Right(), row.Top(), row.Right(), row.Bottom(), D2D1::ColorF(D2D1::ColorF::Red));
-	}
-
-	for (const Column& col : m_columns)
-	{
-		m_deviceResources->DrawLine(col.Left(), col.Top(), col.Right(), col.Top(), D2D1::ColorF(D2D1::ColorF::Blue));
-		m_deviceResources->DrawLine(col.Left(), col.Top(), col.Left(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
-		m_deviceResources->DrawLine(col.Left(), col.Bottom(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
-		m_deviceResources->DrawLine(col.Right(), col.Top(), col.Right(), col.Bottom(), D2D1::ColorF(D2D1::ColorF::Blue));
-	}
 }
 
 std::optional<unsigned int> Layout::MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept

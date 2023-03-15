@@ -228,7 +228,6 @@ public:
 
 	void Update(const Timer& timer);
 	void Render() const;
-	void DrawBorders() const noexcept;
 
 	ND inline bool ContainsPoint(float x, float y) const noexcept { return m_left <= x && m_left + m_width >= x && m_top <= y && m_top + m_height >= y; }
 
