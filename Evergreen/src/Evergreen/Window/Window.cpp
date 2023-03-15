@@ -137,7 +137,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 
 
 
-LRESULT Window::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	CREATESTRUCT* cs = (CREATESTRUCT*)lParam;
 	WindowCreateEvent e(cs->y, cs->x, cs->cx, cs->cy);
@@ -147,7 +147,7 @@ LRESULT Window::OnCreate(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) cons
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */) const noexcept
+LRESULT Window::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LPARAM /* lParam */) const
 {
 	// we don't want the DefProc to handle this message because
 	// we want our destructor to destroy the window, so return 0 instead of break
@@ -160,7 +160,7 @@ LRESULT Window::OnClose(HWND /* hWnd */, UINT /* msg */, WPARAM /* wParam */, LP
 	return 0;
 }
 
-LRESULT Window::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
@@ -170,7 +170,7 @@ LRESULT Window::OnLButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
@@ -189,7 +189,7 @@ LRESULT Window::OnLButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) c
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_LBUTTON, pt.x, pt.y);
@@ -199,7 +199,7 @@ LRESULT Window::OnLButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
@@ -209,7 +209,7 @@ LRESULT Window::OnMButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
@@ -228,7 +228,7 @@ LRESULT Window::OnMButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) c
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_MBUTTON, pt.x, pt.y);
@@ -238,7 +238,7 @@ LRESULT Window::OnMButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonPressedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
@@ -248,7 +248,7 @@ LRESULT Window::OnRButtonDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonReleasedEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
@@ -267,7 +267,7 @@ LRESULT Window::OnRButtonUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) c
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	MouseButtonDoubleClickEvent e(MOUSE_BUTTON::EG_RBUTTON, pt.x, pt.y);
@@ -278,7 +278,7 @@ LRESULT Window::OnRButtonDoubleClick(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
 	return 0;
 }
 
-LRESULT Window::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT Window::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	m_width = LOWORD(lParam);
 	m_height = HIWORD(lParam);
@@ -290,7 +290,7 @@ LRESULT Window::OnResize(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noex
 	return 0;
 }
 
-LRESULT Window::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT Window::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	const POINTS pt = MAKEPOINTS(lParam);
 	m_mouseX = pt.x;
@@ -335,13 +335,13 @@ LRESULT Window::OnMouseMove(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) n
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMouseLeave(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	// Not handling here because wm_leave messages don't seem to trigger
 	// Instead, we are triggering MouseLeaveEvent from OnMouseMove
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
-LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	// Kind of weird behavior, but the mouse location stored in the lParam does not exactly match
 	// the actual location of the mouse on the screen. So instead of calling MAKEPOINTS(lParam), we are
@@ -357,7 +357,7 @@ LRESULT Window::OnMouseWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnMouseHWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnMouseHWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	// Kind of weird behavior, but the mouse location stored in the lParam does not exactly match
 	// the actual location of the mouse on the screen. So instead of calling MAKEPOINTS(lParam), we are
@@ -374,7 +374,7 @@ LRESULT Window::OnMouseHWheel(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	return 0;
 }
 
-LRESULT Window::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	// wParam - Contains the keycode
 	// lParam - Bits 0-15 contain the repeat count
@@ -385,7 +385,7 @@ LRESULT Window::OnChar(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const 
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	// wParam - Contains the keycode
 	KeyReleasedEvent e(WParamToKeyCode(wParam));
@@ -395,7 +395,7 @@ LRESULT Window::OnKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	// wParam - Contains the keycode
 	// lParam - Bits 0-15 contain the repeat count
@@ -408,16 +408,16 @@ LRESULT Window::OnKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) con
 	// --> "An application should return zero if it processes this message."
 	return 0;
 }
-LRESULT Window::OnSysKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnSysKeyUp(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	return this->OnKeyUp(hWnd, msg, wParam, lParam);
 }
-LRESULT Window::OnSysKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnSysKeyDown(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	return this->OnKeyDown(hWnd, msg, wParam, lParam);
 }
 
-LRESULT Window::OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const noexcept
+LRESULT Window::OnKillFocus(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) const
 {
 	/*
 	// clear keystate when window loses focus to prevent input getting "stuck"
