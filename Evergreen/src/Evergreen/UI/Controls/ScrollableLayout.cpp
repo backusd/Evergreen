@@ -423,28 +423,28 @@ void ScrollableLayout::IncrementHorizontalScrollOffset(float delta)
 	ScrollableLayoutChanged();
 }
 
-void ScrollableLayout::OnChar(CharEvent& e) noexcept
+void ScrollableLayout::OnChar(CharEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnChar(e);
 }
-void ScrollableLayout::OnKeyPressed(KeyPressedEvent& e) noexcept
+void ScrollableLayout::OnKeyPressed(KeyPressedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnKeyPressed(e);
 }
-void ScrollableLayout::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void ScrollableLayout::OnKeyReleased(KeyReleasedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
 	// ScrollableLayout doesn't need to handle this, but should forward it to its layout 
 	m_layout->OnKeyReleased(e);
 }
-void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
+void ScrollableLayout::OnMouseMove(MouseMoveEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -586,7 +586,7 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e) noexcept
 	// Finally, if the scrollbars have not handled the event, forward it to the layout
 	m_layout->OnMouseMove(e);
 }
-void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -607,7 +607,7 @@ void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 		}
 	}
 }
-void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -628,7 +628,7 @@ void ScrollableLayout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 		}
 	}
 }
-void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -662,7 +662,7 @@ void ScrollableLayout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	// Not handled so pass to layout
 	m_layout->OnMouseButtonPressed(e);
 }
-void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -708,7 +708,7 @@ void ScrollableLayout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexce
 	// Not handled so pass to layout 
 	m_layout->OnMouseButtonReleased(e);
 }
-void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void ScrollableLayout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 

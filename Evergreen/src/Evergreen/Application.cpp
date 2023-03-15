@@ -88,79 +88,79 @@ void Application::Present()
 }
 
 
-void Application::OnWindowResize(WindowResizeEvent& e) noexcept
+void Application::OnWindowResize(WindowResizeEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 	m_deviceResources->OnResize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 	m_ui->OnWindowResize(e);
 }
-void Application::OnWindowCreate(WindowCreateEvent& e) noexcept
+void Application::OnWindowCreate(WindowCreateEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnWindowClose(WindowCloseEvent& e) noexcept
+void Application::OnWindowClose(WindowCloseEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnAppTick(AppTickEvent& e) noexcept
+void Application::OnAppTick(AppTickEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnAppUpdate(AppUpdateEvent& e) noexcept
+void Application::OnAppUpdate(AppUpdateEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnAppRender(AppRenderEvent& e) noexcept
+void Application::OnAppRender(AppRenderEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnChar(CharEvent& e) noexcept
+void Application::OnChar(CharEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 	m_ui->OnChar(e);
 }
-void Application::OnKeyPressed(KeyPressedEvent& e) noexcept
+void Application::OnKeyPressed(KeyPressedEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 	m_ui->OnKeyPressed(e);
 }
-void Application::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void Application::OnKeyReleased(KeyReleasedEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 	m_ui->OnKeyReleased(e);
 }
-void Application::OnMouseMove(MouseMoveEvent& e) noexcept
+void Application::OnMouseMove(MouseMoveEvent& e)
 {
 	m_ui->OnMouseMove(e);
 	//EG_CORE_INFO("{}", e);
 }
-void Application::OnMouseEnter(MouseEnterEvent& e) noexcept
+void Application::OnMouseEnter(MouseEnterEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnMouseLeave(MouseLeaveEvent& e) noexcept
+void Application::OnMouseLeave(MouseLeaveEvent& e)
 {
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void Application::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	m_ui->OnMouseScrolledVertical(e);
 }
-void Application::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void Application::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	m_ui->OnMouseScrolledHorizontal(e);
 }
-void Application::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void Application::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	m_ui->OnMouseButtonPressed(e);
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void Application::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	m_ui->OnMouseButtonReleased(e);
 	EG_CORE_INFO("{}", e);
 }
-void Application::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void Application::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	m_ui->OnMouseButtonDoubleClick(e);
 	EG_CORE_INFO("{}", e);

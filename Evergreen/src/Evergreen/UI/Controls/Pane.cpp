@@ -565,7 +565,7 @@ void Pane::ForceMouseToBeNotOverTitleAndContent(MouseMoveEvent& e) noexcept
 	}
 }
 
-void Pane::OnChar(CharEvent& e) noexcept
+void Pane::OnChar(CharEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -578,7 +578,7 @@ void Pane::OnChar(CharEvent& e) noexcept
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnChar(e);
 }
-void Pane::OnKeyPressed(KeyPressedEvent& e) noexcept
+void Pane::OnKeyPressed(KeyPressedEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -592,7 +592,7 @@ void Pane::OnKeyPressed(KeyPressedEvent& e) noexcept
 		m_contentLayout->OnKeyPressed(e);
 
 }
-void Pane::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void Pane::OnKeyReleased(KeyReleasedEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -605,7 +605,7 @@ void Pane::OnKeyReleased(KeyReleasedEvent& e) noexcept
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnKeyReleased(e);
 }
-void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
+void Pane::OnMouseMove(MouseMoveEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -1149,7 +1149,7 @@ void Pane::OnMouseMove(MouseMoveEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -1162,7 +1162,7 @@ void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseScrolledVertical(e);
 }
-void Pane::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void Pane::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 
@@ -1175,7 +1175,7 @@ void Pane::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseScrolledHorizontal(e);
 }
-void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 	EG_CORE_ASSERT(m_ui != nullptr, "No UI");
@@ -1302,7 +1302,7 @@ void Pane::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	if (!e.Handled() && mouseIsOverPane)
 		e.Handled(this);
 }
-void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 	
@@ -1410,7 +1410,7 @@ void Pane::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 	if (!e.Handled() && !m_minimized)
 		m_contentLayout->OnMouseButtonReleased(e);
 }
-void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void Pane::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");
 

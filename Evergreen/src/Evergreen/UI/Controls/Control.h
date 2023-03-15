@@ -41,15 +41,15 @@ public:
 
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
 
-	virtual void OnChar(CharEvent& e) noexcept {}
-	virtual void OnKeyPressed(KeyPressedEvent& e) noexcept {}
-	virtual void OnKeyReleased(KeyReleasedEvent& e) noexcept {}
-	virtual void OnMouseMove(MouseMoveEvent& e) noexcept {}
-	virtual void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept {}
-	virtual void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept {}
-	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept {}
-	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept {}
-	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept {}
+	virtual void OnChar(CharEvent& e) {}
+	virtual void OnKeyPressed(KeyPressedEvent& e) {}
+	virtual void OnKeyReleased(KeyReleasedEvent& e) {}
+	virtual void OnMouseMove(MouseMoveEvent& e) {}
+	virtual void OnMouseScrolledVertical(MouseScrolledEvent& e) {}
+	virtual void OnMouseScrolledHorizontal(MouseScrolledEvent& e) {}
+	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) {}
+	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) {}
+	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) {}
 
 	void Name(const std::string& name) noexcept { m_name = name; OnNameChanged(); }
 	void ID(unsigned int id) noexcept { m_id = id; }

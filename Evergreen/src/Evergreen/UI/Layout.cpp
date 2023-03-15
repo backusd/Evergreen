@@ -657,7 +657,7 @@ void Layout::Resize(float width, float height) noexcept
 	UpdateLayout();
 }
 
-void Layout::OnChar(CharEvent& e) noexcept
+void Layout::OnChar(CharEvent& e)
 {
 	// Layouts don't handle this event, so just pass off to child layouts/controls
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
@@ -673,7 +673,7 @@ void Layout::OnChar(CharEvent& e) noexcept
 			return;
 	}
 }
-void Layout::OnKeyPressed(KeyPressedEvent& e) noexcept
+void Layout::OnKeyPressed(KeyPressedEvent& e)
 {
 	// Layouts don't handle this event, so just pass off to child layouts/controls
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
@@ -689,7 +689,7 @@ void Layout::OnKeyPressed(KeyPressedEvent& e) noexcept
 			return;
 	}
 }
-void Layout::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void Layout::OnKeyReleased(KeyReleasedEvent& e)
 {
 	// Layouts don't handle this event, so just pass off to child layouts/controls
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
@@ -705,7 +705,7 @@ void Layout::OnKeyReleased(KeyReleasedEvent& e) noexcept
 			return;
 	}
 }
-void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
+void Layout::OnMouseMove(MouseMoveEvent& e)
 {
 	// If adjustingLayout is true, then mouse L button is down over either a row or column
 	if (m_adjustingLayout)
@@ -854,7 +854,7 @@ void Layout::OnMouseMove(MouseMoveEvent& e) noexcept
 		}
 	}
 }
-void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	// First pass to sublayouts and see if it gets handled
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
@@ -888,7 +888,7 @@ void Layout::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		}
 	}
 }
-void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	// If we are adjusting the layout, no need to pass to sublayouts
 	if (m_adjustingLayout && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
@@ -923,7 +923,7 @@ void Layout::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		}
 	}
 }
-void Layout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void Layout::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	// Layouts don't handle this event, so just pass off to child layouts/controls
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
@@ -939,7 +939,7 @@ void Layout::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 			return;
 	}
 }
-void Layout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void Layout::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	// Layouts don't handle this event, so just pass off to child layouts/controls
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)
@@ -955,7 +955,7 @@ void Layout::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 			return;
 	}
 }
-void Layout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void Layout::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	// Layouts don't handle this event, so just pass off to child layouts/controls
 	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts)

@@ -287,7 +287,7 @@ void TextInput::SetTextToInput() noexcept
 	UpdateVerticalBar();
 }
 
-void TextInput::OnChar(CharEvent& e) noexcept
+void TextInput::OnChar(CharEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 	EG_CORE_ASSERT(m_text != nullptr, "No Text");
@@ -370,7 +370,7 @@ void TextInput::OnChar(CharEvent& e) noexcept
 		m_layout->OnChar(e);
 	}
 }
-void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
+void TextInput::OnKeyPressed(KeyPressedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 	EG_CORE_ASSERT(m_text != nullptr, "No Text");
@@ -426,11 +426,11 @@ void TextInput::OnKeyPressed(KeyPressedEvent& e) noexcept
 		m_layout->OnKeyPressed(e);
 	}
 }
-void TextInput::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void TextInput::OnKeyReleased(KeyReleasedEvent& e)
 {
 
 }
-void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
+void TextInput::OnMouseMove(MouseMoveEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -491,15 +491,15 @@ void TextInput::OnMouseMove(MouseMoveEvent& e) noexcept
 		break;
 	}
 }
-void TextInput::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void TextInput::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 
 }
-void TextInput::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void TextInput::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 
 }
-void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 
@@ -538,7 +538,7 @@ void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		}
 	}
 }
-void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 	EG_CORE_ASSERT(m_text != nullptr, "No Text");
@@ -597,7 +597,7 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 	// Finally, pass to layout
 	m_layout->OnMouseButtonReleased(e);
 }
-void TextInput::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void TextInput::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 
 }

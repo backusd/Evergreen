@@ -143,17 +143,4 @@ void Text::RemoveChar(unsigned int index) noexcept
 }
 
 
-void Text::OnMouseMove(MouseMoveEvent& e) noexcept
-{
-
-}
-void Text::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
-{
-
-}
-void Text::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
-{
-
-}
-
 } // namespace Evergreen

@@ -1085,7 +1085,7 @@ void UI::ClearHandlingControlAndLayout() noexcept
 	m_keyboardHandlingLayout = nullptr;
 }
 
-void UI::OnChar(CharEvent& e) noexcept
+void UI::OnChar(CharEvent& e)
 {
 	if (m_keyboardHandlingControl != nullptr)
 	{
@@ -1125,7 +1125,7 @@ void UI::OnChar(CharEvent& e) noexcept
 	m_keyboardHandlingControl = e.HandlingControl();
 	m_keyboardHandlingLayout = e.HandlingLayout();
 }
-void UI::OnKeyPressed(KeyPressedEvent& e) noexcept
+void UI::OnKeyPressed(KeyPressedEvent& e)
 {
 	if (m_keyboardHandlingControl != nullptr)
 	{
@@ -1165,7 +1165,7 @@ void UI::OnKeyPressed(KeyPressedEvent& e) noexcept
 	m_keyboardHandlingControl = e.HandlingControl();
 	m_keyboardHandlingLayout = e.HandlingLayout();
 }
-void UI::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void UI::OnKeyReleased(KeyReleasedEvent& e)
 {
 	if (m_keyboardHandlingControl != nullptr)
 	{
@@ -1205,11 +1205,11 @@ void UI::OnKeyReleased(KeyReleasedEvent& e) noexcept
 	m_keyboardHandlingControl = e.HandlingControl();
 	m_keyboardHandlingLayout = e.HandlingLayout();
 }
-void UI::OnWindowResize(WindowResizeEvent& e) noexcept
+void UI::OnWindowResize(WindowResizeEvent& e)
 {
 	m_rootLayout->Resize(static_cast<float>(e.GetWidth()), static_cast<float>(e.GetHeight()));
 }
-void UI::OnMouseMove(MouseMoveEvent& e) noexcept
+void UI::OnMouseMove(MouseMoveEvent& e)
 {
 	// If no mouse buttons are in use, we need to first test if the mouse is now over a pane
 	// Because even if the mouseHandlingControl is not nullptr, we might be over a pane now that resides on top
@@ -1294,7 +1294,7 @@ void UI::OnMouseMove(MouseMoveEvent& e) noexcept
 	m_mouseHandlingControl = e.HandlingControl();
 	m_mouseHandlingLayout = e.HandlingLayout();
 }
-void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	switch (e.GetMouseButton())
 	{
@@ -1343,7 +1343,7 @@ void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 	m_mouseHandlingControl = e.HandlingControl();
 	m_mouseHandlingLayout = e.HandlingLayout();
 }
-void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	switch (e.GetMouseButton())
 	{
@@ -1392,7 +1392,7 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 	m_mouseHandlingControl = e.HandlingControl();
 	m_mouseHandlingLayout = e.HandlingLayout();
 }
-void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	if (m_mouseHandlingControl != nullptr)
 	{
@@ -1433,7 +1433,7 @@ void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
 	m_mouseHandlingLayout = e.HandlingLayout();
 }
 
-void UI::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void UI::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	if (m_mouseHandlingControl != nullptr)
 	{
@@ -1469,7 +1469,7 @@ void UI::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 
 	m_rootLayout->OnMouseScrolledVertical(e);
 }
-void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	if (m_mouseHandlingControl != nullptr)
 	{

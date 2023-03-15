@@ -55,9 +55,9 @@ public:
 	void Render() const override;
 
 	// Event handling
-	virtual void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
+	virtual void OnMouseMove(MouseMoveEvent& e) override;
+	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) override;
+	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) override;
 
 	// RadioButton specific
 	ND inline bool GetIsChecked() const noexcept { return m_isChecked; }

@@ -31,8 +31,6 @@ public:
 	void BeginDraw() noexcept;
 	void EndDraw();
 
-	void EnableGPUTimeout(bool enable);
-
 	ND inline IDWriteFactory7*		DWriteFactory() const { return m_dwriteFactory.Get(); }
 	ND inline IWICImagingFactory2*	WICImagingFactory() const { return m_wicImagingFactory.Get(); }
 	ND inline ID2D1Factory7*		D2DFactory() const { return m_d2dFactory.Get(); }

@@ -70,7 +70,7 @@ void Viewport::Render() const
 	m_layout->Render();
 }
 
-void Viewport::OnChar(CharEvent& e) noexcept
+void Viewport::OnChar(CharEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnChar(e);
@@ -83,7 +83,7 @@ void Viewport::OnChar(CharEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Viewport::OnKeyPressed(KeyPressedEvent& e) noexcept
+void Viewport::OnKeyPressed(KeyPressedEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnKeyPressed(e);
@@ -96,7 +96,7 @@ void Viewport::OnKeyPressed(KeyPressedEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Viewport::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void Viewport::OnKeyReleased(KeyReleasedEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnKeyReleased(e);
@@ -109,7 +109,7 @@ void Viewport::OnKeyReleased(KeyReleasedEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Viewport::OnMouseMove(MouseMoveEvent& e) noexcept
+void Viewport::OnMouseMove(MouseMoveEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnMouseMove(e);
@@ -146,7 +146,7 @@ void Viewport::OnMouseMove(MouseMoveEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Viewport::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void Viewport::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnMouseScrolledVertical(e);
@@ -159,7 +159,7 @@ void Viewport::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Viewport::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void Viewport::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnMouseScrolledVertical(e);
@@ -172,7 +172,7 @@ void Viewport::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Viewport::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void Viewport::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	if (m_mouseIsOver)
 	{
@@ -198,7 +198,7 @@ void Viewport::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		m_selected = false;
 	}
 }
-void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	// Basic idea here is that we should only handle the Release event if we had previously registered
 	// the corresponding Pressed event
@@ -272,7 +272,7 @@ void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		break;
 	}
 }
-void Viewport::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void Viewport::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	// See if the layout wants to handle the event
 	m_layout->OnMouseButtonDoubleClick(e);

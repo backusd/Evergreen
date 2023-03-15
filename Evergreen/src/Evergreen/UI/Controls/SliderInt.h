@@ -54,15 +54,15 @@ public:
 	void Render() const override;
 
 	// Event Handling
-	void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-	void OnChar(CharEvent& e) noexcept override { m_valueTextInputOnRight->OnChar(e); }
-	void OnKeyPressed(KeyPressedEvent& e) noexcept override { m_valueTextInputOnRight->OnKeyPressed(e); }
-	void OnKeyReleased(KeyReleasedEvent& e) noexcept override { m_valueTextInputOnRight->OnKeyReleased(e); }
-	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseScrolledVertical(e); }
-	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseScrolledHorizontal(e); }
-	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override { m_valueTextInputOnRight->OnMouseButtonDoubleClick(e); }
+	void OnMouseMove(MouseMoveEvent& e) override;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) override;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) override;
+	void OnChar(CharEvent& e) override { m_valueTextInputOnRight->OnChar(e); }
+	void OnKeyPressed(KeyPressedEvent& e) override { m_valueTextInputOnRight->OnKeyPressed(e); }
+	void OnKeyReleased(KeyReleasedEvent& e) override { m_valueTextInputOnRight->OnKeyReleased(e); }
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) override { m_valueTextInputOnRight->OnMouseScrolledVertical(e); }
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) override { m_valueTextInputOnRight->OnMouseScrolledHorizontal(e); }
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) override { m_valueTextInputOnRight->OnMouseButtonDoubleClick(e); }
 
 	ND inline int GetMinimumValue() const noexcept { return m_minValue; }
 	ND inline int GetMaximumValue() const noexcept { return m_maxValue; }

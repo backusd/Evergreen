@@ -48,15 +48,15 @@ public:
 	inline void SetOnDoubleClickCallback(std::function<void(Viewport*, MouseButtonDoubleClickEvent& e)> func) noexcept { m_OnDoubleClick = func; }
 
 	// Event handling
-	void OnChar(CharEvent& e) noexcept override;
-	void OnKeyPressed(KeyPressedEvent& e) noexcept override;
-	void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
-	void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override;
-	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
+	void OnChar(CharEvent& e) override;
+	void OnKeyPressed(KeyPressedEvent& e) override;
+	void OnKeyReleased(KeyReleasedEvent& e) override;
+	void OnMouseMove(MouseMoveEvent& e) override;
+	void OnMouseScrolledVertical(MouseScrolledEvent& e) override;
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) override;
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e) override;
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) override;
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) override;
 
 protected:
 

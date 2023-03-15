@@ -35,15 +35,15 @@ public:
 
 
 	// Event handling
-	virtual void OnChar(CharEvent& e) noexcept override;
-	virtual void OnKeyPressed(KeyPressedEvent& e) noexcept override;
-	virtual void OnKeyReleased(KeyReleasedEvent& e) noexcept override;
-	virtual void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	virtual void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept override;
-	virtual void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept override;
-	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept override;
+	virtual void OnChar(CharEvent& e) override;
+	virtual void OnKeyPressed(KeyPressedEvent& e) override;
+	virtual void OnKeyReleased(KeyReleasedEvent& e) override;
+	virtual void OnMouseMove(MouseMoveEvent& e) override;
+	virtual void OnMouseScrolledVertical(MouseScrolledEvent& e) override;
+	virtual void OnMouseScrolledHorizontal(MouseScrolledEvent& e) override;
+	virtual void OnMouseButtonPressed(MouseButtonPressedEvent& e) override;
+	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) override;
+	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) override;
 
 	// Button specific
 	ND inline ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }

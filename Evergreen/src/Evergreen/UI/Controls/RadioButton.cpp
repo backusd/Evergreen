@@ -101,7 +101,7 @@ void RadioButton::SetIsChecked(bool checked) noexcept
 }
 
 // Event handling
-void RadioButton::OnMouseMove(MouseMoveEvent& e) noexcept
+void RadioButton::OnMouseMove(MouseMoveEvent& e)
 {
 	bool currentMouseIsOver = MouseIsOver(e.GetX(), e.GetY());
 
@@ -131,7 +131,7 @@ void RadioButton::OnMouseMove(MouseMoveEvent& e) noexcept
 	}
 	}
 }
-void RadioButton::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void RadioButton::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON &&
 		m_mouseState == MouseOverState::OVER)
@@ -141,7 +141,7 @@ void RadioButton::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void RadioButton::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void RadioButton::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON &&
 		m_mouseState == MouseOverState::OVER_AND_LBUTTON_DOWN)

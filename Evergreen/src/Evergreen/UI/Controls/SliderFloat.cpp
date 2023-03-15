@@ -573,7 +573,7 @@ void SliderFloat::SetPopUpBorderBrush(std::unique_ptr<ColorBrush> brush) noexcep
 
 
 
-void SliderFloat::OnMouseMove(MouseMoveEvent& e) noexcept
+void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 {
 	bool currentMouseIsOverCircle = CircleContainsPoint(e.GetX(), e.GetY());
 
@@ -671,7 +671,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e) noexcept
 	m_mouseIsOverCircle = currentMouseIsOverCircle;
 	m_valueTextInputOnRight->OnMouseMove(e);
 }
-void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::OVER && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
@@ -683,7 +683,7 @@ void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 
 	m_valueTextInputOnRight->OnMouseButtonPressed(e);
 }
-void SliderFloat::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void SliderFloat::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::DRAGGING && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{

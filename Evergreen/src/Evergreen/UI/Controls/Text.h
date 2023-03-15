@@ -29,10 +29,6 @@ public:
 	// Inherited from Control
 	void Render() const override;
 
-	void OnMouseMove(MouseMoveEvent& e) noexcept override;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept override;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept override;
-
 	// Text specific
 	ND inline const std::wstring& GetText() const noexcept { return m_text; }
 	ND inline TextStyle* GetTextStyle() const noexcept { return m_style.get(); }

@@ -216,15 +216,15 @@ public:
 	void Resize(float top, float left, float width, float height) noexcept;
 	void Resize(float width, float height) noexcept;
 
-	void OnChar(CharEvent& e) noexcept;
-	void OnKeyPressed(KeyPressedEvent& e) noexcept;
-	void OnKeyReleased(KeyReleasedEvent& e) noexcept;
-	void OnMouseMove(MouseMoveEvent& e) noexcept;
-	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
-	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
-	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
+	void OnChar(CharEvent& e);
+	void OnKeyPressed(KeyPressedEvent& e);
+	void OnKeyReleased(KeyReleasedEvent& e);
+	void OnMouseMove(MouseMoveEvent& e);
+	void OnMouseScrolledVertical(MouseScrolledEvent& e);
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e);
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e);
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e);
 
 	void Update(const Timer& timer);
 	void Render() const;

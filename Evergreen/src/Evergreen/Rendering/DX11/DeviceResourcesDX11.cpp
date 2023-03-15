@@ -252,7 +252,7 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 			// and correctly set up the new device
 			return;
 		}
-		else
+		else if (FAILED(hRESULT))
 		{
 			// Don't use GFX_THROW_INFO - see note above
 			throw DeviceResourcesExceptionDX11(__LINE__, __FILE__, hRESULT, m_infoManager.GetMessages());
@@ -260,9 +260,6 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 	}
 	else
 	{
-		//DXGI_SCALING scaling = DO I Support High Resolutions ? DXGI_SCALING_NONE : DXGI_SCALING_STRETCH;
-		DXGI_SCALING scaling = DXGI_SCALING_NONE;
-
 		DXGI_SWAP_CHAIN_DESC1 swapChainDesc = { 0 };
 		swapChainDesc.Width = static_cast<UINT>(width);					// Match the size of the window
 		swapChainDesc.Height = static_cast<UINT>(height);
@@ -274,33 +271,33 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 		swapChainDesc.BufferCount = 2;									// Use double-buffering to minimize latency
 		swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;	// All Windows Store apps must use this SwapEffect
 		swapChainDesc.Flags = 0;
-		swapChainDesc.Scaling = scaling;
+		swapChainDesc.Scaling = DXGI_SCALING_STRETCH;					// Scaling is only used when the back-buffer does not match the target output. This is the default behavior 
 		swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
 		// This sequence obtains the DXGI factory that was used to create the Direct3D device above
 		ComPtr<IDXGIDevice4> dxgiDevice;
 		GFX_THROW_INFO(m_d3dDevice.As(&dxgiDevice));
-
 		ComPtr<IDXGIAdapter> dxgiAdapter;
-		GFX_THROW_INFO(
-			dxgiDevice->GetAdapter(dxgiAdapter.ReleaseAndGetAddressOf())
-		);
-
+		GFX_THROW_INFO(dxgiDevice->GetAdapter(dxgiAdapter.ReleaseAndGetAddressOf()));
 		ComPtr<IDXGIFactory5> dxgiFactory;
-		GFX_THROW_INFO(
-			dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.ReleaseAndGetAddressOf()))
-		);
+		GFX_THROW_INFO(dxgiAdapter->GetParent(IID_PPV_ARGS(dxgiFactory.ReleaseAndGetAddressOf())));
 
+		// Not needed for now - I think we can omit this and still be able to transition to full screen
+		// DXGI_SWAP_CHAIN_FULLSCREEN_DESC fullscreen{};
+		// fullscreen.RefreshRate.Numerator = 60;
+		// fullscreen.RefreshRate.Denominator = 1;
+		// fullscreen.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		// fullscreen.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+		// fullscreen.Windowed = true;
 
-		// THIS NEEDS VERIFICATION!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		ComPtr<IDXGISwapChain1> swapChain;
 		GFX_THROW_INFO(
 			dxgiFactory->CreateSwapChainForHwnd(
 				m_d3dDevice.Get(),
 				m_hWnd,
 				&swapChainDesc,
-				nullptr,
-				nullptr,
+				nullptr, // <-- DXGI_SWAP_CHAIN_FULLSCREEN_DESC*: Creating a windowed swapchain, so this can be nullptr (I think we can still transition to fullscreen later, but that needs to be tested)
+				nullptr, // <-- IDXGIOutput to restrict where content can be rendered. Not using this for now
 				swapChain.ReleaseAndGetAddressOf()
 			)
 		);
@@ -324,14 +321,14 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 	GFX_THROW_INFO(
 		m_d3dDevice->CreateRenderTargetView1(
 			backBuffer.Get(),
-			nullptr,
+			nullptr,			// <-- D3D11_RENDER_TARGET_VIEW_DESC1*: "Set this parameter to NULL to create a view that accesses all of the subresources in mipmap level 0."
 			m_d3dRenderTargetView.ReleaseAndGetAddressOf()
 		)
 	);
 
 	// Create a depth stencil view for use with 3D rendering if needed
 	CD3D11_TEXTURE2D_DESC1 depthStencilDesc(
-		DXGI_FORMAT_D24_UNORM_S8_UINT, // reserve 24 bits for the depth value and 8 bits for stencil value (used for outline effect)
+		m_dsvFormat,
 		static_cast<UINT>(width),
 		static_cast<UINT>(height),
 		1, // This depth stencil view has only one texture
@@ -343,14 +340,14 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 	GFX_THROW_INFO(
 		m_d3dDevice->CreateTexture2D1(
 			&depthStencilDesc,
-			nullptr,
+			nullptr,			// <-- Initial data. nullptr means data will be undefined, but this is okay, be we will be writing to it as the depth-stencil buffer
 			depthStencil.ReleaseAndGetAddressOf()
 		)
 	);
 
 	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(
 		D3D11_DSV_DIMENSION_TEXTURE2D,
-		DXGI_FORMAT_D24_UNORM_S8_UINT
+		m_dsvFormat
 	);
 	GFX_THROW_INFO(
 		m_d3dDevice->CreateDepthStencilView(
@@ -359,31 +356,6 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 			m_d3dDepthStencilView.ReleaseAndGetAddressOf()
 		)
 	);
-
-//	// Set the rasterizer state
-//	D3D11_RASTERIZER_DESC rd;
-//	rd.FillMode = D3D11_FILL_SOLID; // or D3D11_FILL_WIREFRAME
-//	rd.CullMode = D3D11_CULL_NONE;
-//	rd.FrontCounterClockwise = true;	// This must be true for the outline effect to work properly
-//	rd.DepthBias = 0;
-//	rd.SlopeScaledDepthBias = 0.0f;
-//	rd.DepthBiasClamp = 0.0f;
-//	rd.DepthClipEnable = true;
-//	rd.ScissorEnable = false;
-//	rd.MultisampleEnable = false;
-//	rd.AntialiasedLineEnable = false;
-//
-//	// Create and set the solid raster state
-//	GFX_THROW_INFO(
-//		m_d3dDevice->CreateRasterizerState(&rd, solidRasterState.ReleaseAndGetAddressOf())
-//	);
-//	m_d3dDeviceContext->RSSetState(solidRasterState.Get());
-//
-//	// Also create the wireframe raster state
-//	rd.FillMode = D3D11_FILL_WIREFRAME;
-//	GFX_THROW_INFO(
-//		m_d3dDevice->CreateRasterizerState(&rd, wireframeRasterState.ReleaseAndGetAddressOf())
-//	);
 
 	// Create a Direct2D target bitmap associated with the
 	// swap cahin back buffer and set it as the current target
@@ -433,16 +405,6 @@ void DeviceResourcesDX11::HandleDeviceLost()
 
 	// Must reset the render target because it gets deleted/recreated when we call CreateWindowSizeDependentResources
 	SetRenderTarget();
-}
-
-void DeviceResourcesDX11::EnableGPUTimeout(bool enable)
-{
-	if (m_gpuTimeoutEnabled != enable)
-	{
-		m_gpuTimeoutEnabled = enable;
-
-		// TODO: Finish writing this function (recreate the device, etc.)
-	}
 }
 
 void DeviceResourcesDX11::SetRenderTarget()

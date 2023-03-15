@@ -91,22 +91,22 @@ bool Button::ContainsPoint(float x, float y) const noexcept
 	return m_layout->ContainsPoint(x, y);
 }
 
-void Button::OnChar(CharEvent& e) noexcept
+void Button::OnChar(CharEvent& e)
 {
 	// Just let layout handle it
 	m_layout->OnChar(e);
 }
-void Button::OnKeyPressed(KeyPressedEvent& e) noexcept
+void Button::OnKeyPressed(KeyPressedEvent& e)
 {
 	// Just let layout handle it
 	m_layout->OnKeyPressed(e);
 }
-void Button::OnKeyReleased(KeyReleasedEvent& e) noexcept
+void Button::OnKeyReleased(KeyReleasedEvent& e)
 {
 	// Just let layout handle it
 	m_layout->OnKeyReleased(e);
 }
-void Button::OnMouseMove(MouseMoveEvent& e) noexcept
+void Button::OnMouseMove(MouseMoveEvent& e)
 {
 	// First pass to layout, if the layout does not handle it, then the button can handle it
 	m_layout->OnMouseMove(e);
@@ -149,7 +149,7 @@ void Button::OnMouseMove(MouseMoveEvent& e) noexcept
 		e.Handled(this);
 	}
 }
-void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
+void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	// First pass to layout, if the layout does not handle it, then the button can handle it
 	m_layout->OnMouseButtonPressed(e);
@@ -170,7 +170,7 @@ void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept
 		}
 	}
 }
-void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
+void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
 	// First pass to layout, if the layout does not handle it, then the button can handle it
 	m_layout->OnMouseButtonReleased(e);
@@ -200,17 +200,17 @@ void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept
 		m_mouseLButtonIsDown = false;
 	}
 }
-void Button::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept
+void Button::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 {
 	// Just let layout handle it
 	m_layout->OnMouseButtonDoubleClick(e);
 }
-void Button::OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept
+void Button::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	// Just let layout handle it
 	m_layout->OnMouseScrolledVertical(e);
 }
-void Button::OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept
+void Button::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
 	// Just let layout handle it
 	m_layout->OnMouseScrolledHorizontal(e);

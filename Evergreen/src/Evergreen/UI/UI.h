@@ -36,16 +36,16 @@ public:
 	void Update(const Timer& timer);
 	void Render() const;
 
-	void OnChar(CharEvent& e) noexcept;
-	void OnKeyPressed(KeyPressedEvent& e) noexcept;
-	void OnKeyReleased(KeyReleasedEvent& e) noexcept;
-	void OnWindowResize(WindowResizeEvent& e) noexcept;
-	void OnMouseMove(MouseMoveEvent& e) noexcept;
-	void OnMouseButtonPressed(MouseButtonPressedEvent& e) noexcept;
-	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) noexcept;
-	void OnMouseScrolledVertical(MouseScrolledEvent& e) noexcept;
-	void OnMouseScrolledHorizontal(MouseScrolledEvent& e) noexcept;
-	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) noexcept;
+	void OnChar(CharEvent& e);
+	void OnKeyPressed(KeyPressedEvent& e);
+	void OnKeyReleased(KeyReleasedEvent& e);
+	void OnWindowResize(WindowResizeEvent& e);
+	void OnMouseMove(MouseMoveEvent& e);
+	void OnMouseButtonPressed(MouseButtonPressedEvent& e);
+	void OnMouseButtonReleased(MouseButtonReleasedEvent& e);
+	void OnMouseScrolledVertical(MouseScrolledEvent& e);
+	void OnMouseScrolledHorizontal(MouseScrolledEvent& e);
+	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e);
 
 	template <class T>
 	ND inline T* GetControlByName(const std::string& name) const noexcept;
