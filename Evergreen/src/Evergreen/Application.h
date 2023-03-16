@@ -37,6 +37,7 @@ protected:
 	std::unique_ptr<UI> m_ui;
 	std::shared_ptr<DeviceResources> m_deviceResources;
 	Timer m_timer;
+	std::shared_ptr<Window> m_window;
 
 	// Virtual functions so the client application can update & render to viewports 
 	virtual void OnUpdate(const Timer& timer) {}
@@ -64,8 +65,6 @@ private:
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e);
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e);
-
-	std::shared_ptr<Window> m_window;
 };
 #pragma warning( pop )
 

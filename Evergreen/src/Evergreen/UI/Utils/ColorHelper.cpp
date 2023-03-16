@@ -154,25 +154,4 @@ namespace Evergreen
 		throw ColorException(__LINE__, __FILE__, std::format("Invalid color string: {}", colorName));
 	}
 
-
-
-
-ColorException::ColorException(int line, const char* file, const std::string& message) noexcept :
-	BaseException(line, file),
-	m_message(message)
-{
-}
-const char* ColorException::what() const noexcept
-{
-	m_whatBuffer = std::format("{}\n\n[Error Info]\n{}\n\n{}", GetType(), GetErrorInfo(), GetOriginString());
-	return m_whatBuffer.c_str();
-}
-const char* ColorException::GetType() const noexcept
-{
-	return "Color Exception";
-}
-std::string ColorException::GetErrorInfo() const noexcept
-{
-	return m_message;
-}
 }

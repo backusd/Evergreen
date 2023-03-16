@@ -3,27 +3,6 @@
 
 namespace Evergreen
 {
-FontFamilyException::FontFamilyException(int line, const char* file, const std::string& message) noexcept :
-	BaseException(line, file),
-	m_message(message)
-{
-}
-const char* FontFamilyException::what() const noexcept
-{
-	m_whatBuffer = std::format("{}\n\n[Error Info]\n{}\n\n{}", GetType(), GetErrorInfo(), GetOriginString());
-	return m_whatBuffer.c_str();
-}
-const char* FontFamilyException::GetType() const noexcept
-{
-	return "FontFamily Exception";
-}
-std::string FontFamilyException::GetErrorInfo() const noexcept
-{
-	return m_message;
-}
-
-
-
 const FontFamily FontFamily::Arial("Arial");
 const FontFamily FontFamily::Bahnschrift("Bahnschrift");
 const FontFamily FontFamily::Calibri("Calibri");

@@ -82,10 +82,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp" />
-    <ClCompile Include="src\Evergreen\Exceptions\BaseException.cpp" />
-    <ClCompile Include="src\Evergreen\Exceptions\DeviceResourcesException.cpp" />
-    <ClCompile Include="src\Evergreen\Exceptions\JSONLoadersException.cpp" />
-    <ClCompile Include="src\Evergreen\Exceptions\WindowException.cpp" />
     <ClCompile Include="src\Evergreen\Log.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesDX12.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesExceptionDX12.cpp" />
@@ -124,7 +120,6 @@
     <ClCompile Include="src\Evergreen\Window\WindowsMessageMap.cpp" />
     <ClCompile Include="src\Evergreen\Window\Window.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesDX11.cpp" />
-    <ClCompile Include="src\Evergreen\Rendering\DX11\DeviceResourcesExceptionDX11.cpp" />
     <ClCompile Include="src\Evergreen\Rendering\DX11\DxgiInfoManagerDX11.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Control.cpp" />
     <ClCompile Include="src\Evergreen\UI\Styles\TextStyle.cpp" />
