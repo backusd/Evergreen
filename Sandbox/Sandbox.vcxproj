@@ -97,6 +97,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
+    <ClCompile Include="src\Rendering\Scene.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
@@ -128,6 +130,8 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Rendering\PipelineConfig.h" />
+    <ClInclude Include="src\Rendering\Scene.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

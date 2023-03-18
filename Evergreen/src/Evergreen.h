@@ -7,9 +7,5 @@
 #include "Evergreen/UI/JSONLoading/JSONLoaders.h"
 #include "Evergreen/UI/Controls.h"
 #include "Evergreen/UI/Brushes.h"
+#include "Evergreen/Rendering/DeviceResources.h"
 
-
-
-// ---Entry Point---------------------------
-#include "Evergreen/EntryPoint.h"
-// -----------------------------------------

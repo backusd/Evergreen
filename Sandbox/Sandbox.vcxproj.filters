@@ -21,6 +21,12 @@
     <ClCompile Include="src\Utils\MathHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\PipelineConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\json\main.json" />
@@ -39,6 +45,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Utils\MathHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\PipelineConfig.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
