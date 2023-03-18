@@ -97,7 +97,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
+    <ClCompile Include="src\Rendering\RenderObject.cpp" />
     <ClCompile Include="src\Rendering\Scene.cpp" />
     <ClCompile Include="src\SandboxApp.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
@@ -130,8 +132,11 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Rendering\PipelineConfig.h" />
+    <ClInclude Include="src\Rendering\RenderObject.h" />
     <ClInclude Include="src\Rendering\Scene.h" />
+    <ClInclude Include="src\Rendering\Structs.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,8 +1,11 @@
 #pragma once
 #include "pch.h"
+#include <Evergreen.h>
 #include "PipelineConfig.h"
 #include "../Utils/MathHelper.h"
-#include <Evergreen.h>
+#include "Camera.h"
+#include "RenderObject.h"
+
 
 class Scene
 {
@@ -13,14 +16,10 @@ public:
 
 private:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
+
 	std::vector<PipelineConfig> m_pipelineConfigs;
+	std::vector<std::vector<RenderObject>> m_renderObjectLists;
 
-	DirectX::XMFLOAT4X4 m_world = MathHelper::Identity4x4();
-	DirectX::XMFLOAT4X4 m_view = MathHelper::Identity4x4();
-	DirectX::XMFLOAT4X4 m_proj = MathHelper::Identity4x4();
-	float m_theta = 1.5f * DirectX::XM_PI;
-	float m_phi = DirectX::XM_PIDIV4;
-	float m_radius = 5.0f;
-
-	float m_aspectRatio = 0.0f;
+	std::vector<Camera> m_cameras;
+	unsigned int m_currentCamera;
 };
