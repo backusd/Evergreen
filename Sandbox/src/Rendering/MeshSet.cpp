@@ -73,9 +73,9 @@ void MeshSet::BindToIA() const
 
 	const UINT stride = sizeof(Vertex);
 	const UINT offset = 0u;
-	GFX_THROW_INFO_ONLY(context->IASetVertexBuffers(0u, 1u, m_vertexBuffer.GetAddressOf(), &stride, &offset))
+	GFX_THROW_INFO_ONLY(context->IASetVertexBuffers(0u, 1u, m_vertexBuffer.GetAddressOf(), &stride, &offset));
 
-	GFX_THROW_INFO_ONLY(context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u))
+	GFX_THROW_INFO_ONLY(context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u));
 }
 
 MeshInstance MeshSet::AddBox(float width, float height, float depth, uint32 numSubdivisions)

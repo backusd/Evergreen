@@ -8,6 +8,7 @@ class Camera
 public:
 
 	DirectX::XMMATRIX GetViewMatrix() const;
+	DirectX::XMFLOAT3 GetPosition() const;
 
 private:
 	float m_theta = 1.5f * DirectX::XM_PI;

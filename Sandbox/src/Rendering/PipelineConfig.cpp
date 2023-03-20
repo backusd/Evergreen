@@ -19,11 +19,11 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	// Create Pixel Shader
 	Microsoft::WRL::ComPtr<ID3DBlob> pBlob;
 	D3DReadFileToBlob(L"PixelShader.cso", &pBlob);
-	GFX_THROW_INFO(device->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_pixelShader))
+	GFX_THROW_INFO(device->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_pixelShader));
 
 	// Create Vertex Shader
 	D3DReadFileToBlob(L"VertexShader.cso", pBlob.ReleaseAndGetAddressOf());
-	GFX_THROW_INFO(device->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_vertexShader))
+	GFX_THROW_INFO(device->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &m_vertexShader));
 
 	// Create Input Layout
 	const D3D11_INPUT_ELEMENT_DESC ied[] =
@@ -37,7 +37,7 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 		pBlob->GetBufferPointer(),
 		pBlob->GetBufferSize(),
 		&m_inputLayout
-	))
+	));
 
 	// Create Rasterizer State
 	D3D11_RASTERIZER_DESC rasterDesc; // Fill with default values for now
@@ -51,7 +51,7 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
-	GFX_THROW_INFO(device->CreateRasterizerState(&rasterDesc, m_rasterizerState.ReleaseAndGetAddressOf()))
+	GFX_THROW_INFO(device->CreateRasterizerState(&rasterDesc, m_rasterizerState.ReleaseAndGetAddressOf()));
 
 	// Create Blend State (Use default values)
 	D3D11_BLEND_DESC blendDesc;
@@ -65,7 +65,7 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
 	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-	GFX_THROW_INFO(device->CreateBlendState(&blendDesc, m_blendState.ReleaseAndGetAddressOf()))
+	GFX_THROW_INFO(device->CreateBlendState(&blendDesc, m_blendState.ReleaseAndGetAddressOf()));
 
 	// Create DepthStencil State (Use default values)
 	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
@@ -83,7 +83,7 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
-	GFX_THROW_INFO(device->CreateDepthStencilState(&depthStencilDesc, m_depthStencilState.ReleaseAndGetAddressOf()))
+	GFX_THROW_INFO(device->CreateDepthStencilState(&depthStencilDesc, m_depthStencilState.ReleaseAndGetAddressOf()));
 }
 
 void PipelineConfig::ApplyConfig() const
@@ -91,23 +91,23 @@ void PipelineConfig::ApplyConfig() const
 	auto context = m_deviceResources->D3DDeviceContext();
 
 	// bind pixel shader
-	GFX_THROW_INFO_ONLY(context->PSSetShader(m_pixelShader.Get(), nullptr, 0u))
+	GFX_THROW_INFO_ONLY(context->PSSetShader(m_pixelShader.Get(), nullptr, 0u));
 
 	// bind vertex shader
-	GFX_THROW_INFO_ONLY(context->VSSetShader(m_vertexShader.Get(), nullptr, 0u))
+	GFX_THROW_INFO_ONLY(context->VSSetShader(m_vertexShader.Get(), nullptr, 0u));
 
 	// bind vertex layout
-	GFX_THROW_INFO_ONLY(context->IASetInputLayout(m_inputLayout.Get()))
+	GFX_THROW_INFO_ONLY(context->IASetInputLayout(m_inputLayout.Get()));
 
 	// Set primitive topology to triangle list (groups of 3 vertices)
-	GFX_THROW_INFO_ONLY(context->IASetPrimitiveTopology(m_topology))
+	GFX_THROW_INFO_ONLY(context->IASetPrimitiveTopology(m_topology));
 
 	// Set Rasterizer State
-	GFX_THROW_INFO_ONLY(context->RSSetState(m_rasterizerState.Get()))
+	GFX_THROW_INFO_ONLY(context->RSSetState(m_rasterizerState.Get()));
 
 	// Set Blend State
-	GFX_THROW_INFO_ONLY(context->OMSetBlendState(m_blendState.Get(), m_blendFactor, m_blendSampleMask))
+	GFX_THROW_INFO_ONLY(context->OMSetBlendState(m_blendState.Get(), m_blendFactor, m_blendSampleMask));
 
 	// Set Depth Stencil State
-	GFX_THROW_INFO_ONLY(context->OMSetDepthStencilState(m_depthStencilState.Get(), m_stencilRef))
+	GFX_THROW_INFO_ONLY(context->OMSetDepthStencilState(m_depthStencilState.Get(), m_stencilRef));
 }

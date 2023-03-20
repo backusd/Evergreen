@@ -58,6 +58,9 @@ public:
 	ND inline _ID3D11DepthStencilView* DepthStencilView() noexcept { return m_d3dDepthStencilView.Get(); }
 	ND inline _ID3D11RenderTargetView* BackBufferRenderTargetView() noexcept { return m_d3dRenderTargetView.Get(); }
 
+	ND inline float GetRenderTargetHeight() const noexcept { return m_renderTargetHeight; }
+	ND inline float GetRenderTargetWidth() const noexcept { return m_renderTargetWidth; }
+
 	ND inline float DIPSToPixels(float dips) const noexcept { return dips * m_dpiScale; }
 	ND inline float PixelsToDIPS(float pixels) const noexcept { return pixels / m_dpiScale; }
 
@@ -115,6 +118,10 @@ private:
 	// Formats
 	const DXGI_FORMAT m_rtvFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 	const DXGI_FORMAT m_dsvFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
+
+	// Render Target Height/Width
+	float m_renderTargetHeight;
+	float m_renderTargetWidth;
 };
 #pragma warning( pop )
 

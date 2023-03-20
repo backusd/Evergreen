@@ -213,6 +213,9 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources()
 }
 void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float height)
 {
+	m_renderTargetHeight = height;
+	m_renderTargetWidth = width;
+
 	float dpi = static_cast<float>(GetDpiForWindow(m_hWnd));
 	m_dpiScale = dpi / 96.0f;
 
