@@ -12,6 +12,18 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources);
 
 	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
+	ms->SetVertexConversionFunction([](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
+		{
+			std::vector<Vertex> output(input.size());
+			for (unsigned int iii = 0; iii < input.size(); ++iii)
+			{
+				output[iii].Pos = input[iii].Position;
+				output[iii].Color = XMFLOAT4(DirectX::Colors::ForestGreen);
+			}
+			return output;
+		}
+	);
+/*
 	std::vector<Vertex> vertices =
 	{
 		Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(DirectX::Colors::White) }),
@@ -49,7 +61,9 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 		4, 0, 3,
 		4, 3, 7
 	};
-	MeshInstance mi = ms->AddMesh(vertices, indices);
+*/
+//	MeshInstance mi = ms->AddMesh(vertices, indices);
+	MeshInstance mi = ms->AddBox(1.0f, 1.0f, 1.0f, 0);
 	ms->Finalize();
 
 
@@ -66,6 +80,15 @@ void Scene::SetAspectRatio(float ratio) noexcept
 	for (unsigned int iii = 0; iii < objects.size(); ++iii)
 	{
 		objects[iii].SetAspectRatio(ratio);
+	}
+}
+
+void Scene::Update(const Timer& timer)
+{
+	std::vector<RenderObject>& objects = std::get<2>(m_configAndObjectList);
+	for (unsigned int iii = 0; iii < objects.size(); ++iii)
+	{
+		objects[iii].Update(timer, m_cameras[m_currentCamera]);
 	}
 }
 

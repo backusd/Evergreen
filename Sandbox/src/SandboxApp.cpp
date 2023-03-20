@@ -26,6 +26,10 @@ protected:
 
 	void OnUpdate(const Timer& timer) override
 	{
+		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
+		m_scene->SetAspectRatio(vp->GetAspectRatio());
+
+		m_scene->Update(timer);
 	}
 	void OnRender() override
 	{
@@ -44,9 +48,6 @@ protected:
 		// configure viewport
 		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
 		GFX_THROW_INFO_ONLY(context->RSSetViewports(1, &vp->GetViewport()))
-
-		D3D11_VIEWPORT _vp = vp->GetViewport();
-		m_scene->SetAspectRatio(_vp.Width / _vp.Height);
 
 		m_scene->Render();
 	}

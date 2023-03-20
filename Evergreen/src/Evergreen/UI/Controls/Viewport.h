@@ -30,6 +30,7 @@ public:
 	ND virtual Control* GetControlByID(unsigned int id) noexcept override;
 
 	// GET
+	ND inline float GetAspectRatio() const noexcept { return m_viewport.Width / m_viewport.Height; }
 	ND inline const D3D11_VIEWPORT& GetViewport() const { return m_viewport; }
 	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
 

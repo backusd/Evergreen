@@ -15,6 +15,7 @@ class Scene
 
 public:
 	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources);
+	void Update(const Evergreen::Timer& timer);
 	void Render();
 	void SetAspectRatio(float ratio) noexcept;
 
