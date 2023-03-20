@@ -62,13 +62,18 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 		4, 3, 7
 	};
 */
-//	MeshInstance mi = ms->AddMesh(vertices, indices);
-	MeshInstance mi = ms->AddBox(1.0f, 1.0f, 1.0f, 0);
+	//	MeshInstance mi = ms->AddMesh(vertices, indices);
+	//MeshInstance mi = ms->AddBox(1.0f, 1.0f, 1.0f, 0);
+	//MeshInstance mi = ms->AddSphere(1.0f, 10, 10);
+	MeshInstance miSphere = ms->AddGeosphere(1.0f, 2);
+	//MeshInstance mi = ms->AddCylinder(1.0f, 2.0f, 1.5f, 100, 100);
+	MeshInstance miGrid = ms->AddGrid(4.0f, 4.0f, 4, 4);
 	ms->Finalize();
 
 
 	std::vector<RenderObject> objects;
-	objects.emplace_back(deviceResources, mi);
+	objects.emplace_back(deviceResources, miSphere);
+	objects.emplace_back(deviceResources, miGrid);
 
 	m_configAndObjectList = std::make_tuple(std::move(config), std::move(ms), objects);
 }

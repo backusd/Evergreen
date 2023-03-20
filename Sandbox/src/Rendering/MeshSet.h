@@ -91,7 +91,8 @@ public:
 private:
 	void Subdivide(MeshData& meshData) const;
 	GeneralVertex MidPoint(const GeneralVertex& v0, const GeneralVertex& v1) const;
-
+	void BuildCylinderTopCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData);
+	void BuildCylinderBottomCap(float bottomRadius, float topRadius, float height, uint32 sliceCount, uint32 stackCount, MeshData& meshData);
 
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 
