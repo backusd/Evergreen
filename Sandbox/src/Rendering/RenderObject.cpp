@@ -4,8 +4,9 @@
 using namespace Evergreen;
 using namespace DirectX;
 
-RenderObject::RenderObject(std::shared_ptr<Evergreen::DeviceResources> deviceResources) :
-	m_deviceResources(deviceResources)
+RenderObject::RenderObject(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const MeshInstance& mesh) :
+	m_deviceResources(deviceResources),
+	m_mesh(mesh)
 {}
 
 
@@ -13,9 +14,7 @@ void RenderObject::Render(const Camera& camera)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
 	auto device = m_deviceResources->D3DDevice();
-
-
-
+/*
 	std::array<Vertex, 8> vertices =
 	{
 		Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f), XMFLOAT4(DirectX::Colors::White) }),
@@ -86,6 +85,8 @@ void RenderObject::Render(const Camera& camera)
 	GFX_THROW_INFO(device->CreateBuffer(&ibd, &isd, &pIndexBuffer))
 
 		GFX_THROW_INFO_ONLY(context->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u))
+*/
+
 
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> buffer;
@@ -96,7 +97,6 @@ void RenderObject::Render(const Camera& camera)
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 	bufferDesc.StructureByteStride = 0;
-
 
 	XMMATRIX view = camera.GetViewMatrix();
 	XMMATRIX world = XMLoadFloat4x4(&m_world);
@@ -119,6 +119,5 @@ void RenderObject::Render(const Camera& camera)
 		ID3D11Buffer* const buffers[1] = { buffer.Get() };
 	GFX_THROW_INFO_ONLY(context->VSSetConstantBuffers(0u, 1u, buffers))
 
-
-	GFX_THROW_INFO_ONLY(context->DrawIndexed((UINT)std::size(indices), 0u, 0u))
+	GFX_THROW_INFO_ONLY(context->DrawIndexed(m_mesh.IndexCount, m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation))
 }
