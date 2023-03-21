@@ -2,14 +2,15 @@
 #include "pch.h"
 #include "../Utils/MathHelper.h"
 #include <Evergreen.h>
-
+#include "ConstantBufferArray.h"
+#include "Structs.h"
 
 
 
 class PipelineConfig
 {
 public:
-	PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources);
+	PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, std::shared_ptr<ConstantBuffer> vsPassConstants);
 	void ApplyConfig() const;
 
 private:
@@ -26,4 +27,5 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState;
 	unsigned int									m_stencilRef;
 
+	ConstantBufferArray	m_vsConstantBuffers;
 };

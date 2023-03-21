@@ -25,9 +25,8 @@ private:
 
 	PipelineConfigAndObjectList m_configAndObjectList;
 
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vsModelBuffer;
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_vsPassConstantsBuffer;
 	PassConstants m_passConstants;
+	std::shared_ptr<ConstantBuffer> m_vsPassConstantsBuffer;
 
 	float m_aspectRatio;
 

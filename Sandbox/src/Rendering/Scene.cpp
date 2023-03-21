@@ -11,7 +11,12 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 {
 	m_cameras.emplace_back();
 
-	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources);
+	// Create the Pass Constants buffer so we can share this will ALL pipeline configurations
+	m_vsPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	m_vsPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	// Pipeline Configuration
+	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer);
 
 	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
 	ms->SetVertexConversionFunction([](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
@@ -39,31 +44,6 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	objects.emplace_back(deviceResources, miGrid);
 
 	m_configAndObjectList = std::make_tuple(std::move(config), std::move(ms), objects);
-
-
-	// Model Buffer
-	auto device = m_deviceResources->D3DDevice();
-
-	D3D11_BUFFER_DESC bufferDesc;
-	bufferDesc.ByteWidth = sizeof(ObjectConstants);
-	bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc.MiscFlags = 0;
-	bufferDesc.StructureByteStride = 0;
-
-	GFX_THROW_INFO(device->CreateBuffer(&bufferDesc, nullptr, m_vsModelBuffer.ReleaseAndGetAddressOf()));
-
-	// Pass Constants Buffer
-	D3D11_BUFFER_DESC bufferDesc2;
-	bufferDesc2.ByteWidth = sizeof(PassConstants);
-	bufferDesc2.Usage = D3D11_USAGE_DYNAMIC;
-	bufferDesc2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	bufferDesc2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	bufferDesc2.MiscFlags = 0;
-	bufferDesc2.StructureByteStride = 0;
-
-	GFX_THROW_INFO(device->CreateBuffer(&bufferDesc2, nullptr, m_vsPassConstantsBuffer.ReleaseAndGetAddressOf()));
 }
 
 void Scene::Update(const Timer& timer)
@@ -101,9 +81,11 @@ void Scene::Update(const Timer& timer)
 	D3D11_MAPPED_SUBRESOURCE ms;
 	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
-	GFX_THROW_INFO(context->Map(m_vsPassConstantsBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+
+
+	GFX_THROW_INFO(context->Map(m_vsPassConstantsBuffer->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
 	memcpy(ms.pData, &m_passConstants, sizeof(PassConstants));
-	GFX_THROW_INFO_ONLY(context->Unmap(m_vsPassConstantsBuffer.Get(), 0));
+	GFX_THROW_INFO_ONLY(context->Unmap(m_vsPassConstantsBuffer->GetRawBufferPointer(), 0));
 
 
 	// Update all render objects
@@ -119,11 +101,6 @@ void Scene::Render()
 	EG_ASSERT(m_currentCamera < m_cameras.size(), "The selected camera index must be within the bounds of the m_cameras vector");
 
 	auto context = m_deviceResources->D3DDeviceContext();
-
-	// Set all constant buffers - Including buffers that are constant per rendering pass as well
-	// as buffers that will be updated per object
-	ID3D11Buffer* const buffers[2] = { m_vsModelBuffer.Get(), m_vsPassConstantsBuffer.Get() };
-	GFX_THROW_INFO_ONLY(context->VSSetConstantBuffers(0u, 2u, buffers));
 
 	// Apply the pipeline config for each list of render objects, render each object, then move onto the next config
 	std::unique_ptr<PipelineConfig>& config = std::get<0>(m_configAndObjectList);

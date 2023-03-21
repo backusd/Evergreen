@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Rendering\ConstantBufferArray.cpp" />
     <ClCompile Include="src\Rendering\MeshSet.cpp" />
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
     <ClCompile Include="src\Rendering\RenderObject.cpp" />
@@ -134,6 +135,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rendering\Camera.h" />
+    <ClInclude Include="src\Rendering\ConstantBuffer.h" />
+    <ClInclude Include="src\Rendering\ConstantBufferArray.h" />
     <ClInclude Include="src\Rendering\MeshSet.h" />
     <ClInclude Include="src\Rendering\PipelineConfig.h" />
     <ClInclude Include="src\Rendering\RenderObject.h" />

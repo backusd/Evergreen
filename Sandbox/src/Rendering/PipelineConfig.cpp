@@ -7,12 +7,13 @@ using namespace DirectX;
 
 
 
-PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources) :
+PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, std::shared_ptr<ConstantBuffer> vsPassConstants) :
 	m_deviceResources(deviceResources),
 	m_topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST),
 	m_blendFactor{1.0f, 1.0f, 1.04, 1.0f},
 	m_blendSampleMask(0xffffffff),
-	m_stencilRef(0u)
+	m_stencilRef(0u),
+	m_vsConstantBuffers(deviceResources)
 {
 	auto device = m_deviceResources->D3DDevice();
 
@@ -84,6 +85,13 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
 	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	GFX_THROW_INFO(device->CreateDepthStencilState(&depthStencilDesc, m_depthStencilState.ReleaseAndGetAddressOf()));
+
+	// Populate the VS Constant Buffer Array
+	std::shared_ptr<ConstantBuffer> vsModelBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	vsModelBuffer->CreateBuffer<ObjectConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	m_vsConstantBuffers.AddBuffer(vsModelBuffer);
+	m_vsConstantBuffers.AddBuffer(vsPassConstants);
 }
 
 void PipelineConfig::ApplyConfig() const
@@ -110,4 +118,7 @@ void PipelineConfig::ApplyConfig() const
 
 	// Set Depth Stencil State
 	GFX_THROW_INFO_ONLY(context->OMSetDepthStencilState(m_depthStencilState.Get(), m_stencilRef));
+
+	// Set the VS constant buffers
+	m_vsConstantBuffers.BindVS();
 }
