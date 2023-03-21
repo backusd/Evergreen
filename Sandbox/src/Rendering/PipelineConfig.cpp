@@ -7,13 +7,16 @@ using namespace DirectX;
 
 
 
-PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, std::shared_ptr<ConstantBuffer> vsPassConstants) :
-	m_deviceResources(deviceResources),
-	m_topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST),
-	m_blendFactor{1.0f, 1.0f, 1.04, 1.0f},
-	m_blendSampleMask(0xffffffff),
-	m_stencilRef(0u),
-	m_vsConstantBuffers(deviceResources)
+PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, 
+	std::shared_ptr<ConstantBuffer> vsPassConstants,
+	std::shared_ptr<ConstantBuffer> psPassConstants) :
+		m_deviceResources(deviceResources),
+		m_topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST),
+		m_blendFactor{1.0f, 1.0f, 1.04, 1.0f},
+		m_blendSampleMask(0xffffffff),
+		m_stencilRef(0u),
+		m_vsConstantBuffers(deviceResources),
+		m_psConstantBuffers(deviceResources)
 {
 	auto device = m_deviceResources->D3DDevice();
 
@@ -29,8 +32,8 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	// Create Input Layout
 	const D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
-		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT,    0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		{ "COLOR",    0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,  0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 	};
 	GFX_THROW_INFO(device->CreateInputLayout(
 		ied,
@@ -90,8 +93,19 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 	std::shared_ptr<ConstantBuffer> vsModelBuffer = std::make_shared<ConstantBuffer>(deviceResources);
 	vsModelBuffer->CreateBuffer<ObjectConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
 
-	m_vsConstantBuffers.AddBuffer(vsModelBuffer);
-	m_vsConstantBuffers.AddBuffer(vsPassConstants);
+	std::shared_ptr<ConstantBuffer> vsMaterialBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	vsMaterialBuffer->CreateBuffer<Material>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	m_vsConstantBuffers.AddBuffer(vsPassConstants);	 // Buffer at slot 0
+	m_vsConstantBuffers.AddBuffer(vsMaterialBuffer); // Buffer at slot 1
+	m_vsConstantBuffers.AddBuffer(vsModelBuffer);	 // Buffer at slot 2
+
+	// Populate the PS Constant Buffer Array
+	std::shared_ptr<ConstantBuffer> psMaterialBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	psMaterialBuffer->CreateBuffer<Material>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	m_psConstantBuffers.AddBuffer(psPassConstants);	 // Buffer at slot 0
+	m_psConstantBuffers.AddBuffer(psMaterialBuffer); // Buffer at slot 1
 }
 
 void PipelineConfig::ApplyConfig() const
@@ -121,4 +135,7 @@ void PipelineConfig::ApplyConfig() const
 
 	// Set the VS constant buffers
 	m_vsConstantBuffers.BindVS();
+
+	// Set the PS constant buffers
+	m_psConstantBuffers.BindPS();
 }

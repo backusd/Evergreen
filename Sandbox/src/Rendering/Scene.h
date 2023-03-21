@@ -23,6 +23,7 @@ public:
 
 private:
 	float GetHillHeight(float x, float z) const { return 0.3f * (z * sinf(0.1f * x) + x * cosf(0.1f * z)); }
+	DirectX::XMFLOAT3 GetHillNormal(float x, float z) const;
 
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 
@@ -32,6 +33,7 @@ private:
 	// NOTE: the ConstantBuffer is a shared_ptr so that it can be shared with EVERY PipelineConfig
 	PassConstants m_passConstants;
 	std::shared_ptr<ConstantBuffer> m_vsPassConstantsBuffer;
+	std::shared_ptr<ConstantBuffer> m_psPassConstantsBuffer;
 
 	float m_aspectRatio;
 

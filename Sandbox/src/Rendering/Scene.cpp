@@ -14,10 +14,13 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	// Create the Pass Constants buffer so we can share this will ALL pipeline configurations
 	m_vsPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
 	m_vsPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+	
+	m_psPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	m_psPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
 
 	// HILLS -----------------------------------------------------------------------------
 	// Pipeline Configuration 
-	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer);
+	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer, m_psPassConstantsBuffer);
 
 	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
 
@@ -39,31 +42,7 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 			{
 				output[iii].Pos = input[iii].Position;
 				output[iii].Pos.y = this->GetHillHeight(output[iii].Pos.x, output[iii].Pos.z);
-				if (output[iii].Pos.y < -10.0f)
-				{
-					// Sandy beach color.
-					output[iii].Color = XMFLOAT4(1.0f, 0.96f, 0.62f, 1.0f);
-				}
-				else if (output[iii].Pos.y < 5.0f)
-				{
-					// Light yellow-green.
-					output[iii].Color = XMFLOAT4(0.48f, 0.77f, 0.46f, 1.0f);
-				}
-				else if (output[iii].Pos.y < 12.0f)
-				{
-					// Dark yellow-green.
-					output[iii].Color = XMFLOAT4(0.1f, 0.48f, 0.19f, 1.0f);
-				}
-				else if (output[iii].Pos.y < 20.0f)
-				{
-					// Dark brown.
-					output[iii].Color = XMFLOAT4(0.45f, 0.39f, 0.34f, 1.0f);
-				}
-				else
-				{
-					// White snow.
-					output[iii].Color = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
-				}
+				output[iii].Normal = this->GetHillNormal(output[iii].Pos.x, output[iii].Pos.z);
 			}
 			return output;
 		}
@@ -77,15 +56,19 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	
 	ms->Finalize();
 
+	Material grass;
+	grass.DiffuseAlbedo = XMFLOAT4(0.2f, 0.6f, 0.2f, 1.0f);
+	grass.FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
+	grass.Roughness = 0.125f;
 	std::vector<RenderObject> objects;
-	objects.emplace_back(deviceResources, miGrid);
+	objects.emplace_back(deviceResources, miGrid, grass);
 
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objects));
 
 
 	// WAVES -----------------------------------------------------------------------------
 	// Pipeline Configuration 
-	std::unique_ptr<PipelineConfig> waveConfig = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer);
+	std::unique_ptr<PipelineConfig> waveConfig = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer, m_psPassConstantsBuffer);
 
 	std::unique_ptr<MeshSet> waveMS = std::make_unique<MeshSet>(m_deviceResources, true);
 
@@ -116,8 +99,12 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 
 	waveMS->Finalize();
 
+	Material water;
+	water.DiffuseAlbedo = XMFLOAT4(0.0f, 0.2f, 0.6f, 1.0f);
+	water.FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
+	water.Roughness = 0.0f;
 	std::vector<RenderObject> waveObjects;
-	waveObjects.emplace_back(deviceResources, m_wavesMesh);
+	waveObjects.emplace_back(deviceResources, m_wavesMesh, water);
 
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(waveConfig), std::move(waveMS), waveObjects));
 }
@@ -125,8 +112,6 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 void Scene::Update(const Timer& timer)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
-
-	D3D11_MAPPED_SUBRESOURCE ms;
 
 	// Update Waves ----------------------------------------------------------------
 	// Every quarter second, generate a random wave.
@@ -151,16 +136,13 @@ void Scene::Update(const Timer& timer)
 	for (int iii = 0; iii < m_waves->VertexCount(); ++iii)
 	{
 		vertices[iii].Pos = m_waves->Position(iii);
-		vertices[iii].Color = XMFLOAT4(DirectX::Colors::Blue);
+		vertices[iii].Normal = m_waves->Normal(iii);
 	}
 
 	std::unique_ptr<MeshSet>& meshSet = std::get<1>(m_configsAndObjectLists[1]);
 	meshSet->UpdateVertices(vertices);
 
-
-
-
-	// Update Pass Constants
+	// Update Pass Constants -----------------------------------------------------------------
 
 	XMMATRIX view = m_cameras[m_currentCamera].GetViewMatrix();
 	XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, m_aspectRatio, 1.0f, 1000.0f);
@@ -188,16 +170,26 @@ void Scene::Update(const Timer& timer)
 	m_passConstants.FarZ = 1000.0f;
 	m_passConstants.TotalTime = static_cast<float>(timer.GetTotalSeconds());
 	m_passConstants.DeltaTime = static_cast<float>(timer.GetElapsedSeconds());
+	m_passConstants.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
+
+	XMVECTOR lightDir = -MathHelper::SphericalToCartesian(1.0f, 1.25f * XM_PI, XM_PIDIV4);
+	XMStoreFloat3(&m_passConstants.Lights[0].Direction, lightDir);
+	m_passConstants.Lights[0].Strength = { 1.0f, 1.0f, 0.9f };
 
 	// Update the constant buffer with the new matrix values
-	//D3D11_MAPPED_SUBRESOURCE ms;
+	// VS
+	D3D11_MAPPED_SUBRESOURCE ms;
 	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
-
-
 
 	GFX_THROW_INFO(context->Map(m_vsPassConstantsBuffer->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
 	memcpy(ms.pData, &m_passConstants, sizeof(PassConstants));
 	GFX_THROW_INFO_ONLY(context->Unmap(m_vsPassConstantsBuffer->GetRawBufferPointer(), 0));
+
+	// PS
+	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	GFX_THROW_INFO(context->Map(m_psPassConstantsBuffer->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+	memcpy(ms.pData, &m_passConstants, sizeof(PassConstants));
+	GFX_THROW_INFO_ONLY(context->Unmap(m_psPassConstantsBuffer->GetRawBufferPointer(), 0));
 
 
 	// Update all render objects
@@ -232,4 +224,17 @@ void Scene::Render()
 			objects[iii].Render();
 		}
 	}
+}
+
+DirectX::XMFLOAT3 Scene::GetHillNormal(float x, float z) const
+{
+	// n = (-df/dx, 1, -df/dz)
+	XMFLOAT3 n(
+		-0.03f * z * cosf(0.1f * x) - 0.3f * cosf(0.1f * z),
+		1.0f,
+		-0.3f * sinf(0.1f * x) + 0.03f * x * sinf(0.1f * z));
+
+	XMVECTOR unitNormal = DirectX::XMVector3Normalize(XMLoadFloat3(&n));
+	DirectX::XMStoreFloat3(&n, unitNormal);
+	return n;
 }

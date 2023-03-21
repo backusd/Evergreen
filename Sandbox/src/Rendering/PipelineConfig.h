@@ -10,7 +10,9 @@
 class PipelineConfig
 {
 public:
-	PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, std::shared_ptr<ConstantBuffer> vsPassConstants);
+	PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, 
+		std::shared_ptr<ConstantBuffer> vsPassConstants,
+		std::shared_ptr<ConstantBuffer> psPassConstants);
 	void ApplyConfig() const;
 
 private:
@@ -28,4 +30,5 @@ private:
 	unsigned int									m_stencilRef;
 
 	ConstantBufferArray	m_vsConstantBuffers;
+	ConstantBufferArray	m_psConstantBuffers;
 };
