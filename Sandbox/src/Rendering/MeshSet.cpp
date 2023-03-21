@@ -78,12 +78,7 @@ void MeshSet::UpdateVertices(std::vector<Vertex>& newVertices)
 	D3D11_MAPPED_SUBRESOURCE ms;
 	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	GFX_THROW_INFO(context->Map(m_vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
-
-	Vertex* v = (Vertex*)ms.pData;
-
-	for (unsigned int iii = 0; iii < m_vertices.size(); ++iii)
-		v[iii] = m_vertices[iii];
-
+	memcpy(ms.pData, m_vertices.data(), sizeof(Vertex) * m_vertices.size());
 	GFX_THROW_INFO_ONLY(context->Unmap(m_vertexBuffer.Get(), 0));
 }
 
