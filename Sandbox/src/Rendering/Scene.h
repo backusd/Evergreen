@@ -7,6 +7,7 @@
 #include "RenderObject.h"
 #include "MeshSet.h"
 #include "Structs.h"
+#include "Waves.h"
 
 
 class Scene
@@ -21,10 +22,14 @@ public:
 	void SetAspectRatio(float ratio) noexcept { m_aspectRatio = ratio; }
 
 private:
+	float GetHillHeight(float x, float z) const { return 0.3f * (z * sinf(0.1f * x) + x * cosf(0.1f * z)); }
+
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 
-	PipelineConfigAndObjectList m_configAndObjectList;
+	std::vector<PipelineConfigAndObjectList> m_configsAndObjectLists;
 
+	// Pass Constants that will be updated/bound only once per pass
+	// NOTE: the ConstantBuffer is a shared_ptr so that it can be shared with EVERY PipelineConfig
 	PassConstants m_passConstants;
 	std::shared_ptr<ConstantBuffer> m_vsPassConstantsBuffer;
 
@@ -32,4 +37,7 @@ private:
 
 	std::vector<Camera> m_cameras;
 	unsigned int m_currentCamera;
+
+	std::unique_ptr<Waves> m_waves;
+	MeshInstance m_wavesMesh;
 };

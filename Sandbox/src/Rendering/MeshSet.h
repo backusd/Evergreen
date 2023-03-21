@@ -71,7 +71,7 @@ public:
 	};
 
 public:
-	MeshSet(std::shared_ptr<Evergreen::DeviceResources> deviceResources);
+	MeshSet(std::shared_ptr<Evergreen::DeviceResources> deviceResources, bool dynamic = false);
 
 	MeshInstance AddMesh(const std::vector<Vertex>& vertices, const std::vector<std::uint16_t>& indices);
 	
@@ -87,6 +87,11 @@ public:
 	void SetVertexConversionFunction(std::function<std::vector<Vertex>(std::vector<GeneralVertex>)> fn) noexcept { m_VertexConversionFn = fn; }
 
 	void BindToIA() const;
+
+	ND inline ID3D11Buffer* GetRawVertexBufferPointer() noexcept { return m_vertexBuffer.Get(); }
+	ND inline ID3D11Buffer* GetRawIndexBufferPointer() noexcept { return m_indexBuffer.Get(); }
+
+	void UpdateVertices(std::vector<Vertex>& newVertices);
 
 private:
 	void Subdivide(MeshData& meshData) const;
@@ -106,4 +111,5 @@ private:
 	std::vector<std::uint16_t>	m_indices;
 
 	bool m_finalized;
+	bool m_dynamic;
 };

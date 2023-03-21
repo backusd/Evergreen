@@ -3,12 +3,13 @@
 using namespace Evergreen;
 using namespace DirectX;
 
-MeshSet::MeshSet(std::shared_ptr<DeviceResources> deviceResources) :
+MeshSet::MeshSet(std::shared_ptr<DeviceResources> deviceResources, bool dynamic) :
 	m_deviceResources(deviceResources),
 	m_finalized(false),
 	m_vertexBuffer(nullptr),
 	m_indexBuffer(nullptr),
-	m_conversionFunctionIsSet(false)
+	m_conversionFunctionIsSet(false),
+	m_dynamic(dynamic)
 {
 	// Create a dummy default conversion function
 	m_VertexConversionFn = [](std::vector<GeneralVertex> input) -> std::vector<Vertex>
@@ -42,8 +43,8 @@ void MeshSet::Finalize()
 
 	D3D11_BUFFER_DESC bd = {};
 	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.CPUAccessFlags = 0u;
+	bd.Usage = m_dynamic ? D3D11_USAGE_DYNAMIC : D3D11_USAGE_DEFAULT;
+	bd.CPUAccessFlags = m_dynamic ? D3D11_CPU_ACCESS_WRITE : 0u;
 	bd.MiscFlags = 0u;
 	bd.ByteWidth = static_cast<UINT>(m_vertices.size() * sizeof(Vertex)); // Size of buffer in bytes
 	bd.StructureByteStride = sizeof(Vertex);
@@ -63,6 +64,27 @@ void MeshSet::Finalize()
 	GFX_THROW_INFO(device->CreateBuffer(&ibd, &isd, m_indexBuffer.ReleaseAndGetAddressOf()))
 
 	m_finalized = true;
+}
+
+void MeshSet::UpdateVertices(std::vector<Vertex>& newVertices)
+{
+	EG_ASSERT(m_dynamic, "Cannot update vertices unless the vertex buffer is dynamic");
+	EG_ASSERT(m_vertices.size() == newVertices.size(), "Right now, we only support an exact replacement of the existing vertices");
+	
+	auto context = m_deviceResources->D3DDeviceContext();
+
+	m_vertices.swap(newVertices);
+	
+	D3D11_MAPPED_SUBRESOURCE ms;
+	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
+	GFX_THROW_INFO(context->Map(m_vertexBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+
+	Vertex* v = (Vertex*)ms.pData;
+
+	for (unsigned int iii = 0; iii < m_vertices.size(); ++iii)
+		v[iii] = m_vertices[iii];
+
+	GFX_THROW_INFO_ONLY(context->Unmap(m_vertexBuffer.Get(), 0));
 }
 
 void MeshSet::BindToIA() const
