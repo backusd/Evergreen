@@ -1,6 +1,6 @@
 # Evergreen
 Evergreen is a general purpose application engine for building desktop applications with a UI and/or 3D rendering/simulation.
-Evergeen is intended to be built as a DLL in imported by the client application.
+Evergeen is intended to be built as a DLL and imported by the client application.
 See the `Sandbox` project for an example of how to import the Evergreen DLL and create an application.
 ## Features
 Evergreen allows you to create the UI directly in code, via JSON files, or both.
@@ -10,12 +10,9 @@ Here is the current list of supported UI controls:
 - Button (and RoundedButton)
 - RadioButton
 - SliderInt and SliderFloat
-- Pane 
--- This is simply a pop up window that is displayed on top of the main UI
-- ScrollableLayout
--- This allows you to place controls within a region of the UI that is scrollable
-- Viewport
--- This is a 3D viewport that allows you to render a 3D scene onto
+- Pane (This is simply a pop up window that is displayed on top of the main UI)
+- ScrollableLayout (This allows you to place controls within a region of the UI that is scrollable)
+- Viewport (This is a 3D viewport that allows you to render a 3D scene onto)
 
 ## JSON
 A portion or the entire UI can be specified in one or more JSON files.
@@ -35,4 +32,5 @@ I am only supported Direct3D11.
 
 Also to note, while Evergreen strives provide a lot of UI support with several built-in UI controls, the approach
 to 3D rendering is quite different. Evergreen primarily concerns itself with creating the device, device context, 
-swap chain, render target, and depth stencil. It is up to the client application to create shaders, buffers, etc.
+swap chain, render target, and depth stencil. It is up to the client application to create shaders, buffers, etc, 
+and ultimately configure the rendering pipeline and make draw calls.
