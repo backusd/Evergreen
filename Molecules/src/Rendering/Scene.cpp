@@ -18,129 +18,46 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	m_psPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
 	m_psPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
 
-	// HILLS -----------------------------------------------------------------------------
 	// Pipeline Configuration 
 	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer, m_psPassConstantsBuffer);
 
 	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
-
-//	ms->SetVertexConversionFunction([](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
-//		{
-//			std::vector<Vertex> output(input.size());
-//			for (unsigned int iii = 0; iii < input.size(); ++iii)
-//			{
-//				output[iii].Pos = input[iii].Position;
-//				output[iii].Color = XMFLOAT4(DirectX::Colors::ForestGreen);
-//			}
-//			return output;
-//		}
-//	);
 	ms->SetVertexConversionFunction([this](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
 		{
 			std::vector<Vertex> output(input.size());
 			for (unsigned int iii = 0; iii < input.size(); ++iii)
 			{
 				output[iii].Pos = input[iii].Position;
-				output[iii].Pos.y = this->GetHillHeight(output[iii].Pos.x, output[iii].Pos.z);
-				output[iii].Normal = this->GetHillNormal(output[iii].Pos.x, output[iii].Pos.z);
+				output[iii].Normal = input[iii].Normal;
 			}
 			return output;
 		}
 	);
 
-	//MeshInstance mi = ms->AddBox(1.0f, 1.0f, 1.0f, 0);
-	//MeshInstance mi = ms->AddSphere(1.0f, 10, 10);
-	//MeshInstance miSphere = ms->AddGeosphere(1.0f, 2);
-	//MeshInstance mi = ms->AddCylinder(1.0f, 2.0f, 1.5f, 100, 100);
-	MeshInstance miGrid = ms->AddGrid(160.0f, 160.0f, 50, 50);
-	
+	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
 	ms->Finalize();
 
 	Material grass;
 	grass.DiffuseAlbedo = XMFLOAT4(0.2f, 0.6f, 0.2f, 1.0f);
 	grass.FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
 	grass.Roughness = 0.125f;
+
+	Material red;
+	red.DiffuseAlbedo = XMFLOAT4(0.8f, 0.0f, 0.0f, 1.0f);
+	red.FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
+	red.Roughness = 0.125f;
+
 	std::vector<RenderObject> objects;
-	objects.emplace_back(deviceResources, miGrid, grass);
+	objects.emplace_back(deviceResources, mi, grass);
+	objects.emplace_back(deviceResources, mi, red);
+	objects[1].SetTranslation(2.0f, 0.0f, 0.0f);
 
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objects));
-
-
-	// WAVES -----------------------------------------------------------------------------
-	// Pipeline Configuration 
-	std::unique_ptr<PipelineConfig> waveConfig = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer, m_psPassConstantsBuffer);
-
-	std::unique_ptr<MeshSet> waveMS = std::make_unique<MeshSet>(m_deviceResources, true);
-
-	// Create Waves
-	m_waves = std::make_unique<Waves>(128, 128, 1.0f, 0.03f, 4.0f, 0.2f);
-
-	std::vector<std::uint16_t> indices(3 * m_waves->TriangleCount()); // 3 indices per face
-	int m = m_waves->RowCount();
-	int n = m_waves->ColumnCount();
-	int k = 0;
-	for (int i = 0; i < m - 1; ++i)
-	{
-		for (int j = 0; j < n - 1; ++j)
-		{
-			indices[k] = i * n + j;
-			indices[k + 1] = i * n + j + 1;
-			indices[k + 2] = (i + 1) * n + j;
-
-			indices[k + 3] = (i + 1) * n + j;
-			indices[k + 4] = i * n + j + 1;
-			indices[k + 5] = (i + 1) * n + j + 1;
-
-			k += 6; // next quad
-		}
-	}
-	std::vector<Vertex> vertices(m_waves->VertexCount());
-	m_wavesMesh = waveMS->AddMesh(vertices, indices);
-
-	waveMS->Finalize();
-
-	Material water;
-	water.DiffuseAlbedo = XMFLOAT4(0.0f, 0.2f, 0.6f, 1.0f);
-	water.FresnelR0 = XMFLOAT3(0.1f, 0.1f, 0.1f);
-	water.Roughness = 0.0f;
-	std::vector<RenderObject> waveObjects;
-	waveObjects.emplace_back(deviceResources, m_wavesMesh, water);
-
-	m_configsAndObjectLists.push_back(std::make_tuple(std::move(waveConfig), std::move(waveMS), waveObjects));
 }
 
 void Scene::Update(const Timer& timer)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
-
-	// Update Waves ----------------------------------------------------------------
-	// Every quarter second, generate a random wave.
-	static float t_base = 0.0f;
-	if ((timer.GetTotalSeconds() - t_base) >= 0.25f)
-	{
-		t_base += 0.25f;
-
-		int i = MathHelper::Rand(4, m_waves->RowCount() - 5);
-		int j = MathHelper::Rand(4, m_waves->ColumnCount() - 5);
-
-		float r = MathHelper::RandF(0.2f, 0.5f);
-
-		m_waves->Disturb(i, j, r);
-	}
-
-	// Update the wave simulation.
-	m_waves->Update(timer.GetElapsedSeconds());
-
-	// Update the wave vertex buffer with the new solution.
-	std::vector<Vertex> vertices(m_waves->VertexCount());
-	for (int iii = 0; iii < m_waves->VertexCount(); ++iii)
-	{
-		vertices[iii].Pos = m_waves->Position(iii);
-		vertices[iii].Normal = m_waves->Normal(iii);
-	}
-
-	std::unique_ptr<MeshSet>& meshSet = std::get<1>(m_configsAndObjectLists[1]);
-	meshSet->UpdateVertices(vertices);
 
 	// Update Pass Constants -----------------------------------------------------------------
 
@@ -226,15 +143,15 @@ void Scene::Render()
 	}
 }
 
-DirectX::XMFLOAT3 Scene::GetHillNormal(float x, float z) const
-{
-	// n = (-df/dx, 1, -df/dz)
-	XMFLOAT3 n(
-		-0.03f * z * cosf(0.1f * x) - 0.3f * cosf(0.1f * z),
-		1.0f,
-		-0.3f * sinf(0.1f * x) + 0.03f * x * sinf(0.1f * z));
-
-	XMVECTOR unitNormal = DirectX::XMVector3Normalize(XMLoadFloat3(&n));
-	DirectX::XMStoreFloat3(&n, unitNormal);
-	return n;
-}
+//DirectX::XMFLOAT3 Scene::GetHillNormal(float x, float z) const
+//{
+//	// n = (-df/dx, 1, -df/dz)
+//	XMFLOAT3 n(
+//		-0.03f * z * cosf(0.1f * x) - 0.3f * cosf(0.1f * z),
+//		1.0f,
+//		-0.3f * sinf(0.1f * x) + 0.03f * x * sinf(0.1f * z));
+//
+//	XMVECTOR unitNormal = DirectX::XMVector3Normalize(XMLoadFloat3(&n));
+//	DirectX::XMStoreFloat3(&n, unitNormal);
+//	return n;
+//}

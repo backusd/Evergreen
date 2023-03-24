@@ -156,7 +156,6 @@
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
     <ClCompile Include="src\Rendering\RenderObject.cpp" />
     <ClCompile Include="src\Rendering\Scene.cpp" />
-    <ClCompile Include="src\Rendering\Waves.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -176,7 +175,6 @@
     <ClInclude Include="src\Rendering\RenderObject.h" />
     <ClInclude Include="src\Rendering\Scene.h" />
     <ClInclude Include="src\Rendering\Structs.h" />
-    <ClInclude Include="src\Rendering\Waves.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />
   </ItemGroup>
   <ItemGroup>
@@ -189,11 +187,6 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
     <None Include="src\Shaders\Lighting.hlsl">
-      <FileType>Document</FileType>
-    </None>
-    <None Include="src\Shaders\1_PixelShader.hlsl">
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <FileType>Document</FileType>
     </None>
     <FxCompile Include="src\Shaders\VertexShader.hlsl">

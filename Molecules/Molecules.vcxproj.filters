@@ -18,9 +18,6 @@
     <ClCompile Include="src\MoleculesApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\Waves.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Rendering\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -46,12 +43,8 @@
   <ItemGroup>
     <None Include="src\json\main.json" />
     <None Include="src\Shaders\Lighting.hlsl" />
-    <None Include="src\Shaders\1_PixelShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Rendering\Waves.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Rendering\Structs.h">
       <Filter>Header Files</Filter>
     </ClInclude>

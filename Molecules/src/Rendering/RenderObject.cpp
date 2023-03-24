@@ -9,12 +9,39 @@ using Microsoft::WRL::ComPtr;
 RenderObject::RenderObject(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const MeshInstance& mesh, const Material& material) :
 	m_deviceResources(deviceResources),
 	m_mesh(mesh),
-	m_material(material)
+	m_material(material),
+	m_scaling(1.0f, 1.0f, 1.0f),
+	m_translation(0.0f, 0.0f, 0.0f)
 {
 }
 
 void RenderObject::Update(const Timer& timer)
 {
+}
+
+void RenderObject::SetScaling(float x, float y, float z) noexcept
+{
+	m_scaling = XMFLOAT3(x, y, z);
+	UpdateWorldMatrix();
+}
+void RenderObject::SetScaling(float xyz) noexcept
+{
+	m_scaling = XMFLOAT3(xyz, xyz, xyz);
+	UpdateWorldMatrix();
+}
+void RenderObject::SetTranslation(float x, float y, float z) noexcept
+{
+	m_translation = XMFLOAT3(x, y, z);
+	UpdateWorldMatrix();
+}
+void RenderObject::UpdateWorldMatrix()
+{
+	XMStoreFloat4x4(&m_world, 
+		XMMatrixTranspose(
+			XMMatrixScaling(m_scaling.x, m_scaling.y, m_scaling.z) *
+			XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z)
+		)
+	);
 }
 
 void RenderObject::Render() const
