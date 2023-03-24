@@ -1,6 +1,6 @@
 #include <Evergreen.h>
 #include <Evergreen/EntryPoint.h>
-//#include "Rendering/Scene.h"
+#include "Rendering/Scene.h"
 
 using namespace Evergreen;
 
@@ -9,7 +9,7 @@ class MoleculesApp : public Evergreen::Application
 public:
 	MoleculesApp()
 	{
-		//m_scene = std::make_unique<Scene>(m_deviceResources);
+		m_scene = std::make_unique<Scene>(m_deviceResources);
 
 		SetCallbacks();
 		m_ui->SetUIRoot("src/json/");
@@ -22,34 +22,34 @@ public:
 
 
 protected:
-	//std::unique_ptr<Scene> m_scene;
+	std::unique_ptr<Scene> m_scene;
 
 	void OnUpdate(const Timer& timer) override
 	{
-		//auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
-		//m_scene->SetAspectRatio(vp->GetAspectRatio());
-		//
-		//m_scene->Update(timer);
+		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
+		m_scene->SetAspectRatio(vp->GetAspectRatio());
+		
+		m_scene->Update(timer);
 	}
 	void OnRender() override
 	{
-//		auto context = m_deviceResources->D3DDeviceContext();
-//		auto device = m_deviceResources->D3DDevice();
-//
-//		// bind render target
-//		ID3D11RenderTargetView* const targets[1] = { m_deviceResources->BackBufferRenderTargetView() };
-//		GFX_THROW_INFO_ONLY(context->OMSetRenderTargets(1u, targets, m_deviceResources->DepthStencilView()))
-//
-//			float c = 92.0f / 256;
-//		float background[4] = { c, 0.0f, c, 1.0f };
-//		GFX_THROW_INFO_ONLY(context->ClearRenderTargetView(m_deviceResources->BackBufferRenderTargetView(), background))
-//			GFX_THROW_INFO_ONLY(context->ClearDepthStencilView(m_deviceResources->DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0))
-//
-//			// configure viewport
-//			auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
-//		GFX_THROW_INFO_ONLY(context->RSSetViewports(1, &vp->GetViewport()))
-//
-//			m_scene->Render();
+		auto context = m_deviceResources->D3DDeviceContext();
+		auto device = m_deviceResources->D3DDevice();
+
+		// bind render target
+		ID3D11RenderTargetView* const targets[1] = { m_deviceResources->BackBufferRenderTargetView() };
+		GFX_THROW_INFO_ONLY(context->OMSetRenderTargets(1u, targets, m_deviceResources->DepthStencilView()))
+
+			float c = 92.0f / 256;
+		float background[4] = { c, 0.0f, c, 1.0f };
+		GFX_THROW_INFO_ONLY(context->ClearRenderTargetView(m_deviceResources->BackBufferRenderTargetView(), background))
+			GFX_THROW_INFO_ONLY(context->ClearDepthStencilView(m_deviceResources->DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0))
+
+			// configure viewport
+			auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
+		GFX_THROW_INFO_ONLY(context->RSSetViewports(1, &vp->GetViewport()))
+
+			m_scene->Render();
 	}
 
 private:

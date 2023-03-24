@@ -121,6 +121,9 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -141,9 +144,20 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <FxCompile>
+      <ObjectFileOutput>$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\MoleculesApp.cpp" />
+    <ClCompile Include="src\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Rendering\ConstantBufferArray.cpp" />
+    <ClCompile Include="src\Rendering\MeshSet.cpp" />
+    <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
+    <ClCompile Include="src\Rendering\RenderObject.cpp" />
+    <ClCompile Include="src\Rendering\Scene.cpp" />
+    <ClCompile Include="src\Rendering\Waves.cpp" />
+    <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\json\main.json" />
@@ -152,6 +166,42 @@
     <ProjectReference Include="..\Evergreen\Evergreen.vcxproj">
       <Project>{077a0ba5-74ae-4c93-aa09-3cbeb6203156}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Rendering\Camera.h" />
+    <ClInclude Include="src\Rendering\ConstantBuffer.h" />
+    <ClInclude Include="src\Rendering\ConstantBufferArray.h" />
+    <ClInclude Include="src\Rendering\MeshSet.h" />
+    <ClInclude Include="src\Rendering\PipelineConfig.h" />
+    <ClInclude Include="src\Rendering\RenderObject.h" />
+    <ClInclude Include="src\Rendering\Scene.h" />
+    <ClInclude Include="src\Rendering\Structs.h" />
+    <ClInclude Include="src\Rendering\Waves.h" />
+    <ClInclude Include="src\Utils\MathHelper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\Shaders\PixelShader.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+    </FxCompile>
+    <None Include="src\Shaders\Lighting.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="src\Shaders\1_PixelShader.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <FileType>Document</FileType>
+    </None>
+    <FxCompile Include="src\Shaders\VertexShader.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
