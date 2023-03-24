@@ -32,7 +32,8 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_mouseMButtonDown(false),
 	m_mouseRButtonDown(false),
 	m_mouseX1ButtonDown(false),
-	m_mouseX2ButtonDown(false)
+	m_mouseX2ButtonDown(false),
+	m_mouseIsOverAPane(false)
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
@@ -1214,13 +1215,20 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 	// If no mouse buttons are in use, we need to first test if the mouse is now over a pane
 	// Because even if the mouseHandlingControl is not nullptr, we might be over a pane now that resides on top
 	// of the mouseHandlingControl
-	if (m_panes.size() > 0 && !(m_mouseLButtonDown || m_mouseMButtonDown || m_mouseRButtonDown || m_mouseX1ButtonDown || m_mouseX2ButtonDown))
+	// NOTE: We only want to perform this check if the mouse was not previously over a Pane. If we don't do this
+	//       check then what happens is that EVERY mouse move event that is over an active Pane will be handled this
+	//       way and there is no concept of sending the event to the 'mouseHandlingControl' first (which can cause
+	//       visual bugs when the background of controls are not updated, etc.)
+	if (!m_mouseIsOverAPane && m_panes.size() > 0 && !(m_mouseLButtonDown || m_mouseMButtonDown || m_mouseRButtonDown || m_mouseX1ButtonDown || m_mouseX2ButtonDown))
 	{
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
 			if (!e.Handled())
 				pane->OnMouseMove(e);
+
+			if (e.Handled())
+				m_mouseIsOverAPane = true;
 
 			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
 			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
@@ -1238,6 +1246,8 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 
 		if (!e.Handled())
 		{
+			m_mouseIsOverAPane = false;
+
 			if (m_mouseHandlingControl != nullptr)
 			{
 				m_mouseHandlingControl->OnMouseMove(e);
@@ -1272,6 +1282,8 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 		{
 			if (!e.Handled())
 				pane->OnMouseMove(e);
+			else
+				m_mouseIsOverAPane = true;
 
 			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
 			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
@@ -1289,7 +1301,10 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 	}
 
 	if (!e.Handled())
+	{
+		m_mouseIsOverAPane = false;
 		m_rootLayout->OnMouseMove(e);
+	}
 
 	m_mouseHandlingControl = e.HandlingControl();
 	m_mouseHandlingLayout = e.HandlingLayout();

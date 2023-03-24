@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Evergreen", "Evergreen\Ever
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.vcxproj", "{5E2094B2-3536-41F5-B045-606A3189D5A8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Molecules", "Molecules\Molecules.vcxproj", "{1E24E751-0D97-491F-BC07-E1C4AB1BB13F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -21,6 +23,10 @@ Global
 		{5E2094B2-3536-41F5-B045-606A3189D5A8}.Debug|x64.Build.0 = Debug|x64
 		{5E2094B2-3536-41F5-B045-606A3189D5A8}.Release|x64.ActiveCfg = Release|x64
 		{5E2094B2-3536-41F5-B045-606A3189D5A8}.Release|x64.Build.0 = Release|x64
+		{1E24E751-0D97-491F-BC07-E1C4AB1BB13F}.Debug|x64.ActiveCfg = Debug|x64
+		{1E24E751-0D97-491F-BC07-E1C4AB1BB13F}.Debug|x64.Build.0 = Debug|x64
+		{1E24E751-0D97-491F-BC07-E1C4AB1BB13F}.Release|x64.ActiveCfg = Release|x64
+		{1E24E751-0D97-491F-BC07-E1C4AB1BB13F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

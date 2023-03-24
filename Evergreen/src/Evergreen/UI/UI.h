@@ -76,6 +76,9 @@ private:
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 
+	// Keep track of whether or not the mouse is actively over a Pane
+	bool m_mouseIsOverAPane;
+
 	// Controls/Layouts that have handled key/mouse events
 	Control* m_mouseHandlingControl;
 	Layout*  m_mouseHandlingLayout;

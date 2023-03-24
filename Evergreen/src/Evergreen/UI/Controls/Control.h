@@ -33,7 +33,11 @@ public:
 	void operator=(const Control& control) noexcept = delete;
 	virtual ~Control() noexcept {}
 
-	void Update(const Timer& timer) { OnUpdate(timer); m_CustomOnUpdateCallback(this, timer); }
+	void Update(const Timer& timer) 
+	{ 
+		OnUpdate(timer); 
+		m_CustomOnUpdateCallback(this, timer); 
+	}
 protected:
 	virtual void OnUpdate(const Timer& timer) {}
 public:

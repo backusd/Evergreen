@@ -118,7 +118,11 @@ void ControlLoader::ParseOnUpdateCallback(Control* control, json& data)
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnUpdate"].is_string(), "Control with name: '{}'. 'OnUpdate' value must be a string. Invalid data: {}", m_name, data.dump(4));
 		std::string onUpdateValue = data["OnUpdate"].get<std::string>();
 		JSON_LOADER_EXCEPTION_IF_FALSE(onUpdateValue.size() > 0, "Control with name: '{}'. 'OnUpdate' value cannot be an empty string. Invalid data: {}", m_name, data.dump(4));
-		control->SetOnUpdateCallback(JSONLoaders::GetOnUpdateCallback(onUpdateValue));
+		
+		auto cb = JSONLoaders::GetOnUpdateCallback(onUpdateValue);
+		JSON_LOADER_EXCEPTION_IF_FALSE(cb != nullptr, "Control with name: '{}'. Invalid 'OnUpdate' value '{}' - JSONLoaders::GetOnUpdateCallback() returned nullptr. Invalid data: {}", m_name, onUpdateValue, data.dump(4));
+
+		control->SetOnUpdateCallback(cb);
 	}
 }
 
