@@ -6,7 +6,7 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
-RenderObject::RenderObject(const XMFLOAT3& scaling, float* translation) :
+RenderObject::RenderObject(const XMFLOAT3& scaling, XMFLOAT3* translation) :
 	m_scaling(scaling),
 	m_translation(translation)
 {}
@@ -17,7 +17,7 @@ DirectX::XMFLOAT4X4 RenderObject::WorldMatrix() const noexcept
 	XMStoreFloat4x4(&world,
 		XMMatrixTranspose(
 			XMMatrixScaling(m_scaling.x, m_scaling.y, m_scaling.z) *
-			XMMatrixTranslation(m_translation[0], m_translation[1], m_translation[2])
+			XMMatrixTranslation(m_translation->x, m_translation->y, m_translation->z)
 		)
 	);
 	return world;
@@ -30,7 +30,7 @@ RenderObjectList::RenderObjectList(std::shared_ptr<Evergreen::DeviceResources> d
 	m_mesh(mesh)
 {
 }
-void RenderObjectList::AddRenderObject(const DirectX::XMFLOAT3& scaling, float* translation)
+void RenderObjectList::AddRenderObject(const DirectX::XMFLOAT3& scaling, XMFLOAT3* translation)
 {
 	m_renderObjects.emplace_back(scaling, translation);
 	m_worldMatrices.push_back(m_renderObjects.back().WorldMatrix());
@@ -73,10 +73,10 @@ void RenderObjectList::Render() const
 	bd.Usage = D3D11_USAGE_DEFAULT;
 	bd.CPUAccessFlags = 0u;
 	bd.MiscFlags = 0u;
-	bd.ByteWidth = static_cast<UINT>(2 * sizeof(unsigned int)); // Size of buffer in bytes
+	bd.ByteWidth = static_cast<UINT>(3 * sizeof(unsigned int)); // Size of buffer in bytes
 	bd.StructureByteStride = sizeof(unsigned int);
 
-	unsigned int materialIndices[2] = { 0u, 1u };
+	unsigned int materialIndices[3] = { 0u, 1u, 1u };
 
 	D3D11_SUBRESOURCE_DATA sd = {};
 	sd.pSysMem = materialIndices;

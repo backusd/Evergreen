@@ -7,6 +7,7 @@
 #include "RenderObjectList.h"
 #include "MeshSet.h"
 #include "Structs.h"
+#include "../Simulation/Simulation.h"
 
 
 class Scene
@@ -14,13 +15,14 @@ class Scene
 	using PipelineConfigAndObjectList = std::tuple<std::unique_ptr<PipelineConfig>, std::unique_ptr<MeshSet>, std::vector<RenderObjectList>>;
 
 public:
-	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources);
+	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources, Simulation* simulation);
 	void Update(const Evergreen::Timer& timer);
 	void Render();
 	void SetAspectRatio(float ratio) noexcept { m_aspectRatio = ratio; }
 
 private:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
+	Simulation* m_simulation;
 
 	std::vector<PipelineConfigAndObjectList> m_configsAndObjectLists;
 
@@ -34,8 +36,4 @@ private:
 
 	std::vector<Camera> m_cameras;
 	unsigned int m_currentCamera;
-
-
-	float m_position1[3];
-	float m_position2[3];
 };

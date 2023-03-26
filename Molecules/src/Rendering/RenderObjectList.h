@@ -10,13 +10,13 @@
 class RenderObject
 {
 public:
-	RenderObject(const DirectX::XMFLOAT3& scaling, float* translation);
+	RenderObject(const DirectX::XMFLOAT3& scaling, DirectX::XMFLOAT3* translation);
 	
 	DirectX::XMFLOAT4X4 WorldMatrix() const noexcept;
 
 private:
 	DirectX::XMFLOAT3 m_scaling;
-	float* m_translation; // Hold a pointer to the translation data which should be managed elsewhere
+	DirectX::XMFLOAT3* m_translation; // Hold a pointer to the translation data which should be managed elsewhere
 };
 
 class RenderObjectList
@@ -28,7 +28,7 @@ public:
 	void Update(const Evergreen::Timer& timer);
 	void Render() const;
 
-	void AddRenderObject(const DirectX::XMFLOAT3& scaling, float* translation);
+	void AddRenderObject(const DirectX::XMFLOAT3& scaling, DirectX::XMFLOAT3* translation);
 
 private:
 

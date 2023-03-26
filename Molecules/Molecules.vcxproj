@@ -156,6 +156,7 @@
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
     <ClCompile Include="src\Rendering\RenderObjectList.cpp" />
     <ClCompile Include="src\Rendering\Scene.cpp" />
+    <ClCompile Include="src\Simulation\Simulation.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -175,6 +176,7 @@
     <ClInclude Include="src\Rendering\RenderObjectList.h" />
     <ClInclude Include="src\Rendering\Scene.h" />
     <ClInclude Include="src\Rendering\Structs.h" />
+    <ClInclude Include="src\Simulation\Simulation.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />
   </ItemGroup>
   <ItemGroup>

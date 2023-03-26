@@ -1,6 +1,7 @@
 #include <Evergreen.h>
 #include <Evergreen/EntryPoint.h>
 #include "Rendering/Scene.h"
+#include "Simulation/Simulation.h"
 
 using namespace Evergreen;
 
@@ -9,11 +10,21 @@ class MoleculesApp : public Evergreen::Application
 public:
 	MoleculesApp()
 	{
-		m_scene = std::make_unique<Scene>(m_deviceResources);
-
 		SetCallbacks();
 		m_ui->SetUIRoot("src/json/");
 		m_ui->LoadUI("main.json");
+
+		// Initialize the Simulation
+		m_simulation = std::make_unique<Simulation>();
+		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f });
+		m_simulation->Add(Element::Helium, { 2.0f, 0.0f, 0.0f }, { 0.0f, 0.5f, 0.0f });
+		m_simulation->Add(Element::Helium, { -2.0f, 0.0f, 0.0f }, { 0.0f, -0.5f, 0.0f });
+
+		// Create the scene
+		m_scene = std::make_unique<Scene>(m_deviceResources, m_simulation.get());
+
+		// Start the simulation
+		m_simulation->Play();
 	}
 	MoleculesApp(const MoleculesApp&) = delete;
 	void operator=(const MoleculesApp&) = delete;
@@ -23,9 +34,12 @@ public:
 
 protected:
 	std::unique_ptr<Scene> m_scene;
+	std::unique_ptr<Simulation> m_simulation;
 
 	void OnUpdate(const Timer& timer) override
 	{
+		m_simulation->Update(timer);
+
 		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
 		m_scene->SetAspectRatio(vp->GetAspectRatio());
 		

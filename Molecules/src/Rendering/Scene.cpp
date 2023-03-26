@@ -3,8 +3,9 @@
 using namespace Evergreen;
 using namespace DirectX;
 
-Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
+Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simulation) :
 	m_deviceResources(deviceResources),
+	m_simulation(simulation),
 	m_currentCamera(0u),
 	m_aspectRatio(1.0f)
 {
@@ -54,17 +55,23 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
 	ms->Finalize();
 
-	m_position1[0] = 0.0f;
-	m_position1[1] = 0.0f;
-	m_position1[2] = 0.0f;
-	m_position2[0] = 2.5f;
-	m_position2[1] = 0.0f;
-	m_position2[2] = 0.0f;
+
+	std::vector<DirectX::XMFLOAT3>& positions = m_simulation->Positions();
+	std::vector<DirectX::XMFLOAT3>& velocities = m_simulation->Velocities();
+	std::vector<Element>& elementTypes = m_simulation->ElementTypes();
 
 	std::vector<RenderObjectList> objectLists;
 	objectLists.emplace_back(deviceResources, mi);
-	objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, m_position1);
-	objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, m_position2);
+
+	float r;
+	for (unsigned int iii = 0; iii < positions.size(); ++iii)
+	{
+		r = AtomicRadii[static_cast<int>(elementTypes[iii])];
+		objectLists.back().AddRenderObject({ r, r, r }, &positions.data()[iii]);
+	}
+
+	//objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, &m_position1);
+	//objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, &m_position2);
 
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objectLists));
 }
