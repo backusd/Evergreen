@@ -76,5 +76,7 @@
   <ItemGroup>
     <FxCompile Include="src\Shaders\VertexShader.hlsl" />
     <FxCompile Include="src\Shaders\PixelShader.hlsl" />
+    <FxCompile Include="src\Shaders\VertexShaderInstanced.hlsl" />
+    <FxCompile Include="src\Shaders\PixelShaderInstanced.hlsl" />
   </ItemGroup>
 </Project>

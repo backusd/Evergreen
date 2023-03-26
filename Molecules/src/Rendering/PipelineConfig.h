@@ -16,6 +16,11 @@ public:
 	void ApplyConfig() const;
 
 private:
+	void Initialize(std::shared_ptr<ConstantBuffer> vsPassConstants,
+		std::shared_ptr<ConstantBuffer> psPassConstants);
+	void InitializeInstanced(std::shared_ptr<ConstantBuffer> vsPassConstants,
+		std::shared_ptr<ConstantBuffer> psPassConstants);
+
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 
 	D3D11_PRIMITIVE_TOPOLOGY						m_topology;

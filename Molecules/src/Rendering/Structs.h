@@ -9,9 +9,9 @@ struct Material
     // Material constant buffer data used for shading.
     DirectX::XMFLOAT4 DiffuseAlbedo = { 1.0f, 1.0f, 1.0f, 1.0f };
     DirectX::XMFLOAT3 FresnelR0 = { 0.01f, 0.01f, 0.01f };
-    float Roughness = .25f;
+    float Shininess = .75f;
 
-    DirectX::XMFLOAT4X4 MatTransform = MathHelper::Identity4x4();
+    //DirectX::XMFLOAT4X4 MatTransform = MathHelper::Identity4x4();
 };
 
 struct Light
@@ -26,11 +26,11 @@ struct Light
 
 #define MaxLights 16
 
-struct Vertex
-{
-	DirectX::XMFLOAT3 Pos;
-    DirectX::XMFLOAT3 Normal;
-};
+//struct Vertex
+//{
+//	DirectX::XMFLOAT3 Pos;
+//    DirectX::XMFLOAT3 Normal;
+//};
 
 struct ObjectConstants
 {
@@ -63,3 +63,24 @@ struct PassConstants
     Light Lights[MaxLights];
 };
 
+// ------------------------------------------------------------------------
+
+#define MAX_INSTANCES 100
+#define NUM_MATERIALS 2
+
+struct Vertex
+{
+    DirectX::XMFLOAT3 Pos;
+    UINT MaterialIndex;
+    DirectX::XMFLOAT3 Normal;
+};
+
+struct WorldMatrixInstances
+{
+    DirectX::XMFLOAT4X4 worlds[MAX_INSTANCES];
+};
+
+struct MaterialsArray
+{
+    Material materials[NUM_MATERIALS];
+};
