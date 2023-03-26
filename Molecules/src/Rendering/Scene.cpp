@@ -6,21 +6,38 @@ using namespace DirectX;
 Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	m_deviceResources(deviceResources),
 	m_currentCamera(0u),
-	m_vsPassConstantsBuffer(nullptr),
 	m_aspectRatio(1.0f)
 {
 	m_cameras.emplace_back();
 
 	// Create the Pass Constants buffer so we can share this will ALL pipeline configurations
-	m_vsPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
-	m_vsPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+	std::shared_ptr<ConstantBuffer> vsPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	vsPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	m_vsPerPassConstantsBuffers.push_back(vsPassConstantsBuffer);
 	
-	m_psPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
-	m_psPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+	std::shared_ptr<ConstantBuffer> psPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
+	psPassConstantsBuffer->CreateBuffer<PassConstants>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	m_psPerPassConstantsBuffers.push_back(psPassConstantsBuffer);
+
+	// Create the buffer with all materials
+	std::shared_ptr<ConstantBuffer> psMaterialsArrayBuffer = std::make_shared<ConstantBuffer>(m_deviceResources);
+	MaterialsArray materials;
+	materials.materials[0].DiffuseAlbedo = XMFLOAT4(0.2f, 0.6f, 0.2f, 1.0f);
+	materials.materials[0].FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
+	materials.materials[0].Shininess = 0.875;
+	materials.materials[1].DiffuseAlbedo = XMFLOAT4(0.8f, 0.0f, 0.0f, 1.0f);
+	materials.materials[1].FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
+	materials.materials[1].Shininess = 0.875f;
+	psMaterialsArrayBuffer->CreateBuffer<MaterialsArray>(D3D11_USAGE_DEFAULT, 0u, 0u, 0u, &materials);
+
+	m_psPerPassConstantsBuffers.push_back(psMaterialsArrayBuffer);
 
 	// Pipeline Configuration 
-	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPassConstantsBuffer, m_psPassConstantsBuffer);
+	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPerPassConstantsBuffers, m_psPerPassConstantsBuffers);
 
+	// Mesh Set
 	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
 	ms->SetVertexConversionFunction([this](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
 		{
@@ -37,12 +54,19 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
 	ms->Finalize();
 
-	std::vector<RenderObject> objects;
-	objects.emplace_back(deviceResources, mi);
-	objects.back().AddObject({ 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f });
-	objects.back().AddObject({ 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f });
+	m_position1[0] = 0.0f;
+	m_position1[1] = 0.0f;
+	m_position1[2] = 0.0f;
+	m_position2[0] = 2.5f;
+	m_position2[1] = 0.0f;
+	m_position2[2] = 0.0f;
 
-	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objects));
+	std::vector<RenderObjectList> objectLists;
+	objectLists.emplace_back(deviceResources, mi);
+	objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, m_position1);
+	objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, m_position2);
+
+	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objectLists));
 }
 
 void Scene::Update(const Timer& timer)
@@ -80,7 +104,7 @@ void Scene::Update(const Timer& timer)
 	m_passConstants.AmbientLight = { 0.25f, 0.25f, 0.35f, 1.0f };
 
 	XMVECTOR lightDir = -MathHelper::SphericalToCartesian(1.0f, 1.25f * XM_PI, XM_PIDIV4);
-	XMStoreFloat3(&m_passConstants.Lights[0].Direction, lightDir);
+	DirectX::XMStoreFloat3(&m_passConstants.Lights[0].Direction, lightDir);
 	m_passConstants.Lights[0].Strength = { 1.0f, 1.0f, 0.9f };
 
 	// Update the constant buffer with the new matrix values
@@ -88,24 +112,24 @@ void Scene::Update(const Timer& timer)
 	D3D11_MAPPED_SUBRESOURCE ms;
 	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
-	GFX_THROW_INFO(context->Map(m_vsPassConstantsBuffer->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+	GFX_THROW_INFO(context->Map(m_vsPerPassConstantsBuffers[0]->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
 	memcpy(ms.pData, &m_passConstants, sizeof(PassConstants));
-	GFX_THROW_INFO_ONLY(context->Unmap(m_vsPassConstantsBuffer->GetRawBufferPointer(), 0));
+	GFX_THROW_INFO_ONLY(context->Unmap(m_vsPerPassConstantsBuffers[0]->GetRawBufferPointer(), 0));
 
 	// PS
 	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
-	GFX_THROW_INFO(context->Map(m_psPassConstantsBuffer->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+	GFX_THROW_INFO(context->Map(m_psPerPassConstantsBuffers[0]->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
 	memcpy(ms.pData, &m_passConstants, sizeof(PassConstants));
-	GFX_THROW_INFO_ONLY(context->Unmap(m_psPassConstantsBuffer->GetRawBufferPointer(), 0));
+	GFX_THROW_INFO_ONLY(context->Unmap(m_psPerPassConstantsBuffers[0]->GetRawBufferPointer(), 0));
 
 
-	// Update all render objects
+	// Update all render object lists
 	for (auto& configAndObjectList : m_configsAndObjectLists)
 	{
-		std::vector<RenderObject>& objects = std::get<2>(configAndObjectList);
-		for (unsigned int iii = 0; iii < objects.size(); ++iii)
+		std::vector<RenderObjectList>& objectLists = std::get<2>(configAndObjectList);
+		for (unsigned int iii = 0; iii < objectLists.size(); ++iii)
 		{
-			objects[iii].Update(timer);
+			objectLists[iii].Update(timer);
 		}
 	}
 }
@@ -125,23 +149,10 @@ void Scene::Render()
 		std::unique_ptr<MeshSet>& ms = std::get<1>(configAndObjectList);
 		ms->BindToIA();
 
-		std::vector<RenderObject>& objects = std::get<2>(configAndObjectList);
-		for (unsigned int iii = 0; iii < objects.size(); ++iii)
+		std::vector<RenderObjectList>& objectLists = std::get<2>(configAndObjectList);
+		for (unsigned int iii = 0; iii < objectLists.size(); ++iii)
 		{
-			objects[iii].Render();
+			objectLists[iii].Render();
 		}
 	}
 }
-
-//DirectX::XMFLOAT3 Scene::GetHillNormal(float x, float z) const
-//{
-//	// n = (-df/dx, 1, -df/dz)
-//	XMFLOAT3 n(
-//		-0.03f * z * cosf(0.1f * x) - 0.3f * cosf(0.1f * z),
-//		1.0f,
-//		-0.3f * sinf(0.1f * x) + 0.03f * x * sinf(0.1f * z));
-//
-//	XMVECTOR unitNormal = DirectX::XMVector3Normalize(XMLoadFloat3(&n));
-//	DirectX::XMStoreFloat3(&n, unitNormal);
-//	return n;
-//}

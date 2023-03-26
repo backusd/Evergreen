@@ -7,9 +7,9 @@ using namespace DirectX;
 
 
 
-PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, 
-	std::shared_ptr<ConstantBuffer> vsPassConstants,
-	std::shared_ptr<ConstantBuffer> psPassConstants) :
+PipelineConfig::PipelineConfig(std::shared_ptr<DeviceResources> deviceResources,
+	const std::vector<std::shared_ptr<ConstantBuffer>>& vsPerPassConstantBuffers,
+	const std::vector<std::shared_ptr<ConstantBuffer>>& psPerPassConstantBuffers) :
 		m_deviceResources(deviceResources),
 		m_topology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST),
 		m_blendFactor{1.0f, 1.0f, 1.0f, 1.0f},
@@ -19,7 +19,7 @@ PipelineConfig::PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> devic
 		m_psConstantBuffers(deviceResources)
 {
 	//Initialize(vsPassConstants, psPassConstants);
-	InitializeInstanced(vsPassConstants, psPassConstants);
+	InitializeInstanced(vsPerPassConstantBuffers, psPerPassConstantBuffers);
 
 }
 
@@ -114,7 +114,9 @@ void PipelineConfig::Initialize(std::shared_ptr<ConstantBuffer> vsPassConstants,
 	m_psConstantBuffers.AddBuffer(psPassConstants);	 // Buffer at slot 0
 	m_psConstantBuffers.AddBuffer(psMaterialBuffer); // Buffer at slot 1
 }
-void PipelineConfig::InitializeInstanced(std::shared_ptr<ConstantBuffer> vsPassConstants, std::shared_ptr<ConstantBuffer> psPassConstants)
+void PipelineConfig::InitializeInstanced(
+	const std::vector<std::shared_ptr<ConstantBuffer>>& vsPerPassConstantBuffers,
+	const std::vector<std::shared_ptr<ConstantBuffer>>& psPerPassConstantBuffers)
 {
 	auto device = m_deviceResources->D3DDevice();
 
@@ -131,7 +133,6 @@ void PipelineConfig::InitializeInstanced(std::shared_ptr<ConstantBuffer> vsPassC
 	const D3D11_INPUT_ELEMENT_DESC ied[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,                            0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-		//{ "MATERIAL_INDEX", 0, DXGI_FORMAT_R32_UINT, 0,  D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		// Instance Data ---------------------------------------------
 		{ "MATERIAL_INDEX", 0, DXGI_FORMAT_R32_UINT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1}
@@ -194,27 +195,16 @@ void PipelineConfig::InitializeInstanced(std::shared_ptr<ConstantBuffer> vsPassC
 	std::shared_ptr<ConstantBuffer> vsWorldMatrixInstancesBuffer = std::make_shared<ConstantBuffer>(m_deviceResources);
 	vsWorldMatrixInstancesBuffer->CreateBuffer<WorldMatrixInstances>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
 
-	m_vsConstantBuffers.AddBuffer(vsPassConstants);					// Buffer at slot 0
-	m_vsConstantBuffers.AddBuffer(vsWorldMatrixInstancesBuffer);	// Buffer at slot 1
+	// Add the Per Pass Buffers first
+	for (auto buffer : vsPerPassConstantBuffers)
+		m_vsConstantBuffers.AddBuffer(buffer);
+	
+	m_vsConstantBuffers.AddBuffer(vsWorldMatrixInstancesBuffer);
 
 	// Populate the PS Constant Buffer Array
-	std::shared_ptr<ConstantBuffer> psMaterialsArrayBuffer = std::make_shared<ConstantBuffer>(m_deviceResources);
-
-	MaterialsArray materials;
-	materials.materials[0].DiffuseAlbedo = XMFLOAT4(0.2f, 0.6f, 0.2f, 1.0f);
-	materials.materials[0].FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
-	materials.materials[0].Shininess = 0.875;
-	materials.materials[1].DiffuseAlbedo = XMFLOAT4(0.8f, 0.0f, 0.0f, 1.0f);
-	materials.materials[1].FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
-	materials.materials[1].Shininess = 0.875f;
-
-	psMaterialsArrayBuffer->CreateBuffer<MaterialsArray>(D3D11_USAGE_DEFAULT, 0u, 0u, 0u, &materials);
-
-
-
-
-	m_psConstantBuffers.AddBuffer(psPassConstants);			// Buffer at slot 0
-	m_psConstantBuffers.AddBuffer(psMaterialsArrayBuffer);	// Buffer at slot 1
+	// Add the Per Pass Buffers first
+	for (auto buffer : psPerPassConstantBuffers)
+		m_psConstantBuffers.AddBuffer(buffer);
 }
 
 void PipelineConfig::ApplyConfig() const

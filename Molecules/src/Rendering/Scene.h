@@ -4,14 +4,14 @@
 #include "PipelineConfig.h"
 #include "../Utils/MathHelper.h"
 #include "Camera.h"
-#include "RenderObject.h"
+#include "RenderObjectList.h"
 #include "MeshSet.h"
 #include "Structs.h"
 
 
 class Scene
 {
-	using PipelineConfigAndObjectList = std::tuple<std::unique_ptr<PipelineConfig>, std::unique_ptr<MeshSet>, std::vector<RenderObject>>;
+	using PipelineConfigAndObjectList = std::tuple<std::unique_ptr<PipelineConfig>, std::unique_ptr<MeshSet>, std::vector<RenderObjectList>>;
 
 public:
 	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources);
@@ -27,11 +27,15 @@ private:
 	// Pass Constants that will be updated/bound only once per pass
 	// NOTE: the ConstantBuffer is a shared_ptr so that it can be shared with EVERY PipelineConfig
 	PassConstants m_passConstants;
-	std::shared_ptr<ConstantBuffer> m_vsPassConstantsBuffer;
-	std::shared_ptr<ConstantBuffer> m_psPassConstantsBuffer;
+	std::vector<std::shared_ptr<ConstantBuffer>> m_vsPerPassConstantsBuffers;
+	std::vector<std::shared_ptr<ConstantBuffer>> m_psPerPassConstantsBuffers;
 
 	float m_aspectRatio;
 
 	std::vector<Camera> m_cameras;
 	unsigned int m_currentCamera;
+
+
+	float m_position1[3];
+	float m_position2[3];
 };

@@ -154,7 +154,7 @@
     <ClCompile Include="src\Rendering\ConstantBufferArray.cpp" />
     <ClCompile Include="src\Rendering\MeshSet.cpp" />
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
-    <ClCompile Include="src\Rendering\RenderObject.cpp" />
+    <ClCompile Include="src\Rendering\RenderObjectList.cpp" />
     <ClCompile Include="src\Rendering\Scene.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
@@ -172,7 +172,7 @@
     <ClInclude Include="src\Rendering\ConstantBufferArray.h" />
     <ClInclude Include="src\Rendering\MeshSet.h" />
     <ClInclude Include="src\Rendering\PipelineConfig.h" />
-    <ClInclude Include="src\Rendering\RenderObject.h" />
+    <ClInclude Include="src\Rendering\RenderObjectList.h" />
     <ClInclude Include="src\Rendering\Scene.h" />
     <ClInclude Include="src\Rendering\Structs.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />

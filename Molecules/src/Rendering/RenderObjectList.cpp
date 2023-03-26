@@ -1,4 +1,4 @@
-#include "RenderObject.h"
+#include "RenderObjectList.h"
 #include "Structs.h"
 
 using namespace Evergreen;
@@ -6,29 +6,48 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
-RenderObject::RenderObject(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const MeshInstance& mesh) :
-	m_deviceResources(deviceResources),
-	m_mesh(mesh)
-{
-}
+RenderObject::RenderObject(const XMFLOAT3& scaling, float* translation) :
+	m_scaling(scaling),
+	m_translation(translation)
+{}
 
-void RenderObject::AddObject(const DirectX::XMFLOAT3& scaling, const DirectX::XMFLOAT3& translation)
+DirectX::XMFLOAT4X4 RenderObject::WorldMatrix() const noexcept
 {
 	DirectX::XMFLOAT4X4 world;
 	XMStoreFloat4x4(&world,
 		XMMatrixTranspose(
-			XMMatrixScaling(scaling.x, scaling.y, scaling.z) *
-			XMMatrixTranslation(translation.x, translation.y, translation.z)
+			XMMatrixScaling(m_scaling.x, m_scaling.y, m_scaling.z) *
+			XMMatrixTranslation(m_translation[0], m_translation[1], m_translation[2])
 		)
 	);
-	m_worldMatrices.push_back(world);
+	return world;
 }
 
-void RenderObject::Update(const Timer& timer)
+// -----------------------------------------------------------------------------------
+
+RenderObjectList::RenderObjectList(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const MeshInstance& mesh) :
+	m_deviceResources(deviceResources),
+	m_mesh(mesh)
 {
 }
+void RenderObjectList::AddRenderObject(const DirectX::XMFLOAT3& scaling, float* translation)
+{
+	m_renderObjects.emplace_back(scaling, translation);
+	m_worldMatrices.push_back(m_renderObjects.back().WorldMatrix());
+}
 
-void RenderObject::Render() const
+void RenderObjectList::Update(const Timer& timer)
+{
+	EG_CORE_ASSERT(m_worldMatrices.size() == m_renderObjects.size(), "Number of world matrices and render objects should match");
+
+	// Re-compute all world matrices every frame because their positions will be changing
+	for (unsigned int iii = 0; iii < m_renderObjects.size(); ++iii)
+	{
+		m_worldMatrices[iii] = m_renderObjects[iii].WorldMatrix();
+	}
+}
+
+void RenderObjectList::Render() const
 {
 	EG_CORE_ASSERT(m_worldMatrices.size() < MAX_INSTANCES, "too many objects");
 
@@ -77,6 +96,6 @@ void RenderObject::Render() const
 	//GFX_THROW_INFO_ONLY(context->DrawIndexed(m_mesh.IndexCount, m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation));
 
 	GFX_THROW_INFO_ONLY(
-		context->DrawIndexedInstanced(m_mesh.IndexCount, m_worldMatrices.size(), m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation, 0u);
+		context->DrawIndexedInstanced(m_mesh.IndexCount, static_cast<UINT>(m_worldMatrices.size()), m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation, 0u);
 	);
 }

@@ -21,7 +21,7 @@
     <ClCompile Include="src\Rendering\Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Rendering\RenderObject.cpp">
+    <ClCompile Include="src\Rendering\RenderObjectList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\PipelineConfig.cpp">
@@ -51,7 +51,7 @@
     <ClInclude Include="src\Rendering\Scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Rendering\RenderObject.h">
+    <ClInclude Include="src\Rendering\RenderObjectList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\PipelineConfig.h">

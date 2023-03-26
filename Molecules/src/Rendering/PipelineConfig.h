@@ -11,15 +11,16 @@ class PipelineConfig
 {
 public:
 	PipelineConfig(std::shared_ptr<Evergreen::DeviceResources> deviceResources, 
-		std::shared_ptr<ConstantBuffer> vsPassConstants,
-		std::shared_ptr<ConstantBuffer> psPassConstants);
+		const std::vector<std::shared_ptr<ConstantBuffer>>& vsPerPassConstantBuffers,
+		const std::vector<std::shared_ptr<ConstantBuffer>>& psPerPassConstantBuffers);
 	void ApplyConfig() const;
 
 private:
 	void Initialize(std::shared_ptr<ConstantBuffer> vsPassConstants,
 		std::shared_ptr<ConstantBuffer> psPassConstants);
-	void InitializeInstanced(std::shared_ptr<ConstantBuffer> vsPassConstants,
-		std::shared_ptr<ConstantBuffer> psPassConstants);
+	void InitializeInstanced(
+		const std::vector<std::shared_ptr<ConstantBuffer>>& vsPerPassConstantBuffers,
+		const std::vector<std::shared_ptr<ConstantBuffer>>& psPerPassConstantBuffers);
 
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 
