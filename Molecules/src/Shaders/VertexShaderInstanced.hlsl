@@ -42,25 +42,21 @@ cbuffer cbPass : register(b0)
     Light gLights[MaxLights];
 };
 
-//cbuffer cbMaterial : register(b1)
-//{
-//    float4 gDiffuseAlbedo;
-//    float3 gFresnelR0;
-//    float gRoughness;
-//    float4x4 gMatTransform;
-//};
-
 cbuffer cbPerObject : register(b1)
 {
     float4x4 gWorld[MAX_INSTANCES];
 };
 
+//struct VSIn
+//{
+//    float3 PosL : POSITION;
+//    uint MaterialIndex : MATERIAL_INDEX;
+//    float3 NormalL : NORMAL;
+//};
 struct VSIn
 {
     float3 PosL : POSITION;
-    uint MaterialIndex : MATERIAL_INDEX;
     float3 NormalL : NORMAL;
-    //uint InstanceID : SV_InstanceID;
 };
 
 struct VSOut
@@ -72,14 +68,16 @@ struct VSOut
     uint Instance_ID : INSTANCE_ID;
 };
 
-VSOut main(VSIn vin, uint instanceID : SV_InstanceID)
+VSOut main(VSIn vin, uint materialIndex : MATERIAL_INDEX, uint instanceID : SV_InstanceID)
 {
-    VSOut vout = (VSOut) 0.0f;
+    VSOut vout;
     
+    // Look up the world matrix in the list of all world matrices
     float4x4 world = gWorld[instanceID];
     
-    // Just forward the material index
-    vout.MaterialIndex = vin.MaterialIndex;
+    // Just forward the material index and instance ID
+    vout.MaterialIndex = materialIndex;
+    vout.Instance_ID = instanceID;
 	
     // Transform to world space.
     float4 posW = mul(float4(vin.PosL, 1.0f), world);

@@ -9,9 +9,6 @@ using Microsoft::WRL::ComPtr;
 RenderObject::RenderObject(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const MeshInstance& mesh) :
 	m_deviceResources(deviceResources),
 	m_mesh(mesh)
-//	m_material(material),
-//	m_scaling(1.0f, 1.0f, 1.0f),
-//	m_translation(0.0f, 0.0f, 0.0f)
 {
 }
 
@@ -31,31 +28,6 @@ void RenderObject::Update(const Timer& timer)
 {
 }
 
-//void RenderObject::SetScaling(float x, float y, float z) noexcept
-//{
-//	m_scaling = XMFLOAT3(x, y, z);
-//	UpdateWorldMatrix();
-//}
-//void RenderObject::SetScaling(float xyz) noexcept
-//{
-//	m_scaling = XMFLOAT3(xyz, xyz, xyz);
-//	UpdateWorldMatrix();
-//}
-//void RenderObject::SetTranslation(float x, float y, float z) noexcept
-//{
-//	m_translation = XMFLOAT3(x, y, z);
-//	UpdateWorldMatrix();
-//}
-//void RenderObject::UpdateWorldMatrix()
-//{
-//	XMStoreFloat4x4(&m_world, 
-//		XMMatrixTranspose(
-//			XMMatrixScaling(m_scaling.x, m_scaling.y, m_scaling.z) *
-//			XMMatrixTranslation(m_translation.x, m_translation.y, m_translation.z)
-//		)
-//	);
-//}
-
 void RenderObject::Render() const
 {
 	EG_CORE_ASSERT(m_worldMatrices.size() < MAX_INSTANCES, "too many objects");
@@ -73,6 +45,34 @@ void RenderObject::Render() const
 	memcpy(ms.pData, m_worldMatrices.data(), sizeof(XMFLOAT4X4) * m_worldMatrices.size());
 	GFX_THROW_INFO_ONLY(context->Unmap(buffer.Get(), 0));
 
+
+	// --------------------------------------------------------------------------------------------
+	auto device = m_deviceResources->D3DDevice();
+
+	D3D11_BUFFER_DESC bd = {};
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.CPUAccessFlags = 0u;
+	bd.MiscFlags = 0u;
+	bd.ByteWidth = static_cast<UINT>(2 * sizeof(unsigned int)); // Size of buffer in bytes
+	bd.StructureByteStride = sizeof(unsigned int);
+
+	unsigned int materialIndices[2] = { 0u, 1u };
+
+	D3D11_SUBRESOURCE_DATA sd = {};
+	sd.pSysMem = materialIndices;
+
+	Microsoft::WRL::ComPtr<ID3D11Buffer> m_instanceBuffer;
+	GFX_THROW_INFO(device->CreateBuffer(&bd, &sd, m_instanceBuffer.ReleaseAndGetAddressOf()));
+
+
+
+	UINT strides[1] = { sizeof(unsigned int) };
+	UINT offsets[1] = { 0u };
+	ID3D11Buffer* vertInstBuffers[1] = { m_instanceBuffer.Get() };
+	GFX_THROW_INFO_ONLY(context->IASetVertexBuffers(1u, 1u, vertInstBuffers, strides, offsets));
+
+	// ---------------------------------------------------------------------------------------------
 
 	//GFX_THROW_INFO_ONLY(context->DrawIndexed(m_mesh.IndexCount, m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation));
 

@@ -88,9 +88,12 @@ void MeshSet::BindToIA() const
 
 	auto context = m_deviceResources->D3DDeviceContext();
 
-	const UINT stride = sizeof(Vertex);
-	const UINT offset = 0u;
-	GFX_THROW_INFO_ONLY(context->IASetVertexBuffers(0u, 1u, m_vertexBuffer.GetAddressOf(), &stride, &offset));
+	// NOTE: Always bind the vertex buffer to slot #0 on the IA. When doing instanced rendering and a secondary instance
+	//       buffer is necessary, we can call IASetVertexBuffers to specifically set it to a slot other than slot #0
+	UINT stride[1] = { sizeof(Vertex) };
+	UINT offset[1] = { 0u };
+	ID3D11Buffer* vertexBuffer[1] = { m_vertexBuffer.Get() };
+	GFX_THROW_INFO_ONLY(context->IASetVertexBuffers(0u, 1u, vertexBuffer, stride, offset));
 
 	GFX_THROW_INFO_ONLY(context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u));
 }

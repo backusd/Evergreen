@@ -28,7 +28,6 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 			for (unsigned int iii = 0; iii < input.size(); ++iii)
 			{
 				output[iii].Pos = input[iii].Position;
-				output[iii].MaterialIndex = 0u;
 				output[iii].Normal = input[iii].Normal;
 			}
 			return output;
@@ -37,16 +36,6 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources) :
 
 	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
 	ms->Finalize();
-
-//	Material grass;
-//	grass.DiffuseAlbedo = XMFLOAT4(0.2f, 0.6f, 0.2f, 1.0f);
-//	grass.FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
-//	grass.Shininess = 0.875;
-//
-//	Material red;
-//	red.DiffuseAlbedo = XMFLOAT4(0.8f, 0.0f, 0.0f, 1.0f);
-//	red.FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
-//	red.Shininess = 0.875f;
 
 	std::vector<RenderObject> objects;
 	objects.emplace_back(deviceResources, mi);

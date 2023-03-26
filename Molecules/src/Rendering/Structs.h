@@ -71,7 +71,7 @@ struct PassConstants
 struct Vertex
 {
     DirectX::XMFLOAT3 Pos;
-    UINT MaterialIndex;
+    //UINT MaterialIndex;
     DirectX::XMFLOAT3 Normal;
 };
 
