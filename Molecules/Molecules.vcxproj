@@ -156,6 +156,7 @@
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
     <ClCompile Include="src\Rendering\RenderObjectList.cpp" />
     <ClCompile Include="src\Rendering\Scene.cpp" />
+    <ClCompile Include="src\Rendering\Shaders.cpp" />
     <ClCompile Include="src\Simulation\Simulation.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
@@ -171,10 +172,13 @@
     <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Rendering\ConstantBuffer.h" />
     <ClInclude Include="src\Rendering\ConstantBufferArray.h" />
+    <ClInclude Include="src\Rendering\InputLayout.h" />
     <ClInclude Include="src\Rendering\MeshSet.h" />
     <ClInclude Include="src\Rendering\PipelineConfig.h" />
+    <ClInclude Include="src\Rendering\RasterizerState.h" />
     <ClInclude Include="src\Rendering\RenderObjectList.h" />
     <ClInclude Include="src\Rendering\Scene.h" />
+    <ClInclude Include="src\Rendering\Shaders.h" />
     <ClInclude Include="src\Rendering\Structs.h" />
     <ClInclude Include="src\Simulation\Simulation.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />

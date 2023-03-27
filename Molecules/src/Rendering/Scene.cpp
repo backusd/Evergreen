@@ -3,13 +3,20 @@
 using namespace Evergreen;
 using namespace DirectX;
 
-Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simulation) :
+Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simulation, float aspectRatio) :
 	m_deviceResources(deviceResources),
 	m_simulation(simulation),
-	m_currentCamera(0u),
-	m_aspectRatio(1.0f)
+	m_currentCamera(0u)
 {
-	m_cameras.emplace_back();
+	m_cameras.emplace_back(aspectRatio);
+
+	CreateMainPipelineConfig();
+	CreateBoxPipelineConfig();
+
+
+
+
+
 
 	// Create the Pass Constants buffer so we can share this will ALL pipeline configurations
 	std::shared_ptr<ConstantBuffer> vsPassConstantsBuffer = std::make_shared<ConstantBuffer>(deviceResources);
@@ -38,7 +45,7 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simul
 	// Pipeline Configuration 
 	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, m_vsPerPassConstantsBuffers, m_psPerPassConstantsBuffers);
 
-	// Mesh Set
+	// Mesh Set ----------------------------------------------------------------------------------
 	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
 	ms->SetVertexConversionFunction([this](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
 		{
@@ -51,39 +58,82 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simul
 			return output;
 		}
 	);
-
 	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
 	ms->Finalize();
 
-
+	// RenderObjectLists ----------------------------------------------------------------------------
 	std::vector<DirectX::XMFLOAT3>& positions = m_simulation->Positions();
-	std::vector<DirectX::XMFLOAT3>& velocities = m_simulation->Velocities();
+	//std::vector<DirectX::XMFLOAT3>& velocities = m_simulation->Velocities(); Not needed right now
 	std::vector<Element>& elementTypes = m_simulation->ElementTypes();
 
 	std::vector<RenderObjectList> objectLists;
 	objectLists.emplace_back(deviceResources, mi);
 
 	float r;
+	unsigned int elementType;
 	for (unsigned int iii = 0; iii < positions.size(); ++iii)
 	{
-		r = AtomicRadii[static_cast<int>(elementTypes[iii])];
-		objectLists.back().AddRenderObject({ r, r, r }, &positions.data()[iii]);
+		elementType = static_cast<int>(elementTypes[iii]);
+		r = AtomicRadii[elementType];
+		objectLists.back().AddRenderObject({ r, r, r }, &positions.data()[iii], elementType - 1); // must subtract one because Hydrogen is 1, but its material is at index 0, etc.
 	}
 
-	//objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, &m_position1);
-	//objectLists.back().AddRenderObject({ 1.0f, 1.0f, 1.0f }, &m_position2);
-
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objectLists));
+}
+
+void Scene::CreateMainPipelineConfig()
+{
+	// Shaders
+	std::unique_ptr<PixelShader> ps = std::make_unique<PixelShader>(m_deviceResources, L"PixelShaderInstanced.cso");
+	std::unique_ptr<VertexShader> vs = std::make_unique<VertexShader>(m_deviceResources, L"VertexShaderInstanced.cso");
+
+	// Input Layout
+	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
+	inputElements.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,                            0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+	inputElements.push_back({ "NORMAL",   0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+	// Instance Data ---------------------------------------------
+	inputElements.push_back({ "MATERIAL_INDEX", 0, DXGI_FORMAT_R32_UINT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1 });
+	std::unique_ptr<InputLayout> il = std::make_unique<InputLayout>(m_deviceResources, inputElements, vs.get());
+
+	// Create Rasterizer State
+	D3D11_RASTERIZER_DESC rasterDesc; // Fill with default values for now
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID; // D3D11_FILL_WIREFRAME; // ;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+	std::unique_ptr<RasterizerState> rs = std::make_unique<RasterizerState>(m_deviceResources, rasterDesc);
+
+
+
+}
+void Scene::CreateBoxPipelineConfig()
+{
+
+}
+
+void Scene::SetAspectRatio(float ratio) noexcept 
+{ 
+	for (auto& camera : m_cameras)
+		camera.SetAspectRatio(ratio);
 }
 
 void Scene::Update(const Timer& timer)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
 
+	// Update the Camera ---------------------------------------------------------------------
+	m_cameras[m_currentCamera].Update(timer);
+
 	// Update Pass Constants -----------------------------------------------------------------
 
-	XMMATRIX view = m_cameras[m_currentCamera].GetViewMatrix();
-	XMMATRIX proj = DirectX::XMMatrixPerspectiveFovLH(0.25f * MathHelper::Pi, m_aspectRatio, 1.0f, 1000.0f);
+	XMMATRIX view = m_cameras[m_currentCamera].ViewMatrix();
+	XMMATRIX proj = m_cameras[m_currentCamera].ProjectionMatrix();
 
 	XMVECTOR viewDet = DirectX::XMMatrixDeterminant(view);
 	XMMATRIX invView = DirectX::XMMatrixInverse(&viewDet, view);
@@ -101,7 +151,7 @@ void Scene::Update(const Timer& timer)
 	DirectX::XMStoreFloat4x4(&m_passConstants.InvProj, DirectX::XMMatrixTranspose(invProj));
 	DirectX::XMStoreFloat4x4(&m_passConstants.ViewProj, DirectX::XMMatrixTranspose(viewProj));
 	DirectX::XMStoreFloat4x4(&m_passConstants.InvViewProj, DirectX::XMMatrixTranspose(invViewProj));
-	m_passConstants.EyePosW = m_cameras[m_currentCamera].GetPosition();
+	m_passConstants.EyePosW = m_cameras[m_currentCamera].Position();
 	m_passConstants.RenderTargetSize = XMFLOAT2(m_deviceResources->GetRenderTargetWidth(), m_deviceResources->GetRenderTargetHeight());
 	m_passConstants.InvRenderTargetSize = XMFLOAT2(1.0f / m_deviceResources->GetRenderTargetWidth(), 1.0f / m_deviceResources->GetRenderTargetHeight());
 	m_passConstants.NearZ = 1.0f;
@@ -128,7 +178,6 @@ void Scene::Update(const Timer& timer)
 	GFX_THROW_INFO(context->Map(m_psPerPassConstantsBuffers[0]->GetRawBufferPointer(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
 	memcpy(ms.pData, &m_passConstants, sizeof(PassConstants));
 	GFX_THROW_INFO_ONLY(context->Unmap(m_psPerPassConstantsBuffers[0]->GetRawBufferPointer(), 0));
-
 
 	// Update all render object lists
 	for (auto& configAndObjectList : m_configsAndObjectLists)
@@ -162,4 +211,62 @@ void Scene::Render()
 			objectLists[iii].Render();
 		}
 	}
+}
+
+
+void Scene::OnChar(CharEvent& e)
+{
+	
+}
+void Scene::OnKeyPressed(KeyPressedEvent& e)
+{
+	switch (e.GetKeyCode())
+	{
+	case KEY_CODE::EG_LEFT_ARROW: m_cameras[m_currentCamera].LeftArrowDown(true); break;
+	case KEY_CODE::EG_RIGHT_ARROW: m_cameras[m_currentCamera].RightArrowDown(true); break;
+	}
+}
+void Scene::OnKeyReleased(KeyReleasedEvent& e)
+{
+	switch (e.GetKeyCode())
+	{
+	case KEY_CODE::EG_LEFT_ARROW: m_cameras[m_currentCamera].LeftArrowDown(false); break;
+	case KEY_CODE::EG_RIGHT_ARROW: m_cameras[m_currentCamera].RightArrowDown(false); break;
+	}
+}
+void Scene::OnMouseEntered(MouseMoveEvent& e)
+{
+
+}
+void Scene::OnMouseExited(MouseMoveEvent& e)
+{
+
+}
+void Scene::OnMouseMoved(MouseMoveEvent& e)
+{
+
+}
+void Scene::OnMouseScrolledVertical(MouseScrolledEvent& e)
+{
+
+}
+void Scene::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
+{
+
+}
+void Scene::OnMouseButtonPressed(MouseButtonPressedEvent& e)
+{
+
+}
+void Scene::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
+{
+
+}
+void Scene::OnClick(MouseButtonReleasedEvent& e)
+{
+
+}
+void Scene::OnDoubleClick(MouseButtonDoubleClickEvent& e)
+{
+
 }

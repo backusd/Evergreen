@@ -35,18 +35,18 @@ public:
 	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
 
 	// SET
-	inline void SetOnCharCallback(std::function<void(Viewport*, CharEvent& e)> func) noexcept { m_OnChar = func; }
-	inline void SetOnKeyPressedCallback(std::function<void(Viewport*, KeyPressedEvent& e)> func) noexcept { m_OnKeyPressed = func; }
-	inline void SetOnKeyReleasedCallback(std::function<void(Viewport*, KeyReleasedEvent& e)> func) noexcept { m_OnKeyReleased = func; }
-	inline void SetOnMouseEnteredCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
-	inline void SetOnMouseExitedCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
-	inline void SetOnMouseMovedCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
-	inline void SetOnMouseScrolledVerticalCallback(std::function<void(Viewport*, MouseScrolledEvent& e)> func) noexcept { m_OnMouseScrolledVertical = func; }
-	inline void SetOnMouseScrolledHorizontalCallback(std::function<void(Viewport*, MouseScrolledEvent& e)> func) noexcept { m_OnMouseScrolledHorizontal = func; }
-	inline void SetOnMouseButtonPressedCallback(std::function<void(Viewport*, MouseButtonPressedEvent& e)> func) noexcept { m_OnMouseButtonPressed = func; }
-	inline void SetOnMouseButtonReleasedCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnMouseButtonReleased = func; }
-	inline void SetOnClickCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnClick = func; }
-	inline void SetOnDoubleClickCallback(std::function<void(Viewport*, MouseButtonDoubleClickEvent& e)> func) noexcept { m_OnDoubleClick = func; }
+	inline void SetOnCharCallback(std::function<void(Viewport*, CharEvent& e)> func) { m_OnChar = func; }
+	inline void SetOnKeyPressedCallback(std::function<void(Viewport*, KeyPressedEvent& e)> func) { m_OnKeyPressed = func; }
+	inline void SetOnKeyReleasedCallback(std::function<void(Viewport*, KeyReleasedEvent& e)> func) { m_OnKeyReleased = func; }
+	inline void SetOnMouseEnteredCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) { m_OnMouseEntered = func; }
+	inline void SetOnMouseExitedCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) { m_OnMouseExited = func; }
+	inline void SetOnMouseMovedCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) { m_OnMouseMoved = func; }
+	inline void SetOnMouseScrolledVerticalCallback(std::function<void(Viewport*, MouseScrolledEvent& e)> func) { m_OnMouseScrolledVertical = func; }
+	inline void SetOnMouseScrolledHorizontalCallback(std::function<void(Viewport*, MouseScrolledEvent& e)> func) { m_OnMouseScrolledHorizontal = func; }
+	inline void SetOnMouseButtonPressedCallback(std::function<void(Viewport*, MouseButtonPressedEvent& e)> func) { m_OnMouseButtonPressed = func; }
+	inline void SetOnMouseButtonReleasedCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) { m_OnMouseButtonReleased = func; }
+	inline void SetOnClickCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) { m_OnClick = func; }
+	inline void SetOnDoubleClickCallback(std::function<void(Viewport*, MouseButtonDoubleClickEvent& e)> func) { m_OnDoubleClick = func; }
 
 	// Event handling
 	void OnChar(CharEvent& e) override;

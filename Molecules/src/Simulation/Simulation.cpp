@@ -4,8 +4,7 @@
 
 Simulation::Simulation() noexcept :
 	m_isPaused(true),
-	m_elapsedTime(0.0),
-	m_boxMax(4.0f)
+	m_boxMax(1.0f)
 {}
 
 void Simulation::Add(Element element, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& velocity) noexcept
@@ -20,10 +19,7 @@ void Simulation::Update(const Evergreen::Timer& timer)
 	EG_ASSERT(m_positions.size() == m_velocities.size(), "Invalid");
 	EG_ASSERT(m_positions.size() == m_elementTypes.size(), "Invalid");
 
-	double currentTime = timer.GetTotalSeconds();
-	double timeDelta2 = timer.GetElapsedSeconds();
-	double timeDelta = currentTime - m_elapsedTime;
-	m_elapsedTime = currentTime;
+	double timeDelta = timer.GetElapsedSeconds();
 
 	if (m_isPaused)
 		return;

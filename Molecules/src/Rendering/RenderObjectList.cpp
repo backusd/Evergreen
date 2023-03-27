@@ -6,9 +6,10 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
-RenderObject::RenderObject(const XMFLOAT3& scaling, XMFLOAT3* translation) :
+RenderObject::RenderObject(const XMFLOAT3& scaling, XMFLOAT3* translation, unsigned int materialIndex) :
 	m_scaling(scaling),
-	m_translation(translation)
+	m_translation(translation),
+	m_materialIndex(materialIndex)
 {}
 
 DirectX::XMFLOAT4X4 RenderObject::WorldMatrix() const noexcept
@@ -29,11 +30,24 @@ RenderObjectList::RenderObjectList(std::shared_ptr<Evergreen::DeviceResources> d
 	m_deviceResources(deviceResources),
 	m_mesh(mesh)
 {
+	auto device = m_deviceResources->D3DDevice();
+
+	D3D11_BUFFER_DESC bd = {};
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.Usage = D3D11_USAGE_DYNAMIC;
+	bd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	bd.MiscFlags = 0u;
+	bd.ByteWidth = static_cast<UINT>(MAX_INSTANCES * sizeof(unsigned int)); // Size of buffer in bytes
+	bd.StructureByteStride = sizeof(unsigned int);
+
+	GFX_THROW_INFO(device->CreateBuffer(&bd, nullptr, m_instanceBuffer.ReleaseAndGetAddressOf()));
+
 }
-void RenderObjectList::AddRenderObject(const DirectX::XMFLOAT3& scaling, XMFLOAT3* translation)
+void RenderObjectList::AddRenderObject(const DirectX::XMFLOAT3& scaling, XMFLOAT3* translation, unsigned int materialIndex)
 {
-	m_renderObjects.emplace_back(scaling, translation);
+	m_renderObjects.emplace_back(scaling, translation, materialIndex);
 	m_worldMatrices.push_back(m_renderObjects.back().WorldMatrix());
+	m_materialIndices.push_back(materialIndex);
 }
 
 void RenderObjectList::Update(const Timer& timer)
@@ -55,7 +69,7 @@ void RenderObjectList::Render() const
 
 	D3D11_MAPPED_SUBRESOURCE ms;
 
-	// Update the World buffers at VS slot 1
+	// Update the World buffers at VS slot 1 ------------------------------------------------------
 	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	ComPtr<ID3D11Buffer> buffer = nullptr;
 
@@ -64,27 +78,14 @@ void RenderObjectList::Render() const
 	memcpy(ms.pData, m_worldMatrices.data(), sizeof(XMFLOAT4X4) * m_worldMatrices.size());
 	GFX_THROW_INFO_ONLY(context->Unmap(buffer.Get(), 0));
 
-
 	// --------------------------------------------------------------------------------------------
-	auto device = m_deviceResources->D3DDevice();
+	// Update the instance buffer and then bind it to the IA
 
-	D3D11_BUFFER_DESC bd = {};
-	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.CPUAccessFlags = 0u;
-	bd.MiscFlags = 0u;
-	bd.ByteWidth = static_cast<UINT>(3 * sizeof(unsigned int)); // Size of buffer in bytes
-	bd.StructureByteStride = sizeof(unsigned int);
+	ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE));
 
-	unsigned int materialIndices[3] = { 0u, 1u, 1u };
-
-	D3D11_SUBRESOURCE_DATA sd = {};
-	sd.pSysMem = materialIndices;
-
-	Microsoft::WRL::ComPtr<ID3D11Buffer> m_instanceBuffer;
-	GFX_THROW_INFO(device->CreateBuffer(&bd, &sd, m_instanceBuffer.ReleaseAndGetAddressOf()));
-
-
+	GFX_THROW_INFO(context->Map(m_instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+	memcpy(ms.pData, m_materialIndices.data(), sizeof(unsigned int) * m_materialIndices.size());
+	GFX_THROW_INFO_ONLY(context->Unmap(m_instanceBuffer.Get(), 0));
 
 	UINT strides[1] = { sizeof(unsigned int) };
 	UINT offsets[1] = { 0u };

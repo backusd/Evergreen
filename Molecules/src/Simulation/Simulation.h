@@ -34,7 +34,6 @@ constexpr std::array<float, 11> AtomicRadii{
 };
 
 
-
 class Simulation
 {
 public:
@@ -57,7 +56,6 @@ private:
 	std::vector<Element> m_elementTypes;
 
 	bool m_isPaused;
-	double m_elapsedTime;
 
 	float m_boxMax;
 };

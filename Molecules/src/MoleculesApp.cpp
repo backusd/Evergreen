@@ -17,11 +17,29 @@ public:
 		// Initialize the Simulation
 		m_simulation = std::make_unique<Simulation>();
 		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f });
-		m_simulation->Add(Element::Helium, { 2.0f, 0.0f, 0.0f }, { 0.0f, 0.5f, 0.0f });
-		m_simulation->Add(Element::Helium, { -2.0f, 0.0f, 0.0f }, { 0.0f, -0.5f, 0.0f });
+		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.5f, 0.0f });
+		m_simulation->Add(Element::Helium, { 0.0f, 0.0f, 0.0f }, { 0.0f, -0.5f, 0.0f });
+
+		// Get pointer to the viewport
+		m_viewport = m_ui->GetControlByName<Viewport>("MainViewport");
 
 		// Create the scene
-		m_scene = std::make_unique<Scene>(m_deviceResources, m_simulation.get());
+		m_scene = std::make_unique<Scene>(m_deviceResources, m_simulation.get(), m_viewport->GetAspectRatio());
+
+		// Set viewport callbacks
+		Scene* scene = m_scene.get();
+		m_viewport->SetOnCharCallback([scene](Viewport* vp, CharEvent& e) { scene->OnChar(e); });
+		m_viewport->SetOnKeyPressedCallback([scene](Viewport* vp, KeyPressedEvent& e) { scene->OnKeyPressed(e); });
+		m_viewport->SetOnKeyReleasedCallback([scene](Viewport* vp, KeyReleasedEvent& e) { scene->OnKeyReleased(e); });
+		m_viewport->SetOnMouseEnteredCallback([scene](Viewport* vp, MouseMoveEvent& e) { scene->OnMouseEntered(e); });
+		m_viewport->SetOnMouseExitedCallback([scene](Viewport* vp, MouseMoveEvent& e) { scene->OnMouseExited(e); });
+		m_viewport->SetOnMouseMovedCallback([scene](Viewport* vp, MouseMoveEvent& e) { scene->OnMouseMoved(e); });
+		m_viewport->SetOnMouseScrolledVerticalCallback([scene](Viewport* vp, MouseScrolledEvent& e) { scene->OnMouseScrolledVertical(e); });
+		m_viewport->SetOnMouseScrolledHorizontalCallback([scene](Viewport* vp, MouseScrolledEvent& e) { scene->OnMouseScrolledHorizontal(e); });
+		m_viewport->SetOnMouseButtonPressedCallback([scene](Viewport* vp, MouseButtonPressedEvent& e) { scene->OnMouseButtonPressed(e); });
+		m_viewport->SetOnMouseButtonReleasedCallback([scene](Viewport* vp, MouseButtonReleasedEvent& e) { scene->OnMouseButtonReleased(e); });
+		m_viewport->SetOnClickCallback([scene](Viewport* vp, MouseButtonReleasedEvent& e) { scene->OnClick(e); });
+		m_viewport->SetOnDoubleClickCallback([scene](Viewport* vp, MouseButtonDoubleClickEvent& e) { scene->OnDoubleClick(e); });
 
 		// Start the simulation
 		m_simulation->Play();
@@ -32,16 +50,18 @@ public:
 
 
 
+
+
 protected:
 	std::unique_ptr<Scene> m_scene;
 	std::unique_ptr<Simulation> m_simulation;
+	Viewport* m_viewport;
 
 	void OnUpdate(const Timer& timer) override
 	{
 		m_simulation->Update(timer);
 
-		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
-		m_scene->SetAspectRatio(vp->GetAspectRatio());
+		m_scene->SetAspectRatio(m_viewport->GetAspectRatio());
 		
 		m_scene->Update(timer);
 	}
@@ -52,18 +72,18 @@ protected:
 
 		// bind render target
 		ID3D11RenderTargetView* const targets[1] = { m_deviceResources->BackBufferRenderTargetView() };
-		GFX_THROW_INFO_ONLY(context->OMSetRenderTargets(1u, targets, m_deviceResources->DepthStencilView()))
+		GFX_THROW_INFO_ONLY(context->OMSetRenderTargets(1u, targets, m_deviceResources->DepthStencilView()));
 
-			float c = 92.0f / 256;
+		float c = 92.0f / 256;
 		float background[4] = { c, 0.0f, c, 1.0f };
-		GFX_THROW_INFO_ONLY(context->ClearRenderTargetView(m_deviceResources->BackBufferRenderTargetView(), background))
-			GFX_THROW_INFO_ONLY(context->ClearDepthStencilView(m_deviceResources->DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0))
+		GFX_THROW_INFO_ONLY(context->ClearRenderTargetView(m_deviceResources->BackBufferRenderTargetView(), background));
+		GFX_THROW_INFO_ONLY(context->ClearDepthStencilView(m_deviceResources->DepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0));
 
-			// configure viewport
-			auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
-		GFX_THROW_INFO_ONLY(context->RSSetViewports(1, &vp->GetViewport()))
+		// configure viewport
+		auto vp = m_ui->GetControlByName<Viewport>("MainViewport");
+		GFX_THROW_INFO_ONLY(context->RSSetViewports(1, &vp->GetViewport()));
 
-			m_scene->Render();
+		m_scene->Render();
 	}
 
 private:
