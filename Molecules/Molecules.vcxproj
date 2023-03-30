@@ -169,9 +169,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Rendering\BlendState.h" />
     <ClInclude Include="src\Rendering\Camera.h" />
     <ClInclude Include="src\Rendering\ConstantBuffer.h" />
     <ClInclude Include="src\Rendering\ConstantBufferArray.h" />
+    <ClInclude Include="src\Rendering\DepthStencilState.h" />
     <ClInclude Include="src\Rendering\InputLayout.h" />
     <ClInclude Include="src\Rendering\MeshSet.h" />
     <ClInclude Include="src\Rendering\PipelineConfig.h" />

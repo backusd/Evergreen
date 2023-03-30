@@ -12,6 +12,8 @@
 #include "Shaders.h"
 #include "InputLayout.h"
 #include "RasterizerState.h"
+#include "BlendState.h"
+#include "DepthStencilState.h"
 
 class Scene
 {
