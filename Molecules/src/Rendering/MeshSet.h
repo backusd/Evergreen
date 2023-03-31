@@ -104,8 +104,6 @@ public:
 
 	void SetVertexConversionFunction(std::function<std::vector<T>(std::vector<GenericVertex>)> fn) noexcept { m_VertexConversionFn = fn; m_vertexConversionFunctionIsSet = true; }
 
-	// void BindToIA() const override;
-
 	ND inline ID3D11Buffer* GetRawVertexBufferPointer() noexcept { return m_vertexBuffer.Get(); }
 	ND inline ID3D11Buffer* GetRawIndexBufferPointer() noexcept { return m_indexBuffer.Get(); }
 

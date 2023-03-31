@@ -160,6 +160,44 @@ void Scene::CreateMainPipelineConfig()
 		objectLists.back().AddRenderObject({ r, r, r }, &positions.data()[iii], elementType - 1); // must subtract one because Hydrogen is 1, but its material is at index 0, etc.
 	}
 
+	objectLists.back().SetBufferUpdateCallback([](const RenderObjectList* renderObjectList)
+		{
+			using Microsoft::WRL::ComPtr;
+
+			auto context = renderObjectList->GetDeviceResources()->D3DDeviceContext();
+
+			const std::vector<DirectX::XMFLOAT4X4>& worldMatrices = renderObjectList->GetWorldMatrices();
+			const std::vector<unsigned int>& materialIndices = renderObjectList->GetMaterialIndices();
+
+			D3D11_MAPPED_SUBRESOURCE ms; 
+
+			// Update the World buffers at VS slot 1 ------------------------------------------------------
+			ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE)); 
+			ComPtr<ID3D11Buffer> buffer = nullptr; 
+
+			GFX_THROW_INFO_ONLY(context->VSGetConstantBuffers(1, 1, buffer.ReleaseAndGetAddressOf())); 
+			GFX_THROW_INFO(context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms)); 
+			memcpy(ms.pData, worldMatrices.data(), sizeof(XMFLOAT4X4) * worldMatrices.size());  
+			GFX_THROW_INFO_ONLY(context->Unmap(buffer.Get(), 0)); 
+
+			// --------------------------------------------------------------------------------------------
+			// Update the instance buffer and then bind it to the IA
+
+			Microsoft::WRL::ComPtr<ID3D11Buffer> instanceBuffer = renderObjectList->GetInstanceBuffer();
+
+			ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE)); 
+
+			GFX_THROW_INFO(context->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms)); 
+			memcpy(ms.pData, materialIndices.data(), sizeof(unsigned int) * materialIndices.size()); 
+			GFX_THROW_INFO_ONLY(context->Unmap(instanceBuffer.Get(), 0)); 
+
+			UINT strides[1] = { sizeof(unsigned int) }; 
+			UINT offsets[1] = { 0u }; 
+			ID3D11Buffer* vertInstBuffers[1] = { instanceBuffer.Get() }; 
+			GFX_THROW_INFO_ONLY(context->IASetVertexBuffers(1u, 1u, vertInstBuffers, strides, offsets)); 
+		}
+	);
+
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objectLists));
 }
 void Scene::CreateBoxPipelineConfig()
@@ -243,20 +281,91 @@ void Scene::CreateBoxPipelineConfig()
 
 	// -------------------------------------------------
 	// Mesh Set
-//	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
-//	ms->SetVertexConversionFunction([](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
-//		{
-//			std::vector<Vertex> output(input.size());
-//			for (unsigned int iii = 0; iii < input.size(); ++iii)
-//			{
-//				output[iii].Pos = input[iii].Position;
-//				output[iii].Normal = input[iii].Normal;
-//			}
-//			return output;
-//		}
-//	);
-//	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
-//	ms->Finalize();
+	float x = 1.0f;
+	float y = 1.0f;
+	float z = 1.0f;
+	std::vector<BoxVertex> vertices(8);
+	vertices[0].Position = XMFLOAT3( x,  y,  z);
+	vertices[1].Position = XMFLOAT3(-x,  y,  z);
+	vertices[2].Position = XMFLOAT3( x, -y,  z);
+	vertices[3].Position = XMFLOAT3( x,  y, -z);
+	vertices[4].Position = XMFLOAT3(-x, -y,  z);
+	vertices[5].Position = XMFLOAT3(-x,  y, -z);
+	vertices[6].Position = XMFLOAT3( x, -y, -z);
+	vertices[7].Position = XMFLOAT3(-x, -y, -z);
+
+	std::vector<std::uint16_t> indices(24);
+
+	// draw the square with all positive x
+	indices[0] = 0;
+	indices[1] = 3;
+	indices[2] = 3;
+	indices[3] = 6;
+	indices[4] = 6;
+	indices[5] = 2;
+	indices[6] = 2;
+	indices[7] = 0;
+
+	// draw the square with all negative x
+	indices[8] = 1;
+	indices[9] = 5;
+	indices[10] = 5;
+	indices[11] = 7;
+	indices[12] = 7;
+	indices[13] = 4;
+	indices[14] = 4;
+	indices[15] = 1;
+
+	// draw the four lines that connect positive x with negative x
+	indices[16] = 0;
+	indices[17] = 1;
+	indices[18] = 3;
+	indices[19] = 5;
+	indices[20] = 6;
+	indices[21] = 7;
+	indices[22] = 2;
+	indices[23] = 4;
+
+	std::unique_ptr<MeshSet<BoxVertex>> ms = std::make_unique<MeshSet<BoxVertex>>(m_deviceResources);
+	MeshInstance mi = ms->AddMesh(vertices, indices); 
+	ms->Finalize();
+
+	// RenderObjectList ----------------------------------------------------------------------------
+
+	XMFLOAT3 scaling = m_simulation->BoxScaling();
+	const XMFLOAT3* translation = m_simulation->BoxTranslation();
+
+	std::vector<RenderObjectList> objectLists; 
+	objectLists.emplace_back(m_deviceResources, mi);
+	objectLists.back().AddRenderObject(scaling, translation, 0u);
+	objectLists.back().SetBufferUpdateCallback([this](const RenderObjectList* renderObjectList)
+		{
+			using Microsoft::WRL::ComPtr;
+			using namespace DirectX;
+
+			const Camera* camera = this->GetCurrentCamera();
+			XMMATRIX viewProj = camera->ViewMatrix() * camera->ProjectionMatrix();
+
+			const std::vector<DirectX::XMFLOAT4X4>& worldMatrices = renderObjectList->GetWorldMatrices();
+			EG_ASSERT(worldMatrices.size() == 1, "There should be exactly 1 world matrix for 1 simulation box");
+
+			XMMATRIX worldViewProjection = XMMatrixTranspose(XMLoadFloat4x4(&worldMatrices[0]) * viewProj);
+
+			auto context = renderObjectList->GetDeviceResources()->D3DDeviceContext();
+			D3D11_MAPPED_SUBRESOURCE ms; 
+
+			// Update the World-View-Projection buffer at VS slot 0 ------------------------------------------------------
+			ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE)); 
+			ComPtr<ID3D11Buffer> buffer = nullptr;  
+
+			GFX_THROW_INFO_ONLY(context->VSGetConstantBuffers(0, 1, buffer.ReleaseAndGetAddressOf())); 
+			GFX_THROW_INFO(context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms)); 
+			memcpy(ms.pData, &worldViewProjection, sizeof(XMMATRIX)); 
+			GFX_THROW_INFO_ONLY(context->Unmap(buffer.Get(), 0));
+		}
+	);
+
+	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objectLists)); 
 }
 
 void Scene::SetAspectRatio(float ratio) noexcept 

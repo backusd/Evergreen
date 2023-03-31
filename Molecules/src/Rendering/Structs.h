@@ -91,3 +91,8 @@ struct WorldViewProjectionMatrix
 {
     DirectX::XMFLOAT4X4 worldViewProjection;
 };
+
+struct BoxVertex
+{
+    DirectX::XMFLOAT3 Position;
+};

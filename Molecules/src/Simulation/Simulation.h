@@ -50,6 +50,9 @@ public:
 	std::vector<DirectX::XMFLOAT3>& Velocities() noexcept { return m_velocities; }
 	std::vector<Element>& ElementTypes() noexcept { return m_elementTypes; }
 
+	DirectX::XMFLOAT3 BoxScaling() const noexcept { return { m_boxMax, m_boxMax, m_boxMax }; }
+	const DirectX::XMFLOAT3* BoxTranslation() const noexcept { return &m_boxCenter; }
+
 private:
 	std::vector<DirectX::XMFLOAT3> m_positions;
 	std::vector<DirectX::XMFLOAT3> m_velocities;
@@ -58,4 +61,7 @@ private:
 	bool m_isPaused;
 
 	float m_boxMax;
+
+	// This is necessary so that we can pass a pointer to this this when we create the Box RenderObject
+	const DirectX::XMFLOAT3 m_boxCenter = { 0.0f, 0.0f, 0.0f };
 };

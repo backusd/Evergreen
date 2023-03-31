@@ -10,14 +10,14 @@
 class RenderObject
 {
 public:
-	RenderObject(const DirectX::XMFLOAT3& scaling, DirectX::XMFLOAT3* translation, unsigned int materialIndex);
+	RenderObject(const DirectX::XMFLOAT3& scaling, const DirectX::XMFLOAT3* translation, unsigned int materialIndex);
 	
 	DirectX::XMFLOAT4X4 WorldMatrix() const noexcept;
 	unsigned int MaterialIndex() const noexcept { return m_materialIndex; }
 
 private:
 	DirectX::XMFLOAT3 m_scaling;
-	DirectX::XMFLOAT3* m_translation; // Hold a pointer to the translation data which should be managed elsewhere
+	const DirectX::XMFLOAT3* m_translation; // Hold a pointer to the translation data which should be managed elsewhere
 
 	unsigned int m_materialIndex;
 };
@@ -31,7 +31,15 @@ public:
 	void Update(const Evergreen::Timer& timer);
 	void Render() const;
 
-	void AddRenderObject(const DirectX::XMFLOAT3& scaling, DirectX::XMFLOAT3* translation, unsigned int materialIndex);
+	void AddRenderObject(const DirectX::XMFLOAT3& scaling, const DirectX::XMFLOAT3* translation, unsigned int materialIndex);
+
+	void SetBufferUpdateCallback(std::function<void(const RenderObjectList*)> fn) noexcept { m_bufferUpdateFn = fn; }
+
+
+	ND inline std::shared_ptr<Evergreen::DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+	ND inline const std::vector<DirectX::XMFLOAT4X4>& GetWorldMatrices() const noexcept { return m_worldMatrices; }
+	ND inline const std::vector<unsigned int>& GetMaterialIndices() const noexcept { return m_materialIndices; }
+	ND inline Microsoft::WRL::ComPtr<ID3D11Buffer> GetInstanceBuffer() const noexcept { return m_instanceBuffer; }
 
 private:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
@@ -40,6 +48,8 @@ private:
 
 	// Right now, each instance just requires an index into the materials array
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_instanceBuffer;
+
+	std::function<void(const RenderObjectList*)> m_bufferUpdateFn = [](const RenderObjectList*) {};
 
 
 	std::vector<RenderObject> m_renderObjects;

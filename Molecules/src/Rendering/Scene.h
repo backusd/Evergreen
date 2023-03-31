@@ -39,6 +39,8 @@ public:
 	void OnClick(Evergreen::MouseButtonReleasedEvent& e);
 	void OnDoubleClick(Evergreen::MouseButtonDoubleClickEvent& e);
 
+	const Camera* GetCurrentCamera() const noexcept { return &m_cameras[m_currentCamera]; }
+
 private:
 	void CreateMainPipelineConfig();
 	void CreateBoxPipelineConfig();
