@@ -242,8 +242,10 @@ void PipelineConfig::ApplyConfig() const
 	GFX_THROW_INFO_ONLY(context->OMSetDepthStencilState(m_depthStencilState->Get(), m_stencilRef));
 
 	// Set the VS constant buffers
-	m_vertexShaderConstantBufferArray->BindVS();
+	if (m_vertexShaderConstantBufferArray != nullptr)
+		m_vertexShaderConstantBufferArray->BindVS();
 
 	// Set the PS constant buffers
-	m_pixelShaderConstantBufferArray->BindPS();
+	if (m_pixelShaderConstantBufferArray != nullptr)
+		m_pixelShaderConstantBufferArray->BindPS();
 }

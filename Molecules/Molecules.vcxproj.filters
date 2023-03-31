@@ -102,5 +102,7 @@
     <FxCompile Include="src\Shaders\PixelShader.hlsl" />
     <FxCompile Include="src\Shaders\VertexShaderInstanced.hlsl" />
     <FxCompile Include="src\Shaders\PixelShaderInstanced.hlsl" />
+    <FxCompile Include="src\Shaders\BoxVertexShader.hlsl" />
+    <FxCompile Include="src\Shaders\BoxPixelShader.hlsl" />
   </ItemGroup>
 </Project>

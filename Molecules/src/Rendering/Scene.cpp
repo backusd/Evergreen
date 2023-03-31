@@ -128,8 +128,8 @@ void Scene::CreateMainPipelineConfig()
 
 	// -------------------------------------------------
 	// Mesh Set
-	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
-	ms->SetVertexConversionFunction([this](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
+	std::unique_ptr<MeshSet<Vertex>> ms = std::make_unique<MeshSet<Vertex>>(m_deviceResources);
+	ms->SetVertexConversionFunction([](std::vector<GenericVertex> input) -> std::vector<Vertex>
 		{
 			std::vector<Vertex> output(input.size());
 			for (unsigned int iii = 0; iii < input.size(); ++iii)
@@ -164,7 +164,99 @@ void Scene::CreateMainPipelineConfig()
 }
 void Scene::CreateBoxPipelineConfig()
 {
+	// Shaders
+	std::unique_ptr<PixelShader> ps = std::make_unique<PixelShader>(m_deviceResources, L"BoxPixelShader.cso");
+	std::unique_ptr<VertexShader> vs = std::make_unique<VertexShader>(m_deviceResources, L"BoxVertexShader.cso");
 
+	// Input Layout
+	std::vector<D3D11_INPUT_ELEMENT_DESC> inputElements;
+	inputElements.push_back({ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 });
+	std::unique_ptr<InputLayout> il = std::make_unique<InputLayout>(m_deviceResources, inputElements, vs.get());
+
+	// Create Rasterizer State
+	D3D11_RASTERIZER_DESC rasterDesc; // Fill with default values for now
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID; // D3D11_FILL_WIREFRAME; // ;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+	std::unique_ptr<RasterizerState> rs = std::make_unique<RasterizerState>(m_deviceResources, rasterDesc);
+
+	// Blend State
+	D3D11_BLEND_DESC blendDesc;
+	blendDesc.AlphaToCoverageEnable = false;
+	blendDesc.IndependentBlendEnable = false;
+	blendDesc.RenderTarget[0].BlendEnable = false;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	std::unique_ptr<BlendState> bs = std::make_unique<BlendState>(m_deviceResources, blendDesc);
+
+	// Depth Stencil State
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.StencilEnable = false;
+	depthStencilDesc.StencilReadMask = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthStencilDesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	std::unique_ptr<DepthStencilState> dss = std::make_unique<DepthStencilState>(m_deviceResources, depthStencilDesc);
+
+	// VS Buffers --------------
+	std::unique_ptr<ConstantBufferArray> vsCBA = std::make_unique<ConstantBufferArray>(m_deviceResources);
+
+	// Buffer #1: WorldViewProjection - Will be updated by Scene once per frame
+	std::shared_ptr<ConstantBuffer> vsWorldViewProjectionBuffer = std::make_shared<ConstantBuffer>(m_deviceResources);
+	vsWorldViewProjectionBuffer->CreateBuffer<WorldViewProjectionMatrix>(D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE, 0u, 0u);
+
+	vsCBA->AddBuffer(vsWorldViewProjectionBuffer);
+
+	// Pipeline Configuration 
+	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources,
+		std::move(vs),
+		std::move(ps),
+		std::move(il),
+		std::move(rs),
+		std::move(bs),
+		std::move(dss),
+		std::move(vsCBA),
+		nullptr
+	);
+	config->SetTopology(D3D11_PRIMITIVE_TOPOLOGY::D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
+
+	// -------------------------------------------------
+	// Mesh Set
+//	std::unique_ptr<MeshSet> ms = std::make_unique<MeshSet>(m_deviceResources);
+//	ms->SetVertexConversionFunction([](std::vector<MeshSet::GeneralVertex> input) -> std::vector<Vertex>
+//		{
+//			std::vector<Vertex> output(input.size());
+//			for (unsigned int iii = 0; iii < input.size(); ++iii)
+//			{
+//				output[iii].Pos = input[iii].Position;
+//				output[iii].Normal = input[iii].Normal;
+//			}
+//			return output;
+//		}
+//	);
+//	MeshInstance mi = ms->AddGeosphere(1.0f, 3);
+//	ms->Finalize();
 }
 
 void Scene::SetAspectRatio(float ratio) noexcept 
@@ -252,7 +344,7 @@ void Scene::Render()
 		std::unique_ptr<PipelineConfig>& config = std::get<0>(configAndObjectList);
 		config->ApplyConfig();
 
-		std::unique_ptr<MeshSet>& ms = std::get<1>(configAndObjectList);
+		std::unique_ptr<MeshSetBase>& ms = std::get<1>(configAndObjectList);
 		ms->BindToIA();
 
 		std::vector<RenderObjectList>& objectLists = std::get<2>(configAndObjectList);

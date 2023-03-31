@@ -84,3 +84,10 @@ struct MaterialsArray
 {
     Material materials[NUM_MATERIALS];
 };
+
+
+// For BOX rendering
+struct WorldViewProjectionMatrix
+{
+    DirectX::XMFLOAT4X4 worldViewProjection;
+};

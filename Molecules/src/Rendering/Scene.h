@@ -17,7 +17,7 @@
 
 class Scene
 {
-	using PipelineConfigAndObjectList = std::tuple<std::unique_ptr<PipelineConfig>, std::unique_ptr<MeshSet>, std::vector<RenderObjectList>>;
+	using PipelineConfigAndObjectList = std::tuple<std::unique_ptr<PipelineConfig>, std::unique_ptr<MeshSetBase>, std::vector<RenderObjectList>>;
 
 public:
 	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources, Simulation* simulation, float aspectRatio);
