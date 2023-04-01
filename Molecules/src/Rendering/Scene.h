@@ -20,7 +20,7 @@ class Scene
 	using PipelineConfigAndObjectList = std::tuple<std::unique_ptr<PipelineConfig>, std::unique_ptr<MeshSetBase>, std::vector<RenderObjectList>>;
 
 public:
-	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources, Simulation* simulation, float aspectRatio);
+	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources, Simulation* simulation, Evergreen::Viewport* viewport);
 	void Update(const Evergreen::Timer& timer);
 	void Render();
 	void SetAspectRatio(float ratio) noexcept;
@@ -47,6 +47,7 @@ private:
 
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 	Simulation* m_simulation;
+	Evergreen::Viewport* m_viewport;
 
 	std::vector<PipelineConfigAndObjectList> m_configsAndObjectLists;
 
@@ -55,8 +56,6 @@ private:
 	PassConstants m_passConstants;
 	std::vector<std::shared_ptr<ConstantBuffer>> m_vsPerPassConstantsBuffers;
 	std::vector<std::shared_ptr<ConstantBuffer>> m_psPerPassConstantsBuffers;
-
-	float m_aspectRatio;
 
 	std::vector<Camera> m_cameras;
 	unsigned int m_currentCamera;

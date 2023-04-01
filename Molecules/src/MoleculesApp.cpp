@@ -24,7 +24,7 @@ public:
 		m_viewport = m_ui->GetControlByName<Viewport>("MainViewport");
 
 		// Create the scene
-		m_scene = std::make_unique<Scene>(m_deviceResources, m_simulation.get(), m_viewport->GetAspectRatio());
+		m_scene = std::make_unique<Scene>(m_deviceResources, m_simulation.get(), m_viewport);
 
 		// Set viewport callbacks
 		Scene* scene = m_scene.get();

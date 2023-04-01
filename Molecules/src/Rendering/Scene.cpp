@@ -3,12 +3,15 @@
 using namespace Evergreen;
 using namespace DirectX;
 
-Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simulation, float aspectRatio) :
+Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simulation, Viewport* viewport) :
 	m_deviceResources(deviceResources),
 	m_simulation(simulation),
-	m_currentCamera(0u)
+	m_currentCamera(0u),
+	m_viewport(viewport)
 {
-	m_cameras.emplace_back(aspectRatio);
+	EG_ASSERT(viewport != nullptr, "Viewport cannot be nullptr");
+
+	m_cameras.emplace_back(viewport);
 
 	CreateMainPipelineConfig();
 	CreateBoxPipelineConfig();
@@ -467,23 +470,15 @@ void Scene::Render()
 
 void Scene::OnChar(CharEvent& e)
 {
-	
+	m_cameras[m_currentCamera].OnChar(e.GetKeyCode());
 }
 void Scene::OnKeyPressed(KeyPressedEvent& e)
 {
-	switch (e.GetKeyCode())
-	{
-	case KEY_CODE::EG_LEFT_ARROW: m_cameras[m_currentCamera].LeftArrowDown(true); break;
-	case KEY_CODE::EG_RIGHT_ARROW: m_cameras[m_currentCamera].RightArrowDown(true); break;
-	}
+	m_cameras[m_currentCamera].OnKeyPressed(e.GetKeyCode());
 }
 void Scene::OnKeyReleased(KeyReleasedEvent& e)
 {
-	switch (e.GetKeyCode())
-	{
-	case KEY_CODE::EG_LEFT_ARROW: m_cameras[m_currentCamera].LeftArrowDown(false); break;
-	case KEY_CODE::EG_RIGHT_ARROW: m_cameras[m_currentCamera].RightArrowDown(false); break;
-	}
+	m_cameras[m_currentCamera].OnKeyReleased(e.GetKeyCode());
 }
 void Scene::OnMouseEntered(MouseMoveEvent& e)
 {
@@ -495,23 +490,45 @@ void Scene::OnMouseExited(MouseMoveEvent& e)
 }
 void Scene::OnMouseMoved(MouseMoveEvent& e)
 {
-
+	m_cameras[m_currentCamera].OnMouseMove(e.GetX(), e.GetY());
 }
 void Scene::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
-
+	m_cameras[m_currentCamera].OnMouseScrolledVertical(e.GetX(), e.GetY(), e.GetScrollDelta());
 }
 void Scene::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
-
+	m_cameras[m_currentCamera].OnMouseScrolledHorizontal(e.GetX(), e.GetY(), e.GetScrollDelta());
 }
 void Scene::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
-
+	switch (e.GetMouseButton())
+	{
+	case MOUSE_BUTTON::EG_LBUTTON: 
+		m_cameras[m_currentCamera].OnLButtonPressed(e.GetX(), e.GetY());
+		break;
+	case MOUSE_BUTTON::EG_RBUTTON:
+		m_cameras[m_currentCamera].OnRButtonPressed(e.GetX(), e.GetY());
+		break;
+	case MOUSE_BUTTON::EG_MBUTTON: break;
+	case MOUSE_BUTTON::EG_XBUTTON1: break;
+	case MOUSE_BUTTON::EG_XBUTTON2: break;
+	}
 }
 void Scene::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 {
-
+	switch (e.GetMouseButton())
+	{
+	case MOUSE_BUTTON::EG_LBUTTON:
+		m_cameras[m_currentCamera].OnLButtonReleased(e.GetX(), e.GetY());
+		break;
+	case MOUSE_BUTTON::EG_RBUTTON:
+		m_cameras[m_currentCamera].OnRButtonReleased(e.GetX(), e.GetY());
+		break;
+	case MOUSE_BUTTON::EG_MBUTTON: break;
+	case MOUSE_BUTTON::EG_XBUTTON1: break;
+	case MOUSE_BUTTON::EG_XBUTTON2: break;
+	}
 }
 void Scene::OnClick(MouseButtonReleasedEvent& e)
 {
@@ -519,5 +536,16 @@ void Scene::OnClick(MouseButtonReleasedEvent& e)
 }
 void Scene::OnDoubleClick(MouseButtonDoubleClickEvent& e)
 {
-
+	switch (e.GetMouseButton())
+	{
+	case MOUSE_BUTTON::EG_LBUTTON:
+		m_cameras[m_currentCamera].OnLButtonDoubleClick(e.GetX(), e.GetY());
+		break;
+	case MOUSE_BUTTON::EG_RBUTTON:
+		m_cameras[m_currentCamera].OnRButtonDoubleClick(e.GetX(), e.GetY());
+		break;
+	case MOUSE_BUTTON::EG_MBUTTON: break;
+	case MOUSE_BUTTON::EG_XBUTTON1: break;
+	case MOUSE_BUTTON::EG_XBUTTON2: break;
+	}
 }
