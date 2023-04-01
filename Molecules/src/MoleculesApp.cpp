@@ -60,9 +60,6 @@ protected:
 	void OnUpdate(const Timer& timer) override
 	{
 		m_simulation->Update(timer);
-
-		m_scene->SetAspectRatio(m_viewport->GetAspectRatio());
-		
 		m_scene->Update(timer);
 	}
 	void OnRender() override

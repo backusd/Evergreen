@@ -13,7 +13,7 @@ public:
 		GFX_THROW_INFO(
 			device->CreateInputLayout(
 				inputElements.data(),
-				inputElements.size(),
+				static_cast<UINT>(inputElements.size()),
 				vs->GetBufferPointer(),
 				vs->GetBufferSize(),
 				&m_inputLayout

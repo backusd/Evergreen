@@ -48,6 +48,8 @@ public:
 	inline void SetOnClickCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) { m_OnClick = func; }
 	inline void SetOnDoubleClickCallback(std::function<void(Viewport*, MouseButtonDoubleClickEvent& e)> func) { m_OnDoubleClick = func; }
 
+	inline void SetOnSizeChangedCallback(std::function<void(float, float)> fn) noexcept { m_OnSizeChanged = fn; }
+
 	// Event handling
 	void OnChar(CharEvent& e) override;
 	void OnKeyPressed(KeyPressedEvent& e) override;
@@ -80,6 +82,8 @@ protected:
 	std::function<void(Viewport*, MouseButtonReleasedEvent&)> m_OnMouseButtonReleased = [](Viewport*, MouseButtonReleasedEvent&) {};
 	std::function<void(Viewport*, MouseButtonReleasedEvent&)> m_OnClick = [](Viewport*, MouseButtonReleasedEvent&) {};
 	std::function<void(Viewport*, MouseButtonDoubleClickEvent&)> m_OnDoubleClick = [](Viewport*, MouseButtonDoubleClickEvent&) {};
+
+	std::function<void(float, float)> m_OnSizeChanged = [](float width, float height) {};
 
 	D3D11_VIEWPORT m_viewport;
 	std::unique_ptr<Layout>	m_layout;

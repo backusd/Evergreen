@@ -19,7 +19,7 @@ void Simulation::Update(const Evergreen::Timer& timer)
 	EG_ASSERT(m_positions.size() == m_velocities.size(), "Invalid");
 	EG_ASSERT(m_positions.size() == m_elementTypes.size(), "Invalid");
 
-	double timeDelta = timer.GetElapsedSeconds();
+	float timeDelta = static_cast<float>(timer.GetElapsedSeconds());
 
 	if (m_isPaused)
 		return;
@@ -41,4 +41,4 @@ void Simulation::Update(const Evergreen::Timer& timer)
 		if (m_positions[iii].z + AtomicRadii[iii] > m_boxMax || m_positions[iii].z - AtomicRadii[iii] < -m_boxMax)
 			m_velocities[iii].z *= -1;
 	}
-}
+} 

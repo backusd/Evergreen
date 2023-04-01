@@ -6,12 +6,18 @@ using namespace DirectX;
 Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simulation, Viewport* viewport) :
 	m_deviceResources(deviceResources),
 	m_simulation(simulation),
-	m_currentCamera(0u),
 	m_viewport(viewport)
 {
 	EG_ASSERT(viewport != nullptr, "Viewport cannot be nullptr");
 
-	m_cameras.emplace_back(viewport);
+	// Register a callback with the viewport so that when the viewport size changes, we can update the camera's projection matrix
+	m_viewport->SetOnSizeChangedCallback([this](float width, float height)
+		{
+			this->GetCamera()->UpdateProjectionMatrix();
+		}
+	);
+
+	m_camera = std::make_unique<Camera>(viewport);
 
 	CreateMainPipelineConfig();
 	CreateBoxPipelineConfig();
@@ -346,7 +352,7 @@ void Scene::CreateBoxPipelineConfig()
 			using Microsoft::WRL::ComPtr;
 			using namespace DirectX;
 
-			const Camera* camera = this->GetCurrentCamera();
+			Camera* camera = this->GetCamera();
 			XMMATRIX viewProj = camera->ViewMatrix() * camera->ProjectionMatrix();
 
 			const std::vector<DirectX::XMFLOAT4X4>& worldMatrices = renderObjectList->GetWorldMatrices();
@@ -371,23 +377,17 @@ void Scene::CreateBoxPipelineConfig()
 	m_configsAndObjectLists.push_back(std::make_tuple(std::move(config), std::move(ms), objectLists)); 
 }
 
-void Scene::SetAspectRatio(float ratio) noexcept 
-{ 
-	for (auto& camera : m_cameras)
-		camera.SetAspectRatio(ratio);
-}
-
 void Scene::Update(const Timer& timer)
 {
 	auto context = m_deviceResources->D3DDeviceContext();
 
 	// Update the Camera ---------------------------------------------------------------------
-	m_cameras[m_currentCamera].Update(timer);
+	m_camera->Update(timer);
 
 	// Update Pass Constants -----------------------------------------------------------------
 
-	XMMATRIX view = m_cameras[m_currentCamera].ViewMatrix();
-	XMMATRIX proj = m_cameras[m_currentCamera].ProjectionMatrix();
+	XMMATRIX view = m_camera->ViewMatrix();
+	XMMATRIX proj = m_camera->ProjectionMatrix();
 
 	XMVECTOR viewDet = DirectX::XMMatrixDeterminant(view);
 	XMMATRIX invView = DirectX::XMMatrixInverse(&viewDet, view);
@@ -405,7 +405,7 @@ void Scene::Update(const Timer& timer)
 	DirectX::XMStoreFloat4x4(&m_passConstants.InvProj, DirectX::XMMatrixTranspose(invProj));
 	DirectX::XMStoreFloat4x4(&m_passConstants.ViewProj, DirectX::XMMatrixTranspose(viewProj));
 	DirectX::XMStoreFloat4x4(&m_passConstants.InvViewProj, DirectX::XMMatrixTranspose(invViewProj));
-	m_passConstants.EyePosW = m_cameras[m_currentCamera].Position();
+	m_passConstants.EyePosW = m_camera->Position();
 	m_passConstants.RenderTargetSize = XMFLOAT2(m_deviceResources->GetRenderTargetWidth(), m_deviceResources->GetRenderTargetHeight());
 	m_passConstants.InvRenderTargetSize = XMFLOAT2(1.0f / m_deviceResources->GetRenderTargetWidth(), 1.0f / m_deviceResources->GetRenderTargetHeight());
 	m_passConstants.NearZ = 1.0f;
@@ -446,8 +446,6 @@ void Scene::Update(const Timer& timer)
 
 void Scene::Render()
 {
-	EG_ASSERT(m_currentCamera < m_cameras.size(), "The selected camera index must be within the bounds of the m_cameras vector");
-
 	auto context = m_deviceResources->D3DDeviceContext();
 
 	// Apply the pipeline config for each list of render objects, render each object, then move onto the next config
@@ -470,15 +468,15 @@ void Scene::Render()
 
 void Scene::OnChar(CharEvent& e)
 {
-	m_cameras[m_currentCamera].OnChar(e.GetKeyCode());
+	m_camera->OnChar(e.GetKeyCode());
 }
 void Scene::OnKeyPressed(KeyPressedEvent& e)
 {
-	m_cameras[m_currentCamera].OnKeyPressed(e.GetKeyCode());
+	m_camera->OnKeyPressed(e.GetKeyCode());
 }
 void Scene::OnKeyReleased(KeyReleasedEvent& e)
 {
-	m_cameras[m_currentCamera].OnKeyReleased(e.GetKeyCode());
+	m_camera->OnKeyReleased(e.GetKeyCode());
 }
 void Scene::OnMouseEntered(MouseMoveEvent& e)
 {
@@ -490,25 +488,25 @@ void Scene::OnMouseExited(MouseMoveEvent& e)
 }
 void Scene::OnMouseMoved(MouseMoveEvent& e)
 {
-	m_cameras[m_currentCamera].OnMouseMove(e.GetX(), e.GetY());
+	m_camera->OnMouseMove(e.GetX(), e.GetY());
 }
 void Scene::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
-	m_cameras[m_currentCamera].OnMouseScrolledVertical(e.GetX(), e.GetY(), e.GetScrollDelta());
+	m_camera->OnMouseScrolledVertical(e.GetX(), e.GetY(), e.GetScrollDelta());
 }
 void Scene::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 {
-	m_cameras[m_currentCamera].OnMouseScrolledHorizontal(e.GetX(), e.GetY(), e.GetScrollDelta());
+	m_camera->OnMouseScrolledHorizontal(e.GetX(), e.GetY(), e.GetScrollDelta());
 }
 void Scene::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	switch (e.GetMouseButton())
 	{
 	case MOUSE_BUTTON::EG_LBUTTON: 
-		m_cameras[m_currentCamera].OnLButtonPressed(e.GetX(), e.GetY());
+		m_camera->OnLButtonPressed(e.GetX(), e.GetY());
 		break;
 	case MOUSE_BUTTON::EG_RBUTTON:
-		m_cameras[m_currentCamera].OnRButtonPressed(e.GetX(), e.GetY());
+		m_camera->OnRButtonPressed(e.GetX(), e.GetY());
 		break;
 	case MOUSE_BUTTON::EG_MBUTTON: break;
 	case MOUSE_BUTTON::EG_XBUTTON1: break;
@@ -520,10 +518,10 @@ void Scene::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 	switch (e.GetMouseButton())
 	{
 	case MOUSE_BUTTON::EG_LBUTTON:
-		m_cameras[m_currentCamera].OnLButtonReleased(e.GetX(), e.GetY());
+		m_camera->OnLButtonReleased(e.GetX(), e.GetY());
 		break;
 	case MOUSE_BUTTON::EG_RBUTTON:
-		m_cameras[m_currentCamera].OnRButtonReleased(e.GetX(), e.GetY());
+		m_camera->OnRButtonReleased(e.GetX(), e.GetY());
 		break;
 	case MOUSE_BUTTON::EG_MBUTTON: break;
 	case MOUSE_BUTTON::EG_XBUTTON1: break;
@@ -539,10 +537,10 @@ void Scene::OnDoubleClick(MouseButtonDoubleClickEvent& e)
 	switch (e.GetMouseButton())
 	{
 	case MOUSE_BUTTON::EG_LBUTTON:
-		m_cameras[m_currentCamera].OnLButtonDoubleClick(e.GetX(), e.GetY());
+		m_camera->OnLButtonDoubleClick(e.GetX(), e.GetY());
 		break;
 	case MOUSE_BUTTON::EG_RBUTTON:
-		m_cameras[m_currentCamera].OnRButtonDoubleClick(e.GetX(), e.GetY());
+		m_camera->OnRButtonDoubleClick(e.GetX(), e.GetY());
 		break;
 	case MOUSE_BUTTON::EG_MBUTTON: break;
 	case MOUSE_BUTTON::EG_XBUTTON1: break;

@@ -49,6 +49,7 @@ void Viewport::ViewportChanged()
 		m_viewport.Height
 	);
 
+	m_OnSizeChanged(m_viewport.Width, m_viewport.Height);
 }
 void Viewport::OnMarginChanged()
 {

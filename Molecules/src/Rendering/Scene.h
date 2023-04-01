@@ -23,7 +23,6 @@ public:
 	Scene(std::shared_ptr<Evergreen::DeviceResources> deviceResources, Simulation* simulation, Evergreen::Viewport* viewport);
 	void Update(const Evergreen::Timer& timer);
 	void Render();
-	void SetAspectRatio(float ratio) noexcept;
 
 	// Event handlers
 	void OnChar(Evergreen::CharEvent& e);
@@ -39,7 +38,7 @@ public:
 	void OnClick(Evergreen::MouseButtonReleasedEvent& e);
 	void OnDoubleClick(Evergreen::MouseButtonDoubleClickEvent& e);
 
-	const Camera* GetCurrentCamera() const noexcept { return &m_cameras[m_currentCamera]; }
+	Camera* GetCamera() const noexcept { return m_camera.get(); }
 
 private:
 	void CreateMainPipelineConfig();
@@ -57,6 +56,5 @@ private:
 	std::vector<std::shared_ptr<ConstantBuffer>> m_vsPerPassConstantsBuffers;
 	std::vector<std::shared_ptr<ConstantBuffer>> m_psPerPassConstantsBuffers;
 
-	std::vector<Camera> m_cameras;
-	unsigned int m_currentCamera;
+	std::unique_ptr<Camera> m_camera;
 };

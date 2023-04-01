@@ -13,7 +13,7 @@ public:
 	ND DirectX::XMMATRIX ProjectionMatrix() const noexcept;
 	ND DirectX::XMFLOAT3 Position() const noexcept;
 
-	inline void SetAspectRatio(float aspectRatio) noexcept { CreateProjectionMatrix(aspectRatio); }
+	void UpdateProjectionMatrix() noexcept { CreateProjectionMatrix(m_viewport->GetAspectRatio()); }
 
 	void OnLButtonPressed(float x, float y) noexcept;
 	void OnRButtonPressed(float x, float y) noexcept;
