@@ -26,7 +26,7 @@ Camera::Camera(Viewport* viewport) :
     m_upInitial{ 0.0f, 0.0f, 0.0f },
     m_moveStartTime(0.0),
     m_movementComplete(0.0),
-    m_movementMaxTime(0.0),
+    m_movementDuration(0.0),
     m_timeAtLastMoveUpdate(0.0),
     m_totalRotationAngle(0.0),
     m_rotatingLeftRight(false),
@@ -80,36 +80,15 @@ XMFLOAT3 Camera::Position() const noexcept
 
 void Camera::Update(const Timer& timer)
 {
-//    double timeDelta = timer.GetElapsedSeconds();
-//
-//    float radiansPerSecond = 0.5;
-//    float theta = static_cast<float>(timeDelta * radiansPerSecond);
-//
-//    if (m_leftArrow && !m_rightArrow)
-//    {
-//        // Rotate Left
-//        RotateLeftRight(theta);
-//    }
-//    else if (m_rightArrow && !m_leftArrow)
-//    {
-//        // Rotate Right
-//        RotateLeftRight(-theta);
-//    }
-    // -----------------------------------------------------------------------------------
-
     if (m_mouseLButtonDown)
     {
         // Cancel out any existing automated movement
         m_movingToNewLocation = false;
 
-        // Compute the eye distance to center
-        float radius = 0.0f;
-        DirectX::XMStoreFloat(&radius, DirectX::XMVector3Length(m_eye));
-
         // If the pointer were to move from the middle of the screen to the far right,
         // that should produce one full rotation. Therefore, set a rotationFactor = 2
         const D3D11_VIEWPORT& vp = m_viewport->GetViewport();
-        float rotationFactor = 2.0f;
+        constexpr float rotationFactor = 2.0f;
         float radiansPerPixelX = (DirectX::XM_2PI / vp.Width) * rotationFactor;
         float radiansPerPixelY = (DirectX::XM_2PI / vp.Height) * rotationFactor;
 
@@ -129,11 +108,9 @@ void Camera::Update(const Timer& timer)
         // Cancel out any existing automated movement
         m_movingToNewLocation = false;
 
-        double timeDelta = timer.GetElapsedSeconds();
-
         // Compute the rotation
-        float radiansPerSecond = 0.5f;
-        float theta = static_cast<float>(timeDelta * radiansPerSecond);
+        constexpr float radiansPerSecond = 0.5f;
+        float theta = static_cast<float>(timer.GetElapsedSeconds() * radiansPerSecond);
 
         // If rotating up or left, make the angle negative so the rest of the math is the same
         if (m_upArrow || m_leftArrow)
@@ -147,92 +124,88 @@ void Camera::Update(const Timer& timer)
     }
     else if (m_movingToNewLocation)
     {
-        // if the view matrix has officially been read by SceneRenderer, no need to perform any update here
         if (m_movementComplete)
         {
             m_movingToNewLocation = false;
             m_rotatingLeftRight = false;
             m_rotatingUpDown = false;
+            return;
+        }
+
+        // If the move start time is less than 0, it needs to be set
+        if (m_moveStartTime < 0.0)
+        {
+            m_moveStartTime = timer.GetTotalSeconds();
+            m_timeAtLastMoveUpdate = m_moveStartTime;
+            return;
+        }
+
+        double currentTime = timer.GetTotalSeconds();
+        double timeDelta = timer.GetElapsedSeconds();
+
+        // If rotating left/right, just compute the necessary angle and call RotateLeftRight / RotateUpDown
+        if (m_rotatingLeftRight)
+        {
+            // If we have surpassed the time for the movement, then use a truncated timeDelta & signal that we are done
+            if (m_moveStartTime + m_movementDuration < currentTime)
+            {
+                m_movementComplete = true;
+                timeDelta = m_moveStartTime + m_movementDuration - m_timeAtLastMoveUpdate;
+            }
+
+            float theta = m_totalRotationAngle * static_cast<float>(timeDelta / m_movementDuration); 
+
+            RotateLeftRight(theta);
+
+            m_timeAtLastMoveUpdate = currentTime;
+        }
+        else if (m_rotatingUpDown)
+        {
+            // If we have surpassed the time for the movement, then use a truncated timeDelta & signal that we are done
+            if (m_moveStartTime + m_movementDuration < currentTime)
+            {
+                m_movementComplete = true;
+                timeDelta = m_moveStartTime + m_movementDuration - m_timeAtLastMoveUpdate;
+            }
+
+            float theta = m_totalRotationAngle * static_cast<float>(timeDelta / m_movementDuration);
+
+            RotateUpDown(theta);
+
+            m_timeAtLastMoveUpdate = currentTime;
         }
         else
         {
-            // If the move start time is less than 0, it needs to be set
-            if (m_moveStartTime < 0.0)
+            // Compute the ratio of elapsed time / allowed time to complete
+            float timeRatio = static_cast<float>((currentTime - m_moveStartTime) / m_movementDuration);
+
+            // if the current time is passed the movement duration, just assign final postion
+            if (timeRatio >= 1.0f)
             {
-                m_moveStartTime = timer.GetTotalSeconds();
-                //m_moveStartTime = SimulationManager::TotalSeconds();
-                m_timeAtLastMoveUpdate = m_moveStartTime;
-            }
-
-            double currentTime = timer.GetTotalSeconds();
-
-            // If rotating left/right, just compute the necessary angle and call RotateLeftRight / RotateUpDown
-            if (m_rotatingLeftRight || m_rotatingUpDown)
-            {
-                //double currentTime = SimulationManager::TotalSeconds();
-                double timeDelta;
-                if (m_moveStartTime + m_movementMaxTime < currentTime)
-                {
-                    m_movementComplete = true;
-                    timeDelta = m_moveStartTime + m_movementMaxTime - m_timeAtLastMoveUpdate;
-                }
-                else
-                    timeDelta = currentTime - m_timeAtLastMoveUpdate;
-
-                float theta = m_totalRotationAngle * static_cast<float>(timeDelta / m_movementMaxTime);
-
-                if (m_rotatingLeftRight)
-                    RotateLeftRight(theta);
-                else
-                    RotateUpDown(theta);
-
-                m_timeAtLastMoveUpdate = currentTime;
+                m_movementComplete = true;
+                m_eye = DirectX::XMLoadFloat3(&m_eyeTarget);
+                m_up = DirectX::XMLoadFloat3(&m_upTarget);
             }
             else
             {
-                // Compute the ratio of elapsed time / allowed time to complete
-                double timeRatio = (currentTime - m_moveStartTime) / m_movementMaxTime;
+                // Compute the intermediate position
+                XMFLOAT3 eyeCurrent;
+                eyeCurrent.x = m_eyeInitial.x + ((m_eyeTarget.x - m_eyeInitial.x) * timeRatio);
+                eyeCurrent.y = m_eyeInitial.y + ((m_eyeTarget.y - m_eyeInitial.y) * timeRatio);
+                eyeCurrent.z = m_eyeInitial.z + ((m_eyeTarget.z - m_eyeInitial.z) * timeRatio);
 
-                // if the current time is passed the max time, just assign final postion
-                // Need to also set the updated view matrix has been read flag because SceneRenderer
-                // will read the view matrix on the next Update call. Once that is done, we can set
-                // movingToNewLocation to false (above)
-                if (timeRatio >= 1.0)
-                {
-                    m_movementComplete = true;
-                    m_eye = DirectX::XMLoadFloat3(&m_eyeTarget);
-                    m_up = DirectX::XMLoadFloat3(&m_upTarget);
-                }
-                else
-                {
-                    // Compute the intermediate position
-                    XMFLOAT3 eyeCurrent;
-                    eyeCurrent.x = m_eyeInitial.x + static_cast<float>((static_cast<double>(m_eyeTarget.x) - m_eyeInitial.x) * timeRatio);
-                    eyeCurrent.y = m_eyeInitial.y + static_cast<float>((static_cast<double>(m_eyeTarget.y) - m_eyeInitial.y) * timeRatio);
-                    eyeCurrent.z = m_eyeInitial.z + static_cast<float>((static_cast<double>(m_eyeTarget.z) - m_eyeInitial.z) * timeRatio);
+                m_eye = DirectX::XMLoadFloat3(&eyeCurrent);
 
-                    m_eye = DirectX::XMLoadFloat3(&eyeCurrent);
+                // Compute the intermediate position
+                XMFLOAT3 upCurrent;
+                upCurrent.x = m_upInitial.x + ((m_upTarget.x - m_upInitial.x) * timeRatio);
+                upCurrent.y = m_upInitial.y + ((m_upTarget.y - m_upInitial.y) * timeRatio);
+                upCurrent.z = m_upInitial.z + ((m_upTarget.z - m_upInitial.z) * timeRatio);
 
-                    // Compute the intermediate position
-                    XMFLOAT3 upCurrent;
-                    upCurrent.x = m_upInitial.x + static_cast<float>((static_cast<double>(m_upTarget.x) - m_upInitial.x) * timeRatio);
-                    upCurrent.y = m_upInitial.y + static_cast<float>((static_cast<double>(m_upTarget.y) - m_upInitial.y) * timeRatio);
-                    upCurrent.z = m_upInitial.z + static_cast<float>((static_cast<double>(m_upTarget.z) - m_upInitial.z) * timeRatio);
-
-                    m_up = DirectX::XMLoadFloat3(&upCurrent);
-                }
+                m_up = DirectX::XMLoadFloat3(&upCurrent);
             }
         }
     }
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -249,7 +222,7 @@ void Camera::InitializeAutomatedMove(double maxMoveTime) noexcept
     m_moveStartTime = -1.0;
 
     // Set the movement max time to 0.1 seconds, so the zoom completes in that time
-    m_movementMaxTime = maxMoveTime;
+    m_movementDuration = maxMoveTime;
 
     DirectX::XMStoreFloat3(&m_eyeInitial, m_eye);
     DirectX::XMStoreFloat3(&m_upInitial, m_up);

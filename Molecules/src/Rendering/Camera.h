@@ -77,7 +77,7 @@ private:
 	DirectX::XMFLOAT3 m_upInitial;
 	double m_moveStartTime;
 	double m_movementComplete;
-	double m_movementMaxTime;
+	double m_movementDuration;
 	double m_timeAtLastMoveUpdate;
 	float  m_totalRotationAngle;
 	bool m_rotatingLeftRight;
