@@ -41,6 +41,7 @@ protected:
 
 	float m_radiusX;
 	float m_radiusY;
+	float m_borderWidth;
 	D2D1_ROUNDED_RECT m_roundedRect;
 	Microsoft::WRL::ComPtr<ID2D1RoundedRectangleGeometry> m_roundedRectGeometry;
 };

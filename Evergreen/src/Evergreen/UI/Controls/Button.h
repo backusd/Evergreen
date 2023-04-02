@@ -20,6 +20,13 @@ public:
 		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
+		const std::array<float, 4>& borderWidths = {},
+		const Evergreen::Margin& margin = { 0 }) noexcept;
+	Button(std::shared_ptr<DeviceResources> deviceResources,
+		UI* ui,
+		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
+		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	Button(const Button& text) noexcept = delete; // Just delete for now until there is a good use case
@@ -49,12 +56,13 @@ public:
 	ND inline ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
 	ND inline ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
 	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
-	ND inline float BorderWidth() const noexcept { return m_borderWidth; }
+	ND inline std::array<float, 4> BorderWidth() const noexcept { return m_borderWidths; }
 	ND inline const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
 
 	void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); }
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
-	void BorderWidth(float width) noexcept { m_borderWidth = width; }
+	void BorderWidth(float widthAll) noexcept { m_borderWidths.fill(widthAll); }
+	void BorderWidth(const std::array<float, 4>& width) noexcept { m_borderWidths = width; }
 
 	inline void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
 	inline void SetOnMouseExitedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
@@ -84,7 +92,7 @@ protected:
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
 	std::unique_ptr<Layout>		m_layout;
-	float						m_borderWidth;
+	std::array<float, 4>		m_borderWidths;
 	D2D1_RECT_F					m_backgroundRect;
 
 	bool m_mouseIsOver;

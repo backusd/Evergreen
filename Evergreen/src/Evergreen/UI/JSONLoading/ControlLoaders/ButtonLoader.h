@@ -34,7 +34,7 @@ private:
 
 	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
-	float ParseBorderWidth(json& data);
+	std::array<float, 4> ParseBorderWidth(json& data);
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
 	void ParseOnMouseEntered(Button* button, json& data);

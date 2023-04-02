@@ -8,15 +8,45 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 				const D2D1_RECT_F& allowedRegion,
 				std::unique_ptr<ColorBrush> backgroundBrush,
 				std::unique_ptr<ColorBrush> borderBrush,
-				float borderWidth,
+				const std::array<float, 4>& borderWidths,
 				const Evergreen::Margin& margin) noexcept :
 	Control(deviceResources, ui, allowedRegion, margin),
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
-	m_borderWidth(borderWidth),
 	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
 	m_mouseIsOver(false), 
-	m_mouseLButtonIsDown(false)
+	m_mouseLButtonIsDown(false),
+	m_borderWidths(borderWidths)
+{
+	if (m_backgroundBrush == nullptr)
+		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
+
+	if (m_borderBrush == nullptr)
+		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
+
+	m_layout = std::make_unique<Layout>(
+		m_deviceResources,
+		ui,
+		0.0f, 0.0f, 1000.0f, 1000.0f,
+		nullptr, // Don't pass a brush to the layout - Button should draw the background, not the layout
+		"button layout");
+
+	ButtonChanged();
+}
+Button::Button(std::shared_ptr<DeviceResources> deviceResources,
+	UI* ui,
+	const D2D1_RECT_F& allowedRegion,
+	std::unique_ptr<ColorBrush> backgroundBrush,
+	std::unique_ptr<ColorBrush> borderBrush,
+	float borderWidth,
+	const Evergreen::Margin& margin) noexcept :
+	Control(deviceResources, ui, allowedRegion, margin),
+	m_backgroundBrush(std::move(backgroundBrush)),
+	m_borderBrush(std::move(borderBrush)),
+	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
+	m_mouseIsOver(false),
+	m_mouseLButtonIsDown(false),
+	m_borderWidths{ borderWidth, borderWidth, borderWidth, borderWidth }
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -46,15 +76,51 @@ void Button::Render() const
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
 	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
 
+	auto context = m_deviceResources->D2DDeviceContext();
+
 	// Draw the background
-	m_deviceResources->D2DDeviceContext()->FillRectangle(m_backgroundRect, m_backgroundBrush->Get());
+	context->FillRectangle(m_backgroundRect, m_backgroundBrush->Get());
 
 	// Have the layout draw the background and contents of the brush
 	m_layout->Render();
 
 	// Draw the border last so it appears on top
-	if (m_borderWidth > 0.0f)
-		m_deviceResources->D2DDeviceContext()->DrawRectangle(m_backgroundRect, m_borderBrush->Get(), m_borderWidth);
+	if (m_borderWidths[0] > 0.0f)
+	{
+		context->DrawLine(
+			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.top),		// top-left
+			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.bottom),	// bottom-left
+			m_borderBrush->Get(),
+			m_borderWidths[0]
+		);
+	}
+	if (m_borderWidths[1] > 0.0f)
+	{
+		context->DrawLine(
+			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.top),		// top-left
+			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.top),	// top-right
+			m_borderBrush->Get(),
+			m_borderWidths[1]
+		);
+	}
+	if (m_borderWidths[2] > 0.0f)
+	{
+		context->DrawLine(
+			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.top),	// top-right
+			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.bottom),	// bottom-right
+			m_borderBrush->Get(),
+			m_borderWidths[2]
+		);
+	}
+	if (m_borderWidths[3] > 0.0f)
+	{
+		context->DrawLine(
+			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.bottom),	// bottom-right
+			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.bottom),	// bottom-left
+			m_borderBrush->Get(),
+			m_borderWidths[3]
+		);
+	}
 }
 
 void Button::ButtonChanged()

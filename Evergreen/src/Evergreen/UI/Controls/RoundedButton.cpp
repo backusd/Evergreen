@@ -15,9 +15,10 @@ RoundedButton::RoundedButton(std::shared_ptr<DeviceResources> deviceResources,
 								float radiusY,
 								float borderWidth,
 								const Evergreen::Margin& margin) :
-	Button(deviceResources, ui, allowedRegion, nullptr, std::move(borderBrush), borderWidth, margin),
+	Button(deviceResources, ui, allowedRegion, nullptr, std::move(borderBrush), {}, margin),
 	m_radiusX(radiusX),
-	m_radiusY(radiusY)
+	m_radiusY(radiusY),
+	m_borderWidth(borderWidth)
 {
 	// Background brush
 	if (backgroundBrush == nullptr)
@@ -49,11 +50,6 @@ void RoundedButton::Render() const
 	// Draw the border last so it appears on top
 	if (m_borderWidth > 0.0f)
 		context->DrawRoundedRectangle(m_roundedRect, m_borderBrush->Get(), m_borderWidth);
-
-
-
-
-
 }
 
 bool RoundedButton::ContainsPoint(float x, float y) const noexcept
