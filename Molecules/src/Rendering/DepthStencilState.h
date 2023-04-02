@@ -8,6 +8,8 @@ public:
 	DepthStencilState(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const D3D11_DEPTH_STENCIL_DESC& desc) :
 		m_deviceResources(deviceResources)
 	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 		auto device = m_deviceResources->D3DDevice();
 		GFX_THROW_INFO(device->CreateDepthStencilState(&desc, m_depthStencilState.ReleaseAndGetAddressOf()));
 	}
@@ -15,7 +17,7 @@ public:
 	void operator=(const DepthStencilState&) noexcept = delete;
 	virtual ~DepthStencilState() noexcept {}
 
-	ID3D11DepthStencilState* Get() { return m_depthStencilState.Get(); }
+	ND inline ID3D11DepthStencilState* Get() { return m_depthStencilState.Get(); }
 
 protected:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;

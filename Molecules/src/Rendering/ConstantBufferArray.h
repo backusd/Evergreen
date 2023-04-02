@@ -17,19 +17,63 @@ enum class ShaderStage
 class ConstantBufferArray
 {
 public:
-	ConstantBufferArray(std::shared_ptr<Evergreen::DeviceResources> deviceResources) noexcept;
+	ConstantBufferArray(std::shared_ptr<Evergreen::DeviceResources> deviceResources) noexcept :
+		m_deviceResources(deviceResources)
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+	}
 	ConstantBufferArray(const ConstantBufferArray&) = delete;
 	void operator=(const ConstantBufferArray&) = delete;
+	~ConstantBufferArray() noexcept {}
 
-	void AddBuffer(std::shared_ptr<ConstantBuffer> buffer) noexcept;
-	void ClearBuffers() noexcept;
+	inline void AddBuffer(std::shared_ptr<ConstantBuffer> buffer) noexcept
+	{
+		EG_ASSERT(buffer != nullptr, "Buffer cannot be nullptr");
+		m_buffers.push_back(buffer);
+		m_rawBufferPointers.push_back(m_buffers.back()->GetRawBufferPointer());
+	}
+	inline void ClearBuffers() noexcept
+	{
+		m_buffers.clear();
+		m_rawBufferPointers.clear();
+	}
 
-	void BindCS() const;
-	void BindVS() const;
-	void BindHS() const;
-	void BindDS() const;
-	void BindGS() const;
-	void BindPS() const;
+	inline void BindCS() const
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+		auto context = m_deviceResources->D3DDeviceContext();
+		GFX_THROW_INFO_ONLY(context->CSSetConstantBuffers(0u, static_cast<unsigned int>(m_rawBufferPointers.size()), m_rawBufferPointers.data()));
+	}
+	inline void BindVS() const
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+		auto context = m_deviceResources->D3DDeviceContext();
+		GFX_THROW_INFO_ONLY(context->VSSetConstantBuffers(0u, static_cast<unsigned int>(m_rawBufferPointers.size()), m_rawBufferPointers.data()));
+	}
+	inline void BindHS() const
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+		auto context = m_deviceResources->D3DDeviceContext();
+		GFX_THROW_INFO_ONLY(context->HSSetConstantBuffers(0u, static_cast<unsigned int>(m_rawBufferPointers.size()), m_rawBufferPointers.data()));
+	}
+	inline void BindDS() const
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+		auto context = m_deviceResources->D3DDeviceContext();
+		GFX_THROW_INFO_ONLY(context->DSSetConstantBuffers(0u, static_cast<unsigned int>(m_rawBufferPointers.size()), m_rawBufferPointers.data()));
+	}
+	inline void BindGS() const
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+		auto context = m_deviceResources->D3DDeviceContext();
+		GFX_THROW_INFO_ONLY(context->GSSetConstantBuffers(0u, static_cast<unsigned int>(m_rawBufferPointers.size()), m_rawBufferPointers.data()));
+	}
+	inline void BindPS() const
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+		auto context = m_deviceResources->D3DDeviceContext();
+		GFX_THROW_INFO_ONLY(context->PSSetConstantBuffers(0u, static_cast<unsigned int>(m_rawBufferPointers.size()), m_rawBufferPointers.data()));
+	}
 
 protected:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;

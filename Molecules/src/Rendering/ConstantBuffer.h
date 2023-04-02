@@ -2,24 +2,24 @@
 #include "pch.h"
 #include <Evergreen.h>
 
-
-
-
 class ConstantBuffer
 {
 public:
 	ConstantBuffer(std::shared_ptr<Evergreen::DeviceResources> deviceResources) noexcept :
 		m_deviceResources(deviceResources)
-	{}
+	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+	}
 	ConstantBuffer(const ConstantBuffer&) = delete;
 	void operator=(const ConstantBuffer&) = delete;
+	~ConstantBuffer() noexcept {}
 
 	template <typename T>
 	void CreateBuffer(D3D11_USAGE usage, unsigned int cpuAccessFlags, unsigned int miscFlags, unsigned int structuredByteStride);
 	template <typename T>
 	void CreateBuffer(D3D11_USAGE usage, unsigned int cpuAccessFlags, unsigned int miscFlags, unsigned int structuredByteStride, void* initialData);
 
-	ID3D11Buffer* GetRawBufferPointer() const { return m_buffer.Get(); }
+	ND inline ID3D11Buffer* GetRawBufferPointer() const { return m_buffer.Get(); }
 
 private:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
@@ -29,6 +29,8 @@ private:
 template <typename T>
 void ConstantBuffer::CreateBuffer(D3D11_USAGE usage, unsigned int cpuAccessFlags, unsigned int miscFlags, unsigned int structuredByteStride)
 {
+	EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 	auto device = m_deviceResources->D3DDevice();
 
 	D3D11_BUFFER_DESC desc;
@@ -51,6 +53,9 @@ void ConstantBuffer::CreateBuffer(D3D11_USAGE usage, unsigned int cpuAccessFlags
 template <typename T>
 void ConstantBuffer::CreateBuffer(D3D11_USAGE usage, unsigned int cpuAccessFlags, unsigned int miscFlags, unsigned int structuredByteStride, void* initialData)
 {
+	EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_ASSERT(initialData != nullptr, "Do not use this version of CreateBuffer if initial data is nullptr");
+
 	auto device = m_deviceResources->D3DDevice();
 
 	D3D11_BUFFER_DESC desc;

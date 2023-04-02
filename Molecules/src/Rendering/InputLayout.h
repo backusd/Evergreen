@@ -9,6 +9,8 @@ public:
 	InputLayout(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const std::vector<D3D11_INPUT_ELEMENT_DESC>& inputElements, VertexShader* vs) :
 		m_deviceResources(deviceResources)
 	{
+		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+
 		auto device = m_deviceResources->D3DDevice();
 		GFX_THROW_INFO(
 			device->CreateInputLayout(
@@ -24,7 +26,7 @@ public:
 	void operator=(const InputLayout&) noexcept = delete;
 	virtual ~InputLayout() noexcept {}
 
-	ID3D11InputLayout* Get() { return m_inputLayout.Get(); }
+	ND inline ID3D11InputLayout* Get() { return m_inputLayout.Get(); }
 
 protected:
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;

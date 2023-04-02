@@ -2,10 +2,13 @@
 
 using namespace Evergreen;
 
-Shader::Shader(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& filename) :
+Shader::Shader(std::shared_ptr<DeviceResources> deviceResources, const std::wstring& filename) noexcept :
 	m_deviceResources(deviceResources),
 	m_filename(filename)
-{}
+{
+	EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_ASSERT(m_filename.size() > 0, "Filename cannot be empty");
+}
 
 // --------------------------------------------------------------------------------------------------
 

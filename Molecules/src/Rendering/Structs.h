@@ -26,12 +26,6 @@ struct Light
 
 #define MaxLights 16
 
-//struct Vertex
-//{
-//	DirectX::XMFLOAT3 Pos;
-//    DirectX::XMFLOAT3 Normal;
-//};
-
 struct ObjectConstants
 {
 	DirectX::XMFLOAT4X4 World = MathHelper::Identity4x4();
@@ -71,7 +65,6 @@ struct PassConstants
 struct Vertex
 {
     DirectX::XMFLOAT3 Pos;
-    //UINT MaterialIndex;
     DirectX::XMFLOAT3 Normal;
 };
 

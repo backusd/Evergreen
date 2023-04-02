@@ -47,12 +47,6 @@ cbuffer cbPerObject : register(b1)
     float4x4 gWorld[MAX_INSTANCES];
 };
 
-//struct VSIn
-//{
-//    float3 PosL : POSITION;
-//    uint MaterialIndex : MATERIAL_INDEX;
-//    float3 NormalL : NORMAL;
-//};
 struct VSIn
 {
     float3 PosL : POSITION;

@@ -8,7 +8,6 @@
 #include "MeshSet.h"
 #include "Structs.h"
 #include "../Simulation/Simulation.h"
-
 #include "Shaders.h"
 #include "InputLayout.h"
 #include "RasterizerState.h"

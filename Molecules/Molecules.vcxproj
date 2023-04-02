@@ -151,7 +151,6 @@
   <ItemGroup>
     <ClCompile Include="src\MoleculesApp.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
-    <ClCompile Include="src\Rendering\ConstantBufferArray.cpp" />
     <ClCompile Include="src\Rendering\MeshSet.cpp" />
     <ClCompile Include="src\Rendering\PipelineConfig.cpp" />
     <ClCompile Include="src\Rendering\RenderObjectList.cpp" />
