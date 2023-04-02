@@ -39,9 +39,16 @@ public:
 
 	Camera* GetCamera() const noexcept { return m_camera.get(); }
 
+	MaterialsArray* GetMaterials() noexcept { return m_materials.get(); }
+	inline void UpdateMaterials()
+	{
+		m_materialsBuffer->UpdateData(m_materials.get());
+	}
+
 private:
 	void CreateMainPipelineConfig();
 	void CreateBoxPipelineConfig();
+	void CreateMaterials();
 
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 	Simulation* m_simulation;
@@ -56,4 +63,8 @@ private:
 	std::vector<std::shared_ptr<ConstantBuffer>> m_psPerPassConstantsBuffers;
 
 	std::unique_ptr<Camera> m_camera;
+
+	// Materials
+	std::shared_ptr<ConstantBuffer> m_materialsBuffer;
+	std::unique_ptr<MaterialsArray> m_materials;
 };

@@ -46,12 +46,12 @@ public:
 
 	void Update(const Evergreen::Timer& timer);
 
-	std::vector<DirectX::XMFLOAT3>& Positions() noexcept { return m_positions; }
-	std::vector<DirectX::XMFLOAT3>& Velocities() noexcept { return m_velocities; }
-	std::vector<Element>& ElementTypes() noexcept { return m_elementTypes; }
+	ND inline std::vector<DirectX::XMFLOAT3>& Positions() noexcept { return m_positions; }
+	ND inline std::vector<DirectX::XMFLOAT3>& Velocities() noexcept { return m_velocities; }
+	ND inline std::vector<Element>& ElementTypes() noexcept { return m_elementTypes; }
 
-	DirectX::XMFLOAT3 BoxScaling() const noexcept { return { m_boxMax, m_boxMax, m_boxMax }; }
-	const DirectX::XMFLOAT3* BoxTranslation() const noexcept { return &m_boxCenter; }
+	ND inline DirectX::XMFLOAT3 BoxScaling() const noexcept { return { m_boxMax, m_boxMax, m_boxMax }; }
+	ND inline const DirectX::XMFLOAT3* BoxTranslation() const noexcept { return &m_boxCenter; }
 
 private:
 	std::vector<DirectX::XMFLOAT3> m_positions;

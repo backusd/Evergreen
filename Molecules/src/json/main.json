@@ -574,8 +574,44 @@
 			"Column": 2,
 			"Margin": [ 0, 3, 3, 3 ],
 			"Brush": [ 0.16, 0.16, 0.16 ],
-			"RowDefinitions": [ { "Height": "1*" } ],
-			"ColumnDefinitions": [ { "Width": "1*" } ]
+			"RowDefinitions": [
+				{ "Height": "50" },
+				{ "Height": "50" },
+				{ "Height": "50" },
+				{ "Height": "1*" }
+			],
+			"ColumnDefinitions": [ { "Width": "1*" } ],
+
+			"MaterialDiffuseAlbedoXSlider": {
+				"Type": "SliderFloat",
+				"Margin": [ 10, 0, 10, 0 ],
+				"Row": 0,
+				"MinimumValue": 0.0,
+				"MaximumValue": 1.0,
+				"Value": 1.0,
+
+				"OnValueChanged": "MaterialDiffuseAlbedoX_OnValueChanged"
+			},
+			"MaterialDiffuseAlbedoYSlider": {
+				"Type": "SliderFloat",
+				"Margin": [ 10, 0, 10, 0 ],
+				"Row": 1,
+				"MinimumValue": 0.0,
+				"MaximumValue": 1.0,
+				"Value": 1.0,
+
+				"OnValueChanged": "MaterialDiffuseAlbedoY_OnValueChanged"
+			},
+			"MaterialDiffuseAlbedoZSlider": {
+				"Type": "SliderFloat",
+				"Margin": [ 10, 0, 10, 0 ],
+				"Row": 2,
+				"MinimumValue": 0.0,
+				"MaximumValue": 1.0,
+				"Value": 1.0,
+
+				"OnValueChanged": "MaterialDiffuseAlbedoZ_OnValueChanged"
+			}
 
 		}
 
