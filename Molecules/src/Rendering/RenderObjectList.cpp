@@ -6,30 +6,12 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
-RenderObject::RenderObject(const XMFLOAT3& scaling, const XMFLOAT3* translation, unsigned int materialIndex) :
-	m_scaling(scaling),
-	m_translation(translation),
-	m_materialIndex(materialIndex)
-{}
-
-DirectX::XMFLOAT4X4 RenderObject::WorldMatrix() const noexcept
-{
-	DirectX::XMFLOAT4X4 world;
-	XMStoreFloat4x4(&world,
-		XMMatrixTranspose(
-			XMMatrixScaling(m_scaling.x, m_scaling.y, m_scaling.z) *
-			XMMatrixTranslation(m_translation->x, m_translation->y, m_translation->z)
-		)
-	);
-	return world;
-}
-
-// -----------------------------------------------------------------------------------
-
 RenderObjectList::RenderObjectList(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const MeshInstance& mesh) :
 	m_deviceResources(deviceResources),
 	m_mesh(mesh)
 {
+	EG_ASSERT(deviceResources != nullptr, "No device resources");
+
 	auto device = m_deviceResources->D3DDevice();
 
 	D3D11_BUFFER_DESC bd = {};
@@ -41,18 +23,11 @@ RenderObjectList::RenderObjectList(std::shared_ptr<Evergreen::DeviceResources> d
 	bd.StructureByteStride = sizeof(unsigned int);
 
 	GFX_THROW_INFO(device->CreateBuffer(&bd, nullptr, m_instanceBuffer.ReleaseAndGetAddressOf()));
-
-}
-void RenderObjectList::AddRenderObject(const DirectX::XMFLOAT3& scaling, const XMFLOAT3* translation, unsigned int materialIndex)
-{
-	m_renderObjects.emplace_back(scaling, translation, materialIndex);
-	m_worldMatrices.push_back(m_renderObjects.back().WorldMatrix());
-	m_materialIndices.push_back(materialIndex);
 }
 
-void RenderObjectList::Update(const Timer& timer)
+void RenderObjectList::Update(const Timer& timer) noexcept
 {
-	EG_CORE_ASSERT(m_worldMatrices.size() == m_renderObjects.size(), "Number of world matrices and render objects should match");
+	EG_ASSERT(m_worldMatrices.size() == m_renderObjects.size(), "Number of world matrices and render objects should match");
 
 	// Re-compute all world matrices every frame because their positions will be changing
 	for (unsigned int iii = 0; iii < m_renderObjects.size(); ++iii)
@@ -63,6 +38,9 @@ void RenderObjectList::Update(const Timer& timer)
 
 void RenderObjectList::Render() const
 {
+	EG_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_ASSERT(m_worldMatrices.size() == m_renderObjects.size(), "Number of world matrices and render objects should match");
+
 	auto context = m_deviceResources->D3DDeviceContext();
 	
 	// Loop over the world matrices and draw up to MAX_INSTANCES at a time
