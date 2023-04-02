@@ -11,8 +11,8 @@
     #define NUM_SPOT_LIGHTS 0
 #endif
 
-#define MAX_INSTANCES 100
-#define NUM_MATERIALS 2
+// A constant buffer can hold a maximum of 4096 16-byte entries. This is 1024 float4x4 entries
+#define MAX_INSTANCES 1024
 
 // Include structures and functions for lighting.
 #include "Lighting.hlsl"

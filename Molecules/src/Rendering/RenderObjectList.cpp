@@ -63,14 +63,19 @@ void RenderObjectList::Update(const Timer& timer)
 
 void RenderObjectList::Render() const
 {
-	EG_CORE_ASSERT(m_worldMatrices.size() < MAX_INSTANCES, "too many objects");
-
 	auto context = m_deviceResources->D3DDeviceContext();
 	
-	// Need to assign lambda that will update pipeline constant buffers 
-	m_bufferUpdateFn(this);
+	// Loop over the world matrices and draw up to MAX_INSTANCES at a time
+	size_t endIndex = 0; 
+	for (size_t startIndex = 0; startIndex < m_worldMatrices.size(); startIndex += MAX_INSTANCES)
+	{
+		endIndex = std::min(startIndex + MAX_INSTANCES, m_worldMatrices.size()) - 1;
 
-	GFX_THROW_INFO_ONLY(
-		context->DrawIndexedInstanced(m_mesh.IndexCount, static_cast<UINT>(m_worldMatrices.size()), m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation, 0u);
-	);
+		// Need to assign lambda that will update pipeline constant buffers 
+		m_bufferUpdateFn(this, startIndex, endIndex);
+
+		GFX_THROW_INFO_ONLY( 
+			context->DrawIndexedInstanced(m_mesh.IndexCount, static_cast<UINT>(endIndex - startIndex + 1), m_mesh.StartIndexLocation, m_mesh.BaseVertexLocation, 0u);
+		); 
+	}
 }

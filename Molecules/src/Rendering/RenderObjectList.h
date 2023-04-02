@@ -33,7 +33,7 @@ public:
 
 	void AddRenderObject(const DirectX::XMFLOAT3& scaling, const DirectX::XMFLOAT3* translation, unsigned int materialIndex);
 
-	void SetBufferUpdateCallback(std::function<void(const RenderObjectList*)> fn) noexcept { m_bufferUpdateFn = fn; }
+	void SetBufferUpdateCallback(std::function<void(const RenderObjectList*, size_t, size_t)> fn) noexcept { m_bufferUpdateFn = fn; }
 
 
 	ND inline std::shared_ptr<Evergreen::DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
@@ -49,7 +49,7 @@ private:
 	// Right now, each instance just requires an index into the materials array
 	Microsoft::WRL::ComPtr<ID3D11Buffer> m_instanceBuffer;
 
-	std::function<void(const RenderObjectList*)> m_bufferUpdateFn = [](const RenderObjectList*) {};
+	std::function<void(const RenderObjectList*, size_t, size_t)> m_bufferUpdateFn = [](const RenderObjectList*, size_t, size_t) {};
 
 
 	std::vector<RenderObject> m_renderObjects;

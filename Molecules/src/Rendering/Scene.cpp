@@ -179,7 +179,7 @@ void Scene::CreateMainPipelineConfig()
 		objectLists.back().AddRenderObject({ r, r, r }, &positions.data()[iii], elementType - 1); // must subtract one because Hydrogen is 1, but its material is at index 0, etc.
 	}
 
-	objectLists.back().SetBufferUpdateCallback([](const RenderObjectList* renderObjectList)
+	objectLists.back().SetBufferUpdateCallback([](const RenderObjectList* renderObjectList, size_t startIndex, size_t endIndex)
 		{
 			using Microsoft::WRL::ComPtr;
 
@@ -195,8 +195,9 @@ void Scene::CreateMainPipelineConfig()
 			ComPtr<ID3D11Buffer> buffer = nullptr; 
 
 			GFX_THROW_INFO_ONLY(context->VSGetConstantBuffers(1, 1, buffer.ReleaseAndGetAddressOf())); 
-			GFX_THROW_INFO(context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms)); 
-			memcpy(ms.pData, worldMatrices.data(), sizeof(XMFLOAT4X4) * worldMatrices.size());  
+			GFX_THROW_INFO(context->Map(buffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms));
+			// Only copy the elements between the start and end indices
+			memcpy(ms.pData, &worldMatrices.data()[startIndex], sizeof(XMFLOAT4X4) * (endIndex - startIndex + 1));
 			GFX_THROW_INFO_ONLY(context->Unmap(buffer.Get(), 0)); 
 
 			// --------------------------------------------------------------------------------------------
@@ -207,7 +208,8 @@ void Scene::CreateMainPipelineConfig()
 			ZeroMemory(&ms, sizeof(D3D11_MAPPED_SUBRESOURCE)); 
 
 			GFX_THROW_INFO(context->Map(instanceBuffer.Get(), 0, D3D11_MAP_WRITE_DISCARD, 0, &ms)); 
-			memcpy(ms.pData, materialIndices.data(), sizeof(unsigned int) * materialIndices.size()); 
+			// Only copy the elements between the start and end indices
+			memcpy(ms.pData, &materialIndices.data()[startIndex], sizeof(unsigned int) * (endIndex - startIndex + 1));
 			GFX_THROW_INFO_ONLY(context->Unmap(instanceBuffer.Get(), 0)); 
 
 			UINT strides[1] = { sizeof(unsigned int) }; 
@@ -357,7 +359,7 @@ void Scene::CreateBoxPipelineConfig()
 	std::vector<RenderObjectList> objectLists; 
 	objectLists.emplace_back(m_deviceResources, mi);
 	objectLists.back().AddRenderObject(scaling, translation, 0u);
-	objectLists.back().SetBufferUpdateCallback([this](const RenderObjectList* renderObjectList)
+	objectLists.back().SetBufferUpdateCallback([this](const RenderObjectList* renderObjectList, size_t startIndex, size_t endIndex)
 		{
 			using Microsoft::WRL::ComPtr;
 			using namespace DirectX;
