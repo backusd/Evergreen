@@ -4,13 +4,11 @@
 #include <Evergreen.h>
 #include "ConstantBufferArray.h"
 #include "Structs.h"
-
 #include "Shaders.h"
 #include "InputLayout.h"
 #include "RasterizerState.h"
 #include "BlendState.h"
 #include "DepthStencilState.h"
-
 
 class PipelineConfig
 {
@@ -24,21 +22,18 @@ public:
 		std::unique_ptr<DepthStencilState> depthStencilState,
 		std::unique_ptr<ConstantBufferArray> vertexShaderConstantBufferArray,
 		std::unique_ptr<ConstantBufferArray> pixelShaderConstantBufferArray);
+	PipelineConfig(const PipelineConfig&) noexcept = delete;
+	void operator=(const PipelineConfig&) noexcept = delete;
+	~PipelineConfig() noexcept {}
 
 	void ApplyConfig() const;
 
-	void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology) noexcept { m_topology = topology; }
-	void SetBlendFactor(float blendFactors[4]) noexcept { memcpy(m_blendFactor, blendFactors, sizeof(float) * 4); }
-	void SetBlendSampleMask(unsigned int mask) noexcept { m_blendSampleMask = mask; }
-	void SetStencilRef(unsigned int ref) noexcept { m_stencilRef = ref; }
+	inline void SetTopology(D3D11_PRIMITIVE_TOPOLOGY topology) noexcept { m_topology = topology; }
+	inline void SetBlendFactor(float blendFactors[4]) noexcept { memcpy(m_blendFactor, blendFactors, sizeof(float) * 4); }
+	inline void SetBlendSampleMask(unsigned int mask) noexcept { m_blendSampleMask = mask; }
+	inline void SetStencilRef(unsigned int ref) noexcept { m_stencilRef = ref; }
 
 private:
-//	void Initialize(std::shared_ptr<ConstantBuffer> vsPassConstants,
-//		std::shared_ptr<ConstantBuffer> psPassConstants);
-//	void InitializeInstanced(
-//		const std::vector<std::shared_ptr<ConstantBuffer>>& vsPerPassConstantBuffers,
-//		const std::vector<std::shared_ptr<ConstantBuffer>>& psPerPassConstantBuffers);
-
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 
 	std::unique_ptr<VertexShader>		m_vertexShader;
