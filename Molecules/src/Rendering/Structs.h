@@ -66,7 +66,7 @@ struct PassConstants
 // ------------------------------------------------------------------------
 
 #define MAX_INSTANCES 100
-#define NUM_MATERIALS 2
+#define NUM_MATERIALS 10
 
 struct Vertex
 {

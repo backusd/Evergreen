@@ -11,7 +11,7 @@
     #define NUM_SPOT_LIGHTS 0
 #endif
 
-#define NUM_MATERIALS 2
+#define NUM_MATERIALS 10
 
 // Include structures and functions for lighting.
 #include "Lighting.hlsl"
@@ -41,24 +41,11 @@ cbuffer cbPass : register(b0)
     Light gLights[MaxLights];
 };
 
-//cbuffer cbMaterial : register(b1)
-//{
-//    float4 gDiffuseAlbedo;
-//    float3 gFresnelR0;
-//    float gRoughness;
-//    float4x4 gMatTransform;
-//};
 cbuffer cbMaterial : register(b1)
 {
     Material gMaterials[NUM_MATERIALS];
 }
 
-//struct VSOut
-//{
-//    float4 PosH : SV_POSITION;
-//    float3 PosW : POSITION;
-//    float3 NormalW : NORMAL;
-//};
 struct VSOut
 {
     float4 PosH : SV_POSITION;

@@ -110,18 +110,28 @@ void Scene::CreateMainPipelineConfig()
 
 	// Buffer #2: MaterialsArray - Buffer with all materials that will not ever be updated
 	std::shared_ptr<ConstantBuffer> psMaterialsArrayBuffer = std::make_shared<ConstantBuffer>(m_deviceResources);
+	
 	MaterialsArray materials;
+	for (unsigned int iii = 0; iii < 10; ++iii)
+	{
+		materials.materials[iii].FresnelR0 = { 0.1f, 0.1f, 0.1f };
+		materials.materials[iii].Shininess = 0.875f;
+	}
 	materials.materials[0].DiffuseAlbedo = XMFLOAT4(0.2f, 0.6f, 0.2f, 1.0f);
-	materials.materials[0].FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
-	materials.materials[0].Shininess = 0.875;
-	materials.materials[1].DiffuseAlbedo = XMFLOAT4(0.8f, 0.0f, 0.0f, 1.0f);
-	materials.materials[1].FresnelR0 = XMFLOAT3(0.01f, 0.01f, 0.01f);
-	materials.materials[1].Shininess = 0.875f;
+	materials.materials[1].DiffuseAlbedo = XMFLOAT4(0.3f, 0.8f, 0.4f, 1.0f);
+	materials.materials[2].DiffuseAlbedo = XMFLOAT4(0.4f, 0.7f, 0.7f, 1.0f);
+	materials.materials[3].DiffuseAlbedo = XMFLOAT4(0.5f, 0.6f, 0.1f, 1.0f);
+	materials.materials[4].DiffuseAlbedo = XMFLOAT4(0.6f, 0.5f, 0.9f, 1.0f);
+	materials.materials[5].DiffuseAlbedo = XMFLOAT4(0.7f, 0.4f, 0.2f, 1.0f);
+	materials.materials[6].DiffuseAlbedo = XMFLOAT4(0.8f, 0.3f, 0.3f, 1.0f);
+	materials.materials[7].DiffuseAlbedo = XMFLOAT4(0.9f, 0.2f, 0.9f, 1.0f);
+	materials.materials[8].DiffuseAlbedo = XMFLOAT4(0.2f, 0.1f, 0.5f, 1.0f);
+	materials.materials[9].DiffuseAlbedo = XMFLOAT4(0.3f, 0.0f, 0.3f, 1.0f);
+
 	psMaterialsArrayBuffer->CreateBuffer<MaterialsArray>(D3D11_USAGE_DEFAULT, 0u, 0u, 0u, &materials);
 
 	m_psPerPassConstantsBuffers.push_back(psMaterialsArrayBuffer);
 	psCBA->AddBuffer(psMaterialsArrayBuffer);
-
 
 	// Pipeline Configuration 
 	std::unique_ptr<PipelineConfig> config = std::make_unique<PipelineConfig>(m_deviceResources, 

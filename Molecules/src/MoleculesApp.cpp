@@ -16,9 +16,16 @@ public:
 
 		// Initialize the Simulation
 		m_simulation = std::make_unique<Simulation>();
-		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { 0.5f, 0.0f, 0.0f });
-		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.5f, 0.0f });
-		m_simulation->Add(Element::Helium, { 0.0f, 0.0f, 0.0f }, { 0.0f, -0.5f, 0.0f });
+		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f },  {  0.5f,  0.0f,  0.0f });
+		m_simulation->Add(Element::Helium, { 0.0f, 0.0f, 0.0f },    { -0.1f,  0.9f,  0.0f });
+		m_simulation->Add(Element::Lithium, { 0.0f, 0.0f, 0.0f },   {  0.2f, -0.8f,  0.0f });
+		m_simulation->Add(Element::Beryllium, { 0.0f, 0.0f, 0.0f }, { -0.3f, -0.7f,  0.0f });
+		m_simulation->Add(Element::Boron, { 0.0f, 0.0f, 0.0f },     {  0.4f,  0.6f,  0.0f });
+		m_simulation->Add(Element::Carbon, { 0.0f, 0.0f, 0.0f },    { -0.5f,  0.5f,  0.0f });
+		m_simulation->Add(Element::Nitrogen, { 0.0f, 0.0f, 0.0f },  {  0.6f, -0.4f,  0.0f });
+		m_simulation->Add(Element::Oxygen, { 0.0f, 0.0f, 0.0f },    { -0.7f, -0.3f,  0.0f });
+		m_simulation->Add(Element::Flourine, { 0.0f, 0.0f, 0.0f },  {  0.8f,  0.2f,  0.0f });
+		m_simulation->Add(Element::Neon, { 0.0f, 0.0f, 0.0f },      { -0.9f,  0.1f,  0.0f });
 
 		// Get pointer to the viewport
 		m_viewport = m_ui->GetControlByName<Viewport>("MainViewport");
