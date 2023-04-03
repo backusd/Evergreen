@@ -43,7 +43,7 @@ private:
 	bool ParseRelocatable(json& data);
 	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
-	float ParseBorderWidth(json& data);
+	std::array<float, 4> ParseBorderWidth(json& data);
 	bool ParseIncludeTitleBar(json& data);
 	std::unique_ptr<ColorBrush> ParseTitleBarBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	float ParseTitleBarHeight(json& data);

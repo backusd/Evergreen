@@ -21,7 +21,10 @@
 		"Relocatable": true, // (optional) Bool for whether or not the Pane can be relocated. Default is true.
 		"BackgroundBrush": "Blue", // (optional) Background color - See Brushes.json for details on using a color brush. Default is Dark Gray
 		"BorderBrush": "Red", // (optional) Border color - See Brushes.json for details on using a color brush. Default is Black
-		"BorderWidth": 3.0, // (optional) Border width - default will be 0
+		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ], // (optional) Border width [left, top, right, bottom] - default will be 0. 
+		//                                                   Value can also be a single float that would get applied to all sides
+		//                                                   NOTE: When using rounded corners, ONLY the first border width value is used, so you might as well just specify a single float value
+
 		"CornerRadius": 15.0, // (optional) Corner radius for the entire Pane - default is 0
 		//                                  Can alternatively specify 'CornerRadiusX' and 'CornerRadiusY'. See next Pane example below.
 		"IncludeTitleBar": true, // (optional) Bool for whether or not to include a Title Bar. Default is true. (If true, 'Title' key is required.)

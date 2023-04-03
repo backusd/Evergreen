@@ -22,7 +22,7 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			bool relocatable,
 			std::unique_ptr<ColorBrush> backgroundBrush,
 			std::unique_ptr<ColorBrush> borderBrush,
-			float borderWidth,
+			const std::array<float, 4>& borderWidths,
 			bool includeTitleBar,
 			std::unique_ptr<ColorBrush> titleBarBrush,
 			float titleBarHeight) :
@@ -31,7 +31,7 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_relocatable(relocatable),
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
-	m_borderWidth(borderWidth),
+	m_borderWidths(borderWidths),
 	m_titleLayout(nullptr),
 	m_visible(true),
 	m_minimized(false),
@@ -42,6 +42,64 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_lastMouseX(0.0f),
 	m_lastMouseY(0.0f),
 	m_minPaneWidth(100.0f), 
+	m_minPaneHeight(100.0f),
+	m_heightToExpandTo(height),
+	m_widthToExpandTo(width),
+	m_mouseTitleBarState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseContentRegionState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseRightEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseLeftEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseTopEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseBottomEdgeState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseBottomRightCornerState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseBottomLeftCornerState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseTopRightCornerState(MouseOverDraggableAreaState::NOT_OVER),
+	m_mouseTopLeftCornerState(MouseOverDraggableAreaState::NOT_OVER)
+{
+	if (m_backgroundBrush == nullptr)
+		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::DarkGray));
+
+	if (m_borderBrush == nullptr)
+		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
+
+	if (m_titleBarBrush == nullptr)
+		m_titleBarBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f));
+
+	if (includeTitleBar)
+		InitializeLayoutWithTitleBar();
+	else
+		InitializeLayoutWithoutTitleBar();
+}
+Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
+			UI* ui,
+			float top,
+			float left,
+			float height,
+			float width,
+			bool resizable,
+			bool relocatable,
+			std::unique_ptr<ColorBrush> backgroundBrush,
+			std::unique_ptr<ColorBrush> borderBrush,
+			float borderWidth,
+			bool includeTitleBar,
+			std::unique_ptr<ColorBrush> titleBarBrush,
+			float titleBarHeight) :
+	Control(deviceResources, ui, D2D1::RectF(left, top, left + width, top + height)),
+	m_resizable(resizable),
+	m_relocatable(relocatable),
+	m_backgroundBrush(std::move(backgroundBrush)),
+	m_borderBrush(std::move(borderBrush)),
+	m_borderWidths{ borderWidth, borderWidth, borderWidth, borderWidth },
+	m_titleLayout(nullptr),
+	m_visible(true),
+	m_minimized(false),
+	m_paneCornerRadiusX(0.0f),
+	m_paneCornerRadiusY(0.0f),
+	m_titleBarBrush(std::move(titleBarBrush)),
+	m_titleBarHeight(titleBarHeight),
+	m_lastMouseX(0.0f),
+	m_lastMouseY(0.0f),
+	m_minPaneWidth(100.0f),
 	m_minPaneHeight(100.0f),
 	m_heightToExpandTo(height),
 	m_widthToExpandTo(width),
@@ -340,6 +398,8 @@ void Pane::Render() const
 		D2D1_RECT_F titleRect = TitleRect();
 		D2D1_RECT_F contentRect = ContentRect();
 
+		// NOTE: If using rounded corners, we aren't able to draw different border widths. Therefore,
+		//       we assume all border widths are the same and just use the first value in the array
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
 			if (m_minimized)
@@ -350,12 +410,12 @@ void Pane::Render() const
 				);
 				m_titleLayout->Render();
 				
-				if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+				if (m_borderBrush != nullptr && m_borderWidths[0] > 0.0f)
 				{
 					context->DrawRoundedRectangle(
 						D2D1::RoundedRect(titleRect, m_paneCornerRadiusX, m_paneCornerRadiusY),
 						m_borderBrush->Get(), 
-						m_borderWidth
+						m_borderWidths[0]
 					);
 				}
 			}
@@ -371,12 +431,12 @@ void Pane::Render() const
 				m_contentLayout->Render();
 				context->PopAxisAlignedClip();
 
-				if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+				if (m_borderBrush != nullptr && m_borderWidths[0] > 0.0f)
 				{
 					context->DrawRoundedRectangle(
 						D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY),
 						m_borderBrush->Get(),
-						m_borderWidth
+						m_borderWidths[0]
 					);
 				}
 			}
@@ -392,26 +452,62 @@ void Pane::Render() const
 				m_contentLayout->Render();
 			}
 
-			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+			if (m_borderBrush != nullptr)
 			{
-				if (m_minimized)
-					context->DrawRectangle(titleRect, m_borderBrush->Get(), m_borderWidth);
-				else
-					context->DrawRectangle(m_allowedRegion, m_borderBrush->Get(), m_borderWidth);
+				D2D1_RECT_F rect = m_minimized ? titleRect : m_allowedRegion;
+
+				if (m_borderWidths[0] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.left, rect.top),		// top-left
+						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left
+						m_borderBrush->Get(),
+						m_borderWidths[0]
+					);
+				}
+				if (m_borderWidths[1] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.left, rect.top),		// top-left
+						D2D1::Point2F(rect.right, rect.top),	// top-right
+						m_borderBrush->Get(),
+						m_borderWidths[1]
+					);
+				}
+				if (m_borderWidths[2] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.right, rect.top),	// top-right
+						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
+						m_borderBrush->Get(),
+						m_borderWidths[2]
+					);
+				}
+				if (m_borderWidths[3] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
+						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left
+						m_borderBrush->Get(),
+						m_borderWidths[3]
+					);
+				}
 			}
 		}
 	}
 	else if (!m_minimized)
 	{
 		// In order to draw the background with rounded corners, we draw the background for the layout manually here
+		// NOTE: If using rounded corners, we aren't able to draw different border widths. Therefore,
+		//       we assume all border widths are the same and just use the first value in the array
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
 			context->FillRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
 			m_contentLayout->Render();
 
-			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+			if (m_borderBrush != nullptr && m_borderWidths[0] > 0.0f)
 			{
-				context->DrawRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_borderBrush->Get(), m_borderWidth);
+				context->DrawRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_borderBrush->Get(), m_borderWidths[0]);
 			}
 		}
 		else
@@ -419,9 +515,46 @@ void Pane::Render() const
 			context->FillRectangle(m_allowedRegion, m_backgroundBrush->Get());
 			m_contentLayout->Render();
 
-			if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+			if (m_borderBrush != nullptr)
 			{
-				context->DrawRectangle(m_allowedRegion, m_borderBrush->Get(), m_borderWidth);
+				const D2D1_RECT_F& rect = m_allowedRegion;
+
+				if (m_borderWidths[0] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.left, rect.top),		// top-left
+						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left 
+						m_borderBrush->Get(),
+						m_borderWidths[0]
+					);
+				}
+				if (m_borderWidths[1] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.left, rect.top),		// top-left
+						D2D1::Point2F(rect.right, rect.top),	// top-right
+						m_borderBrush->Get(),
+						m_borderWidths[1]
+					);
+				}
+				if (m_borderWidths[2] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.right, rect.top),	// top-right
+						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
+						m_borderBrush->Get(),
+						m_borderWidths[2]
+					);
+				}
+				if (m_borderWidths[3] > 0.0f)
+				{
+					context->DrawLine(
+						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
+						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left
+						m_borderBrush->Get(),
+						m_borderWidths[3]
+					);
+				}
 			}
 		}
 	}

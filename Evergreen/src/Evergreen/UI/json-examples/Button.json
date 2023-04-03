@@ -11,7 +11,8 @@
 		"Margin": [ 5, 5, 5, 5 ], // Specify margin in order: left/top/right/bottom
 		"BackgroundBrush": "Black", // Background color - See Brushes.json for details on using a color brush
 		"BorderBrush": "Yellow", // (optional) Border color - See Brushes.json for details on using a color brush
-		"BorderWidth": 3.0, // (optional) Border width - default will be 0
+		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ], // (optional) Border width [left, top, right, bottom] - default will be 0. 
+		                                       //            Value can also be a single float that would get applied to all sides
 
 		// Button Content: Must be a json object with the 'Type' key having a value of either 'Text' or 'Layout'
 		//                 If the value is 'Text', the button will contain a single Text control (See Text.json for how to specify Text attributes)

@@ -10,7 +10,7 @@ MoleculesApp::MoleculesApp()
 
 	// Initialize the Simulation
 	m_simulation = std::make_unique<Simulation>();
-	m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f },  {  0.0f,  0.0f,  0.0f });
+	//m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f },  {  0.0f,  0.0f,  0.0f });
 	//m_simulation->Add(Element::Helium, { 0.0f, 0.0f, 0.0f },    { -0.1f,  0.9f,  0.0f });
 	//m_simulation->Add(Element::Lithium, { 0.0f, 0.0f, 0.0f },   {  0.2f, -0.8f,  0.0f });
 	//m_simulation->Add(Element::Beryllium, { 0.0f, 0.0f, 0.0f }, { -0.3f, -0.7f,  0.0f });
@@ -21,11 +21,14 @@ MoleculesApp::MoleculesApp()
 	//m_simulation->Add(Element::Flourine, { 0.0f, 0.0f, 0.0f },  {  0.8f,  0.2f,  0.0f });
 	//m_simulation->Add(Element::Neon, { 0.0f, 0.0f, 0.0f },      { -0.9f,  0.1f,  0.0f });
 
-	//for (unsigned int iii = 0; iii < 1024; ++iii)
-	//	m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { iii / 571.0f,  iii / 489.0f,  iii / 555.0f });
+	for (unsigned int iii = 0; iii < 20; ++iii)
+		m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f }, { iii / 57.0f,  iii / 48.0f,  iii / 55.0f });
 
-	//for (unsigned int iii = 0; iii < 1024; ++iii)
-	//	m_simulation->Add(Element::Lithium, { 0.0f, 0.0f, 0.0f }, { iii / -571.0f,  iii / -489.0f,  iii / -555.0f });
+	for (unsigned int iii = 0; iii < 20; ++iii)
+		m_simulation->Add(Element::Helium, { 0.0f, 0.0f, 0.0f }, { iii / 57.0f,  iii / -48.0f,  iii / 55.0f });
+
+	for (unsigned int iii = 0; iii < 20; ++iii)
+		m_simulation->Add(Element::Lithium, { 0.0f, 0.0f, 0.0f }, { iii / -57.0f,  iii / -48.0f,  iii / -55.0f });
 
 
 	// Get pointer to the viewport
@@ -50,7 +53,7 @@ MoleculesApp::MoleculesApp()
 	m_viewport->SetOnDoubleClickCallback([scene](Viewport* vp, MouseButtonDoubleClickEvent& e) { scene->OnDoubleClick(e); });
 
 	// Start the simulation
-	//m_simulation->Play();
+	m_simulation->Play();
 }
 
 void MoleculesApp::OnUpdate(const Timer& timer)

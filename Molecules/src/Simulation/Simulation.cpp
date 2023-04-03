@@ -4,7 +4,7 @@
 
 Simulation::Simulation() noexcept :
 	m_isPaused(true),
-	m_boxMax(1.0f)
+	m_boxMax(3.0f)
 {}
 
 void Simulation::Add(Element element, const DirectX::XMFLOAT3& position, const DirectX::XMFLOAT3& velocity) noexcept

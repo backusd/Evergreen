@@ -35,7 +35,7 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	std::unique_ptr<ColorBrush> borderBrush = ParseBorderBrush(deviceResources, data);
 
 	// Border Width
-	float borderWidth = ParseBorderWidth(data);
+	std::array<float, 4> borderWidths = ParseBorderWidth(data);
 
 	// Title attributes
 	bool includeTitleBar = ParseIncludeTitleBar(data);
@@ -65,7 +65,7 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 		relocatable, // relocatable
 		std::move(backgroundBrush), // background brush
 		std::move(borderBrush), // border brush
-		borderWidth, // border width
+		borderWidths, // border width
 		includeTitleBar, // includeTitleBar
 		std::move(titleBarBrush), // TitleBarBrush
 		titleBarHeight // TitleBar height
@@ -188,20 +188,39 @@ std::unique_ptr<ColorBrush> PaneLoader::ParseBorderBrush(std::shared_ptr<DeviceR
 	// Note: we are allowed to return nullptr here because the Pane class will just create a default border brush
 	return nullptr;
 }
-float PaneLoader::ParseBorderWidth(json& data)
+std::array<float, 4> PaneLoader::ParseBorderWidth(json& data)
 {
+	std::array<float, 4> borderWidths{ 0.0f, 0.0f, 0.0f, 0.0f };
+
 	if (data.contains("BorderWidth"))
 	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderWidth"].is_number(), "Pane control with name '{}': 'BorderWidth' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		if (data["BorderWidth"].is_number())
+		{
+			float width = data["BorderWidth"].get<float>();
+			JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "Pane control with name '{}': 'BorderWidth' is not allowed to be less than 0. Invalid Pane object: {}", m_name, data.dump(4));
+			borderWidths.fill(width);
+			return borderWidths;
+		}
 
-		float borderWidth = data["BorderWidth"].get<float>();
+		if (data["BorderWidth"].is_array())
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderWidth"].size() == 4, "Pane control with name '{}': When specificying 'BorderWidth' as an array of floats, there must be exactly 4 values in the array. Invalid Pane object: {}", m_name, data.dump(4));
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(borderWidth >= 0.0f, "Pane control with name '{}': 'BorderWidth' is not allowed to be less than 0. Invalid Pane object: {}", m_name, data.dump(4));
+			float width = 0.0f;
+			for (unsigned int iii = 0; iii < 4; ++iii)
+			{
+				JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderWidth"][iii].is_number(), "Pane control with name '{}': When specificying 'BorderWidth' as an array, the array values must be parsable numbers. Invalid Pane object: {}", m_name, data.dump(4));
+				width = data["BorderWidth"][iii].get<float>();
+				JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "Pane control with name '{}': 'BorderWidth' array values are not allowed to be less than 0. Invalid Pane object: {}", m_name, data.dump(4));
+				borderWidths[iii] = width;
+			}
+			return borderWidths;
+		}
 
-		return borderWidth;
+		JSON_LOADER_EXCEPTION("Pane control with name '{}': 'BorderWidth' value must either be a number of an array of 4 floats. Invalid Pane object: {}", m_name, data.dump(4));
 	}
 
-	return 0.0f;
+	return borderWidths;
 }
 
 bool PaneLoader::ParseIncludeTitleBar(json& data)

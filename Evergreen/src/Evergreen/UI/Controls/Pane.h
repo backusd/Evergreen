@@ -24,6 +24,21 @@ public:
 		bool relocatable = true,
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
+		const std::array<float, 4>& borderWidths = {},
+		bool includeTitleBar = true,
+		std::unique_ptr<ColorBrush> titleBarBrush = nullptr,
+		float titleBarHeight = 20.0f
+	);
+	Pane(std::shared_ptr<DeviceResources> deviceResources,
+		UI* ui,
+		float top,
+		float left,
+		float height,
+		float width,
+		bool resizable = true,
+		bool relocatable = true,
+		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
+		std::unique_ptr<ColorBrush> borderBrush = nullptr,
 		float borderWidth = 0.0f,
 		bool includeTitleBar = true,
 		std::unique_ptr<ColorBrush> titleBarBrush = nullptr,
@@ -67,7 +82,8 @@ public:
 	inline void SetRelocatable(bool relocatable) noexcept { m_relocatable = relocatable; }
 	void SetBackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); PaneChanged(); }
 	void SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); PaneChanged(); }
-	inline void SetBorderWidth(float width) noexcept { m_borderWidth = width; }
+	inline void SetBorderWidth(float widthAll) noexcept { m_borderWidths.fill(widthAll); }
+	inline void SetBorderWidth(std::array<float, 4> widths) noexcept { m_borderWidths = widths; }
 	void SetTitleBarBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_titleBarBrush = std::move(brush); PaneChanged(); }
 	void SetTitleBarHeight(float height) noexcept;
 	inline void SetMinimized(bool minimized) noexcept { m_minimized = minimized; }
@@ -79,7 +95,7 @@ public:
 	ND inline bool GetRelocatable() const noexcept { return m_relocatable; }
 	ND inline ColorBrush* GetBackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
 	ND inline ColorBrush* GetBorderBrush() const noexcept { return m_borderBrush.get(); }
-	ND inline float GetBorderWidth() const noexcept { return m_borderWidth; }
+	ND inline std::array<float, 4> GetBorderWidth() const noexcept { return m_borderWidths; }
 	ND inline ColorBrush* GetTitleBarBrush() const noexcept { return m_titleBarBrush.get(); }
 	ND inline float GetTitleBarHeight() const noexcept { return m_titleBarHeight; }
 	ND inline bool GetMinimized() const noexcept { return m_minimized; }
@@ -169,7 +185,7 @@ private:
 
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
-	float m_borderWidth;
+	std::array<float, 4>		m_borderWidths;
 
 	std::unique_ptr<ColorBrush> m_titleBarBrush;
 	float m_titleBarHeight;
