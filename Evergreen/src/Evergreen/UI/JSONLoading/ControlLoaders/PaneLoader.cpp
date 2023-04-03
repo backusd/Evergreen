@@ -46,7 +46,9 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Title", "Top", "Left", "Height", "Width", "Resizable",
 	"Relocatable", "BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadius", "CornerRadiusX", "CornerRadiusY", 
 	"IncludeTitleBar", "TitleBarBrush", "TitleBarHeight", "IsMinimized", "IsVisible", "Content", "OnMouseEnteredTitleBar", 
-	"OnMouseExitedTitleBar", "OnMouseEnteredContentRegion", "OnMouseExitedContentRegion", "OnMouseMoved", "OnUpdate"};
+	"OnMouseExitedTitleBar", "OnMouseEnteredContentRegion", "OnMouseExitedContentRegion", "OnMouseMoved", "OnUpdate",
+	"BorderTopLeftOffsetX", "BorderTopLeftOffsetY", "BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", 
+	"BorderBottomLeftOffsetY", "BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -75,6 +77,8 @@ Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 
 	pane->Name(name);
 	pane->ID(ParseID(data));
+
+	ParseBorderOffsets(pane, data);
 
 	ParseCornerRadius(pane, data);
 	ParseIsMinimized(pane, data);
@@ -257,6 +261,68 @@ float PaneLoader::ParseTitleBarHeight(json& data)
 	}
 
 	return 20.0f;
+}
+
+void PaneLoader::ParseBorderOffsets(Pane* pane, json& data)
+{
+	EG_CORE_ASSERT(pane != nullptr, "pane is nullptr");
+
+	if (data.contains("BorderTopLeftOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopLeftOffsetX"].is_number(), "Pane control with name '{}': 'BorderTopLeftOffsetX' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderTopLeftOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderTopLeftOffsetX' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderTopLeftOffsetX(value);
+	}
+	if (data.contains("BorderTopLeftOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopLeftOffsetY"].is_number(), "Pane control with name '{}': 'BorderTopLeftOffsetY' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderTopLeftOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderTopLeftOffsetY' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderTopLeftOffsetY(value);
+	}
+	if (data.contains("BorderTopRightOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopRightOffsetX"].is_number(), "Pane control with name '{}': 'BorderTopRightOffsetX' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderTopRightOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderTopRightOffsetX' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderTopRightOffsetX(value);
+	}
+	if (data.contains("BorderTopRightOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopRightOffsetY"].is_number(), "Pane control with name '{}': 'BorderTopRightOffsetY' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderTopRightOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderTopRightOffsetY' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderTopRightOffsetY(value);
+	}
+	if (data.contains("BorderBottomLeftOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomLeftOffsetX"].is_number(), "Pane control with name '{}': 'BorderBottomLeftOffsetX' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomLeftOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderBottomLeftOffsetX' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderBottomLeftOffsetX(value);
+	}
+	if (data.contains("BorderBottomLeftOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomLeftOffsetY"].is_number(), "Pane control with name '{}': 'BorderBottomLeftOffsetY' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomLeftOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderBottomLeftOffsetY' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderBottomLeftOffsetY(value);
+	}
+	if (data.contains("BorderBottomRightOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomRightOffsetX"].is_number(), "Pane control with name '{}': 'BorderBottomRightOffsetX' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomRightOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderBottomRightOffsetX' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderBottomRightOffsetX(value);
+	}
+	if (data.contains("BorderBottomRightOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomRightOffsetY"].is_number(), "Pane control with name '{}': 'BorderBottomRightOffsetY' value must be a number. Invalid Pane object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomRightOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Pane control with name '{}': 'BorderBottomRightOffsetY' value must be >= 0. Invalid Pane object: {}", m_name, data.dump(4));
+		pane->BorderBottomRightOffsetY(value);
+	}
 }
 
 void PaneLoader::ParseCornerRadius(Pane* pane, json& data)

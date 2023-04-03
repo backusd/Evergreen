@@ -32,6 +32,14 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidths(borderWidths),
+	m_borderTopLeftOffsetX(0.0f),
+	m_borderTopLeftOffsetY(0.0f),
+	m_borderTopRightOffsetX(0.0f),
+	m_borderTopRightOffsetY(0.0f),
+	m_borderBottomLeftOffsetX(0.0f),
+	m_borderBottomLeftOffsetY(0.0f),
+	m_borderBottomRightOffsetX(0.0f),
+	m_borderBottomRightOffsetY(0.0f),
 	m_titleLayout(nullptr),
 	m_visible(true),
 	m_minimized(false),
@@ -90,6 +98,14 @@ Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundBrush(std::move(backgroundBrush)),
 	m_borderBrush(std::move(borderBrush)),
 	m_borderWidths{ borderWidth, borderWidth, borderWidth, borderWidth },
+	m_borderTopLeftOffsetX(0.0f),
+	m_borderTopLeftOffsetY(0.0f),
+	m_borderTopRightOffsetX(0.0f),
+	m_borderTopRightOffsetY(0.0f),
+	m_borderBottomLeftOffsetX(0.0f),
+	m_borderBottomLeftOffsetY(0.0f),
+	m_borderBottomRightOffsetX(0.0f),
+	m_borderBottomRightOffsetY(0.0f),
 	m_titleLayout(nullptr),
 	m_visible(true),
 	m_minimized(false),
@@ -400,6 +416,8 @@ void Pane::Render() const
 
 		// NOTE: If using rounded corners, we aren't able to draw different border widths. Therefore,
 		//       we assume all border widths are the same and just use the first value in the array
+		// NOTE: If using rounded corners, we also can't accommodate using the border offsets to draw
+		//       a partial edge border
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
 			if (m_minimized)
@@ -454,13 +472,13 @@ void Pane::Render() const
 
 			if (m_borderBrush != nullptr)
 			{
-				D2D1_RECT_F rect = m_minimized ? titleRect : m_allowedRegion;
+				const D2D1_RECT_F& rect = m_minimized ? titleRect : m_allowedRegion;
 
 				if (m_borderWidths[0] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.left, rect.top),		// top-left
-						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left
+						D2D1::Point2F(rect.left, rect.top + m_borderTopLeftOffsetY),		// top-left
+						D2D1::Point2F(rect.left, rect.bottom - m_borderBottomLeftOffsetY),	// bottom-left
 						m_borderBrush->Get(),
 						m_borderWidths[0]
 					);
@@ -468,8 +486,8 @@ void Pane::Render() const
 				if (m_borderWidths[1] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.left, rect.top),		// top-left
-						D2D1::Point2F(rect.right, rect.top),	// top-right
+						D2D1::Point2F(rect.left + m_borderTopLeftOffsetX, rect.top),	// top-left
+						D2D1::Point2F(rect.right - m_borderTopRightOffsetX, rect.top),	// top-right
 						m_borderBrush->Get(),
 						m_borderWidths[1]
 					);
@@ -477,8 +495,8 @@ void Pane::Render() const
 				if (m_borderWidths[2] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.right, rect.top),	// top-right
-						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
+						D2D1::Point2F(rect.right, rect.top + m_borderTopRightOffsetY),			// top-right
+						D2D1::Point2F(rect.right, rect.bottom - m_borderBottomRightOffsetY),	// bottom-right
 						m_borderBrush->Get(),
 						m_borderWidths[2]
 					);
@@ -486,8 +504,8 @@ void Pane::Render() const
 				if (m_borderWidths[3] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
-						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left
+						D2D1::Point2F(rect.right - m_borderBottomRightOffsetX, rect.bottom),	// bottom-right
+						D2D1::Point2F(rect.left + m_borderBottomLeftOffsetX, rect.bottom),		// bottom-left
 						m_borderBrush->Get(),
 						m_borderWidths[3]
 					);
@@ -500,6 +518,8 @@ void Pane::Render() const
 		// In order to draw the background with rounded corners, we draw the background for the layout manually here
 		// NOTE: If using rounded corners, we aren't able to draw different border widths. Therefore,
 		//       we assume all border widths are the same and just use the first value in the array
+		// NOTE: If using rounded corners, we also can't accommodate using the border offsets to draw
+		//       a partial edge border
 		if (m_paneCornerRadiusX > 0.0f && m_paneCornerRadiusY > 0.0f)
 		{
 			context->FillRoundedRectangle(D2D1::RoundedRect(m_allowedRegion, m_paneCornerRadiusX, m_paneCornerRadiusY), m_backgroundBrush->Get());
@@ -522,8 +542,8 @@ void Pane::Render() const
 				if (m_borderWidths[0] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.left, rect.top),		// top-left
-						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left 
+						D2D1::Point2F(rect.left, rect.top + m_borderTopLeftOffsetY),		// top-left
+						D2D1::Point2F(rect.left, rect.bottom - m_borderBottomLeftOffsetY),	// bottom-left
 						m_borderBrush->Get(),
 						m_borderWidths[0]
 					);
@@ -531,8 +551,8 @@ void Pane::Render() const
 				if (m_borderWidths[1] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.left, rect.top),		// top-left
-						D2D1::Point2F(rect.right, rect.top),	// top-right
+						D2D1::Point2F(rect.left + m_borderTopLeftOffsetX, rect.top),	// top-left
+						D2D1::Point2F(rect.right - m_borderTopRightOffsetX, rect.top),	// top-right
 						m_borderBrush->Get(),
 						m_borderWidths[1]
 					);
@@ -540,8 +560,8 @@ void Pane::Render() const
 				if (m_borderWidths[2] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.right, rect.top),	// top-right
-						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
+						D2D1::Point2F(rect.right, rect.top + m_borderTopRightOffsetY),			// top-right
+						D2D1::Point2F(rect.right, rect.bottom - m_borderBottomRightOffsetY),	// bottom-right
 						m_borderBrush->Get(),
 						m_borderWidths[2]
 					);
@@ -549,8 +569,8 @@ void Pane::Render() const
 				if (m_borderWidths[3] > 0.0f)
 				{
 					context->DrawLine(
-						D2D1::Point2F(rect.right, rect.bottom),	// bottom-right
-						D2D1::Point2F(rect.left, rect.bottom),	// bottom-left
+						D2D1::Point2F(rect.right - m_borderBottomRightOffsetX, rect.bottom),	// bottom-right
+						D2D1::Point2F(rect.left + m_borderBottomLeftOffsetX, rect.bottom),		// bottom-left
 						m_borderBrush->Get(),
 						m_borderWidths[3]
 					);

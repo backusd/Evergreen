@@ -24,6 +24,18 @@
 		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ], // (optional) Border width [left, top, right, bottom] - default will be 0. 
 		//                                                   Value can also be a single float that would get applied to all sides
 		//                                                   NOTE: When using rounded corners, ONLY the first border width value is used, so you might as well just specify a single float value
+		
+		// Border Offsets: If you want to draw a border around a button, but have it not completely span the length of an edge
+		//                 you can assign an offset so the border will stop short of the intended corner
+		"BorderTopLeftOffsetX": 5.0, // All offset DEFAULT values will be 0
+		"BorderTopLeftOffsetY": 5.0,
+		"BorderTopRightOffsetX": 5.0,
+		"BorderTopRightOffsetY": 5.0,
+		"BorderBottomLeftOffsetX": 5.0,
+		"BorderBottomLeftOffsetY": 5.0,
+		"BorderBottomRightOffsetX": 5.0,
+		"BorderBottomRightOffsetY": 5.0,
+
 
 		"CornerRadius": 15.0, // (optional) Corner radius for the entire Pane - default is 0
 		//                                  Can alternatively specify 'CornerRadiusX' and 'CornerRadiusY'. See next Pane example below.

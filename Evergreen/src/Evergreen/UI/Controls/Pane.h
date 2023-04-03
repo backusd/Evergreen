@@ -84,6 +84,14 @@ public:
 	void SetBorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); PaneChanged(); }
 	inline void SetBorderWidth(float widthAll) noexcept { m_borderWidths.fill(widthAll); }
 	inline void SetBorderWidth(std::array<float, 4> widths) noexcept { m_borderWidths = widths; }
+	inline void BorderTopLeftOffsetX(float offset) noexcept { m_borderTopLeftOffsetX = offset; }
+	inline void BorderTopLeftOffsetY(float offset) noexcept { m_borderTopLeftOffsetY = offset; }
+	inline void BorderTopRightOffsetX(float offset) noexcept { m_borderTopRightOffsetX = offset; }
+	inline void BorderTopRightOffsetY(float offset) noexcept { m_borderTopRightOffsetY = offset; }
+	inline void BorderBottomLeftOffsetX(float offset) noexcept { m_borderBottomLeftOffsetX = offset; }
+	inline void BorderBottomLeftOffsetY(float offset) noexcept { m_borderBottomLeftOffsetY = offset; }
+	inline void BorderBottomRightOffsetX(float offset) noexcept { m_borderBottomRightOffsetX = offset; }
+	inline void BorderBottomRightOffsetY(float offset) noexcept { m_borderBottomRightOffsetY = offset; }
 	void SetTitleBarBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_titleBarBrush = std::move(brush); PaneChanged(); }
 	void SetTitleBarHeight(float height) noexcept;
 	inline void SetMinimized(bool minimized) noexcept { m_minimized = minimized; }
@@ -186,6 +194,14 @@ private:
 	std::unique_ptr<ColorBrush> m_backgroundBrush;
 	std::unique_ptr<ColorBrush> m_borderBrush;
 	std::array<float, 4>		m_borderWidths;
+	float m_borderTopLeftOffsetX;
+	float m_borderTopLeftOffsetY;
+	float m_borderTopRightOffsetX;
+	float m_borderTopRightOffsetY;
+	float m_borderBottomLeftOffsetX;
+	float m_borderBottomLeftOffsetY;
+	float m_borderBottomRightOffsetX;
+	float m_borderBottomRightOffsetY;
 
 	std::unique_ptr<ColorBrush> m_titleBarBrush;
 	float m_titleBarHeight;

@@ -48,6 +48,8 @@ private:
 	std::unique_ptr<ColorBrush> ParseTitleBarBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	float ParseTitleBarHeight(json& data);
 
+	void ParseBorderOffsets(Pane* pane, json& data);
+
 	void ParseCornerRadius(Pane* pane, json& data);
 	void ParseIsMinimized(Pane* pane, json& data);
 	void ParseIsVisible(Pane* pane, json& data);

@@ -223,13 +223,24 @@ void MoleculesApp::SetMenuBarCallbacks()
 		[this](Button* button, MouseMoveEvent& e)
 		{
 			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			D2D1_COLOR_F color = filePane->GetVisible() ? m_menuBarButtonColorPaneOpen : m_menuBarButtonColorMouseOverPaneClosed;
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
+			if (filePane->GetVisible())
+			{
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
+			}
+			else
+			{
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				button->BorderWidth(0.0f);
+			}
 		}
 	);
 	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
+			// Remove any button border
+			button->BorderWidth(0.0f);
+
 			Pane* filePane = m_ui->GetPane("FileDropDownPane");
 
 			// First if the file pane is visible, check if the mouse is now over the Edit button
@@ -276,10 +287,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 			if (filePane->GetVisible())
 			{
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else if (button->MouseIsOver())
 			{
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				button->BorderWidth(0.0f);
 			}
 		}
 	);
@@ -289,13 +302,24 @@ void MoleculesApp::SetMenuBarCallbacks()
 		[this](Button* button, MouseMoveEvent& e)
 		{
 			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-			D2D1_COLOR_F color = editPane->GetVisible() ? m_menuBarButtonColorPaneOpen : m_menuBarButtonColorMouseOverPaneClosed;
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
+			if (editPane->GetVisible())
+			{
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
+			}
+			else
+			{
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				button->BorderWidth(0.0f);
+			}
 		}
 	);
 	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
+			// Remove any button border
+			button->BorderWidth(0.0f);
+
 			Pane* editPane = m_ui->GetPane("EditDropDownPane");
 
 			// First if the edit pane is visible, check if the mouse is now over the File button or View Button
@@ -352,10 +376,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 			if (editPane->GetVisible())
 			{
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else if (button->MouseIsOver())
 			{
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				button->BorderWidth(0.0f);
 			}
 		}
 	);
@@ -365,13 +391,24 @@ void MoleculesApp::SetMenuBarCallbacks()
 		[this](Button* button, MouseMoveEvent& e)
 		{
 			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-			D2D1_COLOR_F color = viewPane->GetVisible() ? m_menuBarButtonColorPaneOpen : m_menuBarButtonColorMouseOverPaneClosed;
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
+			if (viewPane->GetVisible())
+			{
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
+			}
+			else
+			{
+				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				button->BorderWidth(0.0f);
+			}
 		}
 	);
 	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
+			// Remove any button border
+			button->BorderWidth(0.0f);
+
 			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
 
 			// First if the view pane is visible, check if the mouse is now over the Edit button
@@ -419,10 +456,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 			if (viewPane->GetVisible())
 			{
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else if (button->MouseIsOver())
 			{
 				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				button->BorderWidth(0.0f);
 			}
 		}
 	);
@@ -528,6 +567,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			filePane->SetVisible(false);
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
 			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			fileButton->BorderWidth(0.0f);
 		}
 	);
 
@@ -540,6 +580,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			filePane->SetVisible(false);
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
 			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			fileButton->BorderWidth(0.0f);
 		}
 	);
 
@@ -552,6 +593,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			filePane->SetVisible(false);
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
 			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			fileButton->BorderWidth(0.0f);
 		}
 	);
 
@@ -564,6 +606,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			filePane->SetVisible(false);
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
 			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			fileButton->BorderWidth(0.0f);
 		}
 	);
 
@@ -576,6 +619,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			filePane->SetVisible(false);
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
 			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			fileButton->BorderWidth(0.0f);
 		}
 	);
 }
@@ -590,6 +634,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 			editPane->SetVisible(false);
 			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
 			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			editButton->BorderWidth(0.0f);
 		}
 	);
 
@@ -602,6 +647,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 			editPane->SetVisible(false);
 			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
 			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			editButton->BorderWidth(0.0f);
 		}
 	);
 }
@@ -616,6 +662,7 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 			viewPane->SetVisible(false);
 			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
 			viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			viewButton->BorderWidth(0.0f);
 		}
 	);
 
@@ -628,6 +675,7 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 			viewPane->SetVisible(false);
 			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
 			viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			viewButton->BorderWidth(0.0f);
 		}
 	);
 }
