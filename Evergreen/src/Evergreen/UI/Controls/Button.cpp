@@ -16,7 +16,15 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
 	m_mouseIsOver(false), 
 	m_mouseLButtonIsDown(false),
-	m_borderWidths(borderWidths)
+	m_borderWidths(borderWidths),
+	m_borderTopLeftOffsetX(0.0f),
+	m_borderTopLeftOffsetY(0.0f),
+	m_borderTopRightOffsetX(0.0f),
+	m_borderTopRightOffsetY(0.0f),
+	m_borderBottomLeftOffsetX(0.0f),
+	m_borderBottomLeftOffsetY(0.0f),
+	m_borderBottomRightOffsetX(0.0f),
+	m_borderBottomRightOffsetY(0.0f)
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -46,7 +54,15 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
 	m_mouseIsOver(false),
 	m_mouseLButtonIsDown(false),
-	m_borderWidths{ borderWidth, borderWidth, borderWidth, borderWidth }
+	m_borderWidths{ borderWidth, borderWidth, borderWidth, borderWidth },
+	m_borderTopLeftOffsetX(0.0f),
+	m_borderTopLeftOffsetY(0.0f),
+	m_borderTopRightOffsetX(0.0f),
+	m_borderTopRightOffsetY(0.0f),
+	m_borderBottomLeftOffsetX(0.0f),
+	m_borderBottomLeftOffsetY(0.0f),
+	m_borderBottomRightOffsetX(0.0f),
+	m_borderBottomRightOffsetY(0.0f)
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -88,8 +104,8 @@ void Button::Render() const
 	if (m_borderWidths[0] > 0.0f)
 	{
 		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.top),		// top-left
-			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.bottom),	// bottom-left
+			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.top + m_borderTopLeftOffsetY),		// top-left
+			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.bottom - m_borderBottomLeftOffsetY),	// bottom-left
 			m_borderBrush->Get(),
 			m_borderWidths[0]
 		);
@@ -97,8 +113,8 @@ void Button::Render() const
 	if (m_borderWidths[1] > 0.0f)
 	{
 		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.top),		// top-left
-			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.top),	// top-right
+			D2D1::Point2F(m_backgroundRect.left + m_borderTopLeftOffsetX, m_backgroundRect.top),	// top-left
+			D2D1::Point2F(m_backgroundRect.right - m_borderTopRightOffsetX, m_backgroundRect.top),	// top-right
 			m_borderBrush->Get(),
 			m_borderWidths[1]
 		);
@@ -106,8 +122,8 @@ void Button::Render() const
 	if (m_borderWidths[2] > 0.0f)
 	{
 		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.top),	// top-right
-			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.bottom),	// bottom-right
+			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.top + m_borderTopRightOffsetY),			// top-right
+			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.bottom - m_borderBottomRightOffsetY),	// bottom-right
 			m_borderBrush->Get(),
 			m_borderWidths[2]
 		);
@@ -115,8 +131,8 @@ void Button::Render() const
 	if (m_borderWidths[3] > 0.0f)
 	{
 		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.bottom),	// bottom-right
-			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.bottom),	// bottom-left
+			D2D1::Point2F(m_backgroundRect.right - m_borderBottomRightOffsetX, m_backgroundRect.bottom),	// bottom-right
+			D2D1::Point2F(m_backgroundRect.left + m_borderBottomLeftOffsetX, m_backgroundRect.bottom),		// bottom-left
 			m_borderBrush->Get(),
 			m_borderWidths[3]
 		);

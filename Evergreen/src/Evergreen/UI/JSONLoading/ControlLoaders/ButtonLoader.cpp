@@ -33,7 +33,9 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
-	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate"};
+	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
+	"BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", "BorderBottomLeftOffsetY",
+	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -49,6 +51,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 
+	ParseBorderOffsets(button, data);
 	ParseOnMouseEntered(button, data);
 	ParseOnMouseExited(button, data);
 	ParseOnMouseMoved(button, data);
@@ -155,6 +158,68 @@ void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources
 	else
 	{
 		JSON_LOADER_EXCEPTION("Button control with name '{}': 'Content' json object key 'Type' value ('{}') was not recoginized - value must either be 'Text' or 'Layout'. Invalid Button object: {}", m_name, contentType, data.dump(4));
+	}
+}
+
+void ButtonLoader::ParseBorderOffsets(Button* button, json& data)
+{
+	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
+
+	if (data.contains("BorderTopLeftOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopLeftOffsetX"].is_number(), "Button control with name '{}': 'BorderTopLeftOffsetX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderTopLeftOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderTopLeftOffsetX' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderTopLeftOffsetX(value);
+	}
+	if (data.contains("BorderTopLeftOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopLeftOffsetY"].is_number(), "Button control with name '{}': 'BorderTopLeftOffsetY' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderTopLeftOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderTopLeftOffsetY' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderTopLeftOffsetY(value);
+	}
+	if (data.contains("BorderTopRightOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopRightOffsetX"].is_number(), "Button control with name '{}': 'BorderTopRightOffsetX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderTopRightOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderTopRightOffsetX' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderTopRightOffsetX(value);
+	}
+	if (data.contains("BorderTopRightOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopRightOffsetY"].is_number(), "Button control with name '{}': 'BorderTopRightOffsetY' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderTopRightOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderTopRightOffsetY' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderTopRightOffsetY(value);
+	}
+	if (data.contains("BorderBottomLeftOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomLeftOffsetX"].is_number(), "Button control with name '{}': 'BorderBottomLeftOffsetX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomLeftOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderBottomLeftOffsetX' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderBottomLeftOffsetX(value);
+	}
+	if (data.contains("BorderBottomLeftOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomLeftOffsetY"].is_number(), "Button control with name '{}': 'BorderBottomLeftOffsetY' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomLeftOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderBottomLeftOffsetY' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderBottomLeftOffsetY(value);
+	}
+	if (data.contains("BorderBottomRightOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomRightOffsetX"].is_number(), "Button control with name '{}': 'BorderBottomRightOffsetX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomRightOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderBottomRightOffsetX' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderBottomRightOffsetX(value);
+	}
+	if (data.contains("BorderBottomRightOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomRightOffsetY"].is_number(), "Button control with name '{}': 'BorderBottomRightOffsetY' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		float value = data["BorderBottomRightOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Button control with name '{}': 'BorderBottomRightOffsetY' value must be >= 0. Invalid Button object: {}", m_name, data.dump(4));
+		button->BorderBottomRightOffsetY(value);
 	}
 }
 

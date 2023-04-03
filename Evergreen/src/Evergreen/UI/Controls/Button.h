@@ -63,6 +63,14 @@ public:
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
 	void BorderWidth(float widthAll) noexcept { m_borderWidths.fill(widthAll); }
 	void BorderWidth(const std::array<float, 4>& width) noexcept { m_borderWidths = width; }
+	inline void BorderTopLeftOffsetX(float offset) noexcept { m_borderTopLeftOffsetX = offset; }
+	inline void BorderTopLeftOffsetY(float offset) noexcept { m_borderTopLeftOffsetY = offset; }
+	inline void BorderTopRightOffsetX(float offset) noexcept { m_borderTopRightOffsetX = offset; }
+	inline void BorderTopRightOffsetY(float offset) noexcept { m_borderTopRightOffsetY = offset; }
+	inline void BorderBottomLeftOffsetX(float offset) noexcept { m_borderBottomLeftOffsetX = offset; }
+	inline void BorderBottomLeftOffsetY(float offset) noexcept { m_borderBottomLeftOffsetY = offset; }
+	inline void BorderBottomRightOffsetX(float offset) noexcept { m_borderBottomRightOffsetX = offset; }
+	inline void BorderBottomRightOffsetY(float offset) noexcept { m_borderBottomRightOffsetY = offset; }
 
 	inline void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
 	inline void SetOnMouseExitedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
@@ -94,6 +102,15 @@ protected:
 	std::unique_ptr<Layout>		m_layout;
 	std::array<float, 4>		m_borderWidths;
 	D2D1_RECT_F					m_backgroundRect;
+
+	float m_borderTopLeftOffsetX;
+	float m_borderTopLeftOffsetY;
+	float m_borderTopRightOffsetX;
+	float m_borderTopRightOffsetY;
+	float m_borderBottomLeftOffsetX;
+	float m_borderBottomLeftOffsetY;
+	float m_borderBottomRightOffsetX;
+	float m_borderBottomRightOffsetY;
 
 	bool m_mouseIsOver;
 	bool m_mouseLButtonIsDown;

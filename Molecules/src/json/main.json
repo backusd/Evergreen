@@ -590,6 +590,7 @@
 					"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
 					"BorderBrush": "Gray",
 					"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ],
+					"BorderTopLeftOffsetX": 25.0,
 
 					"Content": {
 						"Type": "Text",
