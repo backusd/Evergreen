@@ -593,7 +593,7 @@
 				"Type": "Layout",
 				"RowDefinitions": [ { "Height": "1*" } ],
 				"ColumnDefinitions": [
-					{ "Width": "1*" },
+					{ "Width": "150" },
 					{ "Width": "1*" }
 				],
 
@@ -602,7 +602,6 @@
 					"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
 					"BorderBrush": "Gray",
 					"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ],
-					"BorderTopLeftOffsetX": 25.0,
 
 					"Content": {
 						"Type": "Text",
@@ -630,6 +629,9 @@
 					{ "Height": "1*" }
 				],
 				"ColumnDefinitions": [ { "Width": "1*" } ],
+				"BorderWidth": 1.0,
+				"BorderBrush": "Gray",
+				"BorderTopLeftOffsetX": 150.0,
 
 				"MaterialDiffuseAlbedoXSlider": {
 					"Type": "SliderFloat",

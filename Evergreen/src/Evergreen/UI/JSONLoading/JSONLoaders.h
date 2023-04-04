@@ -161,6 +161,7 @@ private:
 	void LoadLayoutRowDefinitions(Layout* layout, json& data);
 	void LoadLayoutColumnDefinitions(Layout* layout, json& data);
 	void LoadLayoutMargin(Layout* layout, json& data);
+	void LoadLayoutBorder(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 	void LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
 
 	RowColumnPosition ParseRowColumnPosition(json& data);

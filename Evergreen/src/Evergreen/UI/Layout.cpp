@@ -138,7 +138,16 @@ Layout::Layout(std::shared_ptr<DeviceResources> deviceResources, UI* ui, float t
 	m_deviceResources(deviceResources),
 	m_ui(ui),
 	m_backgroundBrush(std::move(backgroundBrush)),
-	m_margin({ 0.0f, 0.0f, 0.0f, 0.0f })
+	m_margin({ 0.0f, 0.0f, 0.0f, 0.0f }),
+	m_borderWidths{ 0.0f, 0.0f, 0.0f, 0.0f },
+	m_borderTopLeftOffsetX(0.0f),
+	m_borderTopLeftOffsetY(0.0f),
+	m_borderTopRightOffsetX(0.0f),
+	m_borderTopRightOffsetY(0.0f),
+	m_borderBottomLeftOffsetX(0.0f),
+	m_borderBottomLeftOffsetY(0.0f),
+	m_borderBottomRightOffsetX(0.0f),
+	m_borderBottomRightOffsetY(0.0f)
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(ui != nullptr, "No UI");
@@ -209,8 +218,6 @@ void Layout::BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept
 void Layout::BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept
 {
 	m_borderBrush = std::move(brush);
-
-	// technically we all the border brush to be nullptr so do a check here
 	if (m_borderBrush != nullptr)
 		m_borderBrush->SetDrawRegion(D2D1::RectF(m_left, m_top, m_left + m_width, m_top + m_height));
 }
@@ -495,9 +502,6 @@ void Layout::Render() const
 
 	if (m_backgroundBrush != nullptr)
 	{
-		if (m_margin.Top > 10.0f)
-			int iii = 0;
-
 		context->FillRectangle(
 			D2D1::RectF(
 				m_left + m_margin.Left, 
@@ -509,18 +513,49 @@ void Layout::Render() const
 		);
 	}
 
-	if (m_borderBrush != nullptr && m_borderWidth > 0.0f)
+	if (m_borderBrush != nullptr)
 	{
-		context->DrawRectangle(
-			D2D1::RectF(
-				m_left + m_margin.Left,
-				m_top + m_margin.Top,
-				m_left + m_width - m_margin.Right,
-				m_top + m_height - m_margin.Bottom
-			),
-			m_borderBrush->Get(),
-			m_borderWidth
-		);
+		float left = m_left + m_margin.Left;
+		float right = m_left + m_width - m_margin.Right;
+		float top = m_top + m_margin.Top;
+		float bottom = m_top + m_height - m_margin.Bottom;
+
+		if (m_borderWidths[0] > 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, top + m_borderTopLeftOffsetY),			// top-left
+				D2D1::Point2F(left, bottom - m_borderBottomLeftOffsetY),	// bottom-left
+				m_borderBrush->Get(),
+				m_borderWidths[0]
+			);
+		}
+		if (m_borderWidths[1] > 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(left + m_borderTopLeftOffsetX, top),		// top-left
+				D2D1::Point2F(right - m_borderTopRightOffsetX, top),	// top-right
+				m_borderBrush->Get(),
+				m_borderWidths[1]
+			);
+		}
+		if (m_borderWidths[2] > 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(right, top + m_borderTopRightOffsetY),		// top-right
+				D2D1::Point2F(right, bottom - m_borderBottomRightOffsetY),	// bottom-right
+				m_borderBrush->Get(),
+				m_borderWidths[2]
+			);
+		}
+		if (m_borderWidths[3] > 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(right - m_borderBottomRightOffsetX, bottom),	// bottom-right
+				D2D1::Point2F(left + m_borderBottomLeftOffsetX, bottom),	// bottom-left
+				m_borderBrush->Get(),
+				m_borderWidths[3]
+			);
+		}
 	}
 
 	for (const std::unique_ptr<Control>& control : m_controls)

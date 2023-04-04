@@ -179,11 +179,20 @@ public:
 
 	void BackgroundBrush(std::unique_ptr<ColorBrush> backgroundBrush) noexcept;
 	void BorderBrush(std::unique_ptr<ColorBrush> borderBrush) noexcept;
-	void BorderWidth(float width) noexcept { m_borderWidth = width; }
+	inline void BorderWidth(float widthAll) noexcept { m_borderWidths.fill(widthAll); }
+	inline void BorderWidth(const std::array<float, 4>& widths) noexcept { m_borderWidths = widths; }
+	inline void BorderTopLeftOffsetX(float offset) noexcept { m_borderTopLeftOffsetX = offset; }
+	inline void BorderTopLeftOffsetY(float offset) noexcept { m_borderTopLeftOffsetY = offset; }
+	inline void BorderTopRightOffsetX(float offset) noexcept { m_borderTopRightOffsetX = offset; }
+	inline void BorderTopRightOffsetY(float offset) noexcept { m_borderTopRightOffsetY = offset; }
+	inline void BorderBottomLeftOffsetX(float offset) noexcept { m_borderBottomLeftOffsetX = offset; }
+	inline void BorderBottomLeftOffsetY(float offset) noexcept { m_borderBottomLeftOffsetY = offset; }
+	inline void BorderBottomRightOffsetX(float offset) noexcept { m_borderBottomRightOffsetX = offset; }
+	inline void BorderBottomRightOffsetY(float offset) noexcept { m_borderBottomRightOffsetY = offset; }
 
-	ND ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
-	ND ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
-	ND float BorderWidth() const noexcept { return m_borderWidth; }
+	ND inline ColorBrush* BackgroundBrush() const noexcept { return m_backgroundBrush.get(); }
+	ND inline ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
+	ND inline std::array<float, 4> BorderWidth() const noexcept { return m_borderWidths; }
 
 	Row* AddRow(RowColumnDefinition definition);
 	Column* AddColumn(RowColumnDefinition definition);
@@ -265,7 +274,15 @@ private:
 
 	std::unique_ptr<Evergreen::ColorBrush> m_backgroundBrush;
 	std::unique_ptr<Evergreen::ColorBrush> m_borderBrush;
-	float								   m_borderWidth;
+	std::array<float, 4>				   m_borderWidths;
+	float								   m_borderTopLeftOffsetX;
+	float								   m_borderTopLeftOffsetY;
+	float								   m_borderTopRightOffsetX;
+	float								   m_borderTopRightOffsetY;
+	float								   m_borderBottomLeftOffsetX;
+	float								   m_borderBottomLeftOffsetY;
+	float								   m_borderBottomRightOffsetX;
+	float								   m_borderBottomRightOffsetY;
 
 	float							 m_top;
 	float							 m_left;

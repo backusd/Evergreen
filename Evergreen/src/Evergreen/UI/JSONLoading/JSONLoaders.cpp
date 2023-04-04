@@ -557,6 +557,9 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 	// Load Margin
 	LoadLayoutMargin(layout, data);
 
+	// Load Layout Border details
+	LoadLayoutBorder(deviceResources, layout, data);
+
 	// Now iterate over the controls and sublayouts within the layout
 	for (auto& [key, value] : data.items())
 	{
@@ -569,7 +572,17 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 			key.compare("ColumnSpan") == 0 ||
 			key.compare("RowDefinitions") == 0 ||
 			key.compare("ColumnDefinitions") == 0 ||
-			key.compare("Margin") == 0)
+			key.compare("Margin") == 0 ||
+			key.compare("BorderBrush") == 0 ||
+			key.compare("BorderWidth") == 0 ||
+			key.compare("BorderTopLeftOffsetX") == 0 || 
+			key.compare("BorderTopLeftOffsetY") == 0 ||
+			key.compare("BorderTopRightOffsetX") == 0 ||
+			key.compare("BorderTopRightOffsetY") == 0 ||
+			key.compare("BorderBottomLeftOffsetX") == 0 ||
+			key.compare("BorderBottomLeftOffsetY") == 0 ||
+			key.compare("BorderBottomRightOffsetX") == 0 ||
+			key.compare("BorderBottomRightOffsetY") == 0)
 			continue;
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(data[key].contains("Type"), "Control or sub-layout has no 'Type' definition: {}", data[key].dump(4));
@@ -801,6 +814,110 @@ void JSONLoaders::LoadLayoutColumnDefinitions(Layout* layout, json& data)
 	{
 		// Add a single column that spans the layout
 		layout->AddColumn({ RowColumnType::STAR, 1.0f });
+	}
+}
+void JSONLoaders::LoadLayoutBorder(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(layout != nullptr, "No layout");
+
+	// Border Brush -----------------------------------------------------------------------------------
+	if (data.contains("BorderWidth")) 
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("BorderBrush"), "Layout with name '{}': When 'BorderWidth' key is present, the 'BorderBrush' key is required. Incomplete Layout object: {}", layout->Name(), data.dump(4));
+	}
+	if (data.contains("BorderBrush"))
+	{
+		layout->BorderBrush(std::move(JSONLoaders::LoadBrush(deviceResources, data["BorderBrush"]))); 
+	}
+
+	// Border Width -----------------------------------------------------------------------------------
+	std::array<float, 4> borderWidths{ 0.0f, 0.0f, 0.0f, 0.0f }; 
+	if (data.contains("BorderWidth")) 
+	{
+		if (data["BorderWidth"].is_number()) 
+		{
+			float width = data["BorderWidth"].get<float>(); 
+			JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "Layout with name '{}': 'BorderWidth' is not allowed to be less than 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+			borderWidths.fill(width);
+			layout->BorderWidth(borderWidths);
+		}
+		else if (data["BorderWidth"].is_array())
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderWidth"].size() == 4, "Layout with name '{}': When specificying 'BorderWidth' as an array of floats, there must be exactly 4 values in the array. Invalid Layout object: {}", layout->Name(), data.dump(4));
+
+			float width = 0.0f; 
+			for (unsigned int iii = 0; iii < 4; ++iii) 
+			{
+				JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderWidth"][iii].is_number(), "Layout with name '{}': When specificying 'BorderWidth' as an array, the array values must be parsable numbers. Invalid Layout object: {}", layout->Name(), data.dump(4));
+				width = data["BorderWidth"][iii].get<float>(); 
+				JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "Layout with name '{}': 'BorderWidth' array values are not allowed to be less than 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+				borderWidths[iii] = width; 
+			}
+			layout->BorderWidth(borderWidths); 
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION("Layout with name '{}': 'BorderWidth' value must either be a number of an array of 4 floats. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		}
+	}
+
+	// Border Offsets -----------------------------------------------------------------------------------
+	if (data.contains("BorderTopLeftOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopLeftOffsetX"].is_number(), "Layout with name '{}': 'BorderTopLeftOffsetX' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderTopLeftOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderTopLeftOffsetX' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderTopLeftOffsetX(value);
+	}
+	if (data.contains("BorderTopLeftOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopLeftOffsetY"].is_number(), "Layout with name '{}': 'BorderTopLeftOffsetY' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderTopLeftOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderTopLeftOffsetY' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderTopLeftOffsetY(value);
+	}
+	if (data.contains("BorderTopRightOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopRightOffsetX"].is_number(), "Layout with name '{}': 'BorderTopRightOffsetX' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderTopRightOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderTopRightOffsetX' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderTopRightOffsetX(value);
+	}
+	if (data.contains("BorderTopRightOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderTopRightOffsetY"].is_number(), "Layout with name '{}': 'BorderTopRightOffsetY' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderTopRightOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderTopRightOffsetY' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderTopRightOffsetY(value);
+	}
+	if (data.contains("BorderBottomLeftOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomLeftOffsetX"].is_number(), "Layout with name '{}': 'BorderBottomLeftOffsetX' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderBottomLeftOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderBottomLeftOffsetX' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderBottomLeftOffsetX(value);
+	}
+	if (data.contains("BorderBottomLeftOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomLeftOffsetY"].is_number(), "Layout with name '{}': 'BorderBottomLeftOffsetY' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderBottomLeftOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderBottomLeftOffsetY' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderBottomLeftOffsetY(value);
+	}
+	if (data.contains("BorderBottomRightOffsetX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomRightOffsetX"].is_number(), "Layout with name '{}': 'BorderBottomRightOffsetX' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderBottomRightOffsetX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderBottomRightOffsetX' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderBottomRightOffsetX(value);
+	}
+	if (data.contains("BorderBottomRightOffsetY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderBottomRightOffsetY"].is_number(), "Layout with name '{}': 'BorderBottomRightOffsetY' value must be a number. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		float value = data["BorderBottomRightOffsetY"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderBottomRightOffsetY' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
+		layout->BorderBottomRightOffsetY(value);
 	}
 }
 void JSONLoaders::LoadLayoutMargin(Layout* layout, json& data)
