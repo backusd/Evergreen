@@ -560,10 +560,14 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 	// Load Layout Border details
 	LoadLayoutBorder(deviceResources, layout, data);
 
+	// Load Layout Callbacks
+	LoadLayoutCallbacks(layout, data);
+
 	// Now iterate over the controls and sublayouts within the layout
 	for (auto& [key, value] : data.items())
 	{
 		if (key.compare("import") == 0 ||
+			key.compare("id") == 0 ||
 			key.compare("Type") == 0 ||
 			key.compare("Brush") == 0 ||
 			key.compare("Row") == 0 ||
@@ -582,7 +586,8 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 			key.compare("BorderBottomLeftOffsetX") == 0 ||
 			key.compare("BorderBottomLeftOffsetY") == 0 ||
 			key.compare("BorderBottomRightOffsetX") == 0 ||
-			key.compare("BorderBottomRightOffsetY") == 0)
+			key.compare("BorderBottomRightOffsetY") == 0 ||
+			key.compare("OnResize") == 0)
 			continue;
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(data[key].contains("Type"), "Control or sub-layout has no 'Type' definition: {}", data[key].dump(4));
@@ -918,6 +923,36 @@ void JSONLoaders::LoadLayoutBorder(std::shared_ptr<DeviceResources> deviceResour
 		float value = data["BorderBottomRightOffsetY"].get<float>();
 		JSON_LOADER_EXCEPTION_IF_FALSE(value >= 0.0f, "Layout with name '{}': 'BorderBottomRightOffsetY' value must be >= 0. Invalid Layout object: {}", layout->Name(), data.dump(4));
 		layout->BorderBottomRightOffsetY(value);
+	}
+}
+void JSONLoaders::LoadLayoutCallbacks(Layout* layout, json& data)
+{
+	EG_CORE_ASSERT(layout != nullptr, "No layout");
+
+	if (data.contains("OnResize"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnResize"].is_string(), "Layout with name '{}': 'OnResize' value must be a string. Invalid Layout object: {}", layout->Name(), data.dump(4));
+
+		std::string key = data["OnResize"].get<std::string>();
+
+		auto callback = JSONLoaders::GetLayoutCallback(key);
+		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Layout with name '{}': 'OnResize' callback not found for key '{}'. Invalid Layout object: {}", layout->Name(), key, data.dump(4));
+		layout->SetOnResizeCallback(callback);
+
+		// NOTE: It might be tempting to immediately call layout->TriggerOnResizeCallback() to allow the
+		//		 callback to alter the layout in some way. However, it is very possible that the callback
+		//		 will perform a lookup of another Layout or Control that has not yet been created. Therefore,
+		//		 we MUST defer triggering the callback until the entire UI has been loaded.
+	}
+}
+void JSONLoaders::LoadLayoutID(Layout* layout, json& data)
+{
+	EG_CORE_ASSERT(layout != nullptr, "No layout");
+	
+	if (data.contains("id"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["id"].is_number_unsigned(), "Layout with name: '{}'. 'id' value must be an unsigned int. Invalid data: {}", layout->Name(), data.dump(4));
+		layout->ID(data["id"].get<unsigned int>());
 	}
 }
 void JSONLoaders::LoadLayoutMargin(Layout* layout, json& data)

@@ -593,7 +593,7 @@
 				"Type": "Layout",
 				"RowDefinitions": [ { "Height": "1*" } ],
 				"ColumnDefinitions": [
-					{ "Width": "150" },
+					{ "Width": "1*" },
 					{ "Width": "1*" }
 				],
 
@@ -631,7 +631,7 @@
 				"ColumnDefinitions": [ { "Width": "1*" } ],
 				"BorderWidth": 1.0,
 				"BorderBrush": "Gray",
-				"BorderTopLeftOffsetX": 150.0,
+				"OnResize": "RightPanelLayout_OnResizeCallback",
 
 				"MaterialDiffuseAlbedoXSlider": {
 					"Type": "SliderFloat",

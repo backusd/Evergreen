@@ -983,6 +983,19 @@ void UI::Render() const
 	m_deviceResources->EndDraw();
 }
 
+Layout* UI::GetLayoutByName(const std::string& name) noexcept
+{
+	Layout* l = nullptr;
+	for (const auto& pane : m_panes)
+	{
+		l = pane->GetLayoutByName(name);
+		if (l != nullptr)
+			return l;
+	}
+
+	return m_rootLayout->GetLayoutByName(name);
+}
+
 Pane* UI::AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept
 {
 	EG_CORE_ASSERT(m_panesMap.find(name) == m_panesMap.end(), std::format("Pane with name '{}' already exists", name));

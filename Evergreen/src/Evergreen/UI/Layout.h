@@ -209,6 +209,9 @@ public:
 	ND inline const std::vector<Row>& Rows() const noexcept { return m_rows; }
 	ND inline const std::vector<Column>& Columns() const noexcept { return m_columns; }
 
+	void ID(unsigned int id) noexcept { m_id = id; }
+	unsigned int ID() const noexcept { return m_id; }
+
 	ND inline UI* GetUI() noexcept { return m_ui; }
 	ND inline Control* GetControl(unsigned int index) const noexcept;
 	ND inline Layout* GetSublayout(unsigned int index) const noexcept;
@@ -219,11 +222,17 @@ public:
 	template<class T>
 	ND T* GetControlByID(unsigned int id) const noexcept requires (std::is_base_of_v<Control, T>);
 
+	ND Layout* GetLayoutByName(const std::string& name) noexcept;
+	ND Layout* GetLayoutByID(unsigned int id) noexcept;
+
 
 
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;
 	void Resize(float width, float height) noexcept;
+
+	void SetOnResizeCallback(std::function<void(Layout*)> fn) noexcept { m_OnResizeCallback = fn; }
+	void TriggerOnResizeCallback() { m_OnResizeCallback(this); }
 
 	void OnChar(CharEvent& e);
 	void OnKeyPressed(KeyPressedEvent& e);
@@ -269,8 +278,11 @@ private:
 	ND std::optional<unsigned int> MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept;
 	ND std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
 
+	std::function<void(Layout*)> m_OnResizeCallback = [](Layout* layout) {};
+
 	std::shared_ptr<DeviceResources> m_deviceResources;
 	UI* m_ui;
+	unsigned int m_id;
 
 	std::unique_ptr<Evergreen::ColorBrush> m_backgroundBrush;
 	std::unique_ptr<Evergreen::ColorBrush> m_borderBrush;

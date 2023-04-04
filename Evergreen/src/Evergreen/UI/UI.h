@@ -52,6 +52,8 @@ public:
 	template <class T>
 	ND inline T* GetControlByID(unsigned int id) const noexcept;
 
+	ND Layout* GetLayoutByName(const std::string& name) noexcept;
+
 	inline Pane* AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
 	ND inline Pane* GetPane(const std::string& name) noexcept;
 	void RemovePane(Pane* pane) noexcept;

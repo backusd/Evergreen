@@ -81,12 +81,13 @@ public:
 	ND inline const D2D1_RECT_F& AllowedRegion() const noexcept { return m_allowedRegion; }
 	ND inline UI* GetUI() const noexcept { return m_ui; }
 
-	// Virtual functions to retrieve a control by either name or ID. By default, they will simply only
+	// Virtual functions to retrieve a layout/control by either name or ID. By default, they will simply only
 	// check whether their name/ID matches and either return 'this' or nullptr. However, other controls (such
 	// as Button) which may contain sub-controls, will want to forward this function call to test its sub-layouts/controls
 	ND inline virtual Control* GetControlByName(const std::string& name) noexcept { return m_name.compare(name) == 0 ? this : nullptr; }
 	ND inline virtual Control* GetControlByID(unsigned int id) noexcept { return m_id == id ? this : nullptr; }
-
+	ND inline virtual Layout* GetLayoutByName(const std::string& name) noexcept { return nullptr; }
+	ND inline virtual Layout* GetLayoutByID(unsigned int id) noexcept { return nullptr; }
 
 protected:
 	// On* functions allow derived controls to perform necessary additional actions when a base class method is called

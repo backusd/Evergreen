@@ -8,6 +8,11 @@ MoleculesApp::MoleculesApp()
 	m_ui->SetUIRoot("src/json/");
 	m_ui->LoadUI("main.json");
 
+	// There may be some callbacks that we wish to invoke immediately, but might require a lookup of 
+	// 1 or more Layouts or Controls. Therefore, they cannot safely be invoked until after the entire
+	// UI has been loaded.
+	FinalizeUI();
+
 	// Initialize the Simulation
 	m_simulation = std::make_unique<Simulation>();
 	//m_simulation->Add(Element::Hydrogen, { 0.0f, 0.0f, 0.0f },  {  0.0f,  0.0f,  0.0f });
@@ -82,6 +87,13 @@ void MoleculesApp::OnRender()
 	m_scene->Render();
 }
 
+void MoleculesApp::FinalizeUI()
+{
+	// Trigger the OnResizeCallback so that the border will be updated before the first Render pass
+	m_ui->GetLayoutByName("RightPanelLayout_ContentLayout")->TriggerOnResizeCallback();
+
+}
+
 void MoleculesApp::SetCallbacks()
 {
 	// MenuBar Callbacks
@@ -95,6 +107,8 @@ void MoleculesApp::SetCallbacks()
 	// Materials
 	SetMaterialEditCallbacks();
 
+	// Right Panel Layout Callbacks
+	SetRightPanelLayoutCallbacks();
 }
 
 void MoleculesApp::SetSearchTextInputCallbacks()
@@ -713,3 +727,14 @@ void MoleculesApp::SetMaterialEditCallbacks()
 }
 
 
+void MoleculesApp::SetRightPanelLayoutCallbacks()
+{
+	JSONLoaders::AddLayoutCallback("RightPanelLayout_OnResizeCallback",
+		[this](Layout* layout)
+		{
+			Button* button = m_ui->GetControlByName<Button>("RightPanel_MaterialsButton");
+			const D2D1_RECT_F& rect = button->BackgroundRect();
+			layout->BorderTopLeftOffsetX(rect.right - rect.left);
+		}
+	);
+}

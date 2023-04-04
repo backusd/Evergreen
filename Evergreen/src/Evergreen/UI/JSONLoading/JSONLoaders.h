@@ -40,7 +40,8 @@ class EVERGREEN_API JSONLoaders
 {
 	using ControlLoaderFn = std::function<Control*(std::shared_ptr<DeviceResources>, Layout*, json&, const std::string&)>;
 	using StyleLoaderFn = std::function<std::unique_ptr<Style>(std::shared_ptr<DeviceResources>, json&, const std::string&)>;
-	
+	using LayoutCallbackFn = std::function<void(Layout*)>;
+
 public:
 	JSONLoaders(const JSONLoaders&) = delete;
 	void operator=(const JSONLoaders&) = delete;
@@ -72,6 +73,8 @@ public:
 	static std::function<void(Control*, const Timer&)> GetOnUpdateCallback(const std::string& key) { return Get().GetOnUpdateCallbackImpl(key); }
 	static void AddOnUpdateCallback(const std::string& key, std::function<void(Control*, const Timer&)> fn) { Get().AddOnUpdateCallbackImpl(key, fn); }
 
+	static void AddLayoutCallback(const std::string& key, LayoutCallbackFn fn) { Get().AddLayoutCallbackImpl(key, fn); }
+	static LayoutCallbackFn GetLayoutCallback(const std::string& key) { return Get().GetLayoutCallbackImpl(key); }
 
 public:
 	template <class C, class E>
@@ -142,6 +145,9 @@ private:
 	void AddControlLoaderImpl(std::string key, ControlLoaderFn loader) noexcept { m_controlLoaders[key] = loader; }
 	void AddStyleLoaderImpl(std::string key, StyleLoaderFn loader) noexcept { m_styleLoaders[key] = loader; }
 
+	void AddLayoutCallbackImpl(const std::string& key, LayoutCallbackFn fn) noexcept { m_layoutCallbacks[key] = fn; }
+	LayoutCallbackFn GetLayoutCallbackImpl(const std::string& key) noexcept { return m_layoutCallbacks[key]; }
+
 	Control* LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, json& data, const std::string& name);
 	std::unique_ptr<Style> LoadStyleImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, json& data, const std::string& stylename);
 
@@ -162,6 +168,8 @@ private:
 	void LoadLayoutColumnDefinitions(Layout* layout, json& data);
 	void LoadLayoutMargin(Layout* layout, json& data);
 	void LoadLayoutBorder(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
+	void LoadLayoutCallbacks(Layout* layout, json& data);
+	void LoadLayoutID(Layout* layout, json& data);
 	void LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
 
 	RowColumnPosition ParseRowColumnPosition(json& data);
@@ -177,6 +185,7 @@ private:
 
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;
+	std::unordered_map<std::string, LayoutCallbackFn>	m_layoutCallbacks;
 
 	// Keep a cache of styles that have been parsed for quick lookup
 	std::unordered_map<std::string, std::unique_ptr<Style>> m_stylesCache;

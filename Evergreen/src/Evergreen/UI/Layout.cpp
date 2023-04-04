@@ -396,12 +396,19 @@ void Layout::UpdateSubLayouts() noexcept
 	
 	for (unsigned int iii = 0; iii < m_subLayouts.size(); ++iii)
 	{
-		m_subLayouts[iii]->m_left   = m_columns[m_subLayoutPositions[iii].Column].Left();
-		m_subLayouts[iii]->m_top    = m_rows[m_subLayoutPositions[iii].Row].Top();
-		m_subLayouts[iii]->m_width  = m_columns[m_subLayoutPositions[iii].Column + m_subLayoutPositions[iii].ColumnSpan - 1].Right() - m_columns[m_subLayoutPositions[iii].Column].Left();
-		m_subLayouts[iii]->m_height = m_rows[m_subLayoutPositions[iii].Row + m_subLayoutPositions[iii].RowSpan - 1].Bottom() - m_rows[m_subLayoutPositions[iii].Row].Top();
+		//m_subLayouts[iii]->m_left   = m_columns[m_subLayoutPositions[iii].Column].Left();
+		//m_subLayouts[iii]->m_top    = m_rows[m_subLayoutPositions[iii].Row].Top();
+		//m_subLayouts[iii]->m_width  = m_columns[m_subLayoutPositions[iii].Column + m_subLayoutPositions[iii].ColumnSpan - 1].Right() - m_columns[m_subLayoutPositions[iii].Column].Left();
+		//m_subLayouts[iii]->m_height = m_rows[m_subLayoutPositions[iii].Row + m_subLayoutPositions[iii].RowSpan - 1].Bottom() - m_rows[m_subLayoutPositions[iii].Row].Top();
+		//
+		//m_subLayouts[iii]->UpdateLayout();
 
-		m_subLayouts[iii]->UpdateLayout();
+		m_subLayouts[iii]->Resize(
+			m_rows[m_subLayoutPositions[iii].Row].Top(),
+			m_columns[m_subLayoutPositions[iii].Column].Left(),
+			m_columns[m_subLayoutPositions[iii].Column + m_subLayoutPositions[iii].ColumnSpan - 1].Right() - m_columns[m_subLayoutPositions[iii].Column].Left(),
+			m_rows[m_subLayoutPositions[iii].Row + m_subLayoutPositions[iii].RowSpan - 1].Bottom() - m_rows[m_subLayoutPositions[iii].Row].Top()
+		);
 	}
 }
 void Layout::UpdateControls() noexcept
@@ -647,27 +654,87 @@ Control* Layout::GetControlByID(unsigned int id) const noexcept
 	return nullptr;
 }
 
+Layout* Layout::GetLayoutByName(const std::string& name) noexcept
+{
+	if (name.compare(m_name) == 0)
+		return this;
+
+	Layout* found;
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		found = control->GetLayoutByName(name);
+		if (found != nullptr) 
+			return found; 
+	}
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts) 
+	{
+		found = sublayout->GetLayoutByName(name);
+		if (found != nullptr) 
+			return found; 
+	}
+
+	return nullptr;
+}
+Layout* Layout::GetLayoutByID(unsigned int id) noexcept
+{
+	if (m_id == id)
+		return this;
+
+	Layout* found; 
+	for (const std::unique_ptr<Control>& control : m_controls) 
+	{
+		found = control->GetLayoutByID(id); 
+		if (found != nullptr) 
+			return found; 
+	}
+
+	for (const std::unique_ptr<Layout>& sublayout : m_subLayouts) 
+	{
+		found = sublayout->GetLayoutByID(id); 
+		if (found != nullptr) 
+			return found; 
+	}
+
+	return nullptr;
+}
+
 void Layout::Resize(const D2D1_RECT_F& rect) noexcept
 {
+	if (m_name.compare("RightPanelLayout_ContentLayout") == 0)
+		int iii = 0;
+
 	m_top = rect.top;
 	m_left = rect.left;
 	m_width = rect.right - rect.left;
 	m_height = rect.bottom - rect.top;
 	UpdateLayout();
+
+	m_OnResizeCallback(this);
 }
 void Layout::Resize(float top, float left, float width, float height) noexcept
 {
+	if (m_name.compare("RightPanelLayout_ContentLayout") == 0)
+		int iii = 0;
+
 	m_top = top;
 	m_left = left;
 	m_width = width;
 	m_height = height;
 	UpdateLayout();
+
+	m_OnResizeCallback(this);
 }
 void Layout::Resize(float width, float height) noexcept
 {
+	if (m_name.compare("RightPanelLayout_ContentLayout") == 0)
+		int iii = 0;
+
 	m_width = width;
 	m_height = height;
 	UpdateLayout();
+
+	m_OnResizeCallback(this);
 }
 
 void Layout::OnChar(CharEvent& e)

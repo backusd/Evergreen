@@ -22,6 +22,7 @@ protected:
 	void OnRender() override;
 
 private:
+	void FinalizeUI();
 	void SetCallbacks();
 	void SetSearchTextInputCallbacks();
 
@@ -35,6 +36,9 @@ private:
 
 	// Material Callbacks
 	void SetMaterialEditCallbacks();
+
+	// Right Panel Layout Callbacks
+	void SetRightPanelLayoutCallbacks();
 
 	const D2D1_COLOR_F m_menuBarButtonColorDefault = D2D1::ColorF(0.16f, 0.16f, 0.16f);
 	const D2D1_COLOR_F m_menuBarButtonColorMouseOverPaneClosed = D2D1::ColorF(0.35f, 0.35f, 0.35f);
