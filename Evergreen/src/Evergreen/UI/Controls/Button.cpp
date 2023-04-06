@@ -101,41 +101,122 @@ void Button::Render() const
 	m_layout->Render();
 
 	// Draw the border last so it appears on top
+	float left = m_backgroundRect.left;
+	float right = m_backgroundRect.right;
+	float top = m_backgroundRect.top;
+	float bottom = m_backgroundRect.bottom;
+
 	if (m_borderWidths[0] > 0.0f)
 	{
-		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.top + m_borderTopLeftOffsetY),		// top-left
-			D2D1::Point2F(m_backgroundRect.left, m_backgroundRect.bottom - m_borderBottomLeftOffsetY),	// bottom-left
-			m_borderBrush->Get(),
-			m_borderWidths[0]
-		);
+		// If the offsets are 0, then just draw the complete border
+		if (m_borderTopLeftOffsetY == 0.0f && m_borderBottomLeftOffsetY == 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, top),		// top-left
+				D2D1::Point2F(left, bottom),	// bottom-left
+				m_borderBrush->Get(),
+				m_borderWidths[0]
+			);
+		}
+		else
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, top),							// top-left
+				D2D1::Point2F(left, top + m_borderTopLeftOffsetY),	// stop point from the top
+				m_borderBrush->Get(),
+				m_borderWidths[0]
+			);
+			context->DrawLine(
+				D2D1::Point2F(left, bottom),								// bottom-left
+				D2D1::Point2F(left, bottom - m_borderBottomLeftOffsetY),	// stop point from the bottom
+				m_borderBrush->Get(),
+				m_borderWidths[0]
+			);
+		}
 	}
 	if (m_borderWidths[1] > 0.0f)
 	{
-		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.left + m_borderTopLeftOffsetX, m_backgroundRect.top),	// top-left
-			D2D1::Point2F(m_backgroundRect.right - m_borderTopRightOffsetX, m_backgroundRect.top),	// top-right
-			m_borderBrush->Get(),
-			m_borderWidths[1]
-		);
+		// If the offsets are 0, then just draw the complete border
+		if (m_borderTopLeftOffsetX == 0.0f && m_borderTopRightOffsetX == 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, top),	// top-left
+				D2D1::Point2F(right, top),	// top-right
+				m_borderBrush->Get(),
+				m_borderWidths[1]
+			);
+		}
+		else
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, top),							// top-left
+				D2D1::Point2F(left + m_borderTopLeftOffsetX, top),	// stop point from the left
+				m_borderBrush->Get(),
+				m_borderWidths[1]
+			);
+			context->DrawLine(
+				D2D1::Point2F(right, top),								// top-right
+				D2D1::Point2F(right - m_borderTopRightOffsetX, top),	// stop point from the right
+				m_borderBrush->Get(),
+				m_borderWidths[1]
+			);
+		}
 	}
 	if (m_borderWidths[2] > 0.0f)
 	{
-		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.top + m_borderTopRightOffsetY),			// top-right
-			D2D1::Point2F(m_backgroundRect.right, m_backgroundRect.bottom - m_borderBottomRightOffsetY),	// bottom-right
-			m_borderBrush->Get(),
-			m_borderWidths[2]
-		);
+		// If the offsets are 0, then just draw the complete border
+		if (m_borderTopRightOffsetY == 0.0f && m_borderBottomRightOffsetY == 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(right, top),		// top-right
+				D2D1::Point2F(right, bottom),	// bottom-right
+				m_borderBrush->Get(),
+				m_borderWidths[2]
+			);
+		}
+		else
+		{
+			context->DrawLine(
+				D2D1::Point2F(right, top),								// top-right
+				D2D1::Point2F(right, top + m_borderTopRightOffsetY),	// stop point from the top
+				m_borderBrush->Get(),
+				m_borderWidths[2]
+			);
+			context->DrawLine(
+				D2D1::Point2F(right, bottom),								// bottom-right
+				D2D1::Point2F(right, bottom - m_borderBottomRightOffsetY),	// stop point from the bottom
+				m_borderBrush->Get(),
+				m_borderWidths[2]
+			);
+		}
 	}
 	if (m_borderWidths[3] > 0.0f)
 	{
-		context->DrawLine(
-			D2D1::Point2F(m_backgroundRect.right - m_borderBottomRightOffsetX, m_backgroundRect.bottom),	// bottom-right
-			D2D1::Point2F(m_backgroundRect.left + m_borderBottomLeftOffsetX, m_backgroundRect.bottom),		// bottom-left
-			m_borderBrush->Get(),
-			m_borderWidths[3]
-		);
+		// If the offsets are 0, then just draw the complete border
+		if (m_borderBottomLeftOffsetX == 0.0f && m_borderBottomRightOffsetX == 0.0f)
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, bottom),	// bottom-left
+				D2D1::Point2F(right, bottom),	// bottom-right
+				m_borderBrush->Get(),
+				m_borderWidths[3]
+			);
+		}
+		else
+		{
+			context->DrawLine(
+				D2D1::Point2F(left, bottom),								// bottom-left
+				D2D1::Point2F(left + m_borderBottomLeftOffsetX, bottom),	// stop point from the left
+				m_borderBrush->Get(),
+				m_borderWidths[3]
+			);
+			context->DrawLine(
+				D2D1::Point2F(right, bottom),								// bottom-right
+				D2D1::Point2F(right - m_borderBottomRightOffsetX, bottom),	// stop point from the right
+				m_borderBrush->Get(),
+				m_borderWidths[3]
+			);
+		}
 	}
 }
 

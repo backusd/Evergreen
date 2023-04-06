@@ -221,11 +221,14 @@ public:
 	ND T* GetControlByName(const std::string& name) const noexcept requires(std::is_base_of_v<Control, T>);
 	template<class T>
 	ND T* GetControlByID(unsigned int id) const noexcept requires (std::is_base_of_v<Control, T>);
+	ND inline bool HasChildControlWithName(const std::string& name) const noexcept { return GetControlByName(name) != nullptr; }
+	ND inline bool HasChildControlWithName(unsigned int id) const noexcept { return GetControlByID(id) != nullptr; }
 
 	ND Layout* GetLayoutByName(const std::string& name) noexcept;
 	ND Layout* GetLayoutByID(unsigned int id) noexcept;
 
-
+	ND inline unsigned int NumberOfControls() noexcept { return static_cast<unsigned int>(m_controls.size()); }
+	ND inline unsigned int NumberOfSubLayouts() noexcept { return static_cast<unsigned int>(m_subLayouts.size()); }
 
 	void Resize(const D2D1_RECT_F& rect) noexcept;
 	void Resize(float top, float left, float width, float height) noexcept;

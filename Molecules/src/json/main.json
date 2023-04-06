@@ -283,7 +283,7 @@
 				"Type": "Pane",
 				"Top": 24,
 				"Left": 51,
-				"Height": 53,
+				"Height": 78,
 				"Width": 200,
 				"Resizable": false,
 				"Relocatable": false,
@@ -300,15 +300,16 @@
 					"RowDefinitions": [
 						{ "Height": "1*" },
 						{ "Height": "1*" },
+						{ "Height": "1*" },
 						{ "Height": 3 }
 					],
 
-					"EditDropDown_Edit1Button": {
+					"EditDropDown_CameraButton": {
 						"Type": "Button",
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
 						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
 						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
-						"OnClick": "EditDropDown_Edit1Button_OnClick",
+						"OnClick": "EditDropDown_CameraButton_OnClick",
 						"Content": {
 							"Type": "Layout",
 							"ColumnDefinitions": [
@@ -316,23 +317,23 @@
 								{ "Width": "1*" }
 							],
 
-							"EditDropDown_Edit1Text": {
+							"EditDropDown_CameraText": {
 								"Type": "Text",
 								"Column": 1,
-								"Text": "Edit 1",
+								"Text": "Camera",
 								"Brush": "White",
 								"Style": "MenuBarDropDownTextContentsStyle"
 							}
 						}
 					},
 
-					"EditDropDown_Edit2Button": {
+					"EditDropDown_MaterialsButton": {
 						"Type": "Button",
 						"Row": 1,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
 						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
 						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
-						"OnClick": "EditDropDown_Edit2Button_OnClick",
+						"OnClick": "EditDropDown_MaterialsButton_OnClick",
 						"Content": {
 							"Type": "Layout",
 							"ColumnDefinitions": [
@@ -340,10 +341,34 @@
 								{ "Width": "1*" }
 							],
 
-							"EditDropDown_Edit2Text": {
+							"EditDropDown_MaterialsText": {
 								"Type": "Text",
 								"Column": 1,
-								"Text": "Edit 2",
+								"Text": "Materials",
+								"Brush": "White",
+								"Style": "MenuBarDropDownTextContentsStyle"
+							}
+						}
+					},
+
+					"EditDropDown_LightingButton": {
+						"Type": "Button",
+						"Row": 2,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
+						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
+						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnClick": "EditDropDown_LightingButton_OnClick",
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": 30 },
+								{ "Width": "1*" }
+							],
+
+							"EditDropDown_LightingText": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Lighting",
 								"Brush": "White",
 								"Style": "MenuBarDropDownTextContentsStyle"
 							}
@@ -597,7 +622,7 @@
 					{ "Width": "1*" }
 				],
 
-				"RightPanel_MaterialsButton": {
+				"RightPanel_SimulationButton": {
 					"Type": "Button",
 					"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
 					"BorderBrush": "Gray",
@@ -605,7 +630,7 @@
 
 					"Content": {
 						"Type": "Text",
-						"Text": "Materials",
+						"Text": "Simulation",
 						"Brush": "White",
 						"FontFamily": "Calibri",
 						"FontSize": 14,
@@ -617,6 +642,7 @@
 						"WordWrapping": "None"
 					}
 				}
+
 			},
 
 			"RightPanelLayout_ContentLayout": {
@@ -665,7 +691,6 @@
 				}
 			}
 		}
-
 
 	}
 }

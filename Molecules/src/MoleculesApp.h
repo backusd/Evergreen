@@ -18,6 +18,9 @@ protected:
 	std::unique_ptr<Simulation> m_simulation;
 	Evergreen::Viewport* m_viewport;
 
+	// Controls we want to keep track of 
+	Evergreen::Button* m_rightPaneSelectedTabButton;
+
 	void OnUpdate(const Evergreen::Timer& timer) override;
 	void OnRender() override;
 

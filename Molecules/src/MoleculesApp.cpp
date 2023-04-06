@@ -2,11 +2,15 @@
 
 using namespace Evergreen;
 
-MoleculesApp::MoleculesApp()
+MoleculesApp::MoleculesApp() :
+	m_rightPaneSelectedTabButton(nullptr)
 {
 	SetCallbacks();
 	m_ui->SetUIRoot("src/json/");
 	m_ui->LoadUI("main.json");
+
+	// Always start with the "Simulation" button as selected
+	m_rightPaneSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton");
 
 	// There may be some callbacks that we wish to invoke immediately, but might require a lookup of 
 	// 1 or more Layouts or Controls. Therefore, they cannot safely be invoked until after the entire
@@ -501,10 +505,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 					if (pane == editPane)
 					{
 						editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						editButton->BorderWidth(0.0f);
 					}
 					else if (pane == viewPane)
 					{
 						viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						editButton->BorderWidth(0.0f);
 					}
 				}
 			}
@@ -518,10 +524,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 					if (pane == filePane)
 					{
 						fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						fileButton->BorderWidth(0.0f);
 					}
 					else if (pane == viewPane)
 					{
 						viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						viewButton->BorderWidth(0.0f);
 					}
 				}
 			}
@@ -535,10 +543,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 					if (pane == filePane)
 					{
 						fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						fileButton->BorderWidth(0.0f);
 					}
 					else if (pane == editPane)
 					{
 						editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						editButton->BorderWidth(0.0f);
 					}
 				}
 			}
@@ -639,26 +649,97 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 }
 void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 {
-	// Edit 1
-	JSONLoaders::AddCallback("EditDropDown_Edit1Button_OnClick",
+	// Camera -------------------------------------------------------
+	JSONLoaders::AddCallback("EditDropDown_CameraButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
 			// Close the pane
 			Pane* editPane = m_ui->GetPane("EditDropDownPane");
 			editPane->SetVisible(false);
+
+			// Reset the drop down button back to its original state
 			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
 			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 			editButton->BorderWidth(0.0f);
+
+			
 		}
 	);
 
-	// Edit 2
-	JSONLoaders::AddCallback("EditDropDown_Edit2Button_OnClick",
+	// Materials -----------------------------------------------------
+	JSONLoaders::AddCallback("EditDropDown_MaterialsButton_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			// Close the pane
+			Pane* editPane = m_ui->GetPane("EditDropDownPane");
+			EG_ASSERT(editPane != nullptr, "Pane does not exist");
+			editPane->SetVisible(false);
+
+			// Reset the drop down button back to its original state
+			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
+			EG_ASSERT(editButton != nullptr, "Button does not exist");
+			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			editButton->BorderWidth(0.0f);
+
+			// Determine if the "Materials" tab already exists. If not, create it
+			Layout* rightPanelTabsLayout = m_ui->GetLayoutByName("RightPanelLayout_TopButtonsLayout"); 
+			EG_ASSERT(rightPanelTabsLayout != nullptr, "Layout does not exist"); 
+			if (!rightPanelTabsLayout->HasChildControlWithName("RightPanel_MaterialsButton"))
+			{
+				// We are going to force the "Simulation" tab to not be removable. When we add a second tab, it will
+				// be placed in the second column, which already exists. However, when we add a third, fourth, etc tab,
+				// we have to add an additional column to the layout
+				if (rightPanelTabsLayout->NumberOfControls() > 1)
+					rightPanelTabsLayout->AddRow({ RowColumnType::STAR, 1.0f });
+
+				RowColumnPosition rowCol = { 0, rightPanelTabsLayout->Columns().size() - 1, 1, 1 };
+				Button* materialsButton = rightPanelTabsLayout->CreateControl<Button>(
+					rowCol,
+					button->GetDeviceResources(),
+					std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f, 1.0f))),
+					std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray))),
+					std::array<float, 4>{ 1.0f, 1.0f, 1.0f, 0.0f }
+				);
+				materialsButton->Name("RightPanel_MaterialsButton");
+
+				Layout* materialsButtonLayout = materialsButton->GetLayout(); 
+				materialsButtonLayout->AddRow({ RowColumnType::STAR, 1.0f }); 
+				materialsButtonLayout->AddColumn({ RowColumnType::STAR, 1.0f }); 
+				materialsButtonLayout->AddColumn({ RowColumnType::FIXED, 25.0f }); 
+
+
+				std::unique_ptr<TextStyle> ts = std::make_unique<TextStyle>(
+					button->GetDeviceResources(), 
+					"RightPanel_MaterialsButton_TextStyle",
+					FontFamily::Calibri, 
+					14.0f,
+					DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_LIGHT, 
+					DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL, 
+					DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL, 
+					DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER, 
+					DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER 
+				); 
+				Text* materialsText = materialsButtonLayout->CreateControl<Text>(
+					button->GetDeviceResources(),
+					L"Materials", 
+					std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White))), 
+					std::move(ts) 
+				); 
+
+			}
+
+		}
+	);
+
+	// Lighting -----------------------------------------------------
+	JSONLoaders::AddCallback("EditDropDown_LightingButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
 			// Close the pane
 			Pane* editPane = m_ui->GetPane("EditDropDownPane");
 			editPane->SetVisible(false);
+
+			// Reset the drop down button back to its original state
 			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
 			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
 			editButton->BorderWidth(0.0f);
@@ -732,9 +813,11 @@ void MoleculesApp::SetRightPanelLayoutCallbacks()
 	JSONLoaders::AddLayoutCallback("RightPanelLayout_OnResizeCallback",
 		[this](Layout* layout)
 		{
-			Button* button = m_ui->GetControlByName<Button>("RightPanel_MaterialsButton");
-			const D2D1_RECT_F& rect = button->BackgroundRect();
-			layout->BorderTopLeftOffsetX(rect.right - rect.left);
+			EG_ASSERT(m_rightPaneSelectedTabButton != nullptr, "The right pane selected tab button should never be nullptr.");
+
+			const D2D1_RECT_F& buttonRect = m_rightPaneSelectedTabButton->BackgroundRect();
+			layout->BorderTopLeftOffsetX(buttonRect.left - layout->Left());
+			layout->BorderTopRightOffsetX(layout->Right() - buttonRect.right);
 		}
 	);
 }
