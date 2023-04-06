@@ -131,6 +131,11 @@ void RadioButton::OnMouseMove(MouseMoveEvent& e)
 	}
 	}
 }
+void RadioButton::MouseMoveHandledByPane(MouseMoveEvent& e)
+{
+	m_mouseState = MouseOverState::NOT_OVER;
+	m_OnMouseExited(this, e);
+}
 void RadioButton::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON &&

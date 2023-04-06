@@ -1382,6 +1382,19 @@ void Pane::OnMouseMove(MouseMoveEvent& e)
 		e.Handled(this);
 	}
 }
+void Pane::MouseMoveHandledByPane(MouseMoveEvent& e)
+{
+	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
+		m_OnMouseExitedTitleBar(this, e);
+	}
+	else if (m_mouseContentRegionState == MouseOverDraggableAreaState::OVER)
+	{
+		m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
+		m_OnMouseExitedContentRegion(this, e);
+	}
+}
 void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	EG_CORE_ASSERT(m_contentLayout != nullptr, "No content layout");

@@ -147,6 +147,11 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 		e.Handled(this);
 	}
 }
+void Viewport::MouseMoveHandledByPane(MouseMoveEvent& e)
+{
+	m_mouseIsOver = false;
+	m_OnMouseExited(this, e);
+}
 void Viewport::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	// See if the layout wants to handle the event

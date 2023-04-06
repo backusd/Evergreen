@@ -671,6 +671,15 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 	m_mouseIsOverCircle = currentMouseIsOverCircle;
 	m_valueTextInputOnRight->OnMouseMove(e);
 }
+void SliderFloat::MouseMoveHandledByPane(MouseMoveEvent& e)
+{
+	if (m_mouseOverCircleState == MouseOverCircleState::OVER)
+	{
+		m_mouseOverCircleState = MouseOverCircleState::NOT_OVER;
+		m_mouseIsOverCircle = false;
+		m_OnMouseExitedCircle(this, e);
+	}
+}
 void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	if (m_mouseOverCircleState == MouseOverCircleState::OVER && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)

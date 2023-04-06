@@ -586,6 +586,16 @@ void ScrollableLayout::OnMouseMove(MouseMoveEvent& e)
 	// Finally, if the scrollbars have not handled the event, forward it to the layout
 	m_layout->OnMouseMove(e);
 }
+void ScrollableLayout::MouseMoveHandledByPane(MouseMoveEvent& e)
+{
+	m_mouseIsOverVerticalScrollBarRegion = false;
+	m_mouseIsOverHorizontalScrollBarRegion = false;
+
+	m_verticalScrollBarState = MouseOverBarState::NOT_OVER;
+	m_horizontalScrollBarState = MouseOverBarState::NOT_OVER;
+
+	// NOTE: We have not implemented an OnMouseExited callback for this control
+}
 void ScrollableLayout::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");

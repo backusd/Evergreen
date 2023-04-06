@@ -52,6 +52,10 @@ public:
 	// Inherited from Control
 	void Render() const override;
 
+	// There is a special case where a Pane has handled a move event, but this Control was previously handling
+	// the move events. Therefore, we need to inform this Control that the mouse is no longer over the Control
+	void MouseMoveHandledByPane(MouseMoveEvent& e) override;
+
 	// Event Handling
 	void OnMouseMove(MouseMoveEvent& e) override;
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e) override;
