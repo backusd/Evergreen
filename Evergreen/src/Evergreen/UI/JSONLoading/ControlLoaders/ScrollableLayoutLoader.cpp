@@ -7,7 +7,7 @@
 
 namespace Evergreen
 {
-Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
+Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
@@ -18,7 +18,7 @@ Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> devic
 	Margin margin;
 
 	// Parse Row/Column
-	rowCol = ParseRowColumnPosition(data);
+	rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data);
 
 	// Parse Margin
 	margin = ParseMargin(data);

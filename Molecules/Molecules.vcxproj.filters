@@ -49,6 +49,7 @@
   <ItemGroup>
     <None Include="src\json\main.json" />
     <None Include="src\Shaders\Lighting.hlsl" />
+    <None Include="src\json\right_pane_materials_tab.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rendering\Structs.h">

@@ -8,6 +8,7 @@ public:
 	MoleculesApp();
 	MoleculesApp(const MoleculesApp&) = delete;
 	void operator=(const MoleculesApp&) = delete;
+
 	~MoleculesApp() override {}
 
 	Scene* GetScene() noexcept { return m_scene.get(); }

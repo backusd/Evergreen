@@ -18,7 +18,7 @@ public:
 	void operator=(const PaneLoader&) = delete;
 	~PaneLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) { return Get().LoadImpl(deviceResources, parent, data, name); }
+	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
 
 private:
 	PaneLoader() noexcept = default;
@@ -29,7 +29,7 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
 
 	// Pane is special in that row/column positioning and margin doesn't make sense
 	// So if the user included them, just log a warning message and delete that piece of data

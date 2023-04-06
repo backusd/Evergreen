@@ -227,6 +227,8 @@ public:
 	ND Layout* GetLayoutByName(const std::string& name) noexcept;
 	ND Layout* GetLayoutByID(unsigned int id) noexcept;
 
+	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }
+
 	ND inline unsigned int NumberOfControls() noexcept { return static_cast<unsigned int>(m_controls.size()); }
 	ND inline unsigned int NumberOfSubLayouts() noexcept { return static_cast<unsigned int>(m_subLayouts.size()); }
 

@@ -32,7 +32,7 @@ public:
 
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
-	
+
 	void Update(const Timer& timer);
 	void Render() const;
 

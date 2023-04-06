@@ -1,0 +1,50 @@
+{
+	"RightPanel_MaterialsButton": {
+		"Type": "Button",
+		"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+		"BorderBrush": "Gray",
+		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ],
+
+		"Content": {
+			"Type": "Layout",
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [
+				{ "Width": "1*" },
+				{ "Width": "25" }
+			],
+
+			"RightPanel_MaterialsButton_Text": {
+				"Type": "Text",
+				"Text": "Materials",
+				"Brush": "White",
+				"FontFamily": "Calibri",
+				"FontSize": 14,
+				"FontWeight": "UltraLight",
+				"FontStyle": "Normal",
+				"FontStretch": "Normal",
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
+			},
+
+			"RightPanel_MaterialsButton_CloseButton": {
+				"Type": "Button",
+				"Column": 1,
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"Content": {
+					"Type": "Text",
+					"Text": "0xE8BB",
+					"Brush": "White",
+					"FontFamily": "Segoe MDL2 Assets",
+					"FontSize": 8,
+					"FontWeight": "UltraLight",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Center",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				}
+			}
+		}
+	}
+}

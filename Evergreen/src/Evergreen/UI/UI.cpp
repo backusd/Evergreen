@@ -36,16 +36,16 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	m_mouseIsOverAPane(false)
 {
 	// Add built-in control loaders
-	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("SliderFloat", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return SliderFloatLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("SliderInt", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return SliderIntLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("RadioButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return RadioButtonLoader::Load(deviceResources, parentLayout, data, controlName); });
-	JSONLoaders::AddControlLoader("Viewport", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName) -> Control* { return ViewportLoader::Load(deviceResources, parentLayout, data, controlName); });
+	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("SliderFloat", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderFloatLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("SliderInt", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderIntLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("RadioButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RadioButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("Viewport", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ViewportLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });
@@ -926,6 +926,7 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		LoadErrorUI();
 	}
 }
+
 
 void UI::LoadErrorUI() noexcept
 {

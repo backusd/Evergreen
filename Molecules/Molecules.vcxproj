@@ -227,6 +227,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <None Include="src\json\right_pane_materials_tab.json" />
     <None Include="src\Shaders\Lighting.hlsl">
       <FileType>Document</FileType>
     </None>

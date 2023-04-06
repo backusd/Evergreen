@@ -4,7 +4,7 @@
 
 namespace Evergreen
 {
-Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
+Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	// NOTE: The pane will not be created as a child control of the parent layout. However, in order to keep the 

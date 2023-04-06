@@ -65,6 +65,29 @@ private:
 	void OnMouseButtonPressed(MouseButtonPressedEvent& e);
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e);
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e);
+
+
+
+// There is a somewhat weird behavior in DirectX reporting memory leaks on application shutdown.
+// In a DEBUG build, DirectX will report on any DirectX resources that have outstanding reference
+// counts. However, this check appears to be performed prior to static class instance destruction.
+// This means that if we have a static class (ex. any singleton class) with a reference to DirectX 
+// resources (such as a shared_ptr to DeviceResources), DirectX will report a memory leak because
+// the static instance of the class has not yet been destructed.
+// 
+// In this specific case, JSONLoaders keeps a cache of all Styles that have been loaded and each
+// style has a shared_ptr to DeviceResources. So here, we just clean that up, which is also just a
+// good idea because there is no need to keep the cached styles around anyways.
+	class ClearCache
+	{
+	public:
+		~ClearCache() 
+		{ 
+			Evergreen::JSONLoaders::ClearCache(); 
+		}
+	};
+
+	ClearCache m_cc;
 };
 #pragma warning( pop )
 

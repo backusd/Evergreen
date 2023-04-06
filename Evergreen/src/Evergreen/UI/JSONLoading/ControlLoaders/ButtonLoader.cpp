@@ -5,7 +5,8 @@
 
 namespace Evergreen
 {
-Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
+Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, 
+	std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
@@ -15,7 +16,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	Margin margin;
 
 	// Parse Row/Column
-	rowCol = ParseRowColumnPosition(data);
+	rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data);
 
 	// Parse Margin
 	margin = ParseMargin(data);

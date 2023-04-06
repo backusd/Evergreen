@@ -18,7 +18,7 @@ public:
 	void operator=(const ViewportLoader&) = delete;
 	~ViewportLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name) { return Get().LoadImpl(deviceResources, parent, data, name); }
+	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
 
 private:
 	ViewportLoader() noexcept = default;
@@ -29,7 +29,7 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
 
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 

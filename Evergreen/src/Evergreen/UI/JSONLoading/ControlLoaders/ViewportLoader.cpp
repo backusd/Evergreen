@@ -3,14 +3,14 @@
 
 namespace Evergreen
 {
-Control* ViewportLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name)
+Control* ViewportLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	m_name = name;
 	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
 
 	// Parse Row/Column
-	RowColumnPosition rowCol = ParseRowColumnPosition(data);
+	RowColumnPosition rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data);
 
 	// Parse Margin
 	Margin margin = ParseMargin(data);

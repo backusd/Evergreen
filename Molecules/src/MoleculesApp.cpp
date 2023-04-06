@@ -684,7 +684,9 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 			// Determine if the "Materials" tab already exists. If not, create it
 			Layout* rightPanelTabsLayout = m_ui->GetLayoutByName("RightPanelLayout_TopButtonsLayout"); 
 			EG_ASSERT(rightPanelTabsLayout != nullptr, "Layout does not exist"); 
-			if (!rightPanelTabsLayout->HasChildControlWithName("RightPanel_MaterialsButton"))
+			
+			Button* materialsButton = rightPanelTabsLayout->GetControlByName<Button>("RightPanel_MaterialsButton");
+			if (materialsButton == nullptr)
 			{
 				// We are going to force the "Simulation" tab to not be removable. When we add a second tab, it will
 				// be placed in the second column, which already exists. However, when we add a third, fourth, etc tab,
@@ -692,41 +694,26 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 				if (rightPanelTabsLayout->NumberOfControls() > 1)
 					rightPanelTabsLayout->AddRow({ RowColumnType::STAR, 1.0f });
 
-				RowColumnPosition rowCol = { 0, rightPanelTabsLayout->Columns().size() - 1, 1, 1 };
-				Button* materialsButton = rightPanelTabsLayout->CreateControl<Button>(
-					rowCol,
-					button->GetDeviceResources(),
-					std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.16f, 0.16f, 0.16f, 1.0f))),
-					std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray))),
-					std::array<float, 4>{ 1.0f, 1.0f, 1.0f, 0.0f }
-				);
-				materialsButton->Name("RightPanel_MaterialsButton");
-
-				Layout* materialsButtonLayout = materialsButton->GetLayout(); 
-				materialsButtonLayout->AddRow({ RowColumnType::STAR, 1.0f }); 
-				materialsButtonLayout->AddColumn({ RowColumnType::STAR, 1.0f }); 
-				materialsButtonLayout->AddColumn({ RowColumnType::FIXED, 25.0f }); 
-
-
-				std::unique_ptr<TextStyle> ts = std::make_unique<TextStyle>(
-					button->GetDeviceResources(), 
-					"RightPanel_MaterialsButton_TextStyle",
-					FontFamily::Calibri, 
-					14.0f,
-					DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_ULTRA_LIGHT, 
-					DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL, 
-					DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL, 
-					DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER, 
-					DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER 
-				); 
-				Text* materialsText = materialsButtonLayout->CreateControl<Text>(
-					button->GetDeviceResources(),
-					L"Materials", 
-					std::move(std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::White))), 
-					std::move(ts) 
-				); 
-
+				RowColumnPosition rowCol = { 0, static_cast<unsigned int>(rightPanelTabsLayout->Columns().size()) - 1, 1, 1 };
+				JSONLoaders::LoadControlsFromFile("right_pane_materials_tab.json", rightPanelTabsLayout, rowCol);
+			
+				materialsButton = rightPanelTabsLayout->GetControlByName<Button>("RightPanel_MaterialsButton"); 
+				EG_ASSERT(materialsButton != nullptr, "Failed to create/find materials button");  
 			}
+
+			// Set the materials Button as the selected button
+			m_rightPaneSelectedTabButton = materialsButton;
+
+			// Update the content layouts border along the top edge
+			Layout* rightPanelContentLayout = m_ui->GetLayoutByName("RightPanelLayout_ContentLayout");
+			const D2D1_RECT_F& buttonRect = materialsButton->BackgroundRect();  
+			rightPanelContentLayout->BorderTopLeftOffsetX(buttonRect.left - rightPanelContentLayout->Left());
+			rightPanelContentLayout->BorderTopRightOffsetX(rightPanelContentLayout->Right() - buttonRect.right);
+
+			// Load the material editing controls in the right pane
+
+
+
 
 		}
 	);

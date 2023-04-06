@@ -416,14 +416,14 @@ std::unique_ptr<Style> JSONLoaders::LoadStyleImpl(std::shared_ptr<DeviceResource
 
 	return style;
 }
-Control* JSONLoaders::LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, json& data, const std::string& name)
+Control* JSONLoaders::LoadControlImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(parent != nullptr, "Parent layout should never be nullptr");
 
 	JSON_LOADER_EXCEPTION_IF_FALSE(m_controlLoaders.find(key) != m_controlLoaders.end(), "JSONLoaders: Failed to load control with name '{}'. No control loader for key: {}", name, key);
 
-	return m_controlLoaders[key](deviceResources, parent, data, name);
+	return m_controlLoaders[key](deviceResources, parent, data, name, rowColumnPositionOverride);
 }
 
 bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept
@@ -444,18 +444,6 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 
 		// Finally, load all panes
 		LoadPanes(deviceResources, rootLayout);
-
-		// There is a somewhat weird behavior in DirectX reporting memory leaks on application shutdown.
-		// In a DEBUG build, DirectX will report on any DirectX resources that have outstanding reference
-		// counts. However, this check appears to be performed prior to static class instance destruction.
-		// This means that if we have a static class (ex. any singleton class) with a reference to DirectX 
-		// resources (such as a shared_ptr to DeviceResources), DirectX will report a memory leak because
-		// the static instance of the class has not yet been destructed.
-		// 
-		// In this specific case, JSONLoaders keeps a cache of all Styles that have been loaded and each
-		// style has a shared_ptr to DeviceResources. So here, we just clean that up, which is also just a
-		// good idea because there is no need to keep the cached styles around anyways.
-		JSONLoaders::ClearCache();
 
 		// LayoutCheck is entirely optional - In a Release build, this does nothing
 		rootLayout->LayoutCheck();
@@ -495,6 +483,64 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 	m_jsonRoot = {};
 	return false;
 }
+void JSONLoaders::LoadControlsFromFileImpl(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride)
+{
+	try
+	{
+		std::filesystem::path filePath = std::filesystem::path(m_jsonRootDirectory).append(fileName);
+		json data = LoadJSONFile(filePath);
+
+		for (auto& [key, value] : data.items())
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data[key].contains("Type"), "JSON File: '{}' - Control with name '{}' has no 'Type' definition: {}", fileName, key, data[key].dump(4)); 
+			JSON_LOADER_EXCEPTION_IF_FALSE(data[key]["Type"].is_string(), "JSON File: '{}' - Control with name '{}' has 'Type' definition that is not a string.\nInvalid value : {}", fileName, key, data[key]["Type"].dump(4));
+
+			std::string type = data[key]["Type"].get<std::string>(); 
+
+			// This function assumes that the Layout has already been created and we simply want to load a new
+			// control. Therefore, we force the keys in the file to be Control keys
+			if (JSONLoaders::IsControlKey(type))
+			{
+				Control* control = JSONLoaders::LoadControl(parentLayout->GetDeviceResources(), type, parentLayout, data[key], key, rowColumnPositionOverride);
+				if (control == nullptr) 
+					EG_CORE_ERROR("JSON File: '{}' - Failed to load control with name '{}'.", fileName, key); 
+			}
+			else
+			{
+				EG_CORE_WARN("JSON File: '{}' - Attempting to load control: {} (... not yet supported ...)", fileName, type);
+			}
+		}
+
+		// LayoutCheck is entirely optional - In a Release build, this does nothing
+		parentLayout->LayoutCheck();
+	}
+	catch (const JSONLoadersException& ex)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught JSONLoadersException with message:\n{}", ex.what());
+	}
+	catch (const BaseException& ex)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught BaseException with message:\n{}", ex.what());
+	}
+	catch (json::parse_error& e)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught json::parse_error:\n{}", e.what());
+	}
+	catch (const std::exception& ex)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught std::exception with message:\n{}", ex.what());
+	}
+	catch (...)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("{}", "Caught unidentified exception");
+	}
+}
+
 json JSONLoaders::LoadJSONFile(std::filesystem::path filePath)
 {
 	std::ifstream file;
