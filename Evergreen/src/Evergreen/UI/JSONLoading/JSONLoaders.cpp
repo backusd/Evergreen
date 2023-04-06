@@ -540,6 +540,66 @@ void JSONLoaders::LoadControlsFromFileImpl(const std::string& fileName, Layout* 
 		EG_CORE_ERROR("{}", "Caught unidentified exception");
 	}
 }
+void JSONLoaders::LoadLayoutFromFileImpl(const std::string& fileName, Layout* layoutToFill)
+{
+	try
+	{
+		std::filesystem::path filePath = std::filesystem::path(m_jsonRootDirectory).append(fileName); 
+		json data = LoadJSONFile(filePath); 
+
+		for (auto& [key, value] : data.items()) 
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data[key].contains("Type"), "JSON File: '{}' - Control with name '{}' has no 'Type' definition: {}", fileName, key, data[key].dump(4)); 
+			JSON_LOADER_EXCEPTION_IF_FALSE(data[key]["Type"].is_string(), "JSON File: '{}' - Control with name '{}' has 'Type' definition that is not a string.\nInvalid value : {}", fileName, key, data[key]["Type"].dump(4)); 
+
+			std::string type = data[key]["Type"].get<std::string>(); 
+
+			if (type.compare("Layout") == 0)
+			{
+				// Before clearing the layout contents, first remove any control names that are in the control names cache
+				RemoveAllNamesFromLayout(layoutToFill);
+
+				// Clear all layout contents (rows, columns, controls, and sublayouts)
+				layoutToFill->ClearContents();
+
+				// Load the new contents
+				LoadLayoutDetails(layoutToFill->GetDeviceResources(), layoutToFill, data[key]);
+			}
+			else
+			{
+				EG_CORE_WARN("JSON File: '{}' - Attempting to load layout - Type value must be 'Layout'. Invalid value: {}", fileName, type);
+			}
+		}
+
+		// LayoutCheck is entirely optional - In a Release build, this does nothing
+		layoutToFill->LayoutCheck();
+	}
+	catch (const JSONLoadersException& ex)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught JSONLoadersException with message:\n{}", ex.what());
+	}
+	catch (const BaseException& ex)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught BaseException with message:\n{}", ex.what());
+	}
+	catch (json::parse_error& e)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught json::parse_error:\n{}", e.what());
+	}
+	catch (const std::exception& ex)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("Caught std::exception with message:\n{}", ex.what());
+	}
+	catch (...)
+	{
+		EG_CORE_ERROR("Failed to load control from file '{}'", fileName);
+		EG_CORE_ERROR("{}", "Caught unidentified exception");
+	}
+}
 
 json JSONLoaders::LoadJSONFile(std::filesystem::path filePath)
 {
@@ -1188,5 +1248,20 @@ void JSONLoaders::AddControlNameImpl(const std::string& name)
 
 	m_controlNames.push_back(name);
 }
+void JSONLoaders::RemoveControlNameImpl(const std::string& name)
+{
+	auto itr = std::find(m_controlNames.begin(), m_controlNames.end(), name);
+	if (itr != m_controlNames.end())
+		m_controlNames.erase(itr);
+}
+void JSONLoaders::RemoveAllNamesFromLayout(Layout* layout)
+{
+	for (unsigned int iii = 0; iii < layout->NumberOfControls(); ++iii)
+		RemoveControlNameImpl(layout->GetControl(iii)->Name());
+
+	for (unsigned int iii = 0; iii < layout->NumberOfSubLayouts(); ++iii)
+		RemoveAllNamesFromLayout(layout->GetSublayout(iii));
+}
+
 
 }

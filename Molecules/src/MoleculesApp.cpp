@@ -256,9 +256,6 @@ void MoleculesApp::SetMenuBarCallbacks()
 	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
-			// Remove any button border
-			button->BorderWidth(0.0f);
-
 			Pane* filePane = m_ui->GetPane("FileDropDownPane");
 
 			// First if the file pane is visible, check if the mouse is now over the Edit button
@@ -269,6 +266,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				{
 					filePane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 
 					Pane* editPane = m_ui->GetPane("EditDropDownPane");
 					editPane->SetVisible(true);
@@ -282,6 +280,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 					// Mouse is not over the button or pane, so close the pane
 					filePane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 				}
 			}
 			else
@@ -335,9 +334,6 @@ void MoleculesApp::SetMenuBarCallbacks()
 	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
-			// Remove any button border
-			button->BorderWidth(0.0f);
-
 			Pane* editPane = m_ui->GetPane("EditDropDownPane");
 
 			// First if the edit pane is visible, check if the mouse is now over the File button or View Button
@@ -350,6 +346,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				{
 					editPane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 
 					Pane* filePane = m_ui->GetPane("FileDropDownPane");
 					filePane->SetVisible(true);
@@ -358,6 +355,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				{
 					editPane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 
 					Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
 					viewPane->SetVisible(true);
@@ -371,6 +369,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 					// Mouse is not over the button or pane, so close the pane
 					editPane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 				}
 			}
 			else
@@ -424,9 +423,6 @@ void MoleculesApp::SetMenuBarCallbacks()
 	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
-			// Remove any button border
-			button->BorderWidth(0.0f);
-
 			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
 
 			// First if the view pane is visible, check if the mouse is now over the Edit button
@@ -438,6 +434,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				{
 					viewPane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 
 					Pane* editPane = m_ui->GetPane("EditDropDownPane");
 					editPane->SetVisible(true);
@@ -451,6 +448,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 					// Mouse is not over the button or pane, so close the pane
 					viewPane->SetVisible(false);
 					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					button->BorderWidth(0.0f);
 				}
 			}
 			else
@@ -675,6 +673,12 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 			EG_ASSERT(editPane != nullptr, "Pane does not exist");
 			editPane->SetVisible(false);
 
+			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
+			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
+			// To do this, we inform the event that it should ignore the handling control
+			//m_ui->ClearHandlingControlAndLayout();
+			e.IgnoreHandlingControl(true);
+
 			// Reset the drop down button back to its original state
 			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
 			EG_ASSERT(editButton != nullptr, "Button does not exist");
@@ -695,7 +699,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 					rightPanelTabsLayout->AddRow({ RowColumnType::STAR, 1.0f });
 
 				RowColumnPosition rowCol = { 0, static_cast<unsigned int>(rightPanelTabsLayout->Columns().size()) - 1, 1, 1 };
-				JSONLoaders::LoadControlsFromFile("right_pane_materials_tab.json", rightPanelTabsLayout, rowCol);
+				m_ui->LoadControlsFromFile("right_pane_materials_tab.json", rightPanelTabsLayout, rowCol);
 			
 				materialsButton = rightPanelTabsLayout->GetControlByName<Button>("RightPanel_MaterialsButton"); 
 				EG_ASSERT(materialsButton != nullptr, "Failed to create/find materials button");  
@@ -711,7 +715,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 			rightPanelContentLayout->BorderTopRightOffsetX(rightPanelContentLayout->Right() - buttonRect.right);
 
 			// Load the material editing controls in the right pane
-
+			m_ui->LoadLayoutFromFile("right_pane_materials_content.json", rightPanelContentLayout);
 
 
 

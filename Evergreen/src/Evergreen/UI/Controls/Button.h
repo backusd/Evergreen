@@ -37,6 +37,10 @@ public:
 	virtual void OnUpdate(const Timer& timer) override;
 	virtual void Render() const override;
 
+	// There is a special case where a Pane has handled a move event, but this Control was previously handling
+	// the move events. Therefore, we need to inform this Control that the mouse is no longer over the Control
+	virtual void MouseMoveHandledByPane(MouseMoveEvent& e) override;
+
 	ND inline virtual Layout* GetLayoutByName(const std::string& name) noexcept override { return m_layout->GetLayoutByName(name); }
 	ND inline virtual Layout* GetLayoutByID(unsigned int id) noexcept override { return m_layout->GetLayoutByID(id); }
 	ND virtual Control* GetControlByName(const std::string& name) noexcept override;

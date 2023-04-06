@@ -926,6 +926,22 @@ void UI::LoadUI(const std::string& fileName) noexcept
 		LoadErrorUI();
 	}
 }
+void UI::LoadControlsFromFile(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride)
+{
+	// This UI method is just a pass through method to JSONLoaders. However, it is possible that at some
+	// point, we do away with JSONLoaders entirely, in which case, we don't want to have to go through
+	// a bunch of client code that calls JSONLoader methods. Instead, client code should just use the UI
+	// class methods
+	JSONLoaders::LoadControlsFromFile(fileName, parentLayout, rowColumnPositionOverride);
+}
+void UI::LoadLayoutFromFile(const std::string& fileName, Layout* layoutToFill)
+{
+	// This UI method is just a pass through method to JSONLoaders. However, it is possible that at some
+	// point, we do away with JSONLoaders entirely, in which case, we don't want to have to go through
+	// a bunch of client code that calls JSONLoader methods. Instead, client code should just use the UI
+	// class methods
+	JSONLoaders::LoadLayoutFromFile(fileName, layoutToFill);
+}
 
 
 void UI::LoadErrorUI() noexcept
@@ -1156,6 +1172,9 @@ void UI::OnKeyPressed(KeyPressedEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnKeyPressed(e);
 
@@ -1196,6 +1215,9 @@ void UI::OnKeyReleased(KeyReleasedEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnKeyReleased(e);
 
@@ -1238,11 +1260,17 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseMove(e);
 
 			if (e.Handled())
+			{
 				m_mouseIsOverAPane = true;
+				break;
+			}
 
 			// Any time we iterate over the panes, it is possible that a Pane is destroyed. When this is the case,
 			// we cannot safely continue to iterate over the panes. Even if the control says that it is Handled, the handling
@@ -1271,6 +1299,12 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 				m_mouseHandlingLayout->OnMouseMove(e);
 			}
 		}
+		else if (m_mouseHandlingControl != nullptr)
+		{
+			// In this case, a pane has handled the move event, but there was previously a control that was handling
+			// the move events. Therefore, we need to inform the control that the mouse is no longer considered over the control
+			m_mouseHandlingControl->MouseMoveHandledByPane(e);
+		}
 
 		if (!e.Handled())
 			m_rootLayout->OnMouseMove(e);
@@ -1294,6 +1328,9 @@ void UI::OnMouseMove(MouseMoveEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseMove(e);
 			else
@@ -1348,6 +1385,9 @@ void UI::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseButtonPressed(e);
 
@@ -1397,6 +1437,9 @@ void UI::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseButtonReleased(e);
 
@@ -1437,6 +1480,9 @@ void UI::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseButtonDoubleClick(e);
 
@@ -1478,6 +1524,9 @@ void UI::OnMouseScrolledVertical(MouseScrolledEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseScrolledVertical(e);
 
@@ -1514,6 +1563,9 @@ void UI::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 		const size_t initialPaneCount = m_panes.size();
 		for (const auto& pane : m_panes)
 		{
+			if (!pane->GetVisible())
+				continue;
+
 			if (!e.Handled())
 				pane->OnMouseScrolledHorizontal(e);
 

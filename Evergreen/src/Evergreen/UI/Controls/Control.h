@@ -55,6 +55,10 @@ public:
 	virtual void OnMouseButtonReleased(MouseButtonReleasedEvent& e) {}
 	virtual void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) {}
 
+	// There is a special case where a Pane has handled a move event, but this Control was previously handling
+	// the move events. Therefore, we need to inform this Control that the mouse is no longer over the Control
+	virtual void MouseMoveHandledByPane(MouseMoveEvent& e) {}
+
 	void Name(const std::string& name) noexcept { m_name = name; OnNameChanged(); }
 	void ID(unsigned int id) noexcept { m_id = id; }
 	void Margin(const Evergreen::Margin& margin) noexcept { m_margin = margin; OnMarginChanged(); }

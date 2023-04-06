@@ -45,12 +45,12 @@ public:
 	virtual int GetCategoryFlags() const noexcept = 0;
 	virtual std::string ToString() const noexcept { return GetName(); }
 
-	inline bool IsInCategory(EventCategory category) const noexcept
+	ND inline bool IsInCategory(EventCategory category) const noexcept
 	{
 		return GetCategoryFlags() & category;
 	}
 
-	inline bool Handled() const noexcept { return m_handlingControl != nullptr || m_handlingLayout != nullptr; }
+	ND inline bool Handled() const noexcept { return m_handlingControl != nullptr || m_handlingLayout != nullptr; }
 
 	inline void Handled(Control* control) noexcept 
 	{ 
@@ -72,13 +72,21 @@ public:
 		m_handlingLayout = nullptr;
 	}
 
-	Control* HandlingControl() const noexcept { return m_handlingControl; }
-	Layout* HandlingLayout() const noexcept { return m_handlingLayout; }
+	ND inline Control* HandlingControl() const noexcept { return m_ignoreHandlingControl ? nullptr : m_handlingControl; }
+	ND inline Layout* HandlingLayout() const noexcept { return m_ignoreHandlingControl ? nullptr : m_handlingLayout; }
+
+	inline void IgnoreHandlingControl(bool ignore) noexcept { m_ignoreHandlingControl = ignore; }
 
 protected:
 	// One and ONLY one of these should be set when a control/layout is handling an event
 	Control* m_handlingControl = nullptr;
 	Layout*  m_handlingLayout = nullptr;
+	
+	// There are cases when we want to register an event as "Handled", but want to force the UI to 
+	// not actually track which control handled the event (For example, if a Button handles a Click event,
+	// we want to register the event as handled, but if the Click callback leads to the button being no 
+	// longer visible, then we don't want the UI to track this Button as the "handling control")
+	bool m_ignoreHandlingControl = false;
 };
 
 }

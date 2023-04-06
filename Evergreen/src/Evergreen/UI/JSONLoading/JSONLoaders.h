@@ -51,6 +51,8 @@ public:
 	static void AddStyleLoader(std::string key, StyleLoaderFn loader) noexcept { Get().AddStyleLoaderImpl(key, loader); }
 
 	static void LoadControlsFromFile(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { Get().LoadControlsFromFileImpl(fileName, parentLayout, rowColumnPositionOverride); }
+	static void LoadLayoutFromFile(const std::string& fileName, Layout* layoutToFill) { Get().LoadLayoutFromFileImpl(fileName, layoutToFill); }
+
 	static void LoadLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data) { Get().LoadLayoutDetails(deviceResources, layout, data); }
 	static Control* LoadControl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadControlImpl(deviceResources, key, parent, data, name, rowColumnPositionOverride); }
 	static std::unique_ptr<Style> LoadStyle(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, json& data, const std::string& stylename) { return std::move(Get().LoadStyleImpl(deviceResources, key, data, stylename)); }
@@ -67,6 +69,7 @@ public:
 	static bool IsStyleKey(const std::string& styleKey) noexcept { return Get().IsStyleKeyImpl(styleKey); }
 
 	static void AddControlName(const std::string& name) { Get().AddControlNameImpl(name); }
+	static void RemoveControlName(const std::string& name) { Get().RemoveControlNameImpl(name); }
 	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
 
 	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
@@ -158,6 +161,7 @@ private:
 	static std::unique_ptr<ColorBrush> LoadBitmapBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 
 	void LoadControlsFromFileImpl(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride);
+	void LoadLayoutFromFileImpl(const std::string& fileName, Layout* layoutToFill);
 
 	bool LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept;
 	void LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources);
@@ -183,7 +187,8 @@ private:
 	bool IsStyleKeyImpl(const std::string& styleKey) const noexcept { return m_styleLoaders.find(styleKey) != m_styleLoaders.end(); }
 
 	void AddControlNameImpl(const std::string& name);
-
+	void RemoveControlNameImpl(const std::string& name);
+	void RemoveAllNamesFromLayout(Layout* layout);
 
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;

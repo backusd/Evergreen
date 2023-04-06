@@ -33,6 +33,9 @@ public:
 	void SetUIRoot(const std::string& directoryPath) noexcept { m_jsonRootDirectory = std::filesystem::path(directoryPath); }
 	void LoadUI(const std::string& fileName) noexcept;
 
+	void LoadControlsFromFile(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt);
+	void LoadLayoutFromFile(const std::string& fileName, Layout* layoutToFill);
+
 	void Update(const Timer& timer);
 	void Render() const;
 

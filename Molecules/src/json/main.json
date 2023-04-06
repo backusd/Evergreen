@@ -648,47 +648,11 @@
 			"RightPanelLayout_ContentLayout": {
 				"Type": "Layout",
 				"Row": 1,
-				"RowDefinitions": [
-					{ "Height": "50" },
-					{ "Height": "50" },
-					{ "Height": "50" },
-					{ "Height": "1*" }
-				],
+				"RowDefinitions": [	{ "Height": "1*" } ],
 				"ColumnDefinitions": [ { "Width": "1*" } ],
 				"BorderWidth": 1.0,
 				"BorderBrush": "Gray",
-				"OnResize": "RightPanelLayout_OnResizeCallback",
-
-				"MaterialDiffuseAlbedoXSlider": {
-					"Type": "SliderFloat",
-					"Margin": [ 10, 0, 10, 0 ],
-					"Row": 0,
-					"MinimumValue": 0.0,
-					"MaximumValue": 1.0,
-					"Value": 1.0,
-
-					"OnValueChanged": "MaterialDiffuseAlbedoX_OnValueChanged"
-				},
-				"MaterialDiffuseAlbedoYSlider": {
-					"Type": "SliderFloat",
-					"Margin": [ 10, 0, 10, 0 ],
-					"Row": 1,
-					"MinimumValue": 0.0,
-					"MaximumValue": 1.0,
-					"Value": 1.0,
-
-					"OnValueChanged": "MaterialDiffuseAlbedoY_OnValueChanged"
-				},
-				"MaterialDiffuseAlbedoZSlider": {
-					"Type": "SliderFloat",
-					"Margin": [ 10, 0, 10, 0 ],
-					"Row": 2,
-					"MinimumValue": 0.0,
-					"MaximumValue": 1.0,
-					"Value": 1.0,
-
-					"OnValueChanged": "MaterialDiffuseAlbedoZ_OnValueChanged"
-				}
+				"OnResize": "RightPanelLayout_OnResizeCallback"
 			}
 		}
 

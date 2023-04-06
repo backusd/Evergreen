@@ -312,6 +312,11 @@ void Button::OnMouseMove(MouseMoveEvent& e)
 		e.Handled(this);
 	}
 }
+void Button::MouseMoveHandledByPane(MouseMoveEvent& e)
+{
+	m_mouseIsOver = false;
+	m_OnMouseExited(this, e);
+}
 void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
 	// First pass to layout, if the layout does not handle it, then the button can handle it
