@@ -222,7 +222,7 @@ D2D1_RECT_F SliderFloat::GetMaxTextAllowedRegion() const noexcept
 D2D1_RECT_F SliderFloat::GetValueTextOnRightAllowedRegion() const noexcept
 {
 	float halfHeight = m_valueTextInputOnRightHeight / 2;
-	float left = m_lineRightX + 5.0f;
+	float left = m_lineRightX + 10.0f;
 	return D2D1::RectF(
 		left,
 		m_lineY - halfHeight,

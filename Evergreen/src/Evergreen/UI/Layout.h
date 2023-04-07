@@ -202,6 +202,9 @@ public:
 	inline void ClearControls() noexcept;
 	inline void ClearSubLayouts() noexcept;
 	void ClearContents() noexcept;
+	ND std::unique_ptr<Control> RemoveControl(unsigned int index) noexcept;
+	void RemoveRow(unsigned int index) noexcept;
+	void RemoveColumn(unsigned int index) noexcept;
 
 	ND inline std::string Name() const noexcept { return m_name; }
 	void Name(const std::string& name) noexcept { m_name = name; }

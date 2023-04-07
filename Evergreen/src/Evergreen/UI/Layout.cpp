@@ -481,6 +481,52 @@ void Layout::ClearContents() noexcept
 	ClearRows();
 	ClearColumns();
 }
+std::unique_ptr<Control> Layout::RemoveControl(unsigned int index) noexcept 
+{
+	EG_CORE_ASSERT(m_controls[index] != nullptr, "Control should not be nullptr");
+	EG_CORE_ASSERT(m_controls.size() == m_controlPositions.size(), "Controls and positions mismatch");
+	EG_CORE_ASSERT(index < m_controls.size(), "Invalid index to remove");
+
+	std::unique_ptr<Control> control = std::move(m_controls[index]);
+
+	m_controls.erase(m_controls.begin() + index);
+	m_controlPositions.erase(m_controlPositions.begin() + index);
+
+	return std::move(control); 
+}
+void Layout::RemoveRow(unsigned int index) noexcept
+{
+	int iii = index;
+}
+void Layout::RemoveColumn(unsigned int index) noexcept
+{
+	EG_CORE_ASSERT(index < m_columns.size(), "Invalid index to remove");
+	EG_CORE_ASSERT(m_columns.size() == m_columnDefinitions.size(), "Columns and definitions mismatch");
+	EG_CORE_ASSERT(m_controls.size() == m_controlPositions.size(), "Controls and positions mismatch");
+
+	m_columns.erase(m_columns.begin() + index);
+	m_columnDefinitions.erase(m_columnDefinitions.begin() + index);
+
+	for (unsigned int iii = 0; iii < m_controlPositions.size(); ++iii)
+	{
+		// Check to see if the control uses this column
+		if (m_controlPositions[iii].Column <= index && m_controlPositions[iii].Column + m_controlPositions[iii].ColumnSpan - 1 >= index)
+		{
+			EG_CORE_WARN("Removing column #{} from layout with name '{}'. Control with name '{}' occupies this column.", index, m_name, m_controls[iii]->Name());
+
+			// if the control spans more than just a single column, then just decrease its span. Otherwise, decrement the column number
+			if (m_controlPositions[iii].ColumnSpan > 1)
+				--m_controlPositions[iii].ColumnSpan;
+			else if (m_controlPositions[iii].Column > 0)
+				--m_controlPositions[iii].Column;
+		}
+		else if (m_controlPositions[iii].Column > index)
+		{
+			// If the control is positioned to the right of the column to be removed, then decrement the column it belongs to
+			--m_controlPositions[iii].Column;
+		}
+	}
+}
 
 void Layout::Margin(float left, float top, float right, float bottom) noexcept
 {

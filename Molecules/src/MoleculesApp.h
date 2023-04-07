@@ -20,7 +20,9 @@ protected:
 	Evergreen::Viewport* m_viewport;
 
 	// Controls we want to keep track of 
-	Evergreen::Button* m_rightPaneSelectedTabButton;
+	Evergreen::Button* m_rightPanelSelectedTabButton;
+	Evergreen::Layout* m_rightPanelContentLayout;
+	Evergreen::Layout* m_rightPanelTabsLayout;
 
 	void OnUpdate(const Evergreen::Timer& timer) override;
 	void OnRender() override;

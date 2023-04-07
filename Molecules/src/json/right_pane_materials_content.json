@@ -20,6 +20,16 @@
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
+			"MinTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
+			"MaxTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
+			"ShowPopUpValueWhenSliding": false,
+
+			"CircleRadius": 5.0,
+			"CircleRadiusOuter": 10.0,
+
+			"CircleBrush": "Purple",
+			"CircleBrushOuter": [ 1.0, 0.0, 1.0, 0.3 ],
+
 
 			"OnValueChanged": "MaterialDiffuseAlbedoX_OnValueChanged"
 		},
@@ -30,6 +40,8 @@
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
+			"MinTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
+			"MaxTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
 
 			"OnValueChanged": "MaterialDiffuseAlbedoY_OnValueChanged"
 		},
@@ -40,6 +52,8 @@
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
+			"MinTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
+			"MaxTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
 
 			"OnValueChanged": "MaterialDiffuseAlbedoZ_OnValueChanged"
 		}

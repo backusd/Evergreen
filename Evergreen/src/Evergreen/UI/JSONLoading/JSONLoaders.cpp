@@ -428,6 +428,12 @@ Control* JSONLoaders::LoadControlImpl(std::shared_ptr<DeviceResources> deviceRes
 
 bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept
 {
+	// So that we don't have to worry about removing names of controls when a control gets deleted,
+	// its going to be best to just enforce the uniqueness of control names at the time we are loading
+	// new controls. Therefore, clear the names cache and just enforce uniqueness of names for the controls
+	// we are about to load here
+	m_controlNames.clear();
+
 	try
 	{
 		// Store root directory as member variable so ImportJson can use it
@@ -485,6 +491,12 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 }
 void JSONLoaders::LoadControlsFromFileImpl(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
+	// So that we don't have to worry about removing names of controls when a control gets deleted,
+	// its going to be best to just enforce the uniqueness of control names at the time we are loading
+	// new controls. Therefore, clear the names cache and just enforce uniqueness of names for the controls
+	// we are about to load here
+	m_controlNames.clear();
+
 	try
 	{
 		std::filesystem::path filePath = std::filesystem::path(m_jsonRootDirectory).append(fileName);
@@ -542,6 +554,12 @@ void JSONLoaders::LoadControlsFromFileImpl(const std::string& fileName, Layout* 
 }
 void JSONLoaders::LoadLayoutFromFileImpl(const std::string& fileName, Layout* layoutToFill)
 {
+	// So that we don't have to worry about removing names of controls when a control gets deleted,
+	// its going to be best to just enforce the uniqueness of control names at the time we are loading
+	// new controls. Therefore, clear the names cache and just enforce uniqueness of names for the controls
+	// we are about to load here
+	m_controlNames.clear();
+
 	try
 	{
 		std::filesystem::path filePath = std::filesystem::path(m_jsonRootDirectory).append(fileName); 
@@ -556,9 +574,6 @@ void JSONLoaders::LoadLayoutFromFileImpl(const std::string& fileName, Layout* la
 
 			if (type.compare("Layout") == 0)
 			{
-				// Before clearing the layout contents, first remove any control names that are in the control names cache
-				RemoveAllNamesFromLayout(layoutToFill);
-
 				// Clear all layout contents (rows, columns, controls, and sublayouts)
 				layoutToFill->ClearContents();
 
@@ -1248,20 +1263,5 @@ void JSONLoaders::AddControlNameImpl(const std::string& name)
 
 	m_controlNames.push_back(name);
 }
-void JSONLoaders::RemoveControlNameImpl(const std::string& name)
-{
-	auto itr = std::find(m_controlNames.begin(), m_controlNames.end(), name);
-	if (itr != m_controlNames.end())
-		m_controlNames.erase(itr);
-}
-void JSONLoaders::RemoveAllNamesFromLayout(Layout* layout)
-{
-	for (unsigned int iii = 0; iii < layout->NumberOfControls(); ++iii)
-		RemoveControlNameImpl(layout->GetControl(iii)->Name());
-
-	for (unsigned int iii = 0; iii < layout->NumberOfSubLayouts(); ++iii)
-		RemoveAllNamesFromLayout(layout->GetSublayout(iii));
-}
-
 
 }

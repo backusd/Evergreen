@@ -69,7 +69,6 @@ public:
 	static bool IsStyleKey(const std::string& styleKey) noexcept { return Get().IsStyleKeyImpl(styleKey); }
 
 	static void AddControlName(const std::string& name) { Get().AddControlNameImpl(name); }
-	static void RemoveControlName(const std::string& name) { Get().RemoveControlNameImpl(name); }
 	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
 
 	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
@@ -187,8 +186,6 @@ private:
 	bool IsStyleKeyImpl(const std::string& styleKey) const noexcept { return m_styleLoaders.find(styleKey) != m_styleLoaders.end(); }
 
 	void AddControlNameImpl(const std::string& name);
-	void RemoveControlNameImpl(const std::string& name);
-	void RemoveAllNamesFromLayout(Layout* layout);
 
 	std::unordered_map<std::string, ControlLoaderFn>	m_controlLoaders; 
 	std::unordered_map<std::string, StyleLoaderFn>		m_styleLoaders;

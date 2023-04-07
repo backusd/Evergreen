@@ -30,6 +30,7 @@
 			"RightPanel_MaterialsButton_CloseButton": {
 				"Type": "Button",
 				"Column": 1,
+				"Margin": [ 6, 3, 6, 3 ],
 				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
 				"Content": {
 					"Type": "Text",
@@ -43,7 +44,12 @@
 					"TextAlignment": "Center",
 					"ParagraphAlignment": "Center",
 					"WordWrapping": "None"
-				}
+				},
+
+				"OnMouseEnter": "RightPanel_MaterialsButton_CloseButton_OnMouseEnter",
+				"OnMouseLeave": "RightPanel_MaterialsButton_CloseButton_OnMouseLeave",
+				"OnMouseLButtonDown": "RightPanel_MaterialsButton_CloseButton_OnMouseLButtonDown",
+				"OnClick": "RightPanel_MaterialsButton_CloseButton_OnClick"
 			}
 		}
 	}

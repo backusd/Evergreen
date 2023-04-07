@@ -51,6 +51,7 @@
     <None Include="src\Shaders\Lighting.hlsl" />
     <None Include="src\json\right_pane_materials_tab.json" />
     <None Include="src\json\right_pane_materials_content.json" />
+    <None Include="src\json\right_pane_simulation_content.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rendering\Structs.h">
