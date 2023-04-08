@@ -770,6 +770,15 @@ Control* Layout::GetControlByID(unsigned int id) const noexcept
 
 	return nullptr;
 }
+Control* Layout::GetFirstControlOfType(Control::ControlType type) const noexcept
+{
+	for (const std::unique_ptr<Control>& control : m_controls)
+	{
+		if (control->GetControlType() == type)
+			return control.get();
+	}
+	return nullptr;
+}
 
 Layout* Layout::GetLayoutByName(const std::string& name) noexcept
 {

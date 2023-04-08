@@ -67,6 +67,8 @@ public:
 	void OnMouseButtonReleased(MouseButtonReleasedEvent& e) override;
 	void OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e) override;
 
+	virtual ControlType GetControlType() const noexcept { return ControlType::Viewport; }
+
 protected:
 
 	void ViewportChanged();

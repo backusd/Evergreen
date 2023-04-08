@@ -87,6 +87,8 @@ public:
 	void SetOnEnterKeyCallback(std::function<void(TextInput*, CharEvent&)> func) noexcept { m_OnEnterKey = func; }
 	void SetOnInputTextChangedCallback(std::function<void(TextInput*, CharEvent&)> func) noexcept { m_OnInputTextChanged = func; }
 
+	virtual ControlType GetControlType() const noexcept { return ControlType::TextInput; }
+
 private:
 	std::function<void(TextInput*, MouseMoveEvent&)> m_OnMouseEntered = [](TextInput*, MouseMoveEvent&) {};
 	std::function<void(TextInput*, MouseMoveEvent&)> m_OnMouseExited = [](TextInput*, MouseMoveEvent&) {};

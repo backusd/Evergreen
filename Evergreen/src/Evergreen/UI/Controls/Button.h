@@ -89,6 +89,8 @@ public:
 
 	ND virtual bool ContainsPoint(float x, float y) const noexcept;
 
+	virtual ControlType GetControlType() const noexcept { return ControlType::Button; }
+
 protected:
 	
 	virtual void ButtonChanged();

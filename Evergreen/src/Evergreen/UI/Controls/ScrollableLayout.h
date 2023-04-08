@@ -111,6 +111,8 @@ public:
 	void HorizontalScrollBarDraggingBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 	void HorizontalScrollBarRegionBrush(std::unique_ptr<ColorBrush> brush) noexcept;
 
+	virtual ControlType GetControlType() const noexcept { return ControlType::ScrollableLayout; }
+
 private:
 	void ScrollableLayoutChanged();
 	void VerticalScrollBarChanged() noexcept;

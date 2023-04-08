@@ -134,6 +134,8 @@ public:
 
 	ND virtual bool ContainsPoint(float x, float y) const;
 
+	virtual ControlType GetControlType() const noexcept { return ControlType::Pane; }
+
 private:
 	enum class MouseOverDraggableAreaState
 	{

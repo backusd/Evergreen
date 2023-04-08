@@ -10,8 +10,6 @@ MoleculesApp::MoleculesApp() :
 	m_ui->SetUIRoot("src/json/");
 	m_ui->LoadUI("main.json");
 
-	EG_TRACE("{}", "UI LOADED");
-
 	// Always start with the "Simulation" button as selected
 	m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton");
 	EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button");
@@ -799,7 +797,9 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 
 			// BEFORE updating the m_rightPaneSelectedTabButton pointer, update the current Button
 			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f))));
-			Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetControl(0));
+			//		NOTE: We use GetFirstControlOfType here because loading via JSON provides zero guarantee of which controls are loaded
+			//            in which order. And we want to be generic here instead of searching for a control of a specific name
+			Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
 			tabText->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray)))); 
 
 			// Set the materials Button as the selected button

@@ -167,7 +167,7 @@ public:
 	void operator=(const Layout&) = delete;
 	~Layout() 
 	{
-		EG_CORE_TRACE("~Layout: {}", m_name);
+		// EG_CORE_TRACE("~Layout: {}", m_name);
 	}
 
 	Layout* AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed");
@@ -230,6 +230,7 @@ public:
 	ND T* GetControlByID(unsigned int id) const noexcept requires (std::is_base_of_v<Control, T>);
 	ND inline bool HasChildControlWithName(const std::string& name) const noexcept { return GetControlByName(name) != nullptr; }
 	ND inline bool HasChildControlWithName(unsigned int id) const noexcept { return GetControlByID(id) != nullptr; }
+	ND inline Control* GetFirstControlOfType(Control::ControlType type) const noexcept;
 
 	ND Layout* GetLayoutByName(const std::string& name) noexcept;
 	ND Layout* GetLayoutByID(unsigned int id) noexcept;
