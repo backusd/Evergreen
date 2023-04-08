@@ -396,13 +396,6 @@ void Layout::UpdateSubLayouts() noexcept
 	
 	for (unsigned int iii = 0; iii < m_subLayouts.size(); ++iii)
 	{
-		//m_subLayouts[iii]->m_left   = m_columns[m_subLayoutPositions[iii].Column].Left();
-		//m_subLayouts[iii]->m_top    = m_rows[m_subLayoutPositions[iii].Row].Top();
-		//m_subLayouts[iii]->m_width  = m_columns[m_subLayoutPositions[iii].Column + m_subLayoutPositions[iii].ColumnSpan - 1].Right() - m_columns[m_subLayoutPositions[iii].Column].Left();
-		//m_subLayouts[iii]->m_height = m_rows[m_subLayoutPositions[iii].Row + m_subLayoutPositions[iii].RowSpan - 1].Bottom() - m_rows[m_subLayoutPositions[iii].Row].Top();
-		//
-		//m_subLayouts[iii]->UpdateLayout();
-
 		m_subLayouts[iii]->Resize(
 			m_rows[m_subLayoutPositions[iii].Row].Top(),
 			m_columns[m_subLayoutPositions[iii].Column].Left(),
@@ -526,6 +519,8 @@ void Layout::RemoveColumn(unsigned int index) noexcept
 			--m_controlPositions[iii].Column;
 		}
 	}
+
+	UpdateColumns();
 }
 
 void Layout::Margin(float left, float top, float right, float bottom) noexcept

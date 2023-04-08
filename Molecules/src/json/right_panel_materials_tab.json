@@ -10,7 +10,7 @@
 			"RowDefinitions": [ { "Height": "1*" } ],
 			"ColumnDefinitions": [
 				{ "Width": "1*" },
-				{ "Width": "25" }
+				{ "Width": "20" }
 			],
 
 			"RightPanel_MaterialsButton_Text": {
@@ -30,7 +30,7 @@
 			"RightPanel_MaterialsButton_CloseButton": {
 				"Type": "Button",
 				"Column": 1,
-				"Margin": [ 6, 3, 6, 3 ],
+				"Margin": [ 3, 3, 3, 3 ],
 				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
 				"Content": {
 					"Type": "Text",

@@ -1,0 +1,56 @@
+{
+	"RightPanel_CameraButton": {
+		"Type": "Button",
+		"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+		"BorderBrush": "Gray",
+		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ],
+
+		"Content": {
+			"Type": "Layout",
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [
+				{ "Width": "1*" },
+				{ "Width": "20" }
+			],
+
+			"RightPanel_CameraButton_Text": {
+				"Type": "Text",
+				"Text": "Camera",
+				"Brush": "White",
+				"FontFamily": "Calibri",
+				"FontSize": 14,
+				"FontWeight": "UltraLight",
+				"FontStyle": "Normal",
+				"FontStretch": "Normal",
+				"TextAlignment": "Center",
+				"ParagraphAlignment": "Center",
+				"WordWrapping": "None"
+			},
+
+			"RightPanel_CameraButton_CloseButton": {
+				"Type": "Button",
+				"Column": 1,
+				"Margin": [ 3, 3, 3, 3 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"Content": {
+					"Type": "Text",
+					"Text": "0xE8BB",
+					"Brush": "White",
+					"FontFamily": "Segoe MDL2 Assets",
+					"FontSize": 8,
+					"FontWeight": "UltraLight",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Center",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				},
+
+				"OnMouseEnter": "RightPanel_CameraButton_CloseButton_OnMouseEnter",
+				"OnMouseLeave": "RightPanel_CameraButton_CloseButton_OnMouseLeave",
+				"OnMouseLButtonDown": "RightPanel_CameraButton_CloseButton_OnMouseLButtonDown",
+				"OnClick": "RightPanel_CameraButton_CloseButton_OnClick"
+			}
+		}
+	}
+}

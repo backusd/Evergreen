@@ -40,7 +40,8 @@ private:
 	void SetMenuBarEditDropDownCallbacks();
 	void SetMenuBarViewDropDownCallbacks();
 
-	// Material Callbacks
+	// Camera/Material Callbacks
+	void SetCameraEditCallbacks();
 	void SetMaterialEditCallbacks();
 
 	// Right Panel Layout Callbacks

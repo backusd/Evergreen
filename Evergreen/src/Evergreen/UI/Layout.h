@@ -165,6 +165,10 @@ public:
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	void operator=(const Layout&) = delete;
+	~Layout() 
+	{
+		EG_CORE_TRACE("~Layout: {}", m_name);
+	}
 
 	Layout* AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed");
 
