@@ -628,6 +628,11 @@
 					"BorderBrush": "Gray",
 					"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ],
 
+					"OnMouseEnter": "RightPanelTabOnMouseEnter",
+					"OnMouseLeave": "RightPanelTabOnMouseLeave",
+					"OnMouseLButtonDown": "RightPanelTabOnMouseLButtonDown",
+					"OnClick": "SimulationTabOnClick",
+
 					"Content": {
 						"Type": "Text",
 						"Text": "Simulation",

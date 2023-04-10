@@ -120,6 +120,8 @@ void MoleculesApp::SetCallbacks()
 	SetViewportCallbacks();
 
 	// Camera / Materials
+	SetGeneralRightPanelCallbacks();
+	SetSimulationCallbacks();
 	SetCameraEditCallbacks();
 	SetMaterialEditCallbacks();
 
@@ -766,6 +768,53 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 	);
 }
 
+// General Right Panel Callbacks
+void MoleculesApp::SetGeneralRightPanelCallbacks()
+{
+	JSONLoaders::AddCallback("RightPanelTabOnMouseEnter", 
+		[this](Button* button, MouseMoveEvent& e) 
+		{
+			if (button != m_rightPanelSelectedTabButton) 
+			{
+				this->ChangeButtonBackgroundAndTextColor(button, m_menuBarButtonColorMouseOverPaneClosed, D2D1::ColorF::White);
+			}
+		}
+	);
+	JSONLoaders::AddCallback("RightPanelTabOnMouseLeave",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			if (button != m_rightPanelSelectedTabButton)
+			{
+				this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f), D2D1::ColorF::LightGray);
+			}
+		}
+	);
+	JSONLoaders::AddCallback("RightPanelTabOnMouseLButtonDown",
+		[this](Button* button, MouseButtonPressedEvent& e)
+		{
+			if (button != m_rightPanelSelectedTabButton)
+			{
+				//this->ChangeButtonBackgroundAndTextColor(button, m_menuBarButtonColorPaneOpen, D2D1::ColorF::White);
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
+			}
+		}
+	);
+}
+
+// Simulation Callbacks
+void MoleculesApp::SetSimulationCallbacks()
+{
+	JSONLoaders::AddCallback("SimulationTabOnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			if (button != m_rightPanelSelectedTabButton)
+			{
+				this->RightPanelTabOnClick(button, "right_panel_simulation_content.json");
+			}
+		}
+	);
+}
+
 // Material Callbacks
 void MoleculesApp::SetMaterialEditCallbacks()
 {
@@ -929,9 +978,10 @@ void MoleculesApp::RightPanelAddTab(Button* button, MouseButtonReleasedEvent& e,
 		return;
 
 	// BEFORE updating the m_rightPaneSelectedTabButton pointer, update the current Button
-	m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f)))); 
-	Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text)); 
-	tabText->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray)))); 
+	ChangeButtonBackgroundAndTextColor(m_rightPanelSelectedTabButton, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
+	Button* closeButton = static_cast<Button*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
+	if (closeButton != nullptr)
+		ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
 
 	// Set the materials Button as the selected button
 	m_rightPanelSelectedTabButton = tabButton;
@@ -983,13 +1033,82 @@ void MoleculesApp::RightPanelCloseTab(MouseButtonReleasedEvent& e, const std::st
 	// Update the color of the Simulation tab text and background 
 	m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton"); 
 	EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button");
-	m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
-	Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
-	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
+	ChangeButtonBackgroundAndTextColor(m_rightPanelSelectedTabButton, m_rightPanelTabColorSelected, D2D1::ColorF::White);
 
 	// Just default to loading the Simulation content
 	m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout);
 
 	// Trigger the OnResize so the layout border gets updated
 	m_rightPanelContentLayout->TriggerOnResizeCallback();
+}
+void MoleculesApp::RightPanelTabOnClick(Button* button, const std::string& contentJSON)
+{
+	// For the currently selected button, update the background and text color
+	ChangeButtonBackgroundAndTextColor(m_rightPanelSelectedTabButton, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
+	Button* closeButton = static_cast<Button*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
+	if (closeButton != nullptr)
+		ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
+
+	// Track the new button
+	m_rightPanelSelectedTabButton = button;
+
+	// Update the selected button color
+	ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorSelected, D2D1::ColorF::White);
+	closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
+	if (closeButton != nullptr)
+		ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorSelected, D2D1::ColorF::White);
+
+	// Load the new right panel contents
+	m_ui->LoadLayoutFromFile(contentJSON, m_rightPanelContentLayout);
+
+	// Trigger the OnResize so the layout border gets updated
+	m_rightPanelContentLayout->TriggerOnResizeCallback();
+}
+
+
+void MoleculesApp::ChangeButtonBackground(Button* button, const D2D1_COLOR_F& color) const
+{
+	EG_ASSERT(button != nullptr, "Button cannot be nullptr");
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, color)));
+}
+void MoleculesApp::ChangeButtonBackground(Button* button, D2D1::ColorF::Enum color) const 
+{
+	EG_ASSERT(button != nullptr, "Button cannot be nullptr");
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(color)))); 
+}
+void MoleculesApp::ChangeButtonBackgroundAndTextColor(Button* button, const D2D1_COLOR_F& buttonColor, const D2D1_COLOR_F& textColor) const
+{
+	EG_ASSERT(button != nullptr, "Button cannot be nullptr");
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, buttonColor)));
+	
+	Text* text = static_cast<Text*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, textColor)));
+}
+void MoleculesApp::ChangeButtonBackgroundAndTextColor(Button* button, D2D1::ColorF::Enum buttonColor, const D2D1_COLOR_F& textColor) const
+{
+	EG_ASSERT(button != nullptr, "Button cannot be nullptr");
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(buttonColor))));
+
+	Text* text = static_cast<Text*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, textColor)));
+}
+void MoleculesApp::ChangeButtonBackgroundAndTextColor(Button* button, const D2D1_COLOR_F& buttonColor, D2D1::ColorF::Enum textColor) const
+{
+	EG_ASSERT(button != nullptr, "Button cannot be nullptr");
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, buttonColor)));
+
+	Text* text = static_cast<Text*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(textColor))));
+}
+void MoleculesApp::ChangeButtonBackgroundAndTextColor(Button* button, D2D1::ColorF::Enum buttonColor, D2D1::ColorF::Enum textColor) const
+{
+	EG_ASSERT(button != nullptr, "Button cannot be nullptr");
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(buttonColor))));
+
+	Text* text = static_cast<Text*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(textColor))));
 }

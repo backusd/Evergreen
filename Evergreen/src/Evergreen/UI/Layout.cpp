@@ -489,7 +489,34 @@ std::unique_ptr<Control> Layout::RemoveControl(unsigned int index) noexcept
 }
 void Layout::RemoveRow(unsigned int index) noexcept
 {
-	int iii = index;
+	EG_CORE_ASSERT(index < m_rows.size(), "Invalid index to remove");
+	EG_CORE_ASSERT(m_rows.size() == m_rowDefinitions.size(), "Rows and definitions mismatch");
+	EG_CORE_ASSERT(m_controls.size() == m_controlPositions.size(), "Controls and positions mismatch");
+
+	m_rows.erase(m_rows.begin() + index);
+	m_rowDefinitions.erase(m_rowDefinitions.begin() + index);
+
+	for (unsigned int iii = 0; iii < m_controlPositions.size(); ++iii)
+	{
+		// Check to see if the control uses this row
+		if (m_controlPositions[iii].Row <= index && m_controlPositions[iii].Row + m_controlPositions[iii].RowSpan - 1 >= index)
+		{
+			EG_CORE_WARN("Removing row #{} from layout with name '{}'. Control with name '{}' occupies this row.", index, m_name, m_controls[iii]->Name());
+
+			// if the control spans more than just a single row, then just decrease its span. Otherwise, decrement the row number
+			if (m_controlPositions[iii].RowSpan > 1)
+				--m_controlPositions[iii].RowSpan;
+			else if (m_controlPositions[iii].Row > 0)
+				--m_controlPositions[iii].Row;
+		}
+		else if (m_controlPositions[iii].Row > index)
+		{
+			// If the control is positioned below the row to be removed, then decrement the row it belongs to
+			--m_controlPositions[iii].Row;
+		}
+	}
+
+	UpdateRows();
 }
 void Layout::RemoveColumn(unsigned int index) noexcept
 {
