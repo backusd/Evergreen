@@ -693,61 +693,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 	JSONLoaders::AddCallback("EditDropDown_CameraButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			// Close the pane
-			Pane* editPane = m_ui->GetPane("EditDropDownPane"); 
-			EG_ASSERT(editPane != nullptr, "Pane does not exist"); 
-			editPane->SetVisible(false); 
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true); 
-
-			// Reset the drop down button back to its original state
-			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton"); 
-			EG_ASSERT(editButton != nullptr, "Button does not exist"); 
-			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault))); 
-			editButton->BorderWidth(0.0f); 
-
-			// Reset the color of the button back to its non-hovered state
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen))); 
-
-			// Determine if the "Materials" tab already exists. If not, create it			
-			Button* cameraButton = m_rightPanelTabsLayout->GetControlByName<Button>("RightPanel_CameraButton"); 
-			if (cameraButton == nullptr) 
-			{
-				// We are going to force the "Simulation" tab to not be removable. When we add a second tab, it will
-				// be placed in the second column, which already exists. However, when we add a third, fourth, etc tab,
-				// we have to add an additional column to the layout
-				if (m_rightPanelTabsLayout->NumberOfControls() > 1) 
-					m_rightPanelTabsLayout->AddColumn({ RowColumnType::STAR, 1.0f }); 
-
-				RowColumnPosition rowCol = { 0, static_cast<unsigned int>(m_rightPanelTabsLayout->Columns().size()) - 1, 1, 1 };
-				m_ui->LoadControlsFromFile("right_panel_camera_tab.json", m_rightPanelTabsLayout, rowCol);
-
-				cameraButton = m_rightPanelTabsLayout->GetControlByName<Button>("RightPanel_CameraButton");
-				EG_ASSERT(cameraButton != nullptr, "Failed to create/find camera button");
-			}
-
-			// If the cameraButton is already selected, there is nothing else we need to do
-			if (m_rightPanelSelectedTabButton == cameraButton)
-				return;
-
-			// BEFORE updating the m_rightPaneSelectedTabButton pointer, update the current Button
-			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f))));
-			Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
-			tabText->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray))));
-
-			// Set the materials Button as the selected button
-			m_rightPanelSelectedTabButton = cameraButton;
-
-			// Update the content layouts border along the top edge
-			const D2D1_RECT_F& buttonRect = cameraButton->BackgroundRect();
-			m_rightPanelContentLayout->BorderTopLeftOffsetX(buttonRect.left - m_rightPanelContentLayout->Left());
-			m_rightPanelContentLayout->BorderTopRightOffsetX(m_rightPanelContentLayout->Right() - buttonRect.right);
-
-			// Load the material editing controls in the right pane
-			m_ui->LoadLayoutFromFile("right_panel_camera_content.json", m_rightPanelContentLayout);
+			this->RightPanelAddTab(button, e, "RightPanel_CameraButton", "right_panel_camera_tab.json", "right_panel_camera_content.json");
 		}
 	);
 
@@ -755,63 +701,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 	JSONLoaders::AddCallback("EditDropDown_MaterialsButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			// Close the pane
-			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-			EG_ASSERT(editPane != nullptr, "Pane does not exist");
-			editPane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			// Reset the drop down button back to its original state
-			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
-			EG_ASSERT(editButton != nullptr, "Button does not exist");
-			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
-			editButton->BorderWidth(0.0f);
-
-			// Reset the color of the button back to its non-hovered state
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
-
-			// Determine if the "Materials" tab already exists. If not, create it			
-			Button* materialsButton = m_rightPanelTabsLayout->GetControlByName<Button>("RightPanel_MaterialsButton");
-			if (materialsButton == nullptr)
-			{
-				// We are going to force the "Simulation" tab to not be removable. When we add a second tab, it will
-				// be placed in the second column, which already exists. However, when we add a third, fourth, etc tab,
-				// we have to add an additional column to the layout
-				if (m_rightPanelTabsLayout->NumberOfControls() > 1)
-					m_rightPanelTabsLayout->AddColumn({ RowColumnType::STAR, 1.0f });
-
-				RowColumnPosition rowCol = { 0, static_cast<unsigned int>(m_rightPanelTabsLayout->Columns().size()) - 1, 1, 1 };
-				m_ui->LoadControlsFromFile("right_panel_materials_tab.json", m_rightPanelTabsLayout, rowCol);
-			
-				materialsButton = m_rightPanelTabsLayout->GetControlByName<Button>("RightPanel_MaterialsButton");
-				EG_ASSERT(materialsButton != nullptr, "Failed to create/find materials button");  
-			}
-
-			// If the materialsButton is already selected, there is nothing else we need to do
-			if (m_rightPanelSelectedTabButton == materialsButton)
-				return;
-
-			// BEFORE updating the m_rightPaneSelectedTabButton pointer, update the current Button
-			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f))));
-			//		NOTE: We use GetFirstControlOfType here because loading via JSON provides zero guarantee of which controls are loaded
-			//            in which order. And we want to be generic here instead of searching for a control of a specific name
-			Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
-			tabText->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray)))); 
-
-			// Set the materials Button as the selected button
-			m_rightPanelSelectedTabButton = materialsButton;
-
-			// Update the content layouts border along the top edge
-			const D2D1_RECT_F& buttonRect = materialsButton->BackgroundRect();  
-			m_rightPanelContentLayout->BorderTopLeftOffsetX(buttonRect.left - m_rightPanelContentLayout->Left());
-			m_rightPanelContentLayout->BorderTopRightOffsetX(m_rightPanelContentLayout->Right() - buttonRect.right);
-
-			// Load the material editing controls in the right pane
-			m_ui->LoadLayoutFromFile("right_panel_materials_content.json", m_rightPanelContentLayout);
+			this->RightPanelAddTab(button, e, "RightPanel_MaterialsButton", "right_panel_materials_tab.json", "right_panel_materials_content.json");
 		}
 	);
 
@@ -908,48 +798,7 @@ void MoleculesApp::SetMaterialEditCallbacks()
 	JSONLoaders::AddCallback("RightPanel_MaterialsButton_CloseButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			// Remove the Materials tab. First, remove the Button control then delete the column it was it
-			//        "Simulation" tab is always at index 0, so we can skip that one
-			//
-			// NOTE: We MUST ensure the lifetime of the Button for the duration of this lambda. Therefore,
-			//       layout->RemoveButton() will return a unique_ptr to the Button which we can store as a
-			//       local variable. Once this lambda goes goes out of scope, the local unique_ptr will
-			//       officially delete the Button
-			std::unique_ptr<Control> _button = nullptr;
-			for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii)
-			{
-				// Find the correct Button to remove then break from the loop
-				if (m_rightPanelTabsLayout->GetControl(iii)->Name().compare("RightPanel_MaterialsButton") == 0)
-				{
-					_button = m_rightPanelTabsLayout->RemoveControl(iii);
-
-					// Only remove the Materials column if there are other non-Simulation tabs
-					if (m_rightPanelTabsLayout->NumberOfControls() > 1)
-						m_rightPanelTabsLayout->RemoveColumn(iii);
-
-					break;
-				}
-			}
-
-			// Make sure the UI doesn't try to send events to the buttont that is being removed
-			e.IgnoreHandlingControl(true);
-
-			// Trigger the OnResize so the layout border gets updated
-			m_rightPanelContentLayout->TriggerOnResizeCallback();
-
-			// If the button we are removing was not selected, then we don't need to load new contents
-			if (static_cast<Button*>(_button.get()) != m_rightPanelSelectedTabButton)
-				return;
-
-			// Update the color of the Simulation tab text and background 
-			m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton"); 
-			EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button"); 
-			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault))); 
-			Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White)))); 
-
-			// Just default to loading the Simulation content
-			m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout); 
+			this->RightPanelCloseTab(e, "RightPanel_MaterialsButton");
 		}
 	);
 
@@ -1015,49 +864,7 @@ void MoleculesApp::SetCameraEditCallbacks()
 	JSONLoaders::AddCallback("RightPanel_CameraButton_CloseButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			// Remove the Camera tab. First, remove the Button control then delete the column it was in
-			//        "Simulation" tab is always at index 0, so we can skip that one
-			//
-			// NOTE: We MUST ensure the lifetime of the Button for the duration of this lambda. Therefore,
-			//       layout->RemoveButton() will return a unique_ptr to the Button which we can store as a
-			//       local variable. Once this lambda goes goes out of scope, the local unique_ptr will
-			//       officially delete the Button
-			std::unique_ptr<Control> _button = nullptr;
-			for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii)
-			{
-				// Find the correct Button to remove then break from the loop
-				if (m_rightPanelTabsLayout->GetControl(iii)->Name().compare("RightPanel_CameraButton") == 0)
-				{
-					_button = m_rightPanelTabsLayout->RemoveControl(iii);
-
-					// Only remove the Materials column if there are other non-Simulation tabs
-					if (m_rightPanelTabsLayout->NumberOfControls() > 1)
-						m_rightPanelTabsLayout->RemoveColumn(iii);
-
-					break;
-				}
-			}
-
-			// Make sure the UI doesn't try to send events to the buttont that is being removed
-			e.IgnoreHandlingControl(true);
-
-			// Trigger the OnResize so the layout border gets updated
-			m_rightPanelContentLayout->TriggerOnResizeCallback();
-
-			// If the button we are removing was not selected, then we don't need to load new contents
-			if (static_cast<Button*>(_button.get()) != m_rightPanelSelectedTabButton)
-				return;
-
-			// Update the color of the Simulation tab text and background 
-			m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton");
-			EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button");
-			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
-			Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
-
-			// Just default to loading the Simulation content
-			m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout);
-
+			this->RightPanelCloseTab(e, "RightPanel_CameraButton");
 		}
 	);
 
@@ -1077,4 +884,112 @@ void MoleculesApp::SetRightPanelLayoutCallbacks()
 			layout->BorderTopRightOffsetX(layout->Right() - buttonRect.right);
 		}
 	);
+}
+
+void MoleculesApp::RightPanelAddTab(Button* button, MouseButtonReleasedEvent& e, const std::string& tabButtonName, const std::string& tabButtonJSON, const std::string& contentJSON)
+{
+	// Close the pane
+	Pane* editPane = m_ui->GetPane("EditDropDownPane"); 
+	EG_ASSERT(editPane != nullptr, "Pane does not exist"); 
+	editPane->SetVisible(false); 
+
+	// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
+	// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
+	// To do this, we inform the event that it should ignore the handling control
+	e.IgnoreHandlingControl(true); 
+
+	// Reset the drop down button back to its original state
+	Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton"); 
+	EG_ASSERT(editButton != nullptr, "Button does not exist"); 
+	editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault))); 
+	editButton->BorderWidth(0.0f); 
+
+	// Reset the color of the button back to its non-hovered state
+	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+
+	// Determine if the tab already exists. If not, create it			
+	Button* tabButton = m_rightPanelTabsLayout->GetControlByName<Button>(tabButtonName);
+	if (tabButton == nullptr)
+	{
+		// We are going to force the "Simulation" tab to not be removable. When we add a second tab, it will
+		// be placed in the second column, which already exists. However, when we add a third, fourth, etc tab,
+		// we have to add an additional column to the layout
+		if (m_rightPanelTabsLayout->NumberOfControls() > 1) 
+			m_rightPanelTabsLayout->AddColumn({ RowColumnType::STAR, 1.0f }); 
+
+		RowColumnPosition rowCol = { 0, static_cast<unsigned int>(m_rightPanelTabsLayout->Columns().size()) - 1, 1, 1 }; 
+		m_ui->LoadControlsFromFile(tabButtonJSON, m_rightPanelTabsLayout, rowCol);
+
+		tabButton = m_rightPanelTabsLayout->GetControlByName<Button>(tabButtonName);
+		EG_ASSERT(tabButton != nullptr, std::format("Failed to create/find {} button", tabButtonName)); 
+	}
+
+	// If the tabButton is already selected, there is nothing else we need to do
+	if (m_rightPanelSelectedTabButton == tabButton)
+		return;
+
+	// BEFORE updating the m_rightPaneSelectedTabButton pointer, update the current Button
+	m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f)))); 
+	Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text)); 
+	tabText->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray)))); 
+
+	// Set the materials Button as the selected button
+	m_rightPanelSelectedTabButton = tabButton;
+
+	// Update the content layouts border along the top edge
+	const D2D1_RECT_F& buttonRect = tabButton->BackgroundRect();
+	m_rightPanelContentLayout->BorderTopLeftOffsetX(buttonRect.left - m_rightPanelContentLayout->Left()); 
+	m_rightPanelContentLayout->BorderTopRightOffsetX(m_rightPanelContentLayout->Right() - buttonRect.right); 
+
+	// Load the material editing controls in the right pane
+	m_ui->LoadLayoutFromFile(contentJSON, m_rightPanelContentLayout);
+} 
+void MoleculesApp::RightPanelCloseTab(MouseButtonReleasedEvent& e, const std::string& tabButtonName)
+{
+	// First, remove the Button control then delete the column it was in
+	//        "Simulation" tab is always at index 0, so we can skip that one
+	//
+	// NOTE: We MUST ensure the lifetime of the Button for the duration of this lambda. Therefore,
+	//       layout->RemoveButton() will return a unique_ptr to the Button which we can store as a
+	//       local variable. Once this lambda goes goes out of scope, the local unique_ptr will
+	//       officially delete the Button
+	std::unique_ptr<Control> _button = nullptr;  
+	for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii)
+	{
+		// Find the correct Button to remove then break from the loop
+		if (m_rightPanelTabsLayout->GetControl(iii)->Name().compare(tabButtonName) == 0)
+		{
+			_button = m_rightPanelTabsLayout->RemoveControl(iii); 
+
+			// Only remove the Materials column if there are other non-Simulation tabs
+			if (m_rightPanelTabsLayout->NumberOfControls() > 1) 
+				m_rightPanelTabsLayout->RemoveColumn(iii); 
+
+			break;
+		}
+	}
+
+	// Make sure the UI doesn't try to send events to the buttont that is being removed
+	e.IgnoreHandlingControl(true); 
+
+	// If the button we are removing was not selected, then we don't need to load new contents
+	if (static_cast<Button*>(_button.get()) != m_rightPanelSelectedTabButton) 
+	{
+		// Trigger the OnResize so the layout border gets updated
+		m_rightPanelContentLayout->TriggerOnResizeCallback();
+		return;
+	}
+
+	// Update the color of the Simulation tab text and background 
+	m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton"); 
+	EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button");
+	m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+	Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
+
+	// Just default to loading the Simulation content
+	m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout);
+
+	// Trigger the OnResize so the layout border gets updated
+	m_rightPanelContentLayout->TriggerOnResizeCallback();
 }

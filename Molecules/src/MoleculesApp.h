@@ -46,6 +46,10 @@ private:
 	// Right Panel Layout Callbacks
 	void SetRightPanelLayoutCallbacks();
 
+	// Generic right panel methods
+	void RightPanelAddTab(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e, const std::string& tabButtonName, const std::string& tabButtonJSON, const std::string& contentJSON);
+	void RightPanelCloseTab(Evergreen::MouseButtonReleasedEvent& e, const std::string& tabButtonName);
+
 	const D2D1_COLOR_F m_menuBarButtonColorDefault = D2D1::ColorF(0.16f, 0.16f, 0.16f);
 	const D2D1_COLOR_F m_menuBarButtonColorMouseOverPaneClosed = D2D1::ColorF(0.35f, 0.35f, 0.35f);
 	const D2D1_COLOR_F m_menuBarButtonColorPaneOpen = D2D1::ColorF(0.25f, 0.25f, 0.25f);
