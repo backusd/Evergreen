@@ -735,7 +735,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 
 			// BEFORE updating the m_rightPaneSelectedTabButton pointer, update the current Button
 			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f))));
-			Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetControl(0));
+			Text* tabText = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
 			tabText->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::LightGray))));
 
 			// Set the materials Button as the selected button
@@ -919,7 +919,7 @@ void MoleculesApp::SetMaterialEditCallbacks()
 			for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii)
 			{
 				// Find the correct Button to remove then break from the loop
-				if (m_rightPanelSelectedTabButton == static_cast<Button*>(m_rightPanelTabsLayout->GetControl(iii)))
+				if (m_rightPanelTabsLayout->GetControl(iii)->Name().compare("RightPanel_MaterialsButton") == 0)
 				{
 					_button = m_rightPanelTabsLayout->RemoveControl(iii);
 
@@ -931,21 +931,25 @@ void MoleculesApp::SetMaterialEditCallbacks()
 				}
 			}
 
-			// Update the color of the Simulation tab text and background 
-			m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton"); 
-			EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button"); 
-			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault))); 
-			Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetControl(0)); 
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White)))); 
-
-			// Just default to loading the Simulation content
-			m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout); 
+			// Make sure the UI doesn't try to send events to the buttont that is being removed
+			e.IgnoreHandlingControl(true);
 
 			// Trigger the OnResize so the layout border gets updated
 			m_rightPanelContentLayout->TriggerOnResizeCallback();
 
-			// Make sure the UI doesn't try to send events to the Materials button
-			e.IgnoreHandlingControl(true);
+			// If the button we are removing was not selected, then we don't need to load new contents
+			if (static_cast<Button*>(_button.get()) != m_rightPanelSelectedTabButton)
+				return;
+
+			// Update the color of the Simulation tab text and background 
+			m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton"); 
+			EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button"); 
+			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault))); 
+			Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
+			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White)))); 
+
+			// Just default to loading the Simulation content
+			m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout); 
 		}
 	);
 
@@ -1011,7 +1015,7 @@ void MoleculesApp::SetCameraEditCallbacks()
 	JSONLoaders::AddCallback("RightPanel_CameraButton_CloseButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			// Remove the Materials tab. First, remove the Button control then delete the column it was it
+			// Remove the Camera tab. First, remove the Button control then delete the column it was in
 			//        "Simulation" tab is always at index 0, so we can skip that one
 			//
 			// NOTE: We MUST ensure the lifetime of the Button for the duration of this lambda. Therefore,
@@ -1022,7 +1026,7 @@ void MoleculesApp::SetCameraEditCallbacks()
 			for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii)
 			{
 				// Find the correct Button to remove then break from the loop
-				if (m_rightPanelSelectedTabButton == static_cast<Button*>(m_rightPanelTabsLayout->GetControl(iii)))
+				if (m_rightPanelTabsLayout->GetControl(iii)->Name().compare("RightPanel_CameraButton") == 0)
 				{
 					_button = m_rightPanelTabsLayout->RemoveControl(iii);
 
@@ -1034,21 +1038,26 @@ void MoleculesApp::SetCameraEditCallbacks()
 				}
 			}
 
+			// Make sure the UI doesn't try to send events to the buttont that is being removed
+			e.IgnoreHandlingControl(true);
+
+			// Trigger the OnResize so the layout border gets updated
+			m_rightPanelContentLayout->TriggerOnResizeCallback();
+
+			// If the button we are removing was not selected, then we don't need to load new contents
+			if (static_cast<Button*>(_button.get()) != m_rightPanelSelectedTabButton)
+				return;
+
 			// Update the color of the Simulation tab text and background 
 			m_rightPanelSelectedTabButton = m_ui->GetControlByName<Button>("RightPanel_SimulationButton");
 			EG_ASSERT(m_rightPanelSelectedTabButton != nullptr, "Could not find Button");
 			m_rightPanelSelectedTabButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
-			Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetControl(0));
+			Text* text = static_cast<Text*>(m_rightPanelSelectedTabButton->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
 			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
 
 			// Just default to loading the Simulation content
 			m_ui->LoadLayoutFromFile("right_panel_simulation_content.json", m_rightPanelContentLayout);
 
-			// Trigger the OnResize so the layout border gets updated
-			m_rightPanelContentLayout->TriggerOnResizeCallback();
-
-			// Make sure the UI doesn't try to send events to the Materials button
-			e.IgnoreHandlingControl(true);
 		}
 	);
 
