@@ -26,7 +26,7 @@ public:
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	TextInput(const Text& text) noexcept = delete;
-	void operator=(const TextInput&) noexcept = delete;
+	TextInput& operator=(const TextInput&) noexcept = delete;
 	virtual ~TextInput() noexcept override {}
 
 	ND Layout* AddRightColumnLayout(RowColumnDefinition rightColumnDefinition);

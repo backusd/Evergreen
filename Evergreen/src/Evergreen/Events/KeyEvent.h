@@ -14,7 +14,7 @@ class EVERGREEN_API CharEvent : public Event
 public:
 	CharEvent(char keycode, int repeatCount) noexcept : m_keycode(keycode), m_repeatCount(repeatCount) {}
 	CharEvent(const CharEvent&) = delete;
-	void operator=(const CharEvent&) = delete;
+	CharEvent& operator=(const CharEvent&) = delete;
 
 	inline char GetKeyCode() const noexcept { return m_keycode; }
 	inline int GetRepeatCount() const noexcept { return m_repeatCount; }
@@ -46,7 +46,7 @@ public:
 protected:
 	KeyEvent(KEY_CODE keycode) noexcept : m_keycode(keycode) {}
 	KeyEvent(const KeyEvent&) = delete;
-	void operator=(const KeyEvent&) = delete;
+	KeyEvent& operator=(const KeyEvent&) = delete;
 
 	const KEY_CODE m_keycode;
 };
@@ -59,7 +59,7 @@ public:
 		KeyEvent(keycode), m_repeatCount(repeatCount), m_keyWasPreviouslyDown(keyWasPreviouslyDown) 
 	{}
 	KeyPressedEvent(const KeyPressedEvent&) = delete;
-	void operator=(const KeyPressedEvent&) = delete;
+	KeyPressedEvent& operator=(const KeyPressedEvent&) = delete;
 
 	inline int GetRepeatCount() const noexcept { return m_repeatCount; }
 	inline bool KeyWasPreviouslyDown() const noexcept { return m_keyWasPreviouslyDown; }
@@ -83,7 +83,7 @@ public:
 	KeyReleasedEvent(KEY_CODE keycode) noexcept :
 		KeyEvent(keycode) {}
 	KeyReleasedEvent(const KeyReleasedEvent&) = delete;
-	void operator=(const KeyReleasedEvent&) = delete;
+	KeyReleasedEvent& operator=(const KeyReleasedEvent&) = delete;
 
 	std::string ToString() const noexcept override { return std::format("KeyReleasedEvent: {}", m_keycode); }
 

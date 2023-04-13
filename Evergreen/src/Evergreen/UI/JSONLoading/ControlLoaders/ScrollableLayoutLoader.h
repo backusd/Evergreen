@@ -15,7 +15,7 @@ class EVERGREEN_API ScrollableLayoutLoader : public ControlLoader
 {
 public:
 	ScrollableLayoutLoader(const ScrollableLayoutLoader&) = delete;
-	void operator=(const ScrollableLayoutLoader&) = delete;
+	ScrollableLayoutLoader& operator=(const ScrollableLayoutLoader&) = delete;
 	~ScrollableLayoutLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

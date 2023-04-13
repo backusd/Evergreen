@@ -14,7 +14,7 @@ public:
 		GFX_THROW_INFO(device->CreateDepthStencilState(&desc, m_depthStencilState.ReleaseAndGetAddressOf()));
 	}
 	DepthStencilState(const DepthStencilState&) noexcept = delete;
-	void operator=(const DepthStencilState&) noexcept = delete;
+	DepthStencilState& operator=(const DepthStencilState&) noexcept = delete;
 	virtual ~DepthStencilState() noexcept {}
 
 	ND inline ID3D11DepthStencilState* Get() { return m_depthStencilState.Get(); }

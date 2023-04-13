@@ -367,9 +367,10 @@ FontFamily::FontFamily(const FontFamily& rhs) noexcept :
 	m_value(rhs.m_value)
 {
 }
-void FontFamily::operator=(const FontFamily& rhs) noexcept
+FontFamily& FontFamily::operator=(const FontFamily& rhs) noexcept
 {
 	m_value = rhs.m_value;
+	return *this;
 }
 
 const FontFamily& FontFamily::GetFontFamily(const std::string& name)

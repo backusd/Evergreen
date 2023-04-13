@@ -11,7 +11,7 @@ class DeviceResourcesExceptionDX12 : public DeviceResourcesException
 public:
 	DeviceResourcesExceptionDX12(unsigned int line, const char* file, HRESULT hr, std::vector<std::string> infoMsgs = {}) noexcept;
 	DeviceResourcesExceptionDX12(const DeviceResourcesExceptionDX12&) = delete;
-	void operator=(const DeviceResourcesExceptionDX12&) = delete;
+	DeviceResourcesExceptionDX12& operator=(const DeviceResourcesExceptionDX12&) = delete;
 	virtual ~DeviceResourcesExceptionDX12() noexcept override {}
 
 	const char* what() const noexcept override;

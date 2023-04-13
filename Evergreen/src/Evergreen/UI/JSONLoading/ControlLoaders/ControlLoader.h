@@ -21,7 +21,7 @@ class EVERGREEN_API ControlLoader
 {
 public:
 	ControlLoader(const ControlLoader&) = delete;
-	void operator=(const ControlLoader&) = delete;
+	ControlLoader& operator=(const ControlLoader&) = delete;
 	virtual ~ControlLoader() noexcept {}
 
 protected:

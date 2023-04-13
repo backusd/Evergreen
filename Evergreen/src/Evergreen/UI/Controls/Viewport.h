@@ -19,7 +19,7 @@ public:
 				const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 				const Evergreen::Margin& margin = { 0 }) noexcept;
 	Viewport(const Viewport&) noexcept = delete; // Just delete for now until there is a good use case
-	void operator=(const Viewport&) noexcept = delete;
+	Viewport& operator=(const Viewport&) noexcept = delete;
 	virtual ~Viewport() noexcept override {}
 
 	// Inherited from Control

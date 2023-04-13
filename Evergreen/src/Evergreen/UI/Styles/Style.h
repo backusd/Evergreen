@@ -16,7 +16,7 @@ class EVERGREEN_API Style
 public:
 	Style(std::shared_ptr<DeviceResources> deviceResources, const std::string& name = "") noexcept;
 	Style(const Style& style) noexcept;
-	void operator=(const Style& rhs) noexcept;
+	Style& operator=(const Style& rhs) noexcept;
 	virtual ~Style() noexcept {}
 
 	ND inline std::shared_ptr<DeviceResources> GetDeviceResources() const noexcept { return m_deviceResources; }

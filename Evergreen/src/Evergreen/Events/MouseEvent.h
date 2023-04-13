@@ -12,7 +12,7 @@ public:
 	MouseMoveEvent(float x, float y) noexcept :
 		m_mouseX(x), m_mouseY(y) {}
 	MouseMoveEvent(const MouseMoveEvent&) = delete;
-	void operator=(const MouseMoveEvent&) = delete;
+	MouseMoveEvent& operator=(const MouseMoveEvent&) = delete;
 
 	inline float GetX() const noexcept { return m_mouseX; }
 	inline float GetY() const noexcept { return m_mouseY; }
@@ -38,7 +38,7 @@ class EVERGREEN_API MouseEnterEvent : public Event
 public:
 	MouseEnterEvent() noexcept {}
 	MouseEnterEvent(const MouseEnterEvent&) = delete;
-	void operator=(const MouseEnterEvent&) = delete;
+	MouseEnterEvent& operator=(const MouseEnterEvent&) = delete;
 
 	std::string ToString() const noexcept override { return "MouseEnterEvent"; }
 
@@ -57,7 +57,7 @@ class EVERGREEN_API MouseLeaveEvent : public Event
 public:
 	MouseLeaveEvent() noexcept {}
 	MouseLeaveEvent(const MouseLeaveEvent&) = delete;
-	void operator=(const MouseLeaveEvent&) = delete;
+	MouseLeaveEvent& operator=(const MouseLeaveEvent&) = delete;
 
 	std::string ToString() const noexcept override { return "MouseLeaveEvent"; }
 
@@ -78,7 +78,7 @@ public:
 		m_xOffset(xOffset), m_yOffset(yOffset), m_scrollDelta(delta)
 	{}
 	MouseScrolledEvent(const MouseScrolledEvent&) = delete;
-	void operator=(const MouseScrolledEvent&) = delete;
+	MouseScrolledEvent& operator=(const MouseScrolledEvent&) = delete;
 
 	inline float GetX() const noexcept { return m_xOffset; }
 	inline float GetY() const noexcept { return m_yOffset; }
@@ -117,7 +117,7 @@ protected:
 		m_button(button), m_xOffset(x), m_yOffset(y)
 	{}
 	MouseButtonEvent(const MouseButtonEvent&) = delete;
-	void operator=(const MouseButtonEvent&) = delete;
+	MouseButtonEvent& operator=(const MouseButtonEvent&) = delete;
 
 	MOUSE_BUTTON m_button;
 	float m_xOffset;
@@ -131,7 +131,7 @@ public:
 	MouseButtonPressedEvent(MOUSE_BUTTON button, float x, float y) noexcept :
 		MouseButtonEvent(button, x, y) {}
 	MouseButtonPressedEvent(const MouseButtonPressedEvent&) = delete;
-	void operator=(const MouseButtonPressedEvent&) = delete;
+	MouseButtonPressedEvent& operator=(const MouseButtonPressedEvent&) = delete;
 
 	std::string ToString() const noexcept override { return std::format("MouseButtonPressedEvent: {}", m_button); }
 
@@ -148,7 +148,7 @@ public:
 	MouseButtonReleasedEvent(MOUSE_BUTTON button, float x, float y) noexcept :
 		MouseButtonEvent(button, x, y) {}
 	MouseButtonReleasedEvent(const MouseButtonReleasedEvent&) = delete;
-	void operator=(const MouseButtonReleasedEvent&) = delete;
+	MouseButtonReleasedEvent& operator=(const MouseButtonReleasedEvent&) = delete;
 
 	std::string ToString() const noexcept override { return std::format("MouseButtonReleasedEvent: {}", m_button); }
 
@@ -165,7 +165,7 @@ public:
 	MouseButtonDoubleClickEvent(MOUSE_BUTTON button, float x, float y) noexcept :
 		MouseButtonEvent(button, x, y) {}
 	MouseButtonDoubleClickEvent(const MouseButtonDoubleClickEvent&) = delete;
-	void operator=(const MouseButtonDoubleClickEvent&) = delete;
+	MouseButtonDoubleClickEvent& operator=(const MouseButtonDoubleClickEvent&) = delete;
 
 	std::string ToString() const noexcept override { return std::format("MouseButtonDoubleClickEvent: {}", m_button); }
 

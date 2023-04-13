@@ -16,7 +16,7 @@ class EVERGREEN_API ButtonLoader : public ControlLoader
 {
 public:
 	ButtonLoader(const ButtonLoader&) = delete;
-	void operator=(const ButtonLoader&) = delete;
+	ButtonLoader& operator=(const ButtonLoader&) = delete;
 	~ButtonLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

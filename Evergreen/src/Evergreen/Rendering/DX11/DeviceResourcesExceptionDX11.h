@@ -31,7 +31,7 @@ public:
 		}
 	}
 	DeviceResourcesExceptionDX11(const DeviceResourcesExceptionDX11&) = delete;
-	void operator=(const DeviceResourcesExceptionDX11&) = delete;
+	DeviceResourcesExceptionDX11& operator=(const DeviceResourcesExceptionDX11&) = delete;
 	virtual ~DeviceResourcesExceptionDX11() noexcept override {}
 
 	ND const char* what() const noexcept override

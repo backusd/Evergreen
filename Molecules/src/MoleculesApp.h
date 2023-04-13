@@ -7,7 +7,7 @@ class MoleculesApp : public Evergreen::Application
 public:
 	MoleculesApp();
 	MoleculesApp(const MoleculesApp&) = delete;
-	void operator=(const MoleculesApp&) = delete;
+	MoleculesApp& operator=(const MoleculesApp&) = delete;
 	~MoleculesApp() override {}
 
 	Scene* GetScene() noexcept { return m_scene.get(); }

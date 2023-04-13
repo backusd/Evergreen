@@ -25,7 +25,7 @@ public:
 		D2D1_EXTEND_MODE extendMode = D2D1_EXTEND_MODE::D2D1_EXTEND_MODE_CLAMP,
 		D2D1_GAMMA gamma = D2D1_GAMMA::D2D1_GAMMA_2_2);
 	RadialBrush(const RadialBrush&);
-	void operator=(const RadialBrush&);
+	RadialBrush& operator=(const RadialBrush&);
 	~RadialBrush() noexcept override {}
 
 	void Refresh() override;

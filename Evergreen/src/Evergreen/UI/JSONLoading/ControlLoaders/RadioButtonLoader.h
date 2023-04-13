@@ -16,7 +16,7 @@ class EVERGREEN_API RadioButtonLoader : public ControlLoader
 {
 public:
 	RadioButtonLoader(const RadioButtonLoader&) = delete;
-	void operator=(const RadioButtonLoader&) = delete;
+	RadioButtonLoader& operator=(const RadioButtonLoader&) = delete;
 	~RadioButtonLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

@@ -14,7 +14,7 @@ public:
 		GFX_THROW_INFO(device->CreateRasterizerState(&desc, m_rasterizerState.ReleaseAndGetAddressOf()));
 	}
 	RasterizerState(const RasterizerState&) noexcept = delete;
-	void operator=(const RasterizerState&) noexcept = delete;
+	RasterizerState& operator=(const RasterizerState&) noexcept = delete;
 	virtual ~RasterizerState() noexcept {}
 
 	ND inline ID3D11RasterizerState* Get() { return m_rasterizerState.Get(); }

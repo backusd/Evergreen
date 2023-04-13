@@ -12,7 +12,7 @@ public:
 	RadioButtonIsCheckedChangedEvent(bool value) noexcept : m_value(value)
 	{}
 	RadioButtonIsCheckedChangedEvent(const RadioButtonIsCheckedChangedEvent&) = delete;
-	void operator=(const RadioButtonIsCheckedChangedEvent&) = delete;
+	RadioButtonIsCheckedChangedEvent& operator=(const RadioButtonIsCheckedChangedEvent&) = delete;
 
 	inline bool IsChecked() const noexcept { return m_value; }
 
@@ -48,7 +48,7 @@ public:
 		std::unique_ptr<ColorBrush> innerBrush = nullptr,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	RadioButton(const RadioButton& text) noexcept = delete; // Just delete for now until there is a good use case
-	void operator=(const RadioButton&) noexcept = delete;
+	RadioButton& operator=(const RadioButton&) noexcept = delete;
 	virtual ~RadioButton() noexcept override {}
 
 	// Inherited from Control

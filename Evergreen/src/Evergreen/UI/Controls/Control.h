@@ -45,7 +45,7 @@ public:
 		    const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		    const Evergreen::Margin& margin = { 0 }) noexcept;
 	Control(const Control& control) noexcept = delete;
-	void operator=(const Control& control) noexcept = delete;
+	Control& operator=(const Control& control) noexcept = delete;
 	virtual ~Control() noexcept {}
 
 	void Update(const Timer& timer) 

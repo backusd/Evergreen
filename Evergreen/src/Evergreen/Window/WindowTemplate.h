@@ -13,7 +13,7 @@ class WindowTemplate
 public:
 	WindowTemplate(const WindowProperties& props);
 	WindowTemplate(const WindowTemplate&) = delete;
-	void operator=(const WindowTemplate&) = delete;
+	WindowTemplate& operator=(const WindowTemplate&) = delete;
 	~WindowTemplate() noexcept;
 
 	ND virtual LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept

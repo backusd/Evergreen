@@ -15,7 +15,7 @@ public:
 	// Add parameters after DeviceResources must have a default so that BrushLoader can create the brush
 	SolidColorBrush(std::shared_ptr<DeviceResources> deviceResources, const D2D1_COLOR_F& solidColor);
 	SolidColorBrush(const SolidColorBrush&);
-	void operator=(const SolidColorBrush&);
+	SolidColorBrush& operator=(const SolidColorBrush&);
 	~SolidColorBrush() noexcept override {}
 
 	void Refresh() override;

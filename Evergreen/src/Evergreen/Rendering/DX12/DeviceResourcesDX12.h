@@ -18,7 +18,7 @@ class EVERGREEN_API DeviceResourcesDX12
 public:
 	DeviceResourcesDX12(Window* window);
 	DeviceResourcesDX12(const DeviceResourcesDX12&) = delete;
-	void operator=(const DeviceResourcesDX12&) = delete;
+	DeviceResourcesDX12& operator=(const DeviceResourcesDX12&) = delete;
 
 	void ClearBackground(const D2D1_COLOR_F& color);
 

@@ -22,7 +22,7 @@ Row::Row(const Row& rhs) noexcept :
 	m_topAdjustable(rhs.m_topAdjustable), m_bottomAdjustable(rhs.m_bottomAdjustable)
 {
 }
-void Row::operator=(const Row& rhs) noexcept
+Row& Row::operator=(const Row& rhs) noexcept
 {
 	this->m_top = rhs.m_top;
 	this->m_left = rhs.m_left;
@@ -34,6 +34,7 @@ void Row::operator=(const Row& rhs) noexcept
 	this->m_minHeightDefinition = rhs.m_minHeightDefinition;
 	this->m_topAdjustable = rhs.m_topAdjustable;
 	this->m_bottomAdjustable = rhs.m_bottomAdjustable;
+	return *this;
 }
 float Row::MaxHeight() const noexcept
 {
@@ -74,7 +75,7 @@ Column::Column(const Column& rhs) noexcept :
 	m_leftAdjustable(rhs.m_leftAdjustable), m_rightAdjustable(rhs.m_rightAdjustable)
 {
 }
-void Column::operator=(const Column& rhs) noexcept
+Column& Column::operator=(const Column& rhs) noexcept
 {
 	this->m_top = rhs.m_top;
 	this->m_left = rhs.m_left;
@@ -86,6 +87,7 @@ void Column::operator=(const Column& rhs) noexcept
 	this->m_minWidthDefinition = rhs.m_minWidthDefinition;
 	this->m_leftAdjustable = rhs.m_leftAdjustable;
 	this->m_rightAdjustable = rhs.m_rightAdjustable;
+	return *this;
 }
 float Column::MaxWidth() const noexcept
 {

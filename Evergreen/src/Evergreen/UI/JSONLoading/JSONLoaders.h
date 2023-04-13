@@ -44,7 +44,7 @@ class EVERGREEN_API JSONLoaders
 
 public:
 	JSONLoaders(const JSONLoaders&) = delete;
-	void operator=(const JSONLoaders&) = delete;
+	JSONLoaders& operator=(const JSONLoaders&) = delete;
 	~JSONLoaders() noexcept = default;
 
 	static void AddControlLoader(std::string key, ControlLoaderFn loader) noexcept { Get().AddControlLoaderImpl(key, loader); }

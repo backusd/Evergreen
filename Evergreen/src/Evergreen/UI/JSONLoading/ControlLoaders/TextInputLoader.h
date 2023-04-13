@@ -16,7 +16,7 @@ class EVERGREEN_API TextInputLoader : public ControlLoader
 {
 public:
 	TextInputLoader(const TextInputLoader&) = delete;
-	void operator=(const TextInputLoader&) = delete;
+	TextInputLoader& operator=(const TextInputLoader&) = delete;
 	~TextInputLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

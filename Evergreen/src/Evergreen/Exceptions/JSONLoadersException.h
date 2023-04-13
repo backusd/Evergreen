@@ -16,7 +16,7 @@ public:
 		m_message(message)
 	{}
 	JSONLoadersException(const JSONLoadersException&) = delete;
-	void operator=(const JSONLoadersException&) = delete;
+	JSONLoadersException& operator=(const JSONLoadersException&) = delete;
 	virtual ~JSONLoadersException() noexcept override {}
 
 	ND const char* what() const noexcept override

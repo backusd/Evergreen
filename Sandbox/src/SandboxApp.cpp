@@ -16,7 +16,7 @@ public:
 		m_ui->LoadUI("main.json");
 	}
 	Sandbox(const Sandbox&) = delete;
-	void operator=(const Sandbox&) = delete;
+	Sandbox& operator=(const Sandbox&) = delete;
 	~Sandbox() override {}
 	
 	

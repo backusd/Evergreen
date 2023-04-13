@@ -22,7 +22,7 @@ public:
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 });
 	RoundedButton(const RoundedButton& text) noexcept = delete;
-	void operator=(const RoundedButton&) noexcept = delete;
+	RoundedButton& operator=(const RoundedButton&) noexcept = delete;
 	virtual ~RoundedButton() noexcept override {}
 
 	// Inherited from Control

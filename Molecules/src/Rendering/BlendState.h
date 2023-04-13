@@ -14,7 +14,7 @@ public:
 		GFX_THROW_INFO(device->CreateBlendState(&desc, m_blendState.ReleaseAndGetAddressOf()));
 	}
 	BlendState(const BlendState&) noexcept = delete;
-	void operator=(const BlendState&) noexcept = delete;
+	BlendState& operator=(const BlendState&) noexcept = delete;
 	virtual ~BlendState() noexcept {}
 
 	ND inline ID3D11BlendState* Get() { return m_blendState.Get(); }

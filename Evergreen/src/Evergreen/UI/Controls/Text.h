@@ -23,7 +23,7 @@ public:
 		std::unique_ptr<TextStyle> style = nullptr, 
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	Text(const Text& text) noexcept = delete;
-	void operator=(const Text&) noexcept = delete;
+	Text& operator=(const Text&) noexcept = delete;
 	virtual ~Text() noexcept override {}
 
 	// Inherited from Control

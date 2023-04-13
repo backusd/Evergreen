@@ -23,7 +23,7 @@ public:
 		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
 	}
 	ConstantBufferArray(const ConstantBufferArray&) = delete;
-	void operator=(const ConstantBufferArray&) = delete;
+	ConstantBufferArray& operator=(const ConstantBufferArray&) = delete;
 	~ConstantBufferArray() noexcept {}
 
 	inline void AddBuffer(std::shared_ptr<ConstantBuffer> buffer) noexcept

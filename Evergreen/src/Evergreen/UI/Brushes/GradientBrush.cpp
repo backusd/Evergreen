@@ -53,7 +53,7 @@ GradientBrush::GradientBrush(const GradientBrush& rhs) :
 	// RefreshGradientAxis(); <-- No need to do this because copying the gradient axis start/end should already be accurate
 	Refresh();
 }
-void GradientBrush::operator=(const GradientBrush& rhs)
+GradientBrush& GradientBrush::operator=(const GradientBrush& rhs)
 {
 	ColorBrush::operator=(rhs);
 
@@ -68,6 +68,8 @@ void GradientBrush::operator=(const GradientBrush& rhs)
 	RefreshGradientStops();
 	// RefreshGradientAxis(); <-- No need to do this because copying the gradient axis start/end should already be accurate
 	Refresh();
+
+	return *this;
 }
 std::unique_ptr<ColorBrush> GradientBrush::Duplicate()
 {

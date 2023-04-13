@@ -15,12 +15,14 @@ Style::Style(const Style& style) noexcept :
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
-void Style::operator=(const Style& rhs) noexcept
+Style& Style::operator=(const Style& rhs) noexcept
 {
 	m_deviceResources = rhs.m_deviceResources;
 	m_name = rhs.m_name + "_copy";
 
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
+	return *this;
 }
 
 

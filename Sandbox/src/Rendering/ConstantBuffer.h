@@ -12,7 +12,7 @@ public:
 		m_deviceResources(deviceResources)
 	{}
 	ConstantBuffer(const ConstantBuffer&) = delete;
-	void operator=(const ConstantBuffer&) = delete;
+	ConstantBuffer& operator=(const ConstantBuffer&) = delete;
 
 	template <typename T>
 	void CreateBuffer(D3D11_USAGE usage, unsigned int cpuAccessFlags, unsigned int miscFlags, unsigned int structuredByteStride);

@@ -44,7 +44,7 @@ RadialBrush::RadialBrush(const RadialBrush& rhs) :
 	RefreshGradientStops();
 	Refresh();
 }
-void RadialBrush::operator=(const RadialBrush& rhs)
+RadialBrush& RadialBrush::operator=(const RadialBrush& rhs)
 {
 	ColorBrush::operator=(rhs);
 
@@ -56,6 +56,8 @@ void RadialBrush::operator=(const RadialBrush& rhs)
 
 	RefreshGradientStops();
 	Refresh();
+
+	return *this;
 }
 std::unique_ptr<ColorBrush> RadialBrush::Duplicate()
 {

@@ -14,7 +14,7 @@ public:
 	SliderIntValueChangedEvent(int value) noexcept : m_value(value)
 	{}
 	SliderIntValueChangedEvent(const SliderIntValueChangedEvent&) = delete;
-	void operator=(const SliderIntValueChangedEvent&) = delete;
+	SliderIntValueChangedEvent& operator=(const SliderIntValueChangedEvent&) = delete;
 
 	inline int GetValue() const noexcept { return m_value; }
 
@@ -47,7 +47,7 @@ public:
 		int minValue = 0, int maxValue = 100, int initialValue = 0,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	SliderInt(const SliderInt&) noexcept = delete; // Just delete for now until there is a good use case
-	void operator=(const SliderInt&) noexcept = delete;
+	SliderInt& operator=(const SliderInt&) noexcept = delete;
 	virtual ~SliderInt() noexcept override {}
 
 	// Inherited from Control

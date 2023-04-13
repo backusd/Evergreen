@@ -30,7 +30,7 @@ public:
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	Button(const Button& text) noexcept = delete; // Just delete for now until there is a good use case
-	void operator=(const Button&) noexcept = delete;
+	Button& operator=(const Button&) noexcept = delete;
 	virtual ~Button() noexcept override {}
 
 	// Inherited from Control

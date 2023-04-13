@@ -21,7 +21,7 @@ ColorBrush::ColorBrush(const ColorBrush& rhs) noexcept :
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 }
-void ColorBrush::operator=(const ColorBrush& rhs) noexcept
+ColorBrush& ColorBrush::operator=(const ColorBrush& rhs) noexcept
 {
 	m_deviceResources = rhs.m_deviceResources;
 	m_brush = nullptr;
@@ -30,6 +30,8 @@ void ColorBrush::operator=(const ColorBrush& rhs) noexcept
 	m_DrawRegionRectModifier = rhs.m_DrawRegionRectModifier;
 
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+
+	return *this;
 }
 
 ID2D1Brush* ColorBrush::Get() const noexcept 

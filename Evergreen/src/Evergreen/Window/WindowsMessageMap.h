@@ -9,7 +9,7 @@ class WindowsMessageMap
 public:
 	WindowsMessageMap() noexcept;
 	WindowsMessageMap(const WindowsMessageMap&) = delete;
-	void operator=(const WindowsMessageMap&) = delete;
+	WindowsMessageMap& operator=(const WindowsMessageMap&) = delete;
 
 	std::string operator()(DWORD msg, LPARAM lParam, WPARAM wParam) const noexcept;
 

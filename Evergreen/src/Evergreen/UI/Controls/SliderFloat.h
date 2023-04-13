@@ -13,7 +13,7 @@ public:
 	SliderFloatValueChangedEvent(float value) noexcept : m_value(value)
 	{}
 	SliderFloatValueChangedEvent(const SliderFloatValueChangedEvent&) = delete;
-	void operator=(const SliderFloatValueChangedEvent&) = delete;
+	SliderFloatValueChangedEvent& operator=(const SliderFloatValueChangedEvent&) = delete;
 
 	inline float GetValue() const noexcept { return m_value; }
 
@@ -46,7 +46,7 @@ public:
 		float minValue = 0.0f, float maxValue = 1.0f, float initialValue = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	SliderFloat(const SliderFloat&) noexcept = delete; // Just delete for now until there is a good use case
-	void operator=(const SliderFloat&) noexcept = delete;
+	SliderFloat& operator=(const SliderFloat&) noexcept = delete;
 	virtual ~SliderFloat() noexcept override {}
 
 	// Inherited from Control

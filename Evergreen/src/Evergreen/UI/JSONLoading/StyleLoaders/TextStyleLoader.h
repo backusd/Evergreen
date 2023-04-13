@@ -19,7 +19,7 @@ class EVERGREEN_API TextStyleLoader
 {
 public:
 	TextStyleLoader(const TextStyleLoader&) = delete;
-	void operator=(const TextStyleLoader&) = delete;
+	TextStyleLoader& operator=(const TextStyleLoader&) = delete;
 	~TextStyleLoader() noexcept {}
 
 	static std::unique_ptr<Style> Load(std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& name = "") { return std::move(Get().LoadImpl(deviceResources, data, name)); }

@@ -45,7 +45,7 @@ public:
 		float titleBarHeight = 20.0f
 	);
 	Pane(const Pane&) = delete;
-	void operator=(const Pane&) = delete;
+	Pane& operator=(const Pane&) = delete;
 	virtual ~Pane() noexcept override {}
 
 	void OnUpdate(const Timer& timer) override;

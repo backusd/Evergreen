@@ -43,7 +43,7 @@ class EVERGREEN_API Row
 public:
 	Row(float top = 0.0f, float left = 0.0f, float width = 1.0f, float height = 1.0f, RowColumnDefinition maxHeightDef = { RowColumnType::FIXED, FLT_MAX }, RowColumnDefinition minHeightDef = { RowColumnType::FIXED, 1.0f }, bool topAdjustable = false, bool bottomAdjustable = false) noexcept;
 	Row(const Row&) noexcept;
-	void operator=(const Row& rhs) noexcept;
+	Row& operator=(const Row& rhs) noexcept;
 
 	ND inline float Top() const noexcept { return m_top; }
 	ND inline float Left() const noexcept { return m_left; }
@@ -90,7 +90,7 @@ class EVERGREEN_API Column
 public:
 	Column(float top = 0.0f, float left = 0.0f, float width = 0.0f, float height = 0.0f, RowColumnDefinition maxWidthDef = { RowColumnType::FIXED, FLT_MAX }, RowColumnDefinition minWidthDef = { RowColumnType::FIXED, 1.0f }, bool leftAdjustable = false, bool rightAdjustable = false) noexcept;
 	Column(const Column&) noexcept;
-	void operator=(const Column& rhs) noexcept;
+	Column& operator=(const Column& rhs) noexcept;
 
 	ND inline float Top() const noexcept { return m_top; }
 	ND inline float Left() const noexcept { return m_left; }
@@ -137,7 +137,7 @@ class LayoutException : public BaseException
 public:
 	LayoutException(int line, const char* file, const std::string& message) noexcept;
 	LayoutException(const LayoutException&) = delete;
-	void operator=(const LayoutException&) = delete;
+	LayoutException& operator=(const LayoutException&) = delete;
 	virtual ~LayoutException() noexcept override {}
 
 	ND const char* what() const noexcept override;
@@ -164,7 +164,7 @@ public:
 		float top, float left, float width, float height, 
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
-	void operator=(const Layout&) = delete;
+	Layout& operator=(const Layout&) = delete;
 	~Layout() 
 	{
 		// EG_CORE_TRACE("~Layout: {}", m_name);

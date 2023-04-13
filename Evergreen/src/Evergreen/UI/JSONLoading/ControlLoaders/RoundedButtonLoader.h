@@ -15,7 +15,7 @@ class EVERGREEN_API RoundedButtonLoader : public ControlLoader
 {
 public:
 	RoundedButtonLoader(const RoundedButtonLoader&) = delete;
-	void operator=(const RoundedButtonLoader&) = delete;
+	RoundedButtonLoader& operator=(const RoundedButtonLoader&) = delete;
 	~RoundedButtonLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

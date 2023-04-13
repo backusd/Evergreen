@@ -17,7 +17,7 @@ public:
 		m_hr(hr)
 	{}
 	WindowException(const WindowException&) = delete;
-	void operator=(const WindowException&) = delete;
+	WindowException& operator=(const WindowException&) = delete;
 	virtual ~WindowException() noexcept override {}
 
 	ND const char* GetType() const noexcept override

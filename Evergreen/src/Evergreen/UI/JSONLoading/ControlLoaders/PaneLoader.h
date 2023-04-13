@@ -15,7 +15,7 @@ class EVERGREEN_API PaneLoader : public ControlLoader
 {
 public:
 	PaneLoader(const PaneLoader&) = delete;
-	void operator=(const PaneLoader&) = delete;
+	PaneLoader& operator=(const PaneLoader&) = delete;
 	~PaneLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

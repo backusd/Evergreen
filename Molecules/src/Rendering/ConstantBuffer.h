@@ -11,7 +11,7 @@ public:
 		EG_ASSERT(m_deviceResources != nullptr, "No device resources");
 	}
 	ConstantBuffer(const ConstantBuffer&) = delete;
-	void operator=(const ConstantBuffer&) = delete;
+	ConstantBuffer& operator=(const ConstantBuffer&) = delete;
 	~ConstantBuffer() noexcept {}
 
 	template <typename T>

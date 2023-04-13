@@ -17,7 +17,7 @@ public:
 	{
 	}
 	BaseException(const BaseException&) = delete;
-	void operator=(const BaseException&) = delete;
+	BaseException& operator=(const BaseException&) = delete;
 	virtual ~BaseException() noexcept override {}
 
 	ND virtual const char* what() const noexcept override

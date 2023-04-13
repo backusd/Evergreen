@@ -16,7 +16,7 @@ public:
 		m_message(message)
 	{}
 	FontFamilyException(const FontFamilyException&) = delete;
-	void operator=(const FontFamilyException&) = delete;
+	FontFamilyException& operator=(const FontFamilyException&) = delete;
 	virtual ~FontFamilyException() noexcept override {}
 
 	ND const char* what() const noexcept override
@@ -225,7 +225,7 @@ public:
 	
 public:
 	FontFamily(const FontFamily&) noexcept;
-	void operator=(const FontFamily&) noexcept;
+	FontFamily& operator=(const FontFamily&) noexcept;
 
 	ND inline std::string Get() { return m_value; }
 

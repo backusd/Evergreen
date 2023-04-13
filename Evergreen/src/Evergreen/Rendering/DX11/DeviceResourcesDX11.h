@@ -37,7 +37,7 @@ private:
 public:
 	DeviceResourcesDX11(Window* window);
 	DeviceResourcesDX11(const DeviceResourcesDX11&) = delete;
-	void operator=(const DeviceResourcesDX11&) = delete;
+	DeviceResourcesDX11& operator=(const DeviceResourcesDX11&) = delete;
 	
 
 	void OnResize(float width, float height);

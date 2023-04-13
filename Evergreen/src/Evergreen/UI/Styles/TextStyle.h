@@ -33,7 +33,7 @@ public:
 	);
 
 	TextStyle(const TextStyle&);
-	void operator=(const TextStyle&);
+	TextStyle& operator=(const TextStyle&);
 	~TextStyle() override {}
 
 	ND std::unique_ptr<Style> Duplicate() const override;

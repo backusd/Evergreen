@@ -16,7 +16,7 @@ class EVERGREEN_API SliderIntLoader : public ControlLoader
 {
 public:
 	SliderIntLoader(const SliderIntLoader&) = delete;
-	void operator=(const SliderIntLoader&) = delete;
+	SliderIntLoader& operator=(const SliderIntLoader&) = delete;
 	~SliderIntLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

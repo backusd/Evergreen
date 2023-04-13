@@ -39,7 +39,7 @@ TextStyle::TextStyle(const TextStyle& rhs) :
 {
 	Initialize();
 }
-void TextStyle::operator=(const TextStyle& rhs)
+TextStyle& TextStyle::operator=(const TextStyle& rhs)
 {
 	Style::operator=(rhs);
 
@@ -55,6 +55,8 @@ void TextStyle::operator=(const TextStyle& rhs)
 	m_trimming = rhs.m_trimming;
 
 	Initialize();
+
+	return *this;
 }
 
 void TextStyle::Initialize()

@@ -8,7 +8,7 @@ class Shader
 public:
 	Shader(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const std::wstring& filename) noexcept;
 	Shader(const Shader&) noexcept = delete;
-	void operator=(const Shader&) noexcept = delete;
+	Shader& operator=(const Shader&) noexcept = delete;
 	virtual ~Shader() noexcept {}
 
 protected:
@@ -23,7 +23,7 @@ class VertexShader : public Shader
 public:
 	VertexShader(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const std::wstring& filename);
 	VertexShader(const VertexShader&) noexcept = delete;
-	void operator=(const VertexShader&) noexcept = delete;
+	VertexShader& operator=(const VertexShader&) noexcept = delete;
 	virtual ~VertexShader() noexcept override {}
 
 	ND inline ID3D11VertexShader* Get() noexcept { return m_vertexShader.Get(); }
@@ -42,7 +42,7 @@ class PixelShader : public Shader
 public:
 	PixelShader(std::shared_ptr<Evergreen::DeviceResources> deviceResources, const std::wstring& filename);
 	PixelShader(const PixelShader&) noexcept = delete;
-	void operator=(const PixelShader&) noexcept = delete;
+	PixelShader& operator=(const PixelShader&) noexcept = delete;
 	virtual ~PixelShader() noexcept override {}
 
 	ND inline ID3D11PixelShader* Get() noexcept { return m_pixelShader.Get(); }

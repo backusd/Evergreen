@@ -15,7 +15,7 @@ public:
 	DeviceResourcesException(unsigned int line, const char* file) noexcept : BaseException(line, file)
 	{}
 	DeviceResourcesException(const DeviceResourcesException&) = delete;
-	void operator=(const DeviceResourcesException&) = delete;
+	DeviceResourcesException& operator=(const DeviceResourcesException&) = delete;
 	virtual ~DeviceResourcesException() noexcept override {}
 
 	ND const char* GetType() const noexcept override
@@ -48,7 +48,7 @@ public:
 		}
 	}
 	InfoException(const InfoException&) = delete;
-	void operator=(const InfoException&) = delete;
+	InfoException& operator=(const InfoException&) = delete;
 	virtual ~InfoException() noexcept override {}
 
 	ND const char* what() const noexcept override

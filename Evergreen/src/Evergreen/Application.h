@@ -28,7 +28,7 @@ class EVERGREEN_API Application
 public:
 	Application();
 	Application(const Application&) = delete;
-	void operator=(const Application&) = delete;
+	Application& operator=(const Application&) = delete;
 	virtual ~Application() {};
 
 	int Run();

@@ -25,7 +25,7 @@ public:
 		TRANSFORM_TO_RECT_METHOD method = TRANSFORM_TO_RECT_METHOD::KEEP_XY_RATIO_FILL_RECT, 
 		const D2D1_BITMAP_BRUSH_PROPERTIES& properties = D2D1::BitmapBrushProperties());
 	BitmapBrush(const BitmapBrush&);
-	void operator=(const BitmapBrush&);
+	BitmapBrush& operator=(const BitmapBrush&);
 	~BitmapBrush() noexcept override {}
 
 	void Refresh() override;

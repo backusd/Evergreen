@@ -19,7 +19,7 @@ public:
 		m_message(message)
 	{}
 	ColorException(const ColorException&) = delete;
-	void operator=(const ColorException&) = delete;
+	ColorException& operator=(const ColorException&) = delete;
 	virtual ~ColorException() noexcept override {}
 
 	ND const char* what() const noexcept override 

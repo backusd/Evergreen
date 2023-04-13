@@ -19,7 +19,7 @@ class ConstantBufferArray
 public:
 	ConstantBufferArray(std::shared_ptr<Evergreen::DeviceResources> deviceResources) noexcept;
 	ConstantBufferArray(const ConstantBufferArray&) = delete;
-	void operator=(const ConstantBufferArray&) = delete;
+	ConstantBufferArray& operator=(const ConstantBufferArray&) = delete;
 
 	void AddBuffer(std::shared_ptr<ConstantBuffer> buffer) noexcept;
 	void ClearBuffers() noexcept;

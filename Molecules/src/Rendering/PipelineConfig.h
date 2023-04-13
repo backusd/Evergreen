@@ -23,7 +23,7 @@ public:
 		std::unique_ptr<ConstantBufferArray> vertexShaderConstantBufferArray,
 		std::unique_ptr<ConstantBufferArray> pixelShaderConstantBufferArray);
 	PipelineConfig(const PipelineConfig&) noexcept = delete;
-	void operator=(const PipelineConfig&) noexcept = delete;
+	PipelineConfig& operator=(const PipelineConfig&) noexcept = delete;
 	~PipelineConfig() noexcept {}
 
 	void ApplyConfig() const;

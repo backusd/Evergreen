@@ -17,12 +17,14 @@ SolidColorBrush::SolidColorBrush(const SolidColorBrush& rhs) :
 {
 	Refresh();
 }
-void SolidColorBrush::operator=(const SolidColorBrush& rhs)
+SolidColorBrush& SolidColorBrush::operator=(const SolidColorBrush & rhs)
 {
 	ColorBrush::operator=(rhs);
 
 	m_color = rhs.m_color;
 	Refresh();
+
+	return *this;
 }
 
 std::unique_ptr<ColorBrush> SolidColorBrush::Duplicate()

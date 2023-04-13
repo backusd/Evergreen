@@ -25,7 +25,7 @@ public:
 		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	ScrollableLayout(const ScrollableLayout& text) noexcept = delete;
-	void operator=(const ScrollableLayout&) noexcept = delete;
+	ScrollableLayout& operator=(const ScrollableLayout&) noexcept = delete;
 	virtual ~ScrollableLayout() noexcept override {}
 
 	void OnUpdate(const Timer& timer) override;

@@ -15,7 +15,7 @@ class EVERGREEN_API ViewportLoader : public ControlLoader
 {
 public:
 	ViewportLoader(const ViewportLoader&) = delete;
-	void operator=(const ViewportLoader&) = delete;
+	ViewportLoader& operator=(const ViewportLoader&) = delete;
 	~ViewportLoader() noexcept override {}
 
 	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }

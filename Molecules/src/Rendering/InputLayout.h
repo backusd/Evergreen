@@ -23,7 +23,7 @@ public:
 		);
 	}
 	InputLayout(const InputLayout&) noexcept = delete;
-	void operator=(const InputLayout&) noexcept = delete;
+	InputLayout& operator=(const InputLayout&) noexcept = delete;
 	virtual ~InputLayout() noexcept {}
 
 	ND inline ID3D11InputLayout* Get() { return m_inputLayout.Get(); }

@@ -34,7 +34,7 @@ class Window : public WindowTemplate<Window>
 public:
 	Window(const WindowProperties& props = WindowProperties()) noexcept;
 	Window(const Window&) = delete;
-	void operator=(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
 	virtual ~Window();
 
 	ND std::optional<int> ProcessMessages() const noexcept;
