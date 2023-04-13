@@ -3,6 +3,7 @@
 		"Type": "Layout",
 		"Row": 1,
 		"RowDefinitions": [
+			{ "Height": "40" },
 			{ "Height": "50" },
 			{ "Height": "50" },
 			{ "Height": "50" },
@@ -13,10 +14,399 @@
 		"BorderBrush": "Gray",
 		"OnResize": "RightPanelLayout_OnResizeCallback",
 
+		"RightPanel_ElementSelectorDropDown_Button": {
+			"Type": "Button",
+			"Margin": [ 25, 10, 25, 0 ],
+			"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+			"OnMouseEnter": "ElementSelectorDropDownButton_OnMouseEnter",
+			"OnMouseLeave": "ElementSelectorDropDownButton_OnMouseLeave",
+			"OnMouseLButtonDown": "ElementSelectorDropDownButton_OnLButtonDown",
+			"OnClick": "ElementSelectorDropDownButton_OnClick",
+
+			"Content": {
+				"Type": "Layout",
+				"RowDefinitions": [ { "Height": "1*" } ],
+				"ColumnDefinitions": [
+					{ "Width": "15" },
+					{ "Width": "1*" },
+					{ "Width": "30" }
+				],
+
+				"RightPanel_ElementSelectorDropDown_Text": {
+					"Type": "Text",
+					"Column": 1,
+					"Text": "Hydrogen",
+					"Brush": "White",
+					"FontFamily": "Calibri",
+					"FontSize": 18,
+					"FontWeight": "Normal",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Leading",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				},
+
+				"RightPanel_ElementSelectorDropDown_Arrow_Text": {
+					"Type": "Text",
+					"Column": 2,
+					"Text": "0xE70D",
+					"Brush": "White",
+					"FontFamily": "Segoe MDL2 Assets",
+					"FontSize": 14,
+					"FontWeight": "UltraLight",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Center",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				}
+			}
+		},
+
+		"RightPanel_ElementSelectorDropDown_Pane": {
+			"Type": "Pane",
+			"Top": 50,
+			"Left": 50,
+			"Height": 200,
+			"Width": 250,
+			"Resizable": false,
+			"Relocatable": false,
+			"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+			"BorderBrush": "LightGray",
+			"BorderWidth": 1.0,
+
+			"IncludeTitleBar": false,
+			"IsMinimized": false,
+			"IsVisible": false,
+
+			"OnMouseExitedContentRegion": "ElementSelectorDropDown_Pane_OnMouseExitedContentRegion",
+
+			"Content": {
+				"RowDefinitions": [ { "Height": "1*" } ],
+				"ColumnDefinitions": [ { "Width": "1*" } ],
+
+				"RightPanel_ElementSelectorDropDown_ScrollableLayout": {
+					"Type": "ScrollableLayout",
+					"RowDefinitions": [
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" },
+						{ "Height": "30" }
+					],
+					"BackgroundBrush": [ 0.0, 0.0, 0.0, 0.0 ],
+					"ScrollVertical": true,
+
+					"VerticalScrollBarCornerRadius": 3.0,
+					"VerticalScrollBarEnabled": true,
+					"VerticalScrollBarHiddenWhenNotOver": true,
+					"VerticalScrollBarWidth": 10.0,
+					"VerticalScrollBarRegionWidth": 12.0,
+					"VerticalScrollBarBrush": [ 1.0, 1.0, 1.0, 0.5 ],
+					"VerticalScrollBarHoveredBrush": "White",
+					"VerticalScrollBarDraggingBrush": "White",
+
+
+					"RightPanel_ElementSelectorDropDown_Hydrogen": {
+						"Type": "Button",
+						"Row": 0,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Hydrogen_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Hydrogen_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Hydrogen",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Helium": {
+						"Type": "Button",
+						"Row": 1,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Helium_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Helium_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Helium",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Lithium": {
+						"Type": "Button",
+						"Row": 2,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Lithium_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Lithium_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Lithium",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Beryllium": {
+						"Type": "Button",
+						"Row": 3,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Beryllium_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Beryllium_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Beryllium",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Boron": {
+						"Type": "Button",
+						"Row": 4,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Boron_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Boron_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Boron",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Carbon": {
+						"Type": "Button",
+						"Row": 5,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Carbon_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Carbon_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Carbon",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Nitrogen": {
+						"Type": "Button",
+						"Row": 6,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Nitrogen_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Nitrogen_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Nitrogen",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Oxygen": {
+						"Type": "Button",
+						"Row": 7,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Oxygen_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Oxygen_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Oxygen",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Flourine": {
+						"Type": "Button",
+						"Row": 8,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Flourine_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Flourine_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Flourine",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					},
+					"RightPanel_ElementSelectorDropDown_Neon": {
+						"Type": "Button",
+						"Row": 9,
+						"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+						"OnMouseEnter": "ElementSelectorDropDownItem_OnMouseEnter",
+						"OnMouseLeave": "ElementSelectorDropDownItem_OnMouseLeave",
+						"OnMouseLButtonDown": "ElementSelectorDropDownItem_OnLButtonDown",
+						"OnClick": "ElementSelectorDropDownItem_Neon_OnClick",
+
+						"Content": {
+							"Type": "Layout",
+							"ColumnDefinitions": [
+								{ "Width": "15" },
+								{ "Width": "1*" }
+							],
+							"RightPanel_ElementSelectorDropDown_Neon_Text": {
+								"Type": "Text",
+								"Column": 1,
+								"Text": "Neon",
+								"Brush": "White",
+								"FontFamily": "Calibri",
+								"FontSize": 16,
+								"TextAlignment": "Leading",
+								"ParagraphAlignment": "Center"
+							}
+						}
+					}
+				}
+			}
+		},
+
+
+
+
+
+
 		"MaterialDiffuseAlbedoXSlider": {
 			"Type": "SliderFloat",
 			"Margin": [ 10, 0, 10, 0 ],
-			"Row": 0,
+			"Row": 1,
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
@@ -36,7 +426,7 @@
 		"MaterialDiffuseAlbedoYSlider": {
 			"Type": "SliderFloat",
 			"Margin": [ 10, 0, 10, 0 ],
-			"Row": 1,
+			"Row": 2,
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
@@ -48,7 +438,7 @@
 		"MaterialDiffuseAlbedoZSlider": {
 			"Type": "SliderFloat",
 			"Margin": [ 10, 0, 10, 0 ],
-			"Row": 2,
+			"Row": 3,
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,

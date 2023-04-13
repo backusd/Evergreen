@@ -570,11 +570,20 @@ void MoleculesApp::SetMenuBarCallbacks()
 				// Mouse is not over pane or menu bar button, so collapse it
 				pane->SetVisible(false);
 				if (pane == filePane)
+				{
 					this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
+					fileButton->BorderWidth(0.0f);
+				}
 				else if (pane == editPane)
+				{
 					this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
+					editButton->BorderWidth(0.0f);
+				}
 				else if (pane == viewPane)
+				{
 					this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
+					viewButton->BorderWidth(0.0f);
+				}
 			}
 		}
 	);
@@ -833,6 +842,8 @@ void MoleculesApp::SetSimulationCallbacks()
 		{
 			if (button != m_rightPanelSelectedTabButton)
 			{
+				m_ui->RemovePane("RightPanel_ElementSelectorDropDown_Pane");
+
 				this->RightPanelTabOnClick(button, "right_panel_simulation_content.json");
 			}
 		}
@@ -858,11 +869,167 @@ void MoleculesApp::SetMaterialEditCallbacks()
 	JSONLoaders::AddCallback("RightPanel_MaterialsButton_CloseButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
+			m_ui->RemovePane("RightPanel_ElementSelectorDropDown_Pane");
 			this->RightPanelCloseTab(e, "RightPanel_MaterialsButton");
 		}
 	);
 
 	// Content Callbacks ---------------------------------------------------------------------------
+	// 
+	// Element Selector Drop Down Button
+	JSONLoaders::AddCallback("ElementSelectorDropDownButton_OnMouseEnter",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			Pane* pane = m_ui->GetPane("RightPanel_ElementSelectorDropDown_Pane");
+			EG_ASSERT(pane != nullptr, "Pane not found");
+			if (!pane->GetVisible())
+			{
+				this->ChangeButtonBackground(button, D2D1::ColorF(0.30f, 0.30f, 0.30f));
+			}
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownButton_OnMouseLeave",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.25f, 0.25f, 0.25f));
+
+			Pane* pane = m_ui->GetPane("RightPanel_ElementSelectorDropDown_Pane");
+			EG_ASSERT(pane != nullptr, "Pane not found");
+			if (pane->GetVisible() && !pane->ContainsPoint(e.GetX(), e.GetY()))
+			{
+				pane->SetVisible(false);
+			}
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownButton_OnLButtonDown",
+		[this](Button* button, MouseButtonPressedEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.35f, 0.35f, 0.35f));
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownButton_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.25f, 0.25f, 0.25f));
+
+			Pane* pane = m_ui->GetPane("RightPanel_ElementSelectorDropDown_Pane");
+			EG_ASSERT(pane != nullptr, "Pane not found");
+			if (pane->GetVisible())
+			{
+				pane->SetVisible(false);
+			}
+			else
+			{
+				pane->SetVisible(true);
+
+				const D2D1_RECT_F& dropDownRect = button->BackgroundRect();
+				D2D1_RECT_F paneRect;
+				paneRect.top = dropDownRect.bottom;
+				paneRect.bottom = paneRect.top + 200.0f;
+				paneRect.left = dropDownRect.left;
+				paneRect.right = dropDownRect.right;
+				pane->AllowedRegion(paneRect);
+			}
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDown_Pane_OnMouseExitedContentRegion",
+		[this](Pane* pane, MouseMoveEvent& e)
+		{
+			Button* dropDownButton = m_ui->GetControlByName<Button>("RightPanel_ElementSelectorDropDown_Button"); 
+			if (!dropDownButton->ContainsPoint(e.GetX(), e.GetY()))
+			{
+				pane->SetVisible(false);
+			}
+		}
+	);
+
+	// Drop Down Items
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_OnMouseEnter",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.30f, 0.30f, 0.30f));
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_OnMouseLeave",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.25f, 0.25f, 0.25f));
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_OnLButtonDown",
+		[this](Button* button, MouseButtonPressedEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.35f, 0.35f, 0.35f));
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Hydrogen_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Helium_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Lithium_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Beryllium_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Boron_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Carbon_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Nitrogen_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Oxygen_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Flourine_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Neon_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+
+		}
+	);
+
+
+
+
+
+
+
+
 	JSONLoaders::AddCallback("MaterialDiffuseAlbedoX_OnValueChanged",
 		[this](SliderFloat* slider, SliderFloatValueChangedEvent& e)
 		{
@@ -902,6 +1069,8 @@ void MoleculesApp::SetCameraEditCallbacks()
 		{
 			if (button != m_rightPanelSelectedTabButton) 
 			{
+				m_ui->RemovePane("RightPanel_ElementSelectorDropDown_Pane");
+
 				this->RightPanelTabOnClick(button, "right_panel_camera_content.json"); 
 			}
 		}
@@ -928,6 +1097,8 @@ void MoleculesApp::SetLightingEditCallbacks()
 		{
 			if (button != m_rightPanelSelectedTabButton)
 			{
+				m_ui->RemovePane("RightPanel_ElementSelectorDropDown_Pane");
+
 				this->RightPanelTabOnClick(button, "right_panel_lighting_content.json");
 			}
 		}
@@ -955,6 +1126,26 @@ void MoleculesApp::SetRightPanelLayoutCallbacks()
 			const D2D1_RECT_F& buttonRect = m_rightPanelSelectedTabButton->BackgroundRect();
 			layout->BorderTopLeftOffsetX(buttonRect.left - layout->Left());
 			layout->BorderTopRightOffsetX(layout->Right() - buttonRect.right);
+
+			// If the Materials tab is selected AND the drop down pane is visible, update its position
+			if (m_rightPanelSelectedTabButton->Name().compare("RightPanel_MaterialsButton") == 0)
+			{
+				Pane* pane = m_ui->GetPane("RightPanel_ElementSelectorDropDown_Pane"); 
+				EG_ASSERT(pane != nullptr, "Pane not found");
+
+				if (pane->GetVisible())
+				{
+					Button* dropDown = layout->GetControlByName<Button>("RightPanel_ElementSelectorDropDown_Button"); 
+					const D2D1_RECT_F& dropDownRect = dropDown->BackgroundRect();
+					
+					D2D1_RECT_F paneRect;
+					paneRect.top    = dropDownRect.bottom;
+					paneRect.bottom = paneRect.top + 200.0f;
+					paneRect.left   = dropDownRect.left;
+					paneRect.right  = dropDownRect.right;					
+					pane->AllowedRegion(paneRect);
+				}
+			}
 		}
 	);
 }

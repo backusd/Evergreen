@@ -141,7 +141,7 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 	}
 	else if (currentMouseIsOver)
 	{
-		m_selected = true;
+		// NOTE: Don't set m_selected = true because we only want it to be selected after it has been clicked
 		m_mouseIsOver = true;
 		m_OnMouseEntered(this, e);
 		e.Handled(this);
