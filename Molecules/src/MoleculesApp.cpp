@@ -1028,7 +1028,7 @@ void MoleculesApp::RightPanelCloseTab(MouseButtonReleasedEvent& e, const std::st
 	//       local variable. Once this lambda goes goes out of scope, the local unique_ptr will
 	//       officially delete the Button
 	std::unique_ptr<Control> _button = nullptr;  
-	for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii)
+	for (unsigned int iii = 1; iii < m_rightPanelTabsLayout->NumberOfControls(); ++iii) 
 	{
 		// Find the correct Button to remove then break from the loop
 		if (m_rightPanelTabsLayout->GetControl(iii)->Name().compare(tabButtonName) == 0)

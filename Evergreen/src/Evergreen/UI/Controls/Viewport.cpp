@@ -146,6 +146,16 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 		m_OnMouseEntered(this, e);
 		e.Handled(this);
 	}
+	else if (m_selected)
+	{
+		// The viewport is "selected" meaning that we want to continue to handle keyboard events
+		// (this the viewport will become unselected when the user clicks on another control)
+		if (m_mouseLButtonDown || m_mouseMButtonDown || m_mouseRButtonDown || m_mouseX1ButtonDown || m_mouseX2ButtonDown)
+		{
+			m_OnMouseMoved(this, e);
+		}
+		e.Handled(this);
+	}
 }
 void Viewport::MouseMoveHandledByPane(MouseMoveEvent& e)
 {

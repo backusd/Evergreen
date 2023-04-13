@@ -32,7 +32,7 @@ BitmapBrush::BitmapBrush(const BitmapBrush& rhs) :
 	TransformToRect();
 	Refresh();
 }
-void BitmapBrush::operator=(const BitmapBrush& rhs)
+BitmapBrush& BitmapBrush::operator=(const BitmapBrush& rhs)
 {
 	ColorBrush::operator=(rhs);
 
@@ -44,6 +44,8 @@ void BitmapBrush::operator=(const BitmapBrush& rhs)
 	LoadBitmapFile();
 	TransformToRect();
 	Refresh();
+
+	return *this;
 }
 std::unique_ptr<ColorBrush> BitmapBrush::Duplicate()
 {
