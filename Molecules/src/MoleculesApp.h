@@ -44,6 +44,7 @@ private:
 	void SetSimulationCallbacks();
 	void SetCameraEditCallbacks();
 	void SetMaterialEditCallbacks();
+	void SetLightingEditCallbacks();
 
 	// Right Panel Layout Callbacks
 	void SetRightPanelLayoutCallbacks();

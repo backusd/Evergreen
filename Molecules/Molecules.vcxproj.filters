@@ -54,6 +54,8 @@
     <None Include="src\json\right_panel_simulation_content.json" />
     <None Include="src\json\right_panel_camera_tab.json" />
     <None Include="src\json\right_panel_camera_content.json" />
+    <None Include="src\json\right_panel_lighting_tab.json" />
+    <None Include="src\json\right_panel_lighting_content.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rendering\Structs.h">

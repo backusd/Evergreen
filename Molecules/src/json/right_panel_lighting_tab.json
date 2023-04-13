@@ -1,5 +1,5 @@
 {
-	"RightPanel_CameraButton": {
+	"RightPanel_LightingButton": {
 		"Type": "Button",
 		"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
 		"BorderBrush": "Gray",
@@ -8,7 +8,7 @@
 		"OnMouseEnter": "RightPanelTabOnMouseEnter",
 		"OnMouseLeave": "RightPanelTabOnMouseLeave",
 		"OnMouseLButtonDown": "RightPanelTabOnMouseLButtonDown",
-		"OnClick": "CameraTabOnClick",
+		"OnClick": "LightingTabOnClick",
 
 		"Content": {
 			"Type": "Layout",
@@ -18,9 +18,9 @@
 				{ "Width": "20" }
 			],
 
-			"RightPanel_CameraButton_Text": {
+			"RightPanel_LightingButton_Text": {
 				"Type": "Text",
-				"Text": "Camera",
+				"Text": "Lighting",
 				"Brush": "White",
 				"FontFamily": "Calibri",
 				"FontSize": 14,
@@ -32,7 +32,7 @@
 				"WordWrapping": "None"
 			},
 
-			"RightPanel_CameraButton_CloseButton": {
+			"RightPanel_LightingButton_CloseButton": {
 				"Type": "Button",
 				"Column": 1,
 				"Margin": [ 3, 3, 3, 3 ],
@@ -54,7 +54,7 @@
 				"OnMouseEnter": "RightPanel_CloseButton_OnMouseEnter",
 				"OnMouseLeave": "RightPanel_CloseButton_OnMouseLeave",
 				"OnMouseLButtonDown": "RightPanel_CloseButton_OnMouseLButtonDown",
-				"OnClick": "RightPanel_CameraButton_CloseButton_OnClick"
+				"OnClick": "RightPanel_LightingButton_CloseButton_OnClick"
 			}
 		}
 	}

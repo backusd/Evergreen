@@ -119,11 +119,12 @@ void MoleculesApp::SetCallbacks()
 	SetSearchTextInputCallbacks();
 	SetViewportCallbacks();
 
-	// Camera / Materials
+	// Right Panel - Simulation / Camera / Materials / Lighting
 	SetGeneralRightPanelCallbacks();
 	SetSimulationCallbacks();
 	SetCameraEditCallbacks();
 	SetMaterialEditCallbacks();
+	SetLightingEditCallbacks();
 
 	// Right Panel Layout Callbacks
 	SetRightPanelLayoutCallbacks();
@@ -257,12 +258,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 			Pane* filePane = m_ui->GetPane("FileDropDownPane");
 			if (filePane->GetVisible())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 				button->BorderWidth(0.0f);
 			}
 		}
@@ -279,7 +280,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				if (editButton->ContainsPoint(e.GetX(), e.GetY()))
 				{
 					filePane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 
 					Pane* editPane = m_ui->GetPane("EditDropDownPane");
@@ -287,26 +288,26 @@ void MoleculesApp::SetMenuBarCallbacks()
 				}
 				else if (filePane->ContainsPoint(e.GetX(), e.GetY()))
 				{
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				}
 				else
 				{
 					// Mouse is not over the button or pane, so close the pane
 					filePane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 				}
 			}
 			else
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 			}
 		}
 	);
 	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLButtonDown",
 		[this](Button* button, MouseButtonPressedEvent& e)
 		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 		}
 	);
 	JSONLoaders::AddCallback("FileDropDownButtonOnClick",
@@ -317,12 +318,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 
 			if (filePane->GetVisible())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else if (button->MouseIsOver())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 				button->BorderWidth(0.0f);
 			}
 		}
@@ -335,12 +336,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 			Pane* editPane = m_ui->GetPane("EditDropDownPane");
 			if (editPane->GetVisible())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 				button->BorderWidth(0.0f);
 			}
 		}
@@ -359,7 +360,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				if (fileButton->ContainsPoint(mme.GetX(), mme.GetY()))
 				{
 					editPane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 
 					Pane* filePane = m_ui->GetPane("FileDropDownPane");
@@ -368,7 +369,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				else if (viewButton->ContainsPoint(mme.GetX(), mme.GetY()))
 				{
 					editPane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 
 					Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
@@ -376,26 +377,26 @@ void MoleculesApp::SetMenuBarCallbacks()
 				}
 				else if (editPane->ContainsPoint(mme.GetX(), mme.GetY()))
 				{
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				}
 				else
 				{
 					// Mouse is not over the button or pane, so close the pane
 					editPane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 				}
 			}
 			else
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 			}
 		}
 	);
 	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLButtonDown",
 		[this](Button* button, MouseButtonPressedEvent& e)
 		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 		}
 	);
 	JSONLoaders::AddCallback("EditDropDownButtonOnClick",
@@ -406,12 +407,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 
 			if (editPane->GetVisible())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else if (button->MouseIsOver())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 				button->BorderWidth(0.0f);
 			}
 		}
@@ -424,12 +425,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
 			if (viewPane->GetVisible())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 				button->BorderWidth(0.0f);
 			}
 		}
@@ -447,7 +448,7 @@ void MoleculesApp::SetMenuBarCallbacks()
 				if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
 				{
 					viewPane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 
 					Pane* editPane = m_ui->GetPane("EditDropDownPane");
@@ -455,26 +456,26 @@ void MoleculesApp::SetMenuBarCallbacks()
 				}
 				else if (viewPane->ContainsPoint(mme.GetX(), mme.GetY()))
 				{
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				}
 				else
 				{
 					// Mouse is not over the button or pane, so close the pane
 					viewPane->SetVisible(false);
-					button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 					button->BorderWidth(0.0f);
 				}
 			}
 			else
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
 			}
 		}
 	);
 	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLButtonDown",
 		[this](Button* button, MouseButtonPressedEvent& e)
 		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 		}
 	);
 	JSONLoaders::AddCallback("ViewDropDownButtonOnClick",
@@ -485,12 +486,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 
 			if (viewPane->GetVisible())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 			}
 			else if (button->MouseIsOver())
 			{
-				button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 				button->BorderWidth(0.0f);
 			}
 		}
@@ -516,13 +517,13 @@ void MoleculesApp::SetMenuBarCallbacks()
 
 					if (pane == editPane)
 					{
-						editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
 						editButton->BorderWidth(0.0f);
 					}
 					else if (pane == viewPane)
 					{
-						viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
-						editButton->BorderWidth(0.0f);
+						this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
+						viewButton->BorderWidth(0.0f);
 					}
 				}
 			}
@@ -535,12 +536,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 
 					if (pane == filePane)
 					{
-						fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 						fileButton->BorderWidth(0.0f);
 					}
 					else if (pane == viewPane)
 					{
-						viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
 						viewButton->BorderWidth(0.0f);
 					}
 				}
@@ -554,12 +555,12 @@ void MoleculesApp::SetMenuBarCallbacks()
 
 					if (pane == filePane)
 					{
-						fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 						fileButton->BorderWidth(0.0f);
 					}
 					else if (pane == editPane)
 					{
-						editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+						this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
 						editButton->BorderWidth(0.0f);
 					}
 				}
@@ -569,11 +570,11 @@ void MoleculesApp::SetMenuBarCallbacks()
 				// Mouse is not over pane or menu bar button, so collapse it
 				pane->SetVisible(false);
 				if (pane == filePane)
-					fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 				else if (pane == editPane)
-					editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
 				else if (pane == viewPane)
-					viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+					this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
 			}
 		}
 	);
@@ -584,13 +585,13 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 	JSONLoaders::AddCallback("FileDropDown_Item_OnMouseEnter",
 		[this](Button* button, MouseMoveEvent& e)
 		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorMouseOverPaneClosed)));
+			this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
 		}
 	);
 	JSONLoaders::AddCallback("FileDropDown_Item_OnMouseExited",
 		[this](Button* button, MouseMoveEvent& e)
 		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 		}
 	);
 
@@ -608,7 +609,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 			fileButton->BorderWidth(0.0f);
 		}
 	);
@@ -627,7 +628,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 			fileButton->BorderWidth(0.0f);
 		}
 	);
@@ -646,7 +647,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 			fileButton->BorderWidth(0.0f);
 		}
 	);
@@ -665,7 +666,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 			fileButton->BorderWidth(0.0f);
 		}
 	);
@@ -684,7 +685,7 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			fileButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
 			fileButton->BorderWidth(0.0f);
 		}
 	);
@@ -711,19 +712,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 	JSONLoaders::AddCallback("EditDropDown_LightingButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			// Close the pane
-			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-			editPane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			// Reset the drop down button back to its original state
-			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
-			editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
-			editButton->BorderWidth(0.0f);
+			this->RightPanelAddTab(button, e, "RightPanel_LightingButton", "right_panel_lighting_tab.json", "right_panel_lighting_content.json");
 		}
 	);
 }
@@ -743,7 +732,7 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
-			viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
 			viewButton->BorderWidth(0.0f);
 		}
 	);
@@ -762,7 +751,7 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 			e.IgnoreHandlingControl(true);
 
 			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
-			viewButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault)));
+			this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
 			viewButton->BorderWidth(0.0f);
 		}
 	);
@@ -771,12 +760,18 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 // General Right Panel Callbacks
 void MoleculesApp::SetGeneralRightPanelCallbacks()
 {
+	// Tab Button
 	JSONLoaders::AddCallback("RightPanelTabOnMouseEnter", 
 		[this](Button* button, MouseMoveEvent& e) 
 		{
 			if (button != m_rightPanelSelectedTabButton) 
 			{
-				this->ChangeButtonBackgroundAndTextColor(button, m_menuBarButtonColorMouseOverPaneClosed, D2D1::ColorF::White);
+				this->ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorMouseOver, D2D1::ColorF::White);
+				Button* closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button)); 
+				if (closeButton != nullptr)
+				{
+					this->ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorMouseOver, D2D1::ColorF::White);
+				}
 			}
 		}
 	);
@@ -785,7 +780,12 @@ void MoleculesApp::SetGeneralRightPanelCallbacks()
 		{
 			if (button != m_rightPanelSelectedTabButton)
 			{
-				this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF(0.2f, 0.2f, 0.2f, 1.0f), D2D1::ColorF::LightGray);
+				this->ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
+				Button* closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
+				if (closeButton != nullptr)
+				{
+					this->ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
+				}
 			}
 		}
 	);
@@ -794,9 +794,33 @@ void MoleculesApp::SetGeneralRightPanelCallbacks()
 		{
 			if (button != m_rightPanelSelectedTabButton)
 			{
-				//this->ChangeButtonBackgroundAndTextColor(button, m_menuBarButtonColorPaneOpen, D2D1::ColorF::White);
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
+				this->ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorMouseDown, D2D1::ColorF::White);
+				Button* closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
+				if (closeButton != nullptr)
+				{
+					this->ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorMouseDown, D2D1::ColorF::White);
+				}
 			}
+		}
+	);
+
+	// Close Button
+	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseEnter",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF::White, D2D1::ColorF::Black);
+		}
+	);
+	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseLeave",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f), D2D1::ColorF::White);
+		}
+	);
+	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseLButtonDown",
+		[this](Button* button, MouseButtonPressedEvent& e)
+		{
+			this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF::White, D2D1::ColorF::Gray);
 		}
 	);
 }
@@ -819,31 +843,18 @@ void MoleculesApp::SetSimulationCallbacks()
 void MoleculesApp::SetMaterialEditCallbacks()
 {
 	// Tab Callbacks ---------------------------------------------------------------------------
-	// 
+	// Materials - Tab Button
+	JSONLoaders::AddCallback("MaterialsTabOnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			if (button != m_rightPanelSelectedTabButton)
+			{
+				this->RightPanelTabOnClick(button, "right_panel_materials_content.json");
+			}
+		}
+	);
+
 	// Materials - Close Button
-	JSONLoaders::AddCallback("RightPanel_MaterialsButton_CloseButton_OnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White)))); 
-			Text* text = static_cast<Text*>(button->GetLayout()->GetControl(0)); 
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black)))); 
-		}
-	);
-	JSONLoaders::AddCallback("RightPanel_MaterialsButton_CloseButton_OnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f)))); 
-			Text* text = static_cast<Text*>(button->GetLayout()->GetControl(0)); 
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
-		}
-	);
-	JSONLoaders::AddCallback("RightPanel_MaterialsButton_CloseButton_OnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
-		{
-			Text* text = static_cast<Text*>(button->GetLayout()->GetControl(0));
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray))));
-		}
-	);
 	JSONLoaders::AddCallback("RightPanel_MaterialsButton_CloseButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
@@ -885,35 +896,48 @@ void MoleculesApp::SetMaterialEditCallbacks()
 void MoleculesApp::SetCameraEditCallbacks()
 {
 	// Tab Callbacks ---------------------------------------------------------------------------
-	// 
-	// Materials - Close Button
-	JSONLoaders::AddCallback("RightPanel_CameraButton_CloseButton_OnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
+	// Camera - Tab Button
+	JSONLoaders::AddCallback("CameraTabOnClick", 
+		[this](Button* button, MouseButtonReleasedEvent& e) 
 		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
-			Text* text = static_cast<Text*>(button->GetLayout()->GetControl(0));
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black))));
+			if (button != m_rightPanelSelectedTabButton) 
+			{
+				this->RightPanelTabOnClick(button, "right_panel_camera_content.json"); 
+			}
 		}
 	);
-	JSONLoaders::AddCallback("RightPanel_CameraButton_CloseButton_OnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f))));
-			Text* text = static_cast<Text*>(button->GetLayout()->GetControl(0));
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White))));
-		}
-	);
-	JSONLoaders::AddCallback("RightPanel_CameraButton_CloseButton_OnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
-		{
-			Text* text = static_cast<Text*>(button->GetLayout()->GetControl(0));
-			text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray))));
-		}
-	);
+
+	// Camera - Close Button
 	JSONLoaders::AddCallback("RightPanel_CameraButton_CloseButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
 			this->RightPanelCloseTab(e, "RightPanel_CameraButton");
+		}
+	);
+
+	// Content Callbacks ---------------------------------------------------------------------------
+}
+
+// Lighting Callbacks
+void MoleculesApp::SetLightingEditCallbacks()
+{
+	// Tab Callbacks ---------------------------------------------------------------------------
+	// Lighting - Tab Button
+	JSONLoaders::AddCallback("LightingTabOnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			if (button != m_rightPanelSelectedTabButton)
+			{
+				this->RightPanelTabOnClick(button, "right_panel_lighting_content.json");
+			}
+		}
+	);
+
+	// Lighting - Close Button
+	JSONLoaders::AddCallback("RightPanel_LightingButton_CloseButton_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			this->RightPanelCloseTab(e, "RightPanel_LightingButton");
 		}
 	);
 
@@ -950,11 +974,11 @@ void MoleculesApp::RightPanelAddTab(Button* button, MouseButtonReleasedEvent& e,
 	// Reset the drop down button back to its original state
 	Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton"); 
 	EG_ASSERT(editButton != nullptr, "Button does not exist"); 
-	editButton->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorDefault))); 
+	this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
 	editButton->BorderWidth(0.0f); 
 
 	// Reset the color of the button back to its non-hovered state
-	button->BackgroundBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, m_menuBarButtonColorPaneOpen)));
+	this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
 
 	// Determine if the tab already exists. If not, create it			
 	Button* tabButton = m_rightPanelTabsLayout->GetControlByName<Button>(tabButtonName);

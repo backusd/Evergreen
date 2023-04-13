@@ -229,6 +229,8 @@
     </FxCompile>
     <None Include="src\json\right_panel_camera_content.json" />
     <None Include="src\json\right_panel_camera_tab.json" />
+    <None Include="src\json\right_panel_lighting_content.json" />
+    <None Include="src\json\right_panel_lighting_tab.json" />
     <None Include="src\json\right_panel_materials_content.json" />
     <None Include="src\json\right_panel_materials_tab.json" />
     <None Include="src\json\right_panel_simulation_content.json" />

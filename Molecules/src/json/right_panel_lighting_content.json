@@ -1,0 +1,25 @@
+{
+	"RightPanelLayout_ContentLayout": {
+		"Type": "Layout",
+		"Row": 1,
+		"RowDefinitions": [ { "Height": "1*" } ],
+		"ColumnDefinitions": [ { "Width": "1*" } ],
+		"BorderWidth": 1.0,
+		"BorderBrush": "Gray",
+		"OnResize": "RightPanelLayout_OnResizeCallback",
+
+		"Lighting_Content": {
+			"Type": "Text",
+			"Text": "Lighting Content",
+			"Brush": "White",
+			"FontFamily": "Calibri",
+			"FontSize": 20,
+			"FontWeight": "Normal",
+			"FontStyle": "Normal",
+			"FontStretch": "Normal",
+			"TextAlignment": "Center",
+			"ParagraphAlignment": "Center",
+			"WordWrapping": "None"
+		}
+	}
+}

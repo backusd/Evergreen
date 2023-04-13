@@ -5,6 +5,11 @@
 		"BorderBrush": "Gray",
 		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ],
 
+		"OnMouseEnter": "RightPanelTabOnMouseEnter",
+		"OnMouseLeave": "RightPanelTabOnMouseLeave",
+		"OnMouseLButtonDown": "RightPanelTabOnMouseLButtonDown",
+		"OnClick": "MaterialsTabOnClick",
+
 		"Content": {
 			"Type": "Layout",
 			"RowDefinitions": [ { "Height": "1*" } ],
@@ -46,9 +51,9 @@
 					"WordWrapping": "None"
 				},
 
-				"OnMouseEnter": "RightPanel_MaterialsButton_CloseButton_OnMouseEnter",
-				"OnMouseLeave": "RightPanel_MaterialsButton_CloseButton_OnMouseLeave",
-				"OnMouseLButtonDown": "RightPanel_MaterialsButton_CloseButton_OnMouseLButtonDown",
+				"OnMouseEnter": "RightPanel_CloseButton_OnMouseEnter",
+				"OnMouseLeave": "RightPanel_CloseButton_OnMouseLeave",
+				"OnMouseLButtonDown": "RightPanel_CloseButton_OnMouseLButtonDown",
 				"OnClick": "RightPanel_MaterialsButton_CloseButton_OnClick"
 			}
 		}
