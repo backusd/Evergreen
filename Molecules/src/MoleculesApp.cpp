@@ -1058,6 +1058,34 @@ void MoleculesApp::SetMaterialEditCallbacks()
 			scene->UpdateMaterials();
 		}
 	);
+
+	JSONLoaders::AddCallback("MaterialFresnelX_OnValueChanged",
+		[this](SliderFloat* slider, SliderFloatValueChangedEvent& e)
+		{
+			Scene* scene = this->GetScene();
+			MaterialsArray* materials = scene->GetMaterials();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].FresnelR0.x = e.GetValue();
+			scene->UpdateMaterials();
+		}
+	);
+	JSONLoaders::AddCallback("MaterialFresnelY_OnValueChanged",
+		[this](SliderFloat* slider, SliderFloatValueChangedEvent& e)
+		{
+			Scene* scene = this->GetScene();
+			MaterialsArray* materials = scene->GetMaterials();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].FresnelR0.y = e.GetValue();
+			scene->UpdateMaterials();
+		}
+	);
+	JSONLoaders::AddCallback("MaterialFresnelZ_OnValueChanged",
+		[this](SliderFloat* slider, SliderFloatValueChangedEvent& e)
+		{
+			Scene* scene = this->GetScene();
+			MaterialsArray* materials = scene->GetMaterials();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].FresnelR0.z = e.GetValue();
+			scene->UpdateMaterials();
+		}
+	);
 }
 
 // Camera Callbacks
@@ -1350,13 +1378,29 @@ void MoleculesApp::MaterialEditElementSelectorDropDownItemOnClick(const std::wst
 
 	const Material& material = materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1]; 
 
+
+
 	SliderFloat* diffuseAlbedoX = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoXSlider"); 
-	SliderFloat* diffuseAlbedoY = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoYSlider"); 
-	SliderFloat* diffuseAlbedoZ = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoZSlider"); 
 	EG_ASSERT(diffuseAlbedoX != nullptr, "diffuseAlbedoX not found");
+	diffuseAlbedoX->SetValue(material.DiffuseAlbedo.x);
+
+	SliderFloat* diffuseAlbedoY = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoYSlider"); 
 	EG_ASSERT(diffuseAlbedoY != nullptr, "diffuseAlbedoY not found");
+	diffuseAlbedoY->SetValue(material.DiffuseAlbedo.y);
+
+	SliderFloat* diffuseAlbedoZ = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoZSlider"); 
 	EG_ASSERT(diffuseAlbedoZ != nullptr, "diffuseAlbedoZ not found");
-	diffuseAlbedoX->SetValue(material.DiffuseAlbedo.x); 
-	diffuseAlbedoY->SetValue(material.DiffuseAlbedo.y); 
-	diffuseAlbedoZ->SetValue(material.DiffuseAlbedo.z); 
+	diffuseAlbedoZ->SetValue(material.DiffuseAlbedo.z);
+
+	SliderFloat* fresnelX = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialFresnelXSlider");
+	EG_ASSERT(fresnelX != nullptr, "fresnelX not found");
+	fresnelX->SetValue(material.FresnelR0.x);
+
+	SliderFloat* fresnelY = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialFresnelYSlider");
+	EG_ASSERT(fresnelY != nullptr, "fresnelY not found");
+	fresnelY->SetValue(material.FresnelR0.y);
+
+	SliderFloat* fresnelZ = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialFresnelZSlider");
+	EG_ASSERT(fresnelZ != nullptr, "fresnelZ not found");
+	fresnelZ->SetValue(material.FresnelR0.z);
 }
