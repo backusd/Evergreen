@@ -1086,6 +1086,16 @@ void MoleculesApp::SetMaterialEditCallbacks()
 			scene->UpdateMaterials();
 		}
 	);
+
+	JSONLoaders::AddCallback("MaterialShininess_OnValueChanged",
+		[this](SliderFloat* slider, SliderFloatValueChangedEvent& e)
+		{
+			Scene* scene = this->GetScene();
+			MaterialsArray* materials = scene->GetMaterials();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].Shininess = e.GetValue();
+			scene->UpdateMaterials();
+		}
+	);
 }
 
 // Camera Callbacks
@@ -1403,4 +1413,8 @@ void MoleculesApp::MaterialEditElementSelectorDropDownItemOnClick(const std::wst
 	SliderFloat* fresnelZ = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialFresnelZSlider");
 	EG_ASSERT(fresnelZ != nullptr, "fresnelZ not found");
 	fresnelZ->SetValue(material.FresnelR0.z);
+
+	SliderFloat* shininess = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialShininessSlider");
+	EG_ASSERT(shininess != nullptr, "shininess not found");
+	shininess->SetValue(material.Shininess);
 }
