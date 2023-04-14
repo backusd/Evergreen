@@ -4,7 +4,8 @@ using namespace Evergreen;
 
 MoleculesApp::MoleculesApp() :
 	m_rightPanelSelectedTabButton(nullptr),
-	m_rightPanelContentLayout(nullptr)
+	m_rightPanelContentLayout(nullptr),
+	m_elementSelectedForMaterialEditing(Element::Hydrogen)
 {
 	SetCallbacks();
 	m_ui->SetUIRoot("src/json/");
@@ -965,61 +966,61 @@ void MoleculesApp::SetMaterialEditCallbacks()
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Hydrogen_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			
-		}
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Hydrogen", Element::Hydrogen);
+		} 
 	);
-	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Helium_OnClick",
+	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Helium_OnClick", 
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Helium", Element::Helium);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Lithium_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Lithium", Element::Lithium);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Beryllium_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Beryllium", Element::Beryllium);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Boron_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Boron", Element::Boron);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Carbon_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Carbon", Element::Carbon);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Nitrogen_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Nitrogen", Element::Nitrogen);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Oxygen_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Oxygen", Element::Oxygen);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Flourine_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Flourine", Element::Flourine);
 		}
 	);
 	JSONLoaders::AddCallback("ElementSelectorDropDownItem_Neon_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Neon", Element::Neon);
 		}
 	);
 
@@ -1035,7 +1036,7 @@ void MoleculesApp::SetMaterialEditCallbacks()
 		{
 			Scene* scene = this->GetScene();
 			MaterialsArray* materials = scene->GetMaterials();
-			materials->materials[0].DiffuseAlbedo.x = e.GetValue();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].DiffuseAlbedo.x = e.GetValue();
 			scene->UpdateMaterials();
 		}
 	);
@@ -1044,7 +1045,7 @@ void MoleculesApp::SetMaterialEditCallbacks()
 		{
 			Scene* scene = this->GetScene();
 			MaterialsArray* materials = scene->GetMaterials();
-			materials->materials[0].DiffuseAlbedo.y = e.GetValue();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].DiffuseAlbedo.y = e.GetValue();
 			scene->UpdateMaterials();
 		}
 	);
@@ -1053,7 +1054,7 @@ void MoleculesApp::SetMaterialEditCallbacks()
 		{
 			Scene* scene = this->GetScene();
 			MaterialsArray* materials = scene->GetMaterials();
-			materials->materials[0].DiffuseAlbedo.z = e.GetValue();
+			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].DiffuseAlbedo.z = e.GetValue();
 			scene->UpdateMaterials();
 		}
 	);
@@ -1326,4 +1327,36 @@ void MoleculesApp::ChangeButtonBackgroundAndTextColor(Button* button, D2D1::Colo
 	Text* text = static_cast<Text*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Text));
 	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
 	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(textColor))));
+}
+
+void MoleculesApp::MaterialEditElementSelectorDropDownItemOnClick(const std::wstring& elementName, Element element) noexcept
+{
+	Text* dropDownText = m_ui->GetControlByName<Text>("RightPanel_ElementSelectorDropDown_Text");
+	EG_ASSERT(dropDownText != nullptr, "Could not find drop down text");
+	dropDownText->SetText(elementName);
+
+	m_elementSelectedForMaterialEditing = element;
+
+	Pane* pane = m_ui->GetPane("RightPanel_ElementSelectorDropDown_Pane");
+	EG_ASSERT(pane != nullptr, "Pane not found");
+	pane->SetVisible(false);
+
+	// Update the sliders that can edit the material
+	Scene* scene = this->GetScene(); 
+	EG_ASSERT(scene != nullptr, "scene not found"); 
+
+	MaterialsArray* materials = scene->GetMaterials(); 
+	EG_ASSERT(materials != nullptr, "materials not found"); 
+
+	const Material& material = materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1]; 
+
+	SliderFloat* diffuseAlbedoX = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoXSlider"); 
+	SliderFloat* diffuseAlbedoY = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoYSlider"); 
+	SliderFloat* diffuseAlbedoZ = m_rightPanelContentLayout->GetControlByName<SliderFloat>("MaterialDiffuseAlbedoZSlider"); 
+	EG_ASSERT(diffuseAlbedoX != nullptr, "diffuseAlbedoX not found");
+	EG_ASSERT(diffuseAlbedoY != nullptr, "diffuseAlbedoY not found");
+	EG_ASSERT(diffuseAlbedoZ != nullptr, "diffuseAlbedoZ not found");
+	diffuseAlbedoX->SetValue(material.DiffuseAlbedo.x); 
+	diffuseAlbedoY->SetValue(material.DiffuseAlbedo.y); 
+	diffuseAlbedoZ->SetValue(material.DiffuseAlbedo.z); 
 }

@@ -23,6 +23,9 @@ protected:
 	Evergreen::Layout* m_rightPanelContentLayout;
 	Evergreen::Layout* m_rightPanelTabsLayout;
 
+	// State we want to keep track of
+	Element m_elementSelectedForMaterialEditing;
+
 	void OnUpdate(const Evergreen::Timer& timer) override;
 	void OnRender() override;
 
@@ -61,6 +64,9 @@ private:
 	void ChangeButtonBackgroundAndTextColor(Evergreen::Button* button, D2D1::ColorF::Enum buttonColor, const D2D1_COLOR_F& textColor) const;
 	void ChangeButtonBackgroundAndTextColor(Evergreen::Button* button, const D2D1_COLOR_F& buttonColor, D2D1::ColorF::Enum textColor) const;
 	void ChangeButtonBackgroundAndTextColor(Evergreen::Button* button, D2D1::ColorF::Enum buttonColor, D2D1::ColorF::Enum textColor) const;
+
+	// Specialty Methods
+	inline void MaterialEditElementSelectorDropDownItemOnClick(const std::wstring& elementName, Element element) noexcept;
 
 	const D2D1_COLOR_F m_menuBarButtonColorDefault = D2D1::ColorF(0.16f, 0.16f, 0.16f);
 	const D2D1_COLOR_F m_menuBarButtonColorMouseOverPaneClosed = D2D1::ColorF(0.35f, 0.35f, 0.35f);

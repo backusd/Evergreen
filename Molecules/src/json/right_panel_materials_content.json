@@ -4,12 +4,16 @@
 		"Row": 1,
 		"RowDefinitions": [
 			{ "Height": "40" },
-			{ "Height": "50" },
-			{ "Height": "50" },
-			{ "Height": "50" },
+			{ "Height": "40" },
+			{ "Height": "30" },
+			{ "Height": "30" },
+			{ "Height": "30" },
 			{ "Height": "1*" }
 		],
-		"ColumnDefinitions": [ { "Width": "1*" } ],
+		"ColumnDefinitions": [
+			{ "Width": "30" },
+			{ "Width": "1*" }
+		],
 		"BorderWidth": 1.0,
 		"BorderBrush": "Gray",
 		"OnResize": "RightPanelLayout_OnResizeCallback",
@@ -17,6 +21,7 @@
 		"RightPanel_ElementSelectorDropDown_Button": {
 			"Type": "Button",
 			"Margin": [ 25, 10, 25, 0 ],
+			"ColumnSpan": 2,
 			"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
 
 			"OnMouseEnter": "ElementSelectorDropDownButton_OnMouseEnter",
@@ -64,7 +69,6 @@
 				}
 			}
 		},
-
 		"RightPanel_ElementSelectorDropDown_Pane": {
 			"Type": "Pane",
 			"Top": 50,
@@ -399,51 +403,83 @@
 		},
 
 
-
-
-
+		"RightPanel_DiffuseAlbedo_Text": {
+			"Type": "Text",
+			"Row": 1,
+			"ColumnSpan": 2,
+			"Margin": [10, 15, 0, 0],
+			"Text": "Diffuse Albedo",
+			"Brush": "White",
+			"FontFamily": "Calibri",
+			"FontSize": 16,
+			"FontWeight": "Normal",
+			"FontStyle": "Normal",
+			"FontStretch": "Normal",
+			"TextAlignment": "Leading",
+			"ParagraphAlignment": "Center",
+			"WordWrapping": "None"
+		},
 
 		"MaterialDiffuseAlbedoXSlider": {
 			"Type": "SliderFloat",
 			"Margin": [ 10, 0, 10, 0 ],
-			"Row": 1,
+			"Row": 2,
+			"Column": 1,
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
-			"MinTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
-			"MaxTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
 			"ShowPopUpValueWhenSliding": false,
-
-			"CircleRadius": 5.0,
-			"CircleRadiusOuter": 10.0,
-
-			"CircleBrush": "Purple",
-			"CircleBrushOuter": [ 1.0, 0.0, 1.0, 0.3 ],
-
+			"ShowMinMaxTextValues": false,
+			"CircleRadius": 6.0,
+			"CircleRadiusOuter": 12.0,
+			"CircleBrush": [ 0.1, 0.9, 0.9, 1.0 ],
+			"CircleBrushOuter": [ 0.1, 0.9, 0.9, 0.3 ],
+			"LineWidth": 4.0,
+			"LineBrushLeft": [ 0.1, 0.9, 0.9, 1.0 ],
+			"LineBrushRight": [ 0.1, 0.9, 0.9, 1.0 ],
+			"FillLineOnRightSide": false,
 
 			"OnValueChanged": "MaterialDiffuseAlbedoX_OnValueChanged"
 		},
 		"MaterialDiffuseAlbedoYSlider": {
 			"Type": "SliderFloat",
 			"Margin": [ 10, 0, 10, 0 ],
-			"Row": 2,
+			"Row": 3,
+			"Column": 1,
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
-			"MinTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
-			"MaxTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
+			"ShowPopUpValueWhenSliding": false,
+			"ShowMinMaxTextValues": false,
+			"CircleRadius": 6.0,
+			"CircleRadiusOuter": 12.0,
+			"CircleBrush": [ 0.1, 0.9, 0.9, 1.0 ],
+			"CircleBrushOuter": [ 0.1, 0.9, 0.9, 0.3 ],
+			"LineWidth": 4.0,
+			"LineBrushLeft": [ 0.1, 0.9, 0.9, 1.0 ],
+			"LineBrushRight": [ 0.1, 0.9, 0.9, 1.0 ],
+			"FillLineOnRightSide": false,
 
 			"OnValueChanged": "MaterialDiffuseAlbedoY_OnValueChanged"
 		},
 		"MaterialDiffuseAlbedoZSlider": {
 			"Type": "SliderFloat",
 			"Margin": [ 10, 0, 10, 0 ],
-			"Row": 3,
+			"Row": 4,
+			"Column": 1,
 			"MinimumValue": 0.0,
 			"MaximumValue": 1.0,
 			"Value": 1.0,
-			"MinTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
-			"MaxTextBrush": [ 0.9, 0.9, 0.9, 1.0 ],
+			"ShowPopUpValueWhenSliding": false,
+			"ShowMinMaxTextValues": false,
+			"CircleRadius": 6.0,
+			"CircleRadiusOuter": 12.0,
+			"CircleBrush": [ 0.1, 0.9, 0.9, 1.0 ],
+			"CircleBrushOuter": [ 0.1, 0.9, 0.9, 0.3 ],
+			"LineWidth": 4.0,
+			"LineBrushLeft": [ 0.1, 0.9, 0.9, 1.0 ],
+			"LineBrushRight": [ 0.1, 0.9, 0.9, 1.0 ],
+			"FillLineOnRightSide": false,
 
 			"OnValueChanged": "MaterialDiffuseAlbedoZ_OnValueChanged"
 		}
