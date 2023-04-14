@@ -85,7 +85,7 @@ public:
 	inline void SetOnMouseLButtonUpCallback(std::function<void(RadioButton*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnMouseLButtonUp = func; }
 	inline void SetOnIsCheckedChanged(std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent& e)> func) noexcept { m_OnIsCheckedChanged = func; }
 
-	virtual ControlType GetControlType() const noexcept { return ControlType::RadioButton; }
+	virtual ControlType GetControlType() const noexcept override { return ControlType::RadioButton; }
 
 protected:
 	enum class MouseOverState

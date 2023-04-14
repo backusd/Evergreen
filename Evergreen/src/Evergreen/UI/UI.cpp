@@ -10,6 +10,7 @@
 #include "JSONLoading/ControlLoaders/SliderIntLoader.h"
 #include "JSONLoading/ControlLoaders/RadioButtonLoader.h"
 #include "JSONLoading/ControlLoaders/ViewportLoader.h"
+#include "JSONLoading/ControlLoaders/RectangleLoader.h"
 
 #include <fstream>
 
@@ -46,6 +47,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	JSONLoaders::AddControlLoader("SliderInt", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderIntLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	JSONLoaders::AddControlLoader("RadioButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RadioButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	JSONLoaders::AddControlLoader("Viewport", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ViewportLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	JSONLoaders::AddControlLoader("Rectangle", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RectangleLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 
 	// Add built-in style loaders
 	JSONLoaders::AddStyleLoader("TextStyle", [](std::shared_ptr<DeviceResources> deviceResources, json& data, const std::string& styleName) -> std::unique_ptr<Style> { return std::move(TextStyleLoader::Load(deviceResources, data, styleName)); });

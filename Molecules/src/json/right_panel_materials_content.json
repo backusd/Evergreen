@@ -403,11 +403,12 @@
 		},
 
 
+
 		"RightPanel_DiffuseAlbedo_Text": {
 			"Type": "Text",
 			"Row": 1,
 			"ColumnSpan": 2,
-			"Margin": [10, 15, 0, 0],
+			"Margin": [ 10, 15, 0, 0 ],
 			"Text": "Diffuse Albedo",
 			"Brush": "White",
 			"FontFamily": "Calibri",
@@ -420,9 +421,16 @@
 			"WordWrapping": "None"
 		},
 
+		"RightPanel_DiffuseAlbedoX_Rectangle": {
+			"Type": "Rectangle",
+			"Row": 2,
+			"Brush": "Red",
+			"Height": 8,
+			"Width": 8
+		},
 		"MaterialDiffuseAlbedoXSlider": {
 			"Type": "SliderFloat",
-			"Margin": [ 10, 0, 10, 0 ],
+			"Margin": [ 0, 0, 10, 0 ],
 			"Row": 2,
 			"Column": 1,
 			"MinimumValue": 0.0,
@@ -430,7 +438,7 @@
 			"Value": 1.0,
 			"ShowPopUpValueWhenSliding": false,
 			"ShowMinMaxTextValues": false,
-			"CircleRadius": 6.0,
+			"CircleRadius": 5.0,
 			"CircleRadiusOuter": 12.0,
 			"CircleBrush": [ 0.1, 0.9, 0.9, 1.0 ],
 			"CircleBrushOuter": [ 0.1, 0.9, 0.9, 0.3 ],
@@ -441,9 +449,17 @@
 
 			"OnValueChanged": "MaterialDiffuseAlbedoX_OnValueChanged"
 		},
+
+		"RightPanel_DiffuseAlbedoY_Rectangle": {
+			"Type": "Rectangle",
+			"Row": 3,
+			"Brush": "Green",
+			"Height": 8,
+			"Width": 8
+		},
 		"MaterialDiffuseAlbedoYSlider": {
 			"Type": "SliderFloat",
-			"Margin": [ 10, 0, 10, 0 ],
+			"Margin": [ 0, 0, 10, 0 ],
 			"Row": 3,
 			"Column": 1,
 			"MinimumValue": 0.0,
@@ -451,7 +467,7 @@
 			"Value": 1.0,
 			"ShowPopUpValueWhenSliding": false,
 			"ShowMinMaxTextValues": false,
-			"CircleRadius": 6.0,
+			"CircleRadius": 5.0,
 			"CircleRadiusOuter": 12.0,
 			"CircleBrush": [ 0.1, 0.9, 0.9, 1.0 ],
 			"CircleBrushOuter": [ 0.1, 0.9, 0.9, 0.3 ],
@@ -462,9 +478,17 @@
 
 			"OnValueChanged": "MaterialDiffuseAlbedoY_OnValueChanged"
 		},
+
+		"RightPanel_DiffuseAlbedoZ_Rectangle": {
+			"Type": "Rectangle",
+			"Row": 4,
+			"Brush": "Blue",
+			"Height": 8,
+			"Width": 8
+		},
 		"MaterialDiffuseAlbedoZSlider": {
 			"Type": "SliderFloat",
-			"Margin": [ 10, 0, 10, 0 ],
+			"Margin": [ 0, 0, 10, 0 ],
 			"Row": 4,
 			"Column": 1,
 			"MinimumValue": 0.0,
@@ -472,7 +496,7 @@
 			"Value": 1.0,
 			"ShowPopUpValueWhenSliding": false,
 			"ShowMinMaxTextValues": false,
-			"CircleRadius": 6.0,
+			"CircleRadius": 5.0,
 			"CircleRadiusOuter": 12.0,
 			"CircleBrush": [ 0.1, 0.9, 0.9, 1.0 ],
 			"CircleBrushOuter": [ 0.1, 0.9, 0.9, 0.3 ],

@@ -56,7 +56,7 @@ public:
 	void AddChar(char c, unsigned int index) noexcept;
 	void RemoveChar(unsigned int index) noexcept;
 
-	virtual ControlType GetControlType() const noexcept { return ControlType::Text; }
+	virtual ControlType GetControlType() const noexcept override { return ControlType::Text; }
 
 private:
 	void TextChanged() noexcept;

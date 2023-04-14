@@ -219,6 +219,12 @@
     <ClInclude Include="src\Evergreen\Utils\Timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\Controls\Rectangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Evergreen\Application.cpp">
@@ -359,6 +365,12 @@
     <ClCompile Include="src\Evergreen\Rendering\DX12\DeviceResourcesDX12.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\Controls\Rectangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Evergreen\UI\json-examples\Brushes.json" />
@@ -375,5 +387,6 @@
     <None Include="src\Evergreen\UI\json-examples\SliderInt.json" />
     <None Include="src\Evergreen\UI\json-examples\RadioButton.json" />
     <None Include="src\Evergreen\UI\json-examples\Viewport.json" />
+    <None Include="src\Evergreen\UI\json-examples\Rectangle.json" />
   </ItemGroup>
 </Project>

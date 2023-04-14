@@ -43,7 +43,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 			EG_CORE_WARN("{}:{} - Button control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
 	}
 
-	// Create the new Text control
+	// Create the new Button control
 	Button* button = parent->CreateControl<Button>(rowCol, deviceResources, std::move(backgroundBrush), std::move(borderBrush), borderWidths, margin);
 	EG_CORE_ASSERT(button != nullptr, "Something went wrong, button is nullptr");
 

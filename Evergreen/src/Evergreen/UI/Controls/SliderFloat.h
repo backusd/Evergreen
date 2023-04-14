@@ -154,7 +154,7 @@ public:
 	inline void SetOnStoppedDraggingCallback(std::function<void(SliderFloat*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnStoppedDragging = func; }
 	inline void SetOnValueChangedCallback(std::function<void(SliderFloat*, SliderFloatValueChangedEvent& e)> func) noexcept { m_OnValueChanged = func; }
 
-	virtual ControlType GetControlType() const noexcept { return ControlType::SliderFloat; }
+	virtual ControlType GetControlType() const noexcept override { return ControlType::SliderFloat; }
 
 protected:
 	enum class MouseOverCircleState

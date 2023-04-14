@@ -1,0 +1,16 @@
+{
+	// Basics:	Declare a Rectangle control by specifying the name of the control and specify the Type as "Rectangle"
+	//					See example below for available attributes
+	"Rectangle_Name": {
+		"Type": "Rectangle",
+		"id": 12, // Unique integer associated with this control
+		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
+		"Column": 1,
+		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
+		"ColumnSpan": 2,
+		"Margin": [ 5, 5, 5, 5 ], // (optional) Specify margin in order: left/top/right/bottom - Default is no margin
+		"Brush": "Blue", // (optional) Color of the Rectangle - Default is Black (See Brushes.json for details on using a color brush)
+		"Height": 8, // (optional) Height of the Rectangle - Default is 10
+		"Width": 8 // (optional) Width of the Rectangle - Default is 10
+	}
+}

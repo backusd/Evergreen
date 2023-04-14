@@ -35,7 +35,7 @@ public:
 	void SetCornerRadius(float xAndY) noexcept { m_radiusX = xAndY; m_radiusY = xAndY; ButtonChanged();  }
 	void SetCornerRadius(float x, float y) noexcept { m_radiusX = x; m_radiusY = y; ButtonChanged(); }
 
-	virtual ControlType GetControlType() const noexcept { return ControlType::RoundedButton; }
+	virtual ControlType GetControlType() const noexcept override { return ControlType::RoundedButton; }
 
 protected:
 	void ButtonChanged() override;

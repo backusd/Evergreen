@@ -31,6 +31,7 @@ public:
 		RoundedButton,
 		Pane,
 		RadioButton,
+		Rectangle,
 		ScrollableLayout,
 		SliderFloat,
 		SliderInt,
