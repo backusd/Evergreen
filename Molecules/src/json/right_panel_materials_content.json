@@ -642,6 +642,47 @@
 			"FillLineOnRightSide": false,
 
 			"OnValueChanged": "MaterialShininess_OnValueChanged"
+		},
+
+		"RightPanel_MaterialSave_Layout": {
+			"Type": "Layout",
+			"Row": 11,
+			"ColumnSpan": 2,
+			"RowDefinitions": [
+				{ "Height": "50" },
+				{ "Height": "1*" }
+			],
+			"ColumnDefinitions": [
+				{ "Width": "1*" },
+				{ "Width": "60" },
+				{ "Width": "1*" }
+			],
+			"RightPanel_MaterialSave_Button": {
+				"Type": "Button",
+				"Margin": [ 0, 25, 0, 0 ],
+				"Column": 1,
+				"BackgroundBrush": [ 0.25, 0.25, 0.25, 1.0 ],
+
+				"OnMouseEnter": "MaterialSaveButton_OnMouseEnter",
+				"OnMouseLeave": "MaterialSaveButton_OnMouseLeave",
+				"OnMouseLButtonDown": "MaterialSaveButton_OnLButtonDown",
+				"OnClick": "MaterialSaveButton_OnClick",
+
+				"Content": {
+					"Type": "Text",
+					"Text": "Save",
+					"Brush": "White",
+					"FontFamily": "Calibri",
+					"FontSize": 16,
+					"FontWeight": "Normal",
+					"FontStyle": "Normal",
+					"FontStretch": "Normal",
+					"TextAlignment": "Center",
+					"ParagraphAlignment": "Center",
+					"WordWrapping": "None"
+				}
+			}
+
 		}
 	}
 }

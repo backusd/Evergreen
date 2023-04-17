@@ -45,6 +45,9 @@
     <ClCompile Include="Entry.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Utils\JSONHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\json\main.json" />
@@ -56,6 +59,7 @@
     <None Include="src\json\right_panel_camera_content.json" />
     <None Include="src\json\right_panel_lighting_tab.json" />
     <None Include="src\json\right_panel_lighting_content.json" />
+    <None Include="src\json\materials\materials.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Rendering\Structs.h">
@@ -104,6 +108,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\MoleculesApp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\JSONHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

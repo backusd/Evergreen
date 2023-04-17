@@ -158,6 +158,7 @@
     <ClCompile Include="src\Rendering\Scene.cpp" />
     <ClCompile Include="src\Rendering\Shaders.cpp" />
     <ClCompile Include="src\Simulation\Simulation.cpp" />
+    <ClCompile Include="src\Utils\JSONHelper.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -184,6 +185,7 @@
     <ClInclude Include="src\Rendering\Shaders.h" />
     <ClInclude Include="src\Rendering\Structs.h" />
     <ClInclude Include="src\Simulation\Simulation.h" />
+    <ClInclude Include="src\Utils\JSONHelper.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />
   </ItemGroup>
   <ItemGroup>
@@ -227,6 +229,7 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
     </FxCompile>
+    <None Include="src\json\materials\materials.json" />
     <None Include="src\json\right_panel_camera_content.json" />
     <None Include="src\json\right_panel_camera_tab.json" />
     <None Include="src\json\right_panel_lighting_content.json" />

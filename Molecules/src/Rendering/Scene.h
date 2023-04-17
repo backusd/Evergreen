@@ -49,6 +49,7 @@ private:
 	void CreateMainPipelineConfig();
 	void CreateBoxPipelineConfig();
 	void CreateMaterials();
+	void LoadDefaultMaterials();
 
 	std::shared_ptr<Evergreen::DeviceResources> m_deviceResources;
 	Simulation* m_simulation;

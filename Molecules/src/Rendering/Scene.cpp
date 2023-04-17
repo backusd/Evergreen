@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "../Utils/JSONHelper.h"
 
 using namespace Evergreen;
 using namespace DirectX;
@@ -27,6 +28,174 @@ Scene::Scene(std::shared_ptr<DeviceResources> deviceResources, Simulation* simul
 }
 void Scene::CreateMaterials()
 {
+	const std::string materialsFile = "src/json/materials/materials.json";
+
+	json materialData = LoadJSONFile(materialsFile);
+	if (!materialData.contains("materials"))
+	{
+		EG_ERROR("{}:{} - json data in file '{}' does not contain a 'materials' key. Not able to load any material data. Falling back on default values.", __FILE__, __LINE__, materialsFile);
+		LoadDefaultMaterials();
+		return;
+	}
+
+	if (!materialData["materials"].is_array())
+	{
+		EG_ERROR("{}:{} - json data in file '{}' -> The value for the 'materials' key is not an array. Not able to load any material data. Falling back on default values.", __FILE__, __LINE__, materialsFile);
+		LoadDefaultMaterials();
+		return;
+	}
+
+	if (materialData["materials"].size() != 10)
+	{
+		EG_ERROR("{}:{} - json data in file '{}' -> The 'materials' array value is expected to have exactly 10 values, but has {}. Not able to load any material data. Falling back on default values.", __FILE__, __LINE__, materialsFile, materialData["materials"].size());
+		LoadDefaultMaterials();
+		return;
+	}
+
+	std::string elementName = "";
+	unsigned int materialIndex = 0;
+	XMFLOAT4 diffuseAlbedo = {};
+	XMFLOAT3 fresnel = {};
+	float shininess = 0.0f;
+
+	for (auto& material : materialData["materials"])
+	{
+		// Element
+		if (!material.contains("Element"))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> An entry in the 'materials' array does not have the key 'Element'. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!material["Element"].is_string())
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> An entry in the 'materials' array has the key 'Element', but the value is not a string. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		elementName = material["Element"].get<std::string>();
+
+		// Material Index
+		if (!material.contains("MaterialIndex"))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array does not have the key 'MaterialIndex'. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!material["MaterialIndex"].is_number_unsigned())
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the key 'MaterialIndex', but the value is not an unsigned int. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		materialIndex = material["MaterialIndex"].get<unsigned int>();
+
+		// Diffuse Albedo
+		if (!material.contains("DiffuseAlbedo"))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array does not have the key 'DiffuseAlbedo'. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!material["DiffuseAlbedo"].is_array())
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the key 'DiffuseAlbedo', but the value is not an array. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (material["DiffuseAlbedo"].size() != 4)
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the 'DiffuseAlbedo' array and the expected size is 4, but the actual size is {}. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material["DiffuseAlbedo"].size(), material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!(material["DiffuseAlbedo"][0].is_number_float() && material["DiffuseAlbedo"][1].is_number_float() && material["DiffuseAlbedo"][2].is_number_float() && material["DiffuseAlbedo"][3].is_number_float()))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the 'DiffuseAlbedo' array, but not all four values were floats. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		diffuseAlbedo.x = material["DiffuseAlbedo"][0].get<float>();
+		diffuseAlbedo.y = material["DiffuseAlbedo"][1].get<float>();
+		diffuseAlbedo.z = material["DiffuseAlbedo"][2].get<float>();
+		diffuseAlbedo.w = material["DiffuseAlbedo"][3].get<float>();
+		if (!(diffuseAlbedo.x >= 0.0f && diffuseAlbedo.x <= 1.0f &&
+			  diffuseAlbedo.y >= 0.0f && diffuseAlbedo.y <= 1.0f &&
+			  diffuseAlbedo.z >= 0.0f && diffuseAlbedo.z <= 1.0f &&
+			  diffuseAlbedo.w >= 0.0f && diffuseAlbedo.w <= 1.0f))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the 'DiffuseAlbedo' array, but not all four values were in the range [0, 1]. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+
+		// FresnelR0
+		if (!material.contains("FresnelR0"))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array does not have the key 'FresnelR0'. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!material["FresnelR0"].is_array())
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the key 'FresnelR0', but the value is not an array. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (material["FresnelR0"].size() != 3)
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the 'FresnelR0' array and the expected size is 3, but the actual size is {}. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material["FresnelR0"].size(), material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!(material["FresnelR0"][0].is_number_float() && material["FresnelR0"][1].is_number_float() && material["FresnelR0"][2].is_number_float()))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the 'FresnelR0' array, but not all three values were floats. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		fresnel.x = material["FresnelR0"][0].get<float>();
+		fresnel.y = material["FresnelR0"][1].get<float>();
+		fresnel.z = material["FresnelR0"][2].get<float>();
+		if (!(fresnel.x >= 0.0f && fresnel.x <= 1.0f &&
+			fresnel.y >= 0.0f && fresnel.y <= 1.0f &&
+			fresnel.z >= 0.0f && fresnel.z <= 1.0f))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the 'FresnelR0' array, but not all thrre values were in the range [0, 1]. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+
+		// Shininess
+		if (!material.contains("Shininess"))
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array does not have the key 'Shininess'. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		if (!material["Shininess"].is_number_float())
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the key 'Shininess', but the value is not a float. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+		shininess = material["Shininess"].get<float>();
+		if (shininess < 0.0f || shininess > 1.0f)
+		{
+			EG_ERROR("{}:{} - json data in file '{}' -> The '{}' entry in the 'materials' array has the key 'Shininess', but the value is not in the range [0, 1]. Not able to load any material data. Falling back on default values.\nInvalid entry: {}", __FILE__, __LINE__, materialsFile, elementName, material.dump(4));
+			LoadDefaultMaterials();
+			return;
+		}
+
+		// Load the data
+		m_materials->materials[materialIndex].DiffuseAlbedo = diffuseAlbedo;
+		m_materials->materials[materialIndex].FresnelR0 = fresnel;
+		m_materials->materials[materialIndex].Shininess = shininess;
+	}
+}
+void Scene::LoadDefaultMaterials()
+{
+	// Load default values
 	for (unsigned int iii = 0; iii < 10; ++iii)
 	{
 		m_materials->materials[iii].FresnelR0 = { 0.1f, 0.1f, 0.1f };

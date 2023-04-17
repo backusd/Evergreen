@@ -1,4 +1,5 @@
 #include "MoleculesApp.h"
+#include <fstream>
 
 using namespace Evergreen;
 
@@ -1094,6 +1095,68 @@ void MoleculesApp::SetMaterialEditCallbacks()
 			MaterialsArray* materials = scene->GetMaterials();
 			materials->materials[static_cast<int>(m_elementSelectedForMaterialEditing) - 1].Shininess = e.GetValue();
 			scene->UpdateMaterials();
+		}
+	);
+
+	// Save Button
+	JSONLoaders::AddCallback("MaterialSaveButton_OnMouseEnter",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.30f, 0.30f, 0.30f));
+		}
+	);
+	JSONLoaders::AddCallback("MaterialSaveButton_OnMouseLeave",
+		[this](Button* button, MouseMoveEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.25f, 0.25f, 0.25f));
+		}
+	);
+	JSONLoaders::AddCallback("MaterialSaveButton_OnLButtonDown",
+		[this](Button* button, MouseButtonPressedEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.35f, 0.35f, 0.35f));
+		}
+	);
+	JSONLoaders::AddCallback("MaterialSaveButton_OnClick",
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			this->ChangeButtonBackground(button, D2D1::ColorF(0.25f, 0.25f, 0.25f));
+
+			Scene* scene = this->GetScene();
+			EG_ASSERT(scene != nullptr, "scene not found");
+
+			MaterialsArray* materials = scene->GetMaterials();
+			EG_ASSERT(materials != nullptr, "materials not found");
+			
+			constexpr std::array elementNames = { "Hydrogen", "Helium", "Lithuim", "Beryllium", "Boron", "Carbon", "Nitrogen", "Oxygen", "Flourine", "Neon" };
+			EG_ASSERT(elementNames.size() == NUM_MATERIALS, "Element names list need to match the number of names");
+
+			json data = {};
+			data["materials"] = json::array();
+			for (unsigned int iii = 0; iii < NUM_MATERIALS; ++iii)
+			{
+				data["materials"][iii] = json::object();
+				data["materials"][iii]["Element"] = elementNames[iii];
+				data["materials"][iii]["MaterialIndex"] = iii;
+				
+				// Must make sure to clamp the values to the range [0, 1], otherwise the code that reads in the data will complain
+				data["materials"][iii]["DiffuseAlbedo"] = json::array();
+				data["materials"][iii]["DiffuseAlbedo"][0] = std::max(std::min(materials->materials[iii].DiffuseAlbedo.x, 1.0f), 0.0f);
+				data["materials"][iii]["DiffuseAlbedo"][1] = std::max(std::min(materials->materials[iii].DiffuseAlbedo.y, 1.0f), 0.0f);
+				data["materials"][iii]["DiffuseAlbedo"][2] = std::max(std::min(materials->materials[iii].DiffuseAlbedo.z, 1.0f), 0.0f);
+				data["materials"][iii]["DiffuseAlbedo"][3] = std::max(std::min(materials->materials[iii].DiffuseAlbedo.w, 1.0f), 0.0f);
+				
+				data["materials"][iii]["FresnelR0"] = json::array();
+				data["materials"][iii]["FresnelR0"][0] = std::max(std::min(materials->materials[iii].FresnelR0.x, 1.0f), 0.0f);
+				data["materials"][iii]["FresnelR0"][1] = std::max(std::min(materials->materials[iii].FresnelR0.y, 1.0f), 0.0f);
+				data["materials"][iii]["FresnelR0"][2] = std::max(std::min(materials->materials[iii].FresnelR0.z, 1.0f), 0.0f);
+				
+				data["materials"][iii]["Shininess"] = std::max(std::min(materials->materials[iii].Shininess, 1.0f), 0.0f);				
+			}
+
+			std::ofstream materialsFile("src/json/materials/materials.json");
+			materialsFile << data.dump(4);
+			materialsFile.close();
 		}
 	);
 }
