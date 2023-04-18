@@ -235,7 +235,9 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 	{
 		// Don't use GFX_THROW_INFO because we don't want to immediately throw is the hResult is an error.
 		// Instead, manually call m_infoManager.Set(), do the hResult processing, and manually throw later if necessary
+#if defined(_DEBUG)
 		m_infoManager.Set();
+#endif
 
 		HRESULT hRESULT = m_dxgiSwapChain->ResizeBuffers(
 			2, // Double-buffered swap chain
@@ -257,7 +259,12 @@ void DeviceResourcesDX11::CreateWindowSizeDependentResources(float width, float 
 		else if (FAILED(hRESULT))
 		{
 			// Don't use GFX_THROW_INFO - see note above
+#if defined(_DEBUG)
 			throw DeviceResourcesExceptionDX11(__LINE__, __FILE__, hRESULT, m_infoManager.GetMessages());
+#endif
+#if defined(NDEBUG)
+			throw DeviceResourcesExceptionDX11(__LINE__, __FILE__, hRESULT, { "(No information because this is a relase build)" });
+#endif
 		}
 	}
 	else
