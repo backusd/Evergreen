@@ -3,4 +3,5 @@
 #include <Evergreen.h>
 
 
-json LoadJSONFile(const std::string& filename);
+json ReadJSONFile(const std::string& filename);
+void WriteJSONToFile(const json& data, const std::string& filename);

@@ -1,5 +1,5 @@
 #include "MoleculesApp.h"
-#include <fstream>
+#include "Utils/JSONHelper.h"
 
 using namespace Evergreen;
 
@@ -1155,9 +1155,7 @@ void MoleculesApp::SetMaterialEditCallbacks()
 				data["materials"][iii]["Shininess"] = std::max(std::min(materials->materials[iii].Shininess, 1.0f), 0.0f);				
 			}
 
-			std::ofstream materialsFile("src/json/materials/materials.json");
-			materialsFile << data.dump(4);
-			materialsFile.close();
+			WriteJSONToFile(data, "src/json/materials/materials.json");
 		}
 	);
 }

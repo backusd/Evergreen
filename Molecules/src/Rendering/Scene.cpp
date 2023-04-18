@@ -30,7 +30,7 @@ void Scene::CreateMaterials()
 {
 	const std::string materialsFile = "src/json/materials/materials.json";
 
-	json materialData = LoadJSONFile(materialsFile);
+	json materialData = ReadJSONFile(materialsFile);
 	if (!materialData.contains("materials"))
 	{
 		EG_ERROR("{}:{} - json data in file '{}' does not contain a 'materials' key. Not able to load any material data. Falling back on default values.", __FILE__, __LINE__, materialsFile);

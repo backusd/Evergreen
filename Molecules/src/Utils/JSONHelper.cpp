@@ -3,7 +3,7 @@
 
 
 
-json LoadJSONFile(const std::string& filename)
+json ReadJSONFile(const std::string& filename)
 {
 	json data;
 	std::ifstream file;
@@ -32,4 +32,11 @@ json LoadJSONFile(const std::string& filename)
 	}
 
 	return data;
+}
+
+void WriteJSONToFile(const json& data, const std::string& filename)
+{
+	std::ofstream materialsFile(filename);
+	materialsFile << data.dump(4);
+	materialsFile.close();
 }
