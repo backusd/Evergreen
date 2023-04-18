@@ -716,6 +716,7 @@ void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
 			this->RightPanelAddTab(button, e, "RightPanel_MaterialsButton", "right_panel_materials_tab.json", "right_panel_materials_content.json");
+			this->MaterialEditElementSelectorDropDownItemOnClick(L"Hydrogen", Element::Hydrogen);
 		}
 	);
 
