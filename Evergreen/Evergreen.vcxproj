@@ -216,7 +216,8 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Sandbox\" 
-xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Molecules\" </Command>
+xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Molecules\" 
+xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-x64\Editor\" </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -244,7 +245,8 @@ xcopy /y "$(SolutionDir)bin\Debug-x64\Evergreen\*.dll" "$(SolutionDir)bin\Debug-
     </Link>
     <PostBuildEvent>
       <Command>xcopy /y "$(SolutionDir)bin\Release-x64\Evergreen\*.dll" "$(SolutionDir)bin\Release-x64\Sandbox\" 
-xcopy /y "$(SolutionDir)bin\Release-x64\Evergreen\*.dll" "$(SolutionDir)bin\Release-x64\Molecules\" </Command>
+xcopy /y "$(SolutionDir)bin\Release-x64\Evergreen\*.dll" "$(SolutionDir)bin\Release-x64\Molecules\" 
+xcopy /y "$(SolutionDir)bin\Release-x64\Evergreen\*.dll" "$(SolutionDir)bin\Release-x64\Editor\" </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
