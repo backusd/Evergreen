@@ -3,6 +3,7 @@
 #include "Evergreen/UI/Controls/Button.h"
 #include "Evergreen/UI/Controls/SliderFloat.h"
 #include "Evergreen/UI/Controls/SliderInt.h"
+#include "Evergreen/UI/Controls/RadioButton.h"
 
 
 
@@ -77,4 +78,31 @@ public:
 	virtual void OnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
 	virtual void OnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
 	virtual void OnValueChanged(Evergreen::SliderIntValueChangedEvent&) override;
+};
+
+class TestRadioButton : public Evergreen::RadioButton
+{
+public:
+	TestRadioButton(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+					Evergreen::UI* ui,
+					const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+					bool isChecked = false,
+					float outerRadius = 6.0f,
+					float innerRadius = 3.0f,
+					std::unique_ptr<Evergreen::ColorBrush> outerBrush = nullptr,
+					std::unique_ptr<Evergreen::ColorBrush> innerBrush = nullptr,
+					const Evergreen::Margin& margin = { 0 }) noexcept :
+		RadioButton(deviceResources, ui, allowedRegion, isChecked, outerRadius, innerRadius, std::move(outerBrush), std::move(innerBrush), margin)
+	{}
+	TestRadioButton(const TestRadioButton&) noexcept = delete;
+	TestRadioButton& operator=(const TestRadioButton&) noexcept = delete;
+	virtual ~TestRadioButton() noexcept override {}
+
+	// Event Handlers
+	virtual void OnMouseEntered(Evergreen::MouseMoveEvent&) override;
+	virtual void OnMouseExited(Evergreen::MouseMoveEvent&) override;
+	virtual void OnMouseMoved(Evergreen::MouseMoveEvent&) override;
+	virtual void OnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void OnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void OnIsCheckedChanged(Evergreen::RadioButtonIsCheckedChangedEvent&) override;
 };

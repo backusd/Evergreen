@@ -19,7 +19,11 @@ public:
 	RadioButtonLoader& operator=(const RadioButtonLoader&) = delete;
 	~RadioButtonLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
+	template<typename T>
+	ND inline static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<RadioButton, T>)
+	{
+		return Get().LoadImpl<T>(deviceResources, parent, data, name, rowColumnPositionOverride);
+	}
 
 private:
 	RadioButtonLoader() noexcept = default;
@@ -30,7 +34,8 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
+	template<typename T>
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<RadioButton, T>);
 
 	ND bool ParseIsChecked(json& data);
 	ND float ParseInnerRadius(json& data);
@@ -40,14 +45,64 @@ private:
 	
 	void ParseOuterLineWidth(RadioButton* rb, json& data);
 
-	void ParseOnMouseEntered(RadioButton* rb, json& data);
-	void ParseOnMouseExited(RadioButton* rb, json& data);
-	void ParseOnMouseMoved(RadioButton* rb, json& data);
-	void ParseOnMouseLButtonDown(RadioButton* rb, json& data);
-	void ParseOnMouseLButtonUp(RadioButton* rb, json& data);
-	void ParseOnIsCheckedChanged(RadioButton* rb, json& data);
-
 };
 #pragma warning( pop )
 
+template<typename T>
+Control* RadioButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<RadioButton, T>)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
+	m_name = name;
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
+
+	RowColumnPosition rowCol;
+	Margin margin;
+
+	// Parse Row/Column
+	rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data);
+
+	// Parse Margin
+	margin = ParseMargin(data);
+
+	// Parse IsChecked
+	bool isChecked = ParseIsChecked(data);
+
+	// Parse inner & outer radius
+	float innerRadius = ParseInnerRadius(data);
+	float outerRadius = ParseOuterRadius(data);
+	JSON_LOADER_EXCEPTION_IF_FALSE(innerRadius < outerRadius, "RadioButton control with name '{}': 'InnerRadius' value must be less than 'OuterRadius' value. Invalid RadioButton object: {}", m_name, data.dump(4));
+
+	// Parse Brushes
+	std::unique_ptr<ColorBrush> innerBrush = std::move(ParseInnerBrush(deviceResources, data));
+	std::unique_ptr<ColorBrush> outerBrush = std::move(ParseOuterBrush(deviceResources, data));
+
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
+	"IsChecked", "InnerRadius", "OuterRadius", "InnerBrush", "OuterBrush", "OuterBrushLineWidth" };
+	for (auto& [key, value] : data.items())
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+			EG_CORE_WARN("{}:{} - RadioButton control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+	}
+
+	// Create the new Text control
+	T* rb = parent->CreateControl<T>(
+		rowCol,
+		deviceResources,
+		isChecked,
+		outerRadius,
+		innerRadius,
+		std::move(outerBrush),
+		std::move(innerBrush),
+		margin
+	);
+	EG_CORE_ASSERT(rb != nullptr, "Something went wrong, radiobutton is nullptr");
+
+	rb->Name(name);
+	rb->ID(ParseID(data));
+
+	ParseOuterLineWidth(rb, data);
+
+	return rb;
+}
 }

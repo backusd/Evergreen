@@ -74,3 +74,30 @@ void TestSliderInt::OnValueChanged(SliderIntValueChangedEvent&)
 {
 
 }
+
+// ===================================================================
+
+void TestRadioButton::OnMouseEntered(MouseMoveEvent&)
+{
+
+}
+void TestRadioButton::OnMouseExited(MouseMoveEvent&)
+{
+
+}
+void TestRadioButton::OnMouseMoved(MouseMoveEvent&)
+{
+
+}
+void TestRadioButton::OnMouseLButtonDown(MouseButtonPressedEvent&)
+{
+
+}
+void TestRadioButton::OnMouseLButtonUp(MouseButtonReleasedEvent&)
+{
+
+}
+void TestRadioButton::OnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&)
+{
+
+}

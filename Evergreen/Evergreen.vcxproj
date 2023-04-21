@@ -21,6 +21,7 @@
     <ClInclude Include="src\Evergreen\Events\KeyEvent.h" />
     <ClInclude Include="src\Evergreen\Events\MouseButton.h" />
     <ClInclude Include="src\Evergreen\Events\MouseEvent.h" />
+    <ClInclude Include="src\Evergreen\Events\RadioButtonEvents.h" />
     <ClInclude Include="src\Evergreen\Events\SliderEvents.h" />
     <ClInclude Include="src\Evergreen\Exceptions\BaseException.h" />
     <ClInclude Include="src\Evergreen\Exceptions\DeviceResourcesException.h" />

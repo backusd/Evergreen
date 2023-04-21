@@ -96,7 +96,7 @@ void RadioButton::SetIsChecked(bool checked) noexcept
 	{
 		m_isChecked = checked;
 		RadioButtonIsCheckedChangedEvent e(checked);
-		m_OnIsCheckedChanged(this, e);
+		OnIsCheckedChanged(e);
 	}
 }
 
@@ -112,7 +112,7 @@ void RadioButton::OnMouseMove(MouseMoveEvent& e)
 		if (currentMouseIsOver)
 		{
 			m_mouseState = MouseOverState::OVER;
-			m_OnMouseEntered(this, e);
+			OnMouseEntered(e);
 			e.Handled(this);
 		}
 		break;
@@ -120,11 +120,11 @@ void RadioButton::OnMouseMove(MouseMoveEvent& e)
 	case MouseOverState::OVER:
 	case MouseOverState::OVER_AND_LBUTTON_DOWN:
 	{
-		m_OnMouseMoved(this, e);
+		OnMouseMoved(e);
 		if (!currentMouseIsOver)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
-			m_OnMouseExited(this, e);			
+			OnMouseExited(e);			
 		}
 		e.Handled(this);
 		break;
@@ -134,7 +134,7 @@ void RadioButton::OnMouseMove(MouseMoveEvent& e)
 void RadioButton::MouseMoveHandledByPane(MouseMoveEvent& e)
 {
 	m_mouseState = MouseOverState::NOT_OVER;
-	m_OnMouseExited(this, e);
+	OnMouseExited(e);
 }
 void RadioButton::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 {
@@ -142,7 +142,7 @@ void RadioButton::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 		m_mouseState == MouseOverState::OVER)
 	{
 		m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;
-		m_OnMouseLButtonDown(this, e);
+		OnMouseLButtonDown(e);
 		e.Handled(this);
 	}
 }
@@ -153,10 +153,10 @@ void RadioButton::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 	{
 		m_isChecked = !m_isChecked;
 		m_mouseState = MouseOverState::OVER;
-		m_OnMouseLButtonUp(this, e);
+		OnMouseLButtonUp(e);
 
 		RadioButtonIsCheckedChangedEvent e(m_isChecked);
-		m_OnIsCheckedChanged(this, e);
+		OnIsCheckedChanged(e);
 
 		e.Handled(this);
 	}

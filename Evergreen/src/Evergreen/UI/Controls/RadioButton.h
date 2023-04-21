@@ -1,35 +1,12 @@
 #pragma once
 #include "pch.h"
 #include "Control.h"
+#include "Evergreen/Events/RadioButtonEvents.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/UI/Layout.h"
 
 namespace Evergreen
 {
-class EVERGREEN_API RadioButtonIsCheckedChangedEvent : public Event
-{
-public:
-	RadioButtonIsCheckedChangedEvent(bool value) noexcept : m_value(value)
-	{}
-	RadioButtonIsCheckedChangedEvent(const RadioButtonIsCheckedChangedEvent&) = delete;
-	RadioButtonIsCheckedChangedEvent& operator=(const RadioButtonIsCheckedChangedEvent&) = delete;
-
-	inline bool IsChecked() const noexcept { return m_value; }
-
-	std::string ToString() const noexcept override { return std::format("RadioButtonIsCheckedChangedEvent: {}", m_value); }
-
-	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategory::None; }
-
-	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::None; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "RadioButtonIsCheckedChanged"; }
-
-private:
-	bool m_value;
-};
-
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -50,6 +27,14 @@ public:
 	RadioButton(const RadioButton& text) noexcept = delete; // Just delete for now until there is a good use case
 	RadioButton& operator=(const RadioButton&) noexcept = delete;
 	virtual ~RadioButton() noexcept override {}
+
+	// Event Handlers
+	virtual void OnMouseEntered(MouseMoveEvent&) {};
+	virtual void OnMouseExited(MouseMoveEvent&) {};
+	virtual void OnMouseMoved(MouseMoveEvent&) {};
+	virtual void OnMouseLButtonDown(MouseButtonPressedEvent&) {};
+	virtual void OnMouseLButtonUp(MouseButtonReleasedEvent&) {};
+	virtual void OnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&) {};
 
 	// Inherited from Control
 	void Render() const override;
@@ -78,14 +63,7 @@ public:
 	void SetInnerRadius(float width) { m_innerRadius = width; RadioButtonChanged(); }
 	void SetOuterRadius(float width) { m_outerRadius = width; RadioButtonChanged(); }
 
-	inline void SetOnMouseEnteredCallback(std::function<void(RadioButton*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
-	inline void SetOnMouseExitedCallback(std::function<void(RadioButton*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
-	inline void SetOnMouseMovedCallback(std::function<void(RadioButton*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
-	inline void SetOnMouseLButtonDownCallback(std::function<void(RadioButton*, MouseButtonPressedEvent& e)> func) noexcept { m_OnMouseLButtonDown = func; }
-	inline void SetOnMouseLButtonUpCallback(std::function<void(RadioButton*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnMouseLButtonUp = func; }
-	inline void SetOnIsCheckedChanged(std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent& e)> func) noexcept { m_OnIsCheckedChanged = func; }
-
-	virtual ControlType GetControlType() const noexcept override { return ControlType::RadioButton; }
+	ND inline virtual ControlType GetControlType() const noexcept override { return ControlType::RadioButton; }
 
 protected:
 	enum class MouseOverState
@@ -100,13 +78,6 @@ protected:
 	virtual void OnAllowedRegionChanged() override;
 
 	ND inline bool MouseIsOver(float x, float y) noexcept;
-
-	std::function<void(RadioButton*, MouseMoveEvent&)> m_OnMouseEntered = [](RadioButton*, MouseMoveEvent&) {};
-	std::function<void(RadioButton*, MouseMoveEvent&)> m_OnMouseExited = [](RadioButton*, MouseMoveEvent&) {};
-	std::function<void(RadioButton*, MouseMoveEvent&)> m_OnMouseMoved = [](RadioButton*, MouseMoveEvent&) {};
-	std::function<void(RadioButton*, MouseButtonPressedEvent&)> m_OnMouseLButtonDown = [](RadioButton*, MouseButtonPressedEvent&) {};
-	std::function<void(RadioButton*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](RadioButton*, MouseButtonReleasedEvent&) {};
-	std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent&)> m_OnIsCheckedChanged = [](RadioButton*, RadioButtonIsCheckedChangedEvent&) {};
 
 	bool						m_isChecked;
 	std::unique_ptr<ColorBrush> m_innerBrush;

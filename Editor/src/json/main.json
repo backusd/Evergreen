@@ -5,6 +5,7 @@
 			{ "Height": "50" },
 			{ "Height": "50" },
 			{ "Height": "50" },
+			{ "Height": "50" },
 			{ "Height": "1*" }
 		],
 		"ColumnDefinitions": [
@@ -43,6 +44,12 @@
 			"MinimumValue": 0,
 			"MaximumValue": 10,
 			"Value": 3
+		},
+
+		"TestRadioButton": {
+			"Type": "TestRadioButton",
+			"Row": 4,
+			"Column": 1
 		}
 	}
 }
