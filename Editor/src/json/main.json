@@ -1,0 +1,28 @@
+{
+	"root": {
+		"RowDefinitions": [
+			{ "Height": "1*" },
+			{ "Height": "50" },
+			{ "Height": "1*" }
+		],
+		"ColumnDefinitions": [
+			{ "Width": "1*" },
+			{ "Width": "100" },
+			{ "Width": "1*" }
+		],
+		"Brush": "Green",
+
+		"TestButton": {
+			"Type": "TestButton",
+			"Row": 1,
+			"Column": 1,
+			"BackgroundBrush": "Blue",
+
+			"Content": {
+				"Type": "Text",
+				"Text": "Some Text",
+				"Brush": "White"
+			}
+		}
+	}
+}

@@ -205,6 +205,7 @@ void Pane::CreateTitleBarLayout()
 
 	std::unique_ptr<SolidColorBrush> minimizeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
+	/*
 	RoundedButton* minimizeButton = m_titleLayout->CreateControl<RoundedButton>(
 		minimizeButtonPosition,
 		m_deviceResources,
@@ -234,45 +235,45 @@ void Pane::CreateTitleBarLayout()
 	minimizeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE738", nullptr, 16)));
 	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(whiteBrush), std::move(minimizeTextStyle));
 
-	minimizeButton->SetOnMouseEnteredCallback(
-		[](Control* c, Event& e)
-		{
-
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	minimizeButton->SetOnMouseExitedCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	minimizeButton->SetOnMouseLButtonDownCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	minimizeButton->SetOnMouseLButtonUpCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	minimizeButton->SetOnClickCallback(
-		[this](Control* c, Event& e)
-		{
-			this->SwitchMinimize();
-		}
-	);
+//	minimizeButton->SetOnMouseEnteredCallback(
+//		[](Control* c, Event& e)
+//		{
+//
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	minimizeButton->SetOnMouseExitedCallback(
+//		[](Control* c, Event& e)
+//		{
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	minimizeButton->SetOnMouseLButtonDownCallback(
+//		[](Control* c, Event& e)
+//		{
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	minimizeButton->SetOnMouseLButtonUpCallback(
+//		[](Control* c, Event& e)
+//		{
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	minimizeButton->SetOnClickCallback(
+//		[this](Control* c, Event& e)
+//		{
+//			this->SwitchMinimize();
+//		}
+//	);
 
 
 	// Close Button --------------------------------------------------------------
@@ -311,48 +312,49 @@ void Pane::CreateTitleBarLayout()
 	closeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE711", nullptr, 16)));
 	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(whiteBrush), std::move(closeTextStyle));
 
-	closeButton->SetOnMouseEnteredCallback(
-		[](Control* c, Event& e)
-		{
-			// Set cursor here because it may be entering from outside the pane and be a double arrow
-			Window::SetCursor(Cursor::ARROW);
-
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Crimson));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	closeButton->SetOnMouseExitedCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	closeButton->SetOnMouseLButtonDownCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	closeButton->SetOnMouseLButtonUpCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	closeButton->SetOnClickCallback(
-		[this](Control* c, Event& e)
-		{
-			this->GetUI()->RemovePane(this);
-			e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
-		}
-	);
+//	closeButton->SetOnMouseEnteredCallback(
+//		[](Control* c, Event& e)
+//		{
+//			// Set cursor here because it may be entering from outside the pane and be a double arrow
+//			Window::SetCursor(Cursor::ARROW);
+//
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Crimson));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	closeButton->SetOnMouseExitedCallback(
+//		[](Control* c, Event& e)
+//		{
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	closeButton->SetOnMouseLButtonDownCallback(
+//		[](Control* c, Event& e)
+//		{
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	closeButton->SetOnMouseLButtonUpCallback(
+//		[](Control* c, Event& e)
+//		{
+//			Button* button = static_cast<Button*>(c);
+//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
+//			button->BackgroundBrush(std::move(brush));
+//		}
+//	);
+//	closeButton->SetOnClickCallback(
+//		[this](Control* c, Event& e)
+//		{
+//			this->GetUI()->RemovePane(this);
+//			e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
+//		}
+//	);
+	*/
 }
 
 void Pane::ClearTitleBarLayoutAndAddTitle(const std::string& title, std::unique_ptr<ColorBrush> titleBrush)

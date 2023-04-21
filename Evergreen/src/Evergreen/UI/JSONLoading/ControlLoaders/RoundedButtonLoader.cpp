@@ -5,6 +5,7 @@
 
 namespace Evergreen
 {
+/*
 Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
@@ -54,16 +55,17 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 
-	ParseOnMouseEntered(button, data);
-	ParseOnMouseExited(button, data);
-	ParseOnMouseLButtonDown(button, data);
-	ParseOnMouseLButtonUp(button, data);
-	ParseOnClick(button, data);
+//	ParseOnMouseEntered(button, data);
+//	ParseOnMouseExited(button, data);
+//	ParseOnMouseLButtonDown(button, data);
+//	ParseOnMouseLButtonUp(button, data);
+//	ParseOnClick(button, data);
 
 	ParseOnUpdateCallback(button, data);
 
 	return button;
 }
+*/
 
 std::unique_ptr<ColorBrush> RoundedButtonLoader::ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
@@ -185,6 +187,7 @@ void RoundedButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceRe
 	}
 }
 
+/*
 void RoundedButtonLoader::ParseOnMouseEntered(RoundedButton* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
@@ -269,6 +272,6 @@ void RoundedButtonLoader::ParseOnClick(RoundedButton* button, json& data)
 		button->SetOnClickCallback(callback);
 	}
 }
-
+*/
 
 }

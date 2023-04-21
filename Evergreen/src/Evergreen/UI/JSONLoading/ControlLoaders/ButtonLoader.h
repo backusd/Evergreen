@@ -19,7 +19,11 @@ public:
 	ButtonLoader& operator=(const ButtonLoader&) = delete;
 	~ButtonLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
+	template<typename T>
+	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<Button, T>)
+	{ 
+		return Get().LoadImpl<T>(deviceResources, parent, data, name, rowColumnPositionOverride); 
+	}
 
 private:
 	ButtonLoader() noexcept = default;
@@ -30,7 +34,8 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
+	template<typename T>
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<Button, T>);
 
 	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
@@ -39,14 +44,75 @@ private:
 
 	void ParseBorderOffsets(Button* button, json& data);
 
-	void ParseOnMouseEntered(Button* button, json& data);
-	void ParseOnMouseExited(Button* button, json& data);
-	void ParseOnMouseMoved(Button* button, json& data);
-	void ParseOnMouseLButtonDown(Button* button, json& data);
-	void ParseOnMouseLButtonUp(Button* button, json& data);
-	void ParseOnClick(Button* button, json& data);
+	//void ParseOnMouseEntered(Button* button, json& data);
+	//void ParseOnMouseExited(Button* button, json& data);
+	//void ParseOnMouseMoved(Button* button, json& data);
+	//void ParseOnMouseLButtonDown(Button* button, json& data);
+	//void ParseOnMouseLButtonUp(Button* button, json& data);
+	//void ParseOnClick(Button* button, json& data);
 
 };
 #pragma warning( pop )
+
+template<typename T>
+Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<Button, T>)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources"); 
+	m_name = name; 
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique 
+
+	RowColumnPosition rowCol; 
+	Margin margin; 
+
+	// Parse Row/Column
+	rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data); 
+
+	// Parse Margin
+	margin = ParseMargin(data); 
+
+	// Parse Brushes
+	std::unique_ptr<ColorBrush> backgroundBrush = ParseBackgroundBrush(deviceResources, data); 
+	EG_CORE_ASSERT(backgroundBrush != nullptr, "Not allowed to return nullptr. Should have thrown exception"); 
+
+	//       Note: this function IS allowed to be nullptr and if so, the Button will just create a default brush
+	std::unique_ptr<ColorBrush> borderBrush = ParseBorderBrush(deviceResources, data); 
+
+	// Border Width
+	std::array<float, 4> borderWidths = ParseBorderWidth(data); 
+
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin", 
+	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
+	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
+	"BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", "BorderBottomLeftOffsetY",
+	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
+	for (auto& [key, value] : data.items()) 
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end()) 
+			EG_CORE_WARN("{}:{} - Button control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key); 
+	}
+
+	// Create the new Button control
+	T* button = parent->CreateControl<T>(rowCol, deviceResources, std::move(backgroundBrush), std::move(borderBrush), borderWidths, margin); 
+	EG_CORE_ASSERT(button != nullptr, "Something went wrong, button is nullptr"); 
+
+	button->Name(name); 
+	button->ID(ParseID(data)); 
+
+	ParseContent(deviceResources, button->GetLayout(), data); 
+
+	ParseBorderOffsets(button, data); 
+//	ParseOnMouseEntered(button, data); 
+//	ParseOnMouseExited(button, data); 
+//	ParseOnMouseMoved(button, data); 
+//	ParseOnMouseLButtonDown(button, data); 
+//	ParseOnMouseLButtonUp(button, data); 
+//	ParseOnClick(button, data); 
+
+	ParseOnUpdateCallback(button, data); 
+
+	return button;
+}
+
 
 }

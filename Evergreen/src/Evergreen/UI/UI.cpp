@@ -38,8 +38,8 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 {
 	// Add built-in control loaders
 	JSONLoaders::AddControlLoader("Text", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return TextLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
-	JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
-	JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	//JSONLoaders::AddControlLoader("Button", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	//JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
@@ -57,6 +57,8 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 
 void UI::LoadDefaultUI() noexcept
 {
+	/*
+
 	// TODO: Load a default UI that displays a "No defined layout"
 	// Could make this quite elaborate, similar to how ImGui has the example of all controls
 	// This could also contain links our website/documentation
@@ -775,18 +777,18 @@ void UI::LoadDefaultUI() noexcept
 	slider->Name("Slider Float #1");
 
 	sliderPosition.Row = 2;
-	/*
-	Slider<int>* slider2 = sublayout->CreateControl<Slider<int>>(
-		sliderPosition,
-		m_deviceResources,
-		0, // min
-		10, // max
-		5, // initial
-		sliderMargin
-	);
-	slider2->Name("Slider2");
-	slider2->SetValueFormatString(L"{}");
-	*/
+
+//	Slider<int>* slider2 = sublayout->CreateControl<Slider<int>>(
+//		sliderPosition,
+//		m_deviceResources,
+//		0, // min
+//		10, // max
+//		5, // initial
+//		sliderMargin
+//	);
+//	slider2->Name("Slider2");
+//	slider2->SetValueFormatString(L"{}");
+
 
 
 	RowColumnPosition sliderCheckPosition;
@@ -905,6 +907,9 @@ void UI::LoadDefaultUI() noexcept
 	vpLayout->AddColumn({ RowColumnType::STAR, 1.0f });
 
 	Text* vpText = vpLayout->CreateControl<Text>(m_deviceResources, L"Viewport");
+
+
+	*/
 }
 
 void UI::LoadUI(const std::string& fileName) noexcept

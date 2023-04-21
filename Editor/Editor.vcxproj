@@ -138,11 +138,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
+    <ClCompile Include="src\TestButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Evergreen\Evergreen.vcxproj">
       <Project>{077a0ba5-74ae-4c93-aa09-3cbeb6203156}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\json\main.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\TestButton.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

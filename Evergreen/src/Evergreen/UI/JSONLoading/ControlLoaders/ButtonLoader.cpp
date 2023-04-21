@@ -5,6 +5,7 @@
 
 namespace Evergreen
 {
+/*
 Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, 
 	std::optional<RowColumnPosition> rowColumnPositionOverride)
 {
@@ -65,6 +66,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	return button;
 }
 
+*/
 std::unique_ptr<ColorBrush> ButtonLoader::ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data)
 {
 	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
@@ -224,6 +226,7 @@ void ButtonLoader::ParseBorderOffsets(Button* button, json& data)
 	}
 }
 
+/*
 void ButtonLoader::ParseOnMouseEntered(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
@@ -314,6 +317,6 @@ void ButtonLoader::ParseOnClick(Button* button, json& data)
 		button->SetOnClickCallback(callback);
 	}
 }
-
+*/
 
 }
