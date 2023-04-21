@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Control.h"
-#include "Evergreen/Events/SliderFloatEvents.h"
+#include "Evergreen/Events/SliderEvents.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/Controls/TextInput.h"
@@ -131,13 +131,7 @@ public:
 
 	inline void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; UpdateValueTexts();  }
 	
-	//inline void SetOnMouseEnteredCircleCallback(std::function<void(SliderFloat*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEnteredCircle = func; }
-	//inline void SetOnMouseExitedCircleCallback(std::function<void(SliderFloat*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExitedCircle = func; }
-	//inline void SetOnBeginDraggingCallback(std::function<void(SliderFloat*, MouseButtonPressedEvent& e)> func) noexcept { m_OnBeginDragging = func; }
-	//inline void SetOnStoppedDraggingCallback(std::function<void(SliderFloat*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnStoppedDragging = func; }
-	//inline void SetOnValueChangedCallback(std::function<void(SliderFloat*, SliderFloatValueChangedEvent& e)> func) noexcept { m_OnValueChanged = func; }
-
-	virtual ControlType GetControlType() const noexcept override { return ControlType::SliderFloat; }
+	ND virtual ControlType GetControlType() const noexcept override { return ControlType::SliderFloat; }
 
 protected:
 	enum class MouseOverCircleState
@@ -162,12 +156,6 @@ protected:
 	ND inline D2D1_RECT_F GetPopUpRect() const noexcept;
 
 	void UpdateValueTexts();
-
-	//std::function<void(SliderFloat*, MouseMoveEvent&)> m_OnMouseEnteredCircle = [](SliderFloat*, MouseMoveEvent&) {};
-	//std::function<void(SliderFloat*, MouseMoveEvent&)> m_OnMouseExitedCircle = [](SliderFloat*, MouseMoveEvent&) {};
-	//std::function<void(SliderFloat*, MouseButtonPressedEvent&)> m_OnBeginDragging = [](SliderFloat*, MouseButtonPressedEvent&) {};
-	//std::function<void(SliderFloat*, MouseButtonReleasedEvent&)> m_OnStoppedDragging = [](SliderFloat*, MouseButtonReleasedEvent&) {};
-	//std::function<void(SliderFloat*, SliderFloatValueChangedEvent&)> m_OnValueChanged = [](SliderFloat*, SliderFloatValueChangedEvent&) {};
 
 	float m_minValue;
 	float m_maxValue;

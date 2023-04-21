@@ -4,11 +4,12 @@
 			{ "Height": "1*" },
 			{ "Height": "50" },
 			{ "Height": "50" },
+			{ "Height": "50" },
 			{ "Height": "1*" }
 		],
 		"ColumnDefinitions": [
 			{ "Width": "1*" },
-			{ "Width": "100" },
+			{ "Width": "200" },
 			{ "Width": "1*" }
 		],
 		"Brush": "Green",
@@ -33,6 +34,15 @@
 			"MinimumValue": 0.0,
 			"MaximumValue": 10.0,
 			"Value": 5.0
+		},
+
+		"TestSliderInt": {
+			"Type": "TestSliderInt",
+			"Row": 3,
+			"Column": 1,
+			"MinimumValue": 0,
+			"MaximumValue": 10,
+			"Value": 3
 		}
 	}
 }

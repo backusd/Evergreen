@@ -1,38 +1,13 @@
 #pragma once
 #include "pch.h"
 #include "Control.h"
+#include "Evergreen/Events/SliderEvents.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/Controls/TextInput.h"
 
 namespace Evergreen
 {
-// Mouse Moved Event -----------------------------------------------------------
-class EVERGREEN_API SliderIntValueChangedEvent : public Event
-{
-public:
-	SliderIntValueChangedEvent(int value) noexcept : m_value(value)
-	{}
-	SliderIntValueChangedEvent(const SliderIntValueChangedEvent&) = delete;
-	SliderIntValueChangedEvent& operator=(const SliderIntValueChangedEvent&) = delete;
-
-	inline int GetValue() const noexcept { return m_value; }
-
-	std::string ToString() const noexcept override { return std::format("SliderIntValueChangedEvent: {}", m_value); }
-
-	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategory::None; }
-
-	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::None; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "SliderIntValueChanged"; }
-
-private:
-	int m_value;
-};
-
-
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -49,6 +24,13 @@ public:
 	SliderInt(const SliderInt&) noexcept = delete; // Just delete for now until there is a good use case
 	SliderInt& operator=(const SliderInt&) noexcept = delete;
 	virtual ~SliderInt() noexcept override {}
+
+	// Event Handlers
+	virtual void OnMouseEnteredCircle(MouseMoveEvent&) {};
+	virtual void OnMouseExitedCircle(MouseMoveEvent&) {};
+	virtual void OnBeginDragging(MouseButtonPressedEvent&) {};
+	virtual void OnStoppedDragging(MouseButtonReleasedEvent&) {};
+	virtual void OnValueChanged(SliderIntValueChangedEvent&) {};
 
 	// Inherited from Control
 	void Render() const override;
@@ -149,13 +131,7 @@ public:
 
 	inline void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; UpdateValueTexts(); }
 
-	inline void SetOnMouseEnteredCircleCallback(std::function<void(SliderInt*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEnteredCircle = func; }
-	inline void SetOnMouseExitedCircleCallback(std::function<void(SliderInt*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExitedCircle = func; }
-	inline void SetOnBeginDraggingCallback(std::function<void(SliderInt*, MouseButtonPressedEvent& e)> func) noexcept { m_OnBeginDragging = func; }
-	inline void SetOnStoppedDraggingCallback(std::function<void(SliderInt*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnStoppedDragging = func; }
-	inline void SetOnValueChangedCallback(std::function<void(SliderInt*, SliderIntValueChangedEvent& e)> func) noexcept { m_OnValueChanged = func; }
-
-	virtual ControlType GetControlType() const noexcept override { return ControlType::SliderInt; }
+	ND virtual ControlType GetControlType() const noexcept override { return ControlType::SliderInt; }
 
 protected:
 	enum class MouseOverCircleState
@@ -180,12 +156,6 @@ protected:
 	ND inline D2D1_RECT_F GetPopUpRect() const noexcept;
 
 	void UpdateValueTexts();
-
-	std::function<void(SliderInt*, MouseMoveEvent&)> m_OnMouseEnteredCircle = [](SliderInt*, MouseMoveEvent&) {};
-	std::function<void(SliderInt*, MouseMoveEvent&)> m_OnMouseExitedCircle = [](SliderInt*, MouseMoveEvent&) {};
-	std::function<void(SliderInt*, MouseButtonPressedEvent&)> m_OnBeginDragging = [](SliderInt*, MouseButtonPressedEvent&) {};
-	std::function<void(SliderInt*, MouseButtonReleasedEvent&)> m_OnStoppedDragging = [](SliderInt*, MouseButtonReleasedEvent&) {};
-	std::function<void(SliderInt*, SliderIntValueChangedEvent&)> m_OnValueChanged = [](SliderInt*, SliderIntValueChangedEvent&) {};
 
 	int m_minValue;
 	int m_maxValue;

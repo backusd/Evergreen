@@ -2,6 +2,7 @@
 #include "pch.h"
 #include "Evergreen/UI/Controls/Button.h"
 #include "Evergreen/UI/Controls/SliderFloat.h"
+#include "Evergreen/UI/Controls/SliderInt.h"
 
 
 
@@ -56,3 +57,24 @@ public:
 	virtual void OnValueChanged(Evergreen::SliderFloatValueChangedEvent&) override;
 };
 
+class TestSliderInt : public Evergreen::SliderInt
+{
+public:
+	TestSliderInt(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+					Evergreen::UI* ui,
+					const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+					int minValue = 0, int maxValue = 100, int initialValue = 0,
+					const Evergreen::Margin& margin = { 0 }) noexcept :
+		SliderInt(deviceResources, ui, allowedRegion, minValue, maxValue, initialValue, margin)
+	{}
+	TestSliderInt(const TestSliderInt&) noexcept = delete;
+	TestSliderInt& operator=(const TestSliderInt&) noexcept = delete;
+	virtual ~TestSliderInt() noexcept override {}
+
+	// Event Handlers
+	virtual void OnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void OnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void OnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void OnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void OnValueChanged(Evergreen::SliderIntValueChangedEvent&) override;
+};

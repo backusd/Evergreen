@@ -51,3 +51,26 @@ void TestSliderFloat::OnValueChanged(SliderFloatValueChangedEvent&)
 {
 
 }
+
+// ==================================================================
+
+void TestSliderInt::OnMouseEnteredCircle(MouseMoveEvent&)
+{
+
+}
+void TestSliderInt::OnMouseExitedCircle(MouseMoveEvent&)
+{
+
+}
+void TestSliderInt::OnBeginDragging(MouseButtonPressedEvent&)
+{
+
+}
+void TestSliderInt::OnStoppedDragging(MouseButtonReleasedEvent&)
+{
+
+}
+void TestSliderInt::OnValueChanged(SliderIntValueChangedEvent&)
+{
+
+}

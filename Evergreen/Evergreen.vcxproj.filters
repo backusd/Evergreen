@@ -225,7 +225,7 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\Events\SliderFloatEvents.h">
+    <ClInclude Include="src\Evergreen\Events\SliderEvents.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
