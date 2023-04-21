@@ -36,8 +36,7 @@ Control* SliderIntLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResour
 	"TextInputTextStyle", "TextInputBackgroundBrush", "TextInputBorderBrush", "TextInputBorderWidth",
 	"ShowPopUpValueWhenSliding", "PopUpBackgroundBrush", "PopUpBorderBrush", "PopUpBorderWidth", "PopUpCornerRadius",
 	"PopUpHeight", "PopUpWidth", "PopUpTextBrush", "PopUpTextStyle",
-	"OnMouseEnteredCircle", "OnMouseExitedCircle", "OnBeginDragging", "OnStoppedDragging", "OnValueChanged",
-	"OnUpdate" };
+	"OnMouseEnteredCircle", "OnMouseExitedCircle", "OnBeginDragging", "OnStoppedDragging", "OnValueChanged" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -102,8 +101,6 @@ Control* SliderIntLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResour
 	ParseOnBeginDragging(slider, data);
 	ParseOnStoppedDragging(slider, data);
 	ParseOnValueChanged(slider, data);
-
-	ParseOnUpdateCallback(slider, data);
 
 	return slider;
 }

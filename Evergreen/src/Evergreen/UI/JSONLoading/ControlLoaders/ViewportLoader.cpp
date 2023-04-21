@@ -19,7 +19,7 @@ Control* ViewportLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResourc
 	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"Content", "OnChar", "OnKeyPressed", "OnKeyReleased", "OnMouseEntered", "OnMouseExited", "OnMouseMoved", 
 	"OnMouseScrolledVertical", "OnMouseScrolledHorizontal", "OnMouseButtonPressed", "OnMouseButtonReleased", 
-	"OnClick", "OnDoubleClick", "OnUpdate"};
+	"OnClick", "OnDoubleClick" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -51,8 +51,6 @@ Control* ViewportLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResourc
 	ParseOnMouseScrolledHorizontal(vp, data);
 	ParseOnClick(vp, data);
 	ParseOnDoubleClick(vp, data);
-
-	ParseOnUpdateCallback(vp, data);
 
 	return vp;
 }

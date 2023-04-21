@@ -91,9 +91,9 @@ private:
 		std::terminate();
 	}
 
-	CONTROL_EVENT_MAP(Button, MouseMoveEvent); 
-	CONTROL_EVENT_MAP(Button, MouseButtonPressedEvent);
-	CONTROL_EVENT_MAP(Button, MouseButtonReleasedEvent);
+//	CONTROL_EVENT_MAP(Button, MouseMoveEvent); 
+//	CONTROL_EVENT_MAP(Button, MouseButtonPressedEvent);
+//	CONTROL_EVENT_MAP(Button, MouseButtonReleasedEvent);
 	CONTROL_EVENT_MAP(Pane, MouseMoveEvent);
 	CONTROL_EVENT_MAP(SliderFloat, MouseMoveEvent);
 	CONTROL_EVENT_MAP(SliderFloat, MouseButtonPressedEvent);

@@ -30,7 +30,6 @@ protected:
 	RowColumnPosition ParseRowColumnPosition(json& data);
 	Margin ParseMargin(json& data);
 	unsigned int ParseID(json& data);
-	void ParseOnUpdateCallback(Control* control, json& data);
 
 	std::string m_name;
 

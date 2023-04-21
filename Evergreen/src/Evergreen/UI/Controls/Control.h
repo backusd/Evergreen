@@ -51,8 +51,7 @@ public:
 
 	void Update(const Timer& timer) 
 	{ 
-		OnUpdate(timer); 
-		m_CustomOnUpdateCallback(this, timer); 
+		OnUpdate(timer);
 	}
 protected:
 	virtual void OnUpdate(const Timer& timer) {}
@@ -90,7 +89,6 @@ public:
 	void AllowedRegionRight(float right) noexcept;
 	void AllowedRegionTop(float top) noexcept;
 	void AllowedRegionBottom(float bottom) noexcept;
-	void SetOnUpdateCallback(std::function<void(Control*, const Timer&)> fn) noexcept { m_CustomOnUpdateCallback = fn; }
 
 	ND inline const std::string& Name() const noexcept { return m_name; }
 	ND inline unsigned int ID() const noexcept { return m_id; }
@@ -123,8 +121,6 @@ protected:
 	std::shared_ptr<DeviceResources>	m_deviceResources;
 	Evergreen::Margin					m_margin;	
 	UI*									m_ui;
-
-	std::function<void(Control*, const Timer&)> m_CustomOnUpdateCallback = [](Control*, const Timer&) {};
 
 	// Allowed region should be set by the parent layout
 	D2D1_RECT_F							m_allowedRegion;

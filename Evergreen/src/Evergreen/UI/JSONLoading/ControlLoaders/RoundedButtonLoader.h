@@ -43,13 +43,6 @@ private:
 	float ParseRadiusY(json& data);
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
-//	void ParseOnMouseEntered(RoundedButton* button, json& data);
-//	void ParseOnMouseExited(RoundedButton* button, json& data);
-//	void ParseOnMouseMoved(RoundedButton* button, json& data);
-//	void ParseOnMouseLButtonDown(RoundedButton* button, json& data);
-//	void ParseOnMouseLButtonUp(RoundedButton* button, json& data);
-//	void ParseOnClick(RoundedButton* button, json& data);
-
 };
 #pragma warning( pop )
 
@@ -86,8 +79,7 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
-	"BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadiusX", "CornerRadiusY", "Content", "OnMouseEnter",
-	"OnMouseMoved", "OnMouseLeave", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate" };
+	"BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadiusX", "CornerRadiusY", "Content" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -102,14 +94,6 @@ Control* RoundedButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceRe
 	button->ID(ParseID(data));
 
 	ParseContent(deviceResources, button->GetLayout(), data);
-
-	//	ParseOnMouseEntered(button, data);
-	//	ParseOnMouseExited(button, data);
-	//	ParseOnMouseLButtonDown(button, data);
-	//	ParseOnMouseLButtonUp(button, data);
-	//	ParseOnClick(button, data);
-
-	ParseOnUpdateCallback(button, data);
 
 	return button;
 }

@@ -44,7 +44,7 @@ Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> devic
 	"VerticalScrollBarWidth",	"VerticalScrollBarRegionWidth", "VerticalScrollBarBrush", "VerticalScrollBarHoveredBrush", 
 	"VerticalScrollBarDraggingBrush", "HorizontalScrollBarCornerRadius", "HorizontalScrollBarCornerRadiusX", "HorizontalScrollBarCornerRadiusY",
 	"HorizontalScrollBarEnabled", "HorizontalScrollBarHiddenWhenNotOver", "HorizontalScrollBarHeight", "HorizontalScrollBarRegionHeight",
-	"HorizontalScrollBarBrush", "HorizontalScrollBarHoveredBrush", "HorizontalScrollBarDraggingBrush", "OnUpdate"};
+	"HorizontalScrollBarBrush", "HorizontalScrollBarHoveredBrush", "HorizontalScrollBarDraggingBrush" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -96,8 +96,6 @@ Control* ScrollableLayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> devic
 	ParseHorizontalScrollBarDraggingBrush(deviceResources, scrollableLayout, data);
 
 	LoadControls(deviceResources, scrollableLayout, data);
-
-	ParseOnUpdateCallback(scrollableLayout, data);
 
 	return scrollableLayout;
 }

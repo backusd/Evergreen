@@ -39,7 +39,7 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"Style", "Brush", "FontFamily", "FontSize", "FontWeight", "FontStyle", "FontStretch", "TextAlignment",
-	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale", "OnUpdate"};
+	"ParagraphAlignment", "WordWrapping", "Trimming", "Locale" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
@@ -52,8 +52,6 @@ Control* TextLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, 
 
 	textControl->Name(name);
 	textControl->ID(ParseID(data));
-
-	ParseOnUpdateCallback(textControl, data);
 	
 	return textControl;
 }

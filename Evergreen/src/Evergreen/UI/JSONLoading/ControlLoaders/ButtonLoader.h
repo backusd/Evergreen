@@ -44,13 +44,6 @@ private:
 
 	void ParseBorderOffsets(Button* button, json& data);
 
-	//void ParseOnMouseEntered(Button* button, json& data);
-	//void ParseOnMouseExited(Button* button, json& data);
-	//void ParseOnMouseMoved(Button* button, json& data);
-	//void ParseOnMouseLButtonDown(Button* button, json& data);
-	//void ParseOnMouseLButtonUp(Button* button, json& data);
-	//void ParseOnClick(Button* button, json& data);
-
 };
 #pragma warning( pop )
 
@@ -82,8 +75,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin", 
-	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
-	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
+	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
 	"BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", "BorderBottomLeftOffsetY",
 	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
 	for (auto& [key, value] : data.items()) 
@@ -100,16 +92,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	button->ID(ParseID(data)); 
 
 	ParseContent(deviceResources, button->GetLayout(), data); 
-
 	ParseBorderOffsets(button, data); 
-//	ParseOnMouseEntered(button, data); 
-//	ParseOnMouseExited(button, data); 
-//	ParseOnMouseMoved(button, data); 
-//	ParseOnMouseLButtonDown(button, data); 
-//	ParseOnMouseLButtonUp(button, data); 
-//	ParseOnClick(button, data); 
-
-	ParseOnUpdateCallback(button, data); 
 
 	return button;
 }
