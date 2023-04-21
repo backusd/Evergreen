@@ -472,7 +472,7 @@ void SliderFloat::SetValue(float value) noexcept
 		SliderChanged();
 
 		SliderFloatValueChangedEvent _e(m_value);
-		m_OnValueChanged(this, _e);
+		OnValueChanged(_e);
 	}
 }
 void SliderFloat::SetTextInputHeight(float height) noexcept
@@ -586,7 +586,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 			if (!m_mouseIsOverCircle)
 			{
 				m_mouseIsOverCircle = true;
-				m_OnMouseEnteredCircle(this, e);
+				OnMouseEnteredCircle(e);
 			}
 		}
 		else
@@ -594,7 +594,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 			if (m_mouseIsOverCircle)
 			{
 				m_mouseIsOverCircle = false;
-				m_OnMouseExitedCircle(this, e);
+				OnMouseExitedCircle(e);
 			}
 		}
 
@@ -608,7 +608,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 				UpdateValueTexts();
 
 				SliderFloatValueChangedEvent _e(m_value);
-				m_OnValueChanged(this, _e);
+				OnValueChanged(_e);
 			}
 		}
 		else if (e.GetX() < m_lineLeftX)
@@ -620,7 +620,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 				UpdateValueTexts();
 
 				SliderFloatValueChangedEvent _e(m_value);
-				m_OnValueChanged(this, _e);
+				OnValueChanged(_e);
 			}
 		}
 		else
@@ -633,7 +633,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 				UpdateValueTexts();
 
 				SliderFloatValueChangedEvent _e(m_value);
-				m_OnValueChanged(this, _e);
+				OnValueChanged(_e);
 			}
 		}
 
@@ -646,7 +646,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 		if (currentMouseIsOverCircle)
 		{
 			m_mouseOverCircleState = MouseOverCircleState::OVER;
-			m_OnMouseEnteredCircle(this, e);
+			OnMouseEnteredCircle(e);
 			e.Handled(this);
 			m_mouseIsOverCircle = currentMouseIsOverCircle;
 			return;
@@ -659,7 +659,7 @@ void SliderFloat::OnMouseMove(MouseMoveEvent& e)
 		if (!currentMouseIsOverCircle)
 		{
 			m_mouseOverCircleState = MouseOverCircleState::NOT_OVER;
-			m_OnMouseExitedCircle(this, e);
+			OnMouseExitedCircle(e);
 			break;
 		}
 		e.Handled(this);
@@ -677,7 +677,7 @@ void SliderFloat::MouseMoveHandledByPane(MouseMoveEvent& e)
 	{
 		m_mouseOverCircleState = MouseOverCircleState::NOT_OVER;
 		m_mouseIsOverCircle = false;
-		m_OnMouseExitedCircle(this, e);
+		OnMouseExitedCircle(e);
 	}
 }
 void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e)
@@ -685,7 +685,7 @@ void SliderFloat::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 	if (m_mouseOverCircleState == MouseOverCircleState::OVER && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
 		m_mouseOverCircleState = MouseOverCircleState::DRAGGING;
-		m_OnBeginDragging(this, e);
+		OnBeginDragging(e);
 		e.Handled(this);
 		return;
 	}
@@ -697,7 +697,7 @@ void SliderFloat::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 	if (m_mouseOverCircleState == MouseOverCircleState::DRAGGING && e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 	{
 		m_mouseOverCircleState = CircleContainsPoint(e.GetX(), e.GetY()) ? MouseOverCircleState::OVER : MouseOverCircleState::NOT_OVER;
-		m_OnStoppedDragging(this, e);
+		OnStoppedDragging(e);
 		e.Handled(this);
 		return;
 	}

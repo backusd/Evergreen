@@ -1,37 +1,13 @@
 #pragma once
 #include "pch.h"
 #include "Control.h"
+#include "Evergreen/Events/SliderFloatEvents.h"
 #include "Evergreen/UI/Brushes.h"
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/Controls/TextInput.h"
 
 namespace Evergreen
 {
-class EVERGREEN_API SliderFloatValueChangedEvent : public Event
-{
-public:
-	SliderFloatValueChangedEvent(float value) noexcept : m_value(value)
-	{}
-	SliderFloatValueChangedEvent(const SliderFloatValueChangedEvent&) = delete;
-	SliderFloatValueChangedEvent& operator=(const SliderFloatValueChangedEvent&) = delete;
-
-	inline float GetValue() const noexcept { return m_value; }
-
-	std::string ToString() const noexcept override { return std::format("SliderFloatValueChangedEvent: {}", m_value); }
-
-	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategory::None; }
-
-	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::None; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "SliderFloatValueChanged"; }
-
-private:
-	float m_value;
-};
-
-
 // Drop this warning because the private members are not accessible by the client application, but 
 // the compiler will complain that they don't have a DLL interface
 // See: https://stackoverflow.com/questions/767579/exporting-classes-containing-std-objects-vector-map-etc-from-a-dll
@@ -48,6 +24,13 @@ public:
 	SliderFloat(const SliderFloat&) noexcept = delete; // Just delete for now until there is a good use case
 	SliderFloat& operator=(const SliderFloat&) noexcept = delete;
 	virtual ~SliderFloat() noexcept override {}
+
+	// Event Handlers
+	virtual void OnMouseEnteredCircle(MouseMoveEvent&) {};
+	virtual void OnMouseExitedCircle(MouseMoveEvent&) {};
+	virtual void OnBeginDragging(MouseButtonPressedEvent&) {}; 
+	virtual void OnStoppedDragging(MouseButtonReleasedEvent&) {}; 
+	virtual void OnValueChanged(SliderFloatValueChangedEvent&) {};
 
 	// Inherited from Control
 	void Render() const override;
@@ -148,11 +131,11 @@ public:
 
 	inline void SetValueFormatString(const std::wstring& fmt) noexcept { m_valueFormatString = fmt; UpdateValueTexts();  }
 	
-	inline void SetOnMouseEnteredCircleCallback(std::function<void(SliderFloat*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEnteredCircle = func; }
-	inline void SetOnMouseExitedCircleCallback(std::function<void(SliderFloat*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExitedCircle = func; }
-	inline void SetOnBeginDraggingCallback(std::function<void(SliderFloat*, MouseButtonPressedEvent& e)> func) noexcept { m_OnBeginDragging = func; }
-	inline void SetOnStoppedDraggingCallback(std::function<void(SliderFloat*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnStoppedDragging = func; }
-	inline void SetOnValueChangedCallback(std::function<void(SliderFloat*, SliderFloatValueChangedEvent& e)> func) noexcept { m_OnValueChanged = func; }
+	//inline void SetOnMouseEnteredCircleCallback(std::function<void(SliderFloat*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEnteredCircle = func; }
+	//inline void SetOnMouseExitedCircleCallback(std::function<void(SliderFloat*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExitedCircle = func; }
+	//inline void SetOnBeginDraggingCallback(std::function<void(SliderFloat*, MouseButtonPressedEvent& e)> func) noexcept { m_OnBeginDragging = func; }
+	//inline void SetOnStoppedDraggingCallback(std::function<void(SliderFloat*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnStoppedDragging = func; }
+	//inline void SetOnValueChangedCallback(std::function<void(SliderFloat*, SliderFloatValueChangedEvent& e)> func) noexcept { m_OnValueChanged = func; }
 
 	virtual ControlType GetControlType() const noexcept override { return ControlType::SliderFloat; }
 
@@ -180,11 +163,11 @@ protected:
 
 	void UpdateValueTexts();
 
-	std::function<void(SliderFloat*, MouseMoveEvent&)> m_OnMouseEnteredCircle = [](SliderFloat*, MouseMoveEvent&) {};
-	std::function<void(SliderFloat*, MouseMoveEvent&)> m_OnMouseExitedCircle = [](SliderFloat*, MouseMoveEvent&) {};
-	std::function<void(SliderFloat*, MouseButtonPressedEvent&)> m_OnBeginDragging = [](SliderFloat*, MouseButtonPressedEvent&) {};
-	std::function<void(SliderFloat*, MouseButtonReleasedEvent&)> m_OnStoppedDragging = [](SliderFloat*, MouseButtonReleasedEvent&) {};
-	std::function<void(SliderFloat*, SliderFloatValueChangedEvent&)> m_OnValueChanged = [](SliderFloat*, SliderFloatValueChangedEvent&) {};
+	//std::function<void(SliderFloat*, MouseMoveEvent&)> m_OnMouseEnteredCircle = [](SliderFloat*, MouseMoveEvent&) {};
+	//std::function<void(SliderFloat*, MouseMoveEvent&)> m_OnMouseExitedCircle = [](SliderFloat*, MouseMoveEvent&) {};
+	//std::function<void(SliderFloat*, MouseButtonPressedEvent&)> m_OnBeginDragging = [](SliderFloat*, MouseButtonPressedEvent&) {};
+	//std::function<void(SliderFloat*, MouseButtonReleasedEvent&)> m_OnStoppedDragging = [](SliderFloat*, MouseButtonReleasedEvent&) {};
+	//std::function<void(SliderFloat*, SliderFloatValueChangedEvent&)> m_OnValueChanged = [](SliderFloat*, SliderFloatValueChangedEvent&) {};
 
 	float m_minValue;
 	float m_maxValue;

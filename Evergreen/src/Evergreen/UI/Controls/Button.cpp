@@ -284,7 +284,6 @@ void Button::OnMouseMove(MouseMoveEvent& e)
 		if (!currentMouseIsOver)
 		{
 			m_mouseIsOver = false;
-			//m_OnMouseExited(this, e);
 			OnMouseExited(e);
 
 			// Only set handled=true if the mouse is down, making it so that another control can not process this event
@@ -296,14 +295,12 @@ void Button::OnMouseMove(MouseMoveEvent& e)
 		}
 
 		// Nothing changed here, just make sure the event is handled and return
-		//m_OnMouseMoved(this, e);
 		OnMouseMoved(e);
 		e.Handled(this);
 	}
 	else if (currentMouseIsOver) // Check if the mouse is newly over the button
 	{
 		m_mouseIsOver = true;
-		//m_OnMouseEntered(this, e);
 		OnMouseEntered(e);
 		e.Handled(this);
 	}
@@ -318,7 +315,6 @@ void Button::OnMouseMove(MouseMoveEvent& e)
 void Button::MouseMoveHandledByPane(MouseMoveEvent& e)
 {
 	m_mouseIsOver = false;
-	//m_OnMouseExited(this, e);
 	OnMouseExited(e);
 }
 void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e)
@@ -338,7 +334,6 @@ void Button::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseLButtonIsDown = true;
-			//m_OnMouseLButtonDown(this, e);
 			OnMouseLButtonDown(e);
 		}
 	}
@@ -360,10 +355,8 @@ void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseLButtonIsDown = false;
-			//m_OnMouseLButtonUp(this, e);
 			OnMouseLButtonUp(e);
 			OnClick(e);
-			//m_OnClick(this, e);
 		}
 	}
 	else

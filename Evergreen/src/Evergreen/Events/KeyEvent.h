@@ -16,18 +16,18 @@ public:
 	CharEvent(const CharEvent&) = delete;
 	CharEvent& operator=(const CharEvent&) = delete;
 
-	inline char GetKeyCode() const noexcept { return m_keycode; }
-	inline int GetRepeatCount() const noexcept { return m_repeatCount; }
+	ND inline char GetKeyCode() const noexcept { return m_keycode; }
+	ND inline int GetRepeatCount() const noexcept { return m_repeatCount; }
 
-	std::string ToString() const noexcept override { return std::format("CharEvent: {} (repeats: {})", m_keycode, m_repeatCount); }
+	ND std::string ToString() const noexcept override { return std::format("CharEvent: {} (repeats: {})", m_keycode, m_repeatCount); }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryKeyboard | EventCategoryInput | EventCategoryCharacter; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryKeyboard | EventCategoryInput | EventCategoryCharacter; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::Character; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "Character"; }
+	ND static EventType GetStaticType() noexcept { return EventType::Character; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "Character"; }
 
 protected:
 	const char m_keycode;
@@ -38,10 +38,10 @@ protected:
 class EVERGREEN_API KeyEvent : public Event
 {
 public:
-	inline KEY_CODE GetKeyCode() const noexcept { return m_keycode; }
+	ND inline KEY_CODE GetKeyCode() const noexcept { return m_keycode; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryKeyboard | EventCategoryInput; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryKeyboard | EventCategoryInput; }
 
 protected:
 	KeyEvent(KEY_CODE keycode) noexcept : m_keycode(keycode) {}
@@ -61,15 +61,15 @@ public:
 	KeyPressedEvent(const KeyPressedEvent&) = delete;
 	KeyPressedEvent& operator=(const KeyPressedEvent&) = delete;
 
-	inline int GetRepeatCount() const noexcept { return m_repeatCount; }
-	inline bool KeyWasPreviouslyDown() const noexcept { return m_keyWasPreviouslyDown; }
+	ND inline int GetRepeatCount() const noexcept { return m_repeatCount; }
+	ND inline bool KeyWasPreviouslyDown() const noexcept { return m_keyWasPreviouslyDown; }
 
-	std::string ToString() const noexcept override { return std::format("KeyPressedEvent: {} (repeats: {}, previously down: {})", m_keycode, m_repeatCount, m_keyWasPreviouslyDown); }
+	ND std::string ToString() const noexcept override { return std::format("KeyPressedEvent: {} (repeats: {}, previously down: {})", m_keycode, m_repeatCount, m_keyWasPreviouslyDown); }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::KeyPressed; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "KeyPressed"; }
+	ND static EventType GetStaticType() noexcept { return EventType::KeyPressed; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "KeyPressed"; }
 
 private:
 	int m_repeatCount;
@@ -85,12 +85,12 @@ public:
 	KeyReleasedEvent(const KeyReleasedEvent&) = delete;
 	KeyReleasedEvent& operator=(const KeyReleasedEvent&) = delete;
 
-	std::string ToString() const noexcept override { return std::format("KeyReleasedEvent: {}", m_keycode); }
+	ND std::string ToString() const noexcept override { return std::format("KeyReleasedEvent: {}", m_keycode); }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::KeyReleased; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "KeyReleased"; }
+	ND static EventType GetStaticType() noexcept { return EventType::KeyReleased; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "KeyReleased"; }
 };
 
 

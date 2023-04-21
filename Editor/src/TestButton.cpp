@@ -28,3 +28,26 @@ void TestButton::OnClick(MouseButtonReleasedEvent&)
 {
 
 }
+
+// ==================================================================
+
+void TestSliderFloat::OnMouseEnteredCircle(MouseMoveEvent&)
+{
+
+}
+void TestSliderFloat::OnMouseExitedCircle(MouseMoveEvent&)
+{
+
+}
+void TestSliderFloat::OnBeginDragging(MouseButtonPressedEvent&)
+{
+
+}
+void TestSliderFloat::OnStoppedDragging(MouseButtonReleasedEvent&)
+{
+
+}
+void TestSliderFloat::OnValueChanged(SliderFloatValueChangedEvent&)
+{
+
+}

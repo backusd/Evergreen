@@ -1,6 +1,7 @@
 #pragma once
 #include "pch.h"
 #include "Evergreen/UI/Controls/Button.h"
+#include "Evergreen/UI/Controls/SliderFloat.h"
 
 
 
@@ -31,3 +32,27 @@
 
 
 BUTTON(TestButton);
+
+
+class TestSliderFloat : public Evergreen::SliderFloat
+{
+public:
+	TestSliderFloat(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+					Evergreen::UI* ui,
+					const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+					float minValue = 0.0f, float maxValue = 1.0f, float initialValue = 0.0f,
+					const Evergreen::Margin& margin = { 0 }) noexcept :
+		SliderFloat(deviceResources, ui, allowedRegion, minValue, maxValue, initialValue, margin)
+	{}
+	TestSliderFloat(const TestSliderFloat&) noexcept = delete;
+	TestSliderFloat& operator=(const TestSliderFloat&) noexcept = delete;
+	virtual ~TestSliderFloat() noexcept override {}
+
+	// Event Handlers
+	virtual void OnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void OnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void OnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void OnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void OnValueChanged(Evergreen::SliderFloatValueChangedEvent&) override;
+};
+

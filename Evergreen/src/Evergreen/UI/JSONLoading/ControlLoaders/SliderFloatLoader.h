@@ -19,7 +19,11 @@ public:
 	SliderFloatLoader& operator=(const SliderFloatLoader&) = delete;
 	~SliderFloatLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
+	template<typename T>
+	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<SliderFloat, T>)
+	{ 
+		return Get().LoadImpl<T>(deviceResources, parent, data, name, rowColumnPositionOverride); 
+	}
 
 private:
 	SliderFloatLoader() noexcept = default;
@@ -30,7 +34,8 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
+	template<typename T>
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<SliderFloat, T>);
 
 	float ParseMinimumValue(json& data);
 	float ParseMaximumValue(json& data);
@@ -76,13 +81,103 @@ private:
 	void ParsePopUpTextBrush(SliderFloat* slider, json& data);
 	void ParsePopUpTextStyle(SliderFloat* slider, json& data);
 
-	void ParseOnMouseEnteredCircle(SliderFloat* slider, json& data);
-	void ParseOnMouseExitedCircle(SliderFloat* slider, json& data);
-	void ParseOnBeginDragging(SliderFloat* slider, json& data);
-	void ParseOnStoppedDragging(SliderFloat* slider, json& data);
-	void ParseOnValueChanged(SliderFloat* slider, json& data);
-
 };
 #pragma warning( pop )
+
+template<typename T>
+Control* SliderFloatLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<SliderFloat, T>)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
+	m_name = name;
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
+
+	RowColumnPosition rowCol;
+	Margin margin;
+
+	// Parse Row/Column
+	rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data);
+
+	// Parse Margin
+	margin = ParseMargin(data);
+
+	// Parse Min/Max/Value
+	float min = ParseMinimumValue(data);
+	float max = ParseMaximumValue(data);
+	float value = ParseValue(data);
+	JSON_LOADER_EXCEPTION_IF_FALSE(min < max, "SliderFloat control with name '{}': 'MinimumValue' ({}) must be less than 'MaximumValue' ({}). Invalid SliderFloat object: {}", m_name, min, max, data.dump(4));
+	JSON_LOADER_EXCEPTION_IF_FALSE(min <= value && value <= max, "SliderFloat control with name '{}': 'Value' ({}) must be >= 'MinimumValue' ({}) and <= 'MaximumValue' ({}). Invalid SliderFloat object: {}", m_name, value, min, max, data.dump(4));
+
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
+	"MinimumValue",	"MaximumValue",	"Value",
+	"LineWidth", "LineBrushLeft", "LineBrushRight", "FillLineOnRightSide",
+	"CircleRadius", "CircleRadiusOuter", "CircleBrush", "CircleBrushOuter",
+	"ValueFormatString", "ShowMinMaxTextValues", "MinTextXYOffset", "MinTextBrush", "MinTextStyle",
+	"MaxTextXYOffset", "MaxTextBrush", "MaxTextStyle",
+	"MarginRightOfSlider", "ShowTextInputOnRight", "TextInputHeight", "TextInputWidth", "TextInputTextBrush",
+	"TextInputTextStyle", "TextInputBackgroundBrush", "TextInputBorderBrush", "TextInputBorderWidth",
+	"ShowPopUpValueWhenSliding", "PopUpBackgroundBrush", "PopUpBorderBrush", "PopUpBorderWidth", "PopUpCornerRadius",
+	"PopUpHeight", "PopUpWidth", "PopUpTextBrush", "PopUpTextStyle" };
+	for (auto& [key, value] : data.items())
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+			EG_CORE_WARN("{}:{} - SliderFloat control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+	}
+
+	// Create the new Text control
+	T* slider = parent->CreateControl<T>(
+		rowCol,
+		deviceResources,
+		min,
+		max,
+		value,
+		margin);
+	EG_CORE_ASSERT(slider != nullptr, "Something went wrong, slider is nullptr");
+
+	slider->Name(name);
+	slider->ID(ParseID(data));
+
+	ParseLineWidth(slider, data);
+	ParseLineBrushRight(slider, data);
+	ParseLineBrushLeft(slider, data);
+	ParseFillLineOnRightSide(slider, data);
+
+	ParseCircleRadius(slider, data);
+	ParseCircleRadiusOuter(slider, data);
+	ParseCircleBrush(slider, data);
+	ParseCircleBrushOuter(slider, data);
+
+	ParseValueFormatString(slider, data);
+	ParseShowMinMaxTextValues(slider, data);
+	ParseMinTextXYOffset(slider, data);
+	ParseMinTextBrush(slider, data);
+	ParseMinTextStyle(slider, data);
+
+	ParseMaxTextXYOffset(slider, data);
+	ParseMaxTextBrush(slider, data);
+	ParseMaxTextStyle(slider, data);
+
+	ParseMarginRightOfSlider(slider, data);
+	ParseShowTextInputOnRight(slider, data);
+	ParseTextInputHeight(slider, data);
+	ParseTextInputWidth(slider, data);
+	ParseTextInputTextBrush(slider, data);
+	ParseTextInputTextStyle(slider, data);
+	ParseTextInputBackgroundBrush(slider, data);
+	ParseTextInputBorderBrush(slider, data);
+	ParseTextInputBorderWidth(slider, data);
+
+	ParseShowPopUpValueWhenSliding(slider, data);
+	ParsePopUpBackgroundBrush(slider, data);
+	ParsePopUpBorderBrush(slider, data);
+	ParsePopUpBorderWidth(slider, data);
+	ParsePopUpCornerRadius(slider, data);
+	ParsePopUpHeight(slider, data);
+	ParsePopUpWidth(slider, data);
+	ParsePopUpTextBrush(slider, data);
+	ParsePopUpTextStyle(slider, data);
+
+	return slider;
+}
 
 }

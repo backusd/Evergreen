@@ -14,18 +14,18 @@ public:
 	WindowResizeEvent(const WindowResizeEvent&) = delete;
 	WindowResizeEvent& operator=(const WindowResizeEvent&) = delete;
 
-	inline unsigned int GetWidth() const noexcept { return m_width; }
-	inline unsigned int GetHeight() const noexcept { return m_height; }
+	ND inline unsigned int GetWidth() const noexcept { return m_width; }
+	ND inline unsigned int GetHeight() const noexcept { return m_height; }
 
-	std::string ToString() const noexcept override { return std::format("WindowResizeEvent: width = {}, height = {}", m_width, m_height); }
+	ND std::string ToString() const noexcept override { return std::format("WindowResizeEvent: width = {}, height = {}", m_width, m_height); }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
 	
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::WindowResize; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "WindowResize"; }
+	ND static EventType GetStaticType() noexcept { return EventType::WindowResize; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "WindowResize"; }
 
 private:
 	const unsigned int m_width;
@@ -44,15 +44,15 @@ public:
 	WindowCreateEvent(const WindowCreateEvent&) = delete;
 	WindowCreateEvent& operator=(const WindowCreateEvent&) = delete;
 
-	std::string ToString() const noexcept override { return std::format("WindowCreateEvent (top: {}, left: {}, width: {}, height: {}", m_top, m_left, m_width, m_height); }
+	ND std::string ToString() const noexcept override { return std::format("WindowCreateEvent (top: {}, left: {}, width: {}, height: {}", m_top, m_left, m_width, m_height); }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::WindowCreate; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "WindowCreate"; }
+	ND static EventType GetStaticType() noexcept { return EventType::WindowCreate; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "WindowCreate"; }
 
 private:
 	const unsigned int m_top;
@@ -69,15 +69,15 @@ public:
 	WindowCloseEvent(const WindowCloseEvent&) = delete;
 	WindowCloseEvent& operator=(const WindowCloseEvent&) = delete;
 
-	std::string ToString() const noexcept override { return "WindowCloseEvent"; }
+	ND std::string ToString() const noexcept override { return "WindowCloseEvent"; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::WindowClose; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "WindowClose"; }
+	ND static EventType GetStaticType() noexcept { return EventType::WindowClose; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "WindowClose"; }
 };
 
 // App Tick Event -----------------------------------------------------------
@@ -88,15 +88,15 @@ public:
 	AppTickEvent(const AppTickEvent&) = delete;
 	AppTickEvent& operator=(const AppTickEvent&) = delete;
 
-	std::string ToString() const noexcept override { return "AppTickEvent"; }
+	ND std::string ToString() const noexcept override { return "AppTickEvent"; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::AppTick; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "AppTick"; }
+	ND static EventType GetStaticType() noexcept { return EventType::AppTick; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "AppTick"; }
 };
 
 // App Update Event -----------------------------------------------------------
@@ -107,15 +107,15 @@ public:
 	AppUpdateEvent(const AppUpdateEvent&) = delete;
 	AppUpdateEvent& operator=(const AppUpdateEvent&) = delete;
 
-	std::string ToString() const noexcept override { return "AppUpdateEvent"; }
+	ND std::string ToString() const noexcept override { return "AppUpdateEvent"; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::AppUpdate; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "AppUpdate"; }
+	ND static EventType GetStaticType() noexcept { return EventType::AppUpdate; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "AppUpdate"; }
 };
 
 // App Render Event -----------------------------------------------------------
@@ -126,15 +126,15 @@ public:
 	AppRenderEvent(const AppRenderEvent&) = delete;
 	AppRenderEvent& operator=(const AppRenderEvent&) = delete;
 
-	std::string ToString() const noexcept override { return "AppRenderEvent"; }
+	ND std::string ToString() const noexcept override { return "AppRenderEvent"; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryApplication; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::AppRender; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "AppRender"; }
+	ND static EventType GetStaticType() noexcept { return EventType::AppRender; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "AppRender"; }
 };
 
 }

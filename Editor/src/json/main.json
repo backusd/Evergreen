@@ -3,6 +3,7 @@
 		"RowDefinitions": [
 			{ "Height": "1*" },
 			{ "Height": "50" },
+			{ "Height": "50" },
 			{ "Height": "1*" }
 		],
 		"ColumnDefinitions": [
@@ -23,6 +24,15 @@
 				"Text": "Some Text",
 				"Brush": "White"
 			}
+		},
+
+		"TestSliderFloat": {
+			"Type": "TestSliderFloat",
+			"Row": 2,
+			"Column": 1,
+			"MinimumValue": 0.0,
+			"MaximumValue": 10.0,
+			"Value": 5.0
 		}
 	}
 }

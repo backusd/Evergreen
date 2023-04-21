@@ -1,6 +1,7 @@
 #include <Evergreen.h>
 #include <Evergreen/EntryPoint.h>
 #include "Evergreen/UI/JSONLoading/ControlLoaders/ButtonLoader.h"
+#include "Evergreen/UI/JSONLoading/ControlLoaders/SliderFloatLoader.h"
 
 #include "TestButton.h"
 
@@ -12,6 +13,7 @@ public:
 	Editor()
 	{
 		JSONLoaders::AddControlLoader("TestButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ButtonLoader::Load<TestButton>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+		JSONLoaders::AddControlLoader("TestSliderFloat", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderFloatLoader::Load<TestSliderFloat>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 
 
 

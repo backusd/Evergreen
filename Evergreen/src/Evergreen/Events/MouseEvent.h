@@ -14,18 +14,18 @@ public:
 	MouseMoveEvent(const MouseMoveEvent&) = delete;
 	MouseMoveEvent& operator=(const MouseMoveEvent&) = delete;
 
-	inline float GetX() const noexcept { return m_mouseX; }
-	inline float GetY() const noexcept { return m_mouseY; }
+	ND inline float GetX() const noexcept { return m_mouseX; }
+	ND inline float GetY() const noexcept { return m_mouseY; }
 
-	std::string ToString() const noexcept override { return std::format("MouseMoveEvent: ({}, {})", m_mouseX, m_mouseY); }
+	ND std::string ToString() const noexcept override { return std::format("MouseMoveEvent: ({}, {})", m_mouseX, m_mouseY); }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseMove; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseMove"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseMove; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseMove"; }
 
 private:
 	float m_mouseX;
@@ -40,15 +40,15 @@ public:
 	MouseEnterEvent(const MouseEnterEvent&) = delete;
 	MouseEnterEvent& operator=(const MouseEnterEvent&) = delete;
 
-	std::string ToString() const noexcept override { return "MouseEnterEvent"; }
+	ND std::string ToString() const noexcept override { return "MouseEnterEvent"; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseEnter; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseEnter"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseEnter; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseEnter"; }
 };
 
 // Mouse Leave Event -----------------------------------------------------------
@@ -59,15 +59,15 @@ public:
 	MouseLeaveEvent(const MouseLeaveEvent&) = delete;
 	MouseLeaveEvent& operator=(const MouseLeaveEvent&) = delete;
 
-	std::string ToString() const noexcept override { return "MouseLeaveEvent"; }
+	ND std::string ToString() const noexcept override { return "MouseLeaveEvent"; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseLeave; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseLeave"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseLeave; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseLeave"; }
 };
 
 // Mouse Scrolled Event -----------------------------------------------------------
@@ -80,19 +80,19 @@ public:
 	MouseScrolledEvent(const MouseScrolledEvent&) = delete;
 	MouseScrolledEvent& operator=(const MouseScrolledEvent&) = delete;
 
-	inline float GetX() const noexcept { return m_xOffset; }
-	inline float GetY() const noexcept { return m_yOffset; }
-	inline int GetScrollDelta() const noexcept { return m_scrollDelta; }
+	ND inline float GetX() const noexcept { return m_xOffset; }
+	ND inline float GetY() const noexcept { return m_yOffset; }
+	ND inline int GetScrollDelta() const noexcept { return m_scrollDelta; }
 
-	std::string ToString() const noexcept override { return std::format("MouseScrolledEvent - scroll: {} ({}, {})", m_scrollDelta, m_xOffset, m_yOffset); }
+	ND inline std::string ToString() const noexcept override { return std::format("MouseScrolledEvent - scroll: {} ({}, {})", m_scrollDelta, m_xOffset, m_yOffset); }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
+	ND inline virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryInput; }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseScrolled; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseScrolled"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseScrolled; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseScrolled"; }
 
 private:
 	float m_xOffset;
@@ -106,11 +106,11 @@ class EVERGREEN_API MouseButtonEvent : public Event
 public:
 	inline MOUSE_BUTTON GetMouseButton() const noexcept { return m_button; }
 
-	inline float GetX() const noexcept { return m_xOffset; }
-	inline float GetY() const noexcept { return m_yOffset; }
+	ND inline float GetX() const noexcept { return m_xOffset; }
+	ND inline float GetY() const noexcept { return m_yOffset; }
 
 	// Event Class Category
-	virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput; }
+	ND virtual int GetCategoryFlags() const noexcept override { return EventCategoryMouse | EventCategoryMouseButton | EventCategoryInput; }
 
 protected:
 	MouseButtonEvent(MOUSE_BUTTON button, float x, float y) noexcept :
@@ -133,12 +133,12 @@ public:
 	MouseButtonPressedEvent(const MouseButtonPressedEvent&) = delete;
 	MouseButtonPressedEvent& operator=(const MouseButtonPressedEvent&) = delete;
 
-	std::string ToString() const noexcept override { return std::format("MouseButtonPressedEvent: {}", m_button); }
+	ND std::string ToString() const noexcept override { return std::format("MouseButtonPressedEvent: {}", m_button); }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseButtonPressed; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseButtonPressed"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseButtonPressed; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseButtonPressed"; }
 };
 
 // Mouse Button Released Event -----------------------------------------------------------
@@ -150,12 +150,12 @@ public:
 	MouseButtonReleasedEvent(const MouseButtonReleasedEvent&) = delete;
 	MouseButtonReleasedEvent& operator=(const MouseButtonReleasedEvent&) = delete;
 
-	std::string ToString() const noexcept override { return std::format("MouseButtonReleasedEvent: {}", m_button); }
+	ND std::string ToString() const noexcept override { return std::format("MouseButtonReleasedEvent: {}", m_button); }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseButtonReleased; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseButtonReleased"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseButtonReleased; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseButtonReleased"; }
 };
 
 // Mouse Button Double Click Event -----------------------------------------------------------
@@ -167,12 +167,12 @@ public:
 	MouseButtonDoubleClickEvent(const MouseButtonDoubleClickEvent&) = delete;
 	MouseButtonDoubleClickEvent& operator=(const MouseButtonDoubleClickEvent&) = delete;
 
-	std::string ToString() const noexcept override { return std::format("MouseButtonDoubleClickEvent: {}", m_button); }
+	ND std::string ToString() const noexcept override { return std::format("MouseButtonDoubleClickEvent: {}", m_button); }
 
 	// Event class type
-	static EventType GetStaticType() noexcept { return EventType::MouseButtonDoubleClick; }
-	virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
-	virtual const char* GetName() const noexcept override { return "MouseButtonDoubleClick"; }
+	ND static EventType GetStaticType() noexcept { return EventType::MouseButtonDoubleClick; }
+	ND virtual EventType GetEventType() const noexcept override { return GetStaticType(); }
+	ND virtual const char* GetName() const noexcept override { return "MouseButtonDoubleClick"; }
 };
 
 }
