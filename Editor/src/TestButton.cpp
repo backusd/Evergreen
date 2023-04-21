@@ -101,3 +101,38 @@ void TestRadioButton::OnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&)
 {
 
 }
+
+// ===================================================================
+
+void TestTextInput::OnMouseEntered(MouseMoveEvent&)
+{
+
+}
+void TestTextInput::OnMouseExited(MouseMoveEvent&)
+{
+
+}
+void TestTextInput::OnMouseMoved(MouseMoveEvent&)
+{
+
+}
+void TestTextInput::OnMouseLButtonDown(MouseButtonPressedEvent&)
+{
+
+}
+void TestTextInput::OnMouseLButtonUp(MouseButtonReleasedEvent&)
+{
+
+}
+void TestTextInput::OnClick(MouseButtonReleasedEvent&)
+{
+
+}
+void TestTextInput::OnEnterKey(CharEvent&)
+{
+
+}
+void TestTextInput::OnInputTextChanged(CharEvent&)
+{
+
+}

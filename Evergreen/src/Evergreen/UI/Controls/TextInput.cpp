@@ -39,7 +39,7 @@ TextInput::TextInput(std::shared_ptr<DeviceResources> deviceResources,
 {
 	// Brushes
 	if (m_placeholderTextBrush == nullptr)
-		m_placeholderTextBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
+		m_placeholderTextBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
 
 	if (m_inputTextBrush == nullptr)
 		m_inputTextBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
@@ -300,7 +300,7 @@ void TextInput::OnChar(CharEvent& e)
 		// First, handle if the user presses ENTER
 		if (key == '\r' || key == '\n')
 		{
-			m_OnEnterKey(this, e);
+			OnEnterKey(e);
 			return;
 		}
 
@@ -363,7 +363,7 @@ void TextInput::OnChar(CharEvent& e)
 			}
 		}
 
-		m_OnInputTextChanged(this, e);
+		OnInputTextChanged(e);
 	}
 	else
 	{
@@ -439,7 +439,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e)
 	// We are going to just trigger the OnMouseMove callback as long as the mouse is moving over the
 	// control, even though the layout may decide to handle the event
 	if (mouseIsOver)
-		m_OnMouseMoved(this, e);
+		OnMouseMoved(e);
 
 	// First pass to layout, if the layout does not handle it, then the control can handle it
 	m_layout->OnMouseMove(e);
@@ -454,7 +454,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e)
 			m_mouseState = MouseOverState::OVER;
 			e.Handled(this);
 			Window::SetCursor(Cursor::I_BEAM);
-			m_OnMouseEntered(this, e);
+			OnMouseEntered(e);
 		}
 		else if (m_textInputControlIsSelected)
 		{
@@ -468,7 +468,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
 			Window::SetCursor(Cursor::ARROW);
-			m_OnMouseExited(this, e);
+			OnMouseExited(e);
 			return;
 		}
 
@@ -534,7 +534,7 @@ void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;
-			m_OnMouseLButtonDown(this, e);
+			OnMouseLButtonDown(e);
 		}
 	}
 }
@@ -581,15 +581,15 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 			UpdateVerticalBar();
 			
 			e.Handled(this);
-			m_OnMouseLButtonUp(this, e);
-			m_OnClick(this, e);
+			OnMouseLButtonUp(e);
+			OnClick(e);
 			return;
 		}
 		else if (m_mouseState == MouseOverState::NOT_OVER_AND_LBUTTON_DOWN)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
-			m_OnMouseLButtonUp(this, e);
-			m_OnClick(this, e);
+			OnMouseLButtonUp(e);
+			OnClick(e);
 			return;
 		}
 	}

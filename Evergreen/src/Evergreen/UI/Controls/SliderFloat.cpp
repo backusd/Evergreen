@@ -141,6 +141,7 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 		1.0f // border width
 		);
 	m_valueTextInputOnRight->SetInputText(std::format(L"{:.2f}", m_value));
+/*
 	m_valueTextInputOnRight->SetOnEnterKeyCallback(
 		[this](Control* control, Event& e)
 		{
@@ -183,7 +184,7 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 			}
 		}
 	);
-
+*/
 
 	// Value Text On Pop Up
 	std::unique_ptr<TextStyle> valueTextOnPopUpTextStyle = std::make_unique<TextStyle>(
