@@ -18,7 +18,11 @@ public:
 	ViewportLoader& operator=(const ViewportLoader&) = delete;
 	~ViewportLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
+	template<typename T>
+	ND static inline Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<Viewport, T>)
+	{
+		return Get().LoadImpl<T>(deviceResources, parent, data, name, rowColumnPositionOverride);
+	}
 
 private:
 	ViewportLoader() noexcept = default;
@@ -29,24 +33,49 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
+	template<typename T>
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<Viewport, T>);
 
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
-	void ParseOnChar(Viewport* vp, json& data);
-	void ParseOnKeyPressed(Viewport* vp, json& data);
-	void ParseOnKeyReleased(Viewport* vp, json& data);
-	void ParseOnMouseEntered(Viewport* vp, json& data);
-	void ParseOnMouseExited(Viewport* vp, json& data);
-	void ParseOnMouseMoved(Viewport* vp, json& data);
-	void ParseOnMouseButtonPressed(Viewport* vp, json& data);
-	void ParseOnMouseButtonReleased(Viewport* vp, json& data);
-	void ParseOnMouseScrolledVertical(Viewport* vp, json& data);
-	void ParseOnMouseScrolledHorizontal(Viewport* vp, json& data);
-	void ParseOnClick(Viewport* vp, json& data);
-	void ParseOnDoubleClick(Viewport* vp, json& data);
-
 };
 #pragma warning( pop )
+
+template<typename T>
+Control* ViewportLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<Viewport, T>)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
+	m_name = name;
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
+
+	// Parse Row/Column
+	RowColumnPosition rowCol = rowColumnPositionOverride.has_value() ? rowColumnPositionOverride.value() : ParseRowColumnPosition(data);
+
+	// Parse Margin
+	Margin margin = ParseMargin(data);
+
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin", "Content" };
+	for (auto& [key, value] : data.items())
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+			EG_CORE_WARN("{}:{} - Viewport control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+	}
+
+	// Create the new Text control
+	T* vp = parent->CreateControl<T>(
+		rowCol,
+		deviceResources,
+		margin
+	);
+	EG_CORE_ASSERT(vp != nullptr, "Something went wrong, viewport is nullptr");
+
+	vp->Name(name);
+	vp->ID(ParseID(data));
+
+	ParseContent(vp->GetDeviceResources(), vp->GetLayout(), data);
+
+	return vp;
+}
 
 }

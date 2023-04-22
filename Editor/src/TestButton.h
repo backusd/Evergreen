@@ -5,6 +5,7 @@
 #include "Evergreen/UI/Controls/SliderInt.h"
 #include "Evergreen/UI/Controls/RadioButton.h"
 #include "Evergreen/UI/Controls/TextInput.h"
+#include "Evergreen/UI/Controls/Viewport.h"
 
 
 
@@ -139,4 +140,33 @@ public:
 	virtual void OnClick(Evergreen::MouseButtonReleasedEvent&) override;
 	virtual void OnEnterKey(Evergreen::CharEvent&) override;
 	virtual void OnInputTextChanged(Evergreen::CharEvent&) override;
+};
+
+class TestViewport : public Evergreen::Viewport
+{
+public:
+	TestViewport(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+				Evergreen::UI* ui,
+				const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+				const Evergreen::Margin& margin = { 0 }) noexcept :
+		Evergreen::Viewport(deviceResources, ui, allowedRegion, margin)
+	{}
+	TestViewport(const TestViewport&) noexcept = delete;
+	TestViewport& operator=(const TestViewport&) noexcept = delete;
+	virtual ~TestViewport() noexcept override {}
+
+	// Event Handlers
+	virtual void HandleOnChar(Evergreen::CharEvent&) override;
+	virtual void HandleOnKeyPressed(Evergreen::KeyPressedEvent&) override;
+	virtual void HandleOnKeyReleased(Evergreen::KeyReleasedEvent&) override;
+	virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseScrolledVertical(Evergreen::MouseScrolledEvent&) override;
+	virtual void HandleOnMouseScrolledHorizontal(Evergreen::MouseScrolledEvent&) override;
+	virtual void HandleOnMouseButtonPressed(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void HandleOnMouseButtonReleased(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnDoubleClick(Evergreen::MouseButtonDoubleClickEvent&) override;
+	virtual void HandleOnSizeChanged(float width, float height) override;
 };

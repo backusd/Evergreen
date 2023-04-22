@@ -136,3 +136,58 @@ void TestTextInput::OnInputTextChanged(CharEvent&)
 {
 
 }
+
+// ===================================================================
+
+void TestViewport::HandleOnChar(CharEvent&)
+{
+
+}
+void TestViewport::HandleOnKeyPressed(KeyPressedEvent&)
+{
+
+}
+void TestViewport::HandleOnKeyReleased(KeyReleasedEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseEntered(MouseMoveEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseExited(MouseMoveEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseMove(MouseMoveEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseScrolledVertical(MouseScrolledEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseScrolledHorizontal(MouseScrolledEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseButtonPressed(MouseButtonPressedEvent&)
+{
+
+}
+void TestViewport::HandleOnMouseButtonReleased(MouseButtonReleasedEvent&)
+{
+
+}
+void TestViewport::HandleOnClick(MouseButtonReleasedEvent&)
+{
+
+}
+void TestViewport::HandleOnDoubleClick(MouseButtonDoubleClickEvent&)
+{
+
+}
+void TestViewport::HandleOnSizeChanged(float width, float height)
+{
+
+}

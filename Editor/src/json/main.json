@@ -57,7 +57,13 @@
 			"Type": "TestTextInput",
 			"Row": 5,
 			"Column": 1
+		},
 
+		"TestViewport": {
+			"Type": "TestViewport",
+			"Row": 0,
+			"RowSpan": 4,
+			"Column": 2
 		}
 	}
 }

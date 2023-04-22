@@ -22,6 +22,21 @@ public:
 	Viewport& operator=(const Viewport&) noexcept = delete;
 	virtual ~Viewport() noexcept override {}
 
+	// Event Handlers
+	virtual void HandleOnChar(CharEvent&) {}
+	virtual void HandleOnKeyPressed(KeyPressedEvent&) {}
+	virtual void HandleOnKeyReleased(KeyReleasedEvent&) {}
+	virtual void HandleOnMouseEntered(MouseMoveEvent&) {}
+	virtual void HandleOnMouseExited(MouseMoveEvent&) {}
+	virtual void HandleOnMouseMove(MouseMoveEvent&) {}
+	virtual void HandleOnMouseScrolledVertical(MouseScrolledEvent&) {}
+	virtual void HandleOnMouseScrolledHorizontal(MouseScrolledEvent&) {}
+	virtual void HandleOnMouseButtonPressed(MouseButtonPressedEvent&) {}
+	virtual void HandleOnMouseButtonReleased(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnClick(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnDoubleClick(MouseButtonDoubleClickEvent&) {}
+	virtual void HandleOnSizeChanged(float width, float height) {}
+
 	// Inherited from Control
 	void OnUpdate(const Timer& timer) override;
 	void Render() const override;
@@ -39,22 +54,6 @@ public:
 	ND inline float GetAspectRatio() const noexcept { return m_viewport.Width / m_viewport.Height; }
 	ND inline const D3D11_VIEWPORT& GetViewport() const { return m_viewport; }
 	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
-
-	// SET
-	inline void SetOnCharCallback(std::function<void(Viewport*, CharEvent& e)> func) { m_OnChar = func; }
-	inline void SetOnKeyPressedCallback(std::function<void(Viewport*, KeyPressedEvent& e)> func) { m_OnKeyPressed = func; }
-	inline void SetOnKeyReleasedCallback(std::function<void(Viewport*, KeyReleasedEvent& e)> func) { m_OnKeyReleased = func; }
-	inline void SetOnMouseEnteredCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) { m_OnMouseEntered = func; }
-	inline void SetOnMouseExitedCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) { m_OnMouseExited = func; }
-	inline void SetOnMouseMovedCallback(std::function<void(Viewport*, MouseMoveEvent& e)> func) { m_OnMouseMoved = func; }
-	inline void SetOnMouseScrolledVerticalCallback(std::function<void(Viewport*, MouseScrolledEvent& e)> func) { m_OnMouseScrolledVertical = func; }
-	inline void SetOnMouseScrolledHorizontalCallback(std::function<void(Viewport*, MouseScrolledEvent& e)> func) { m_OnMouseScrolledHorizontal = func; }
-	inline void SetOnMouseButtonPressedCallback(std::function<void(Viewport*, MouseButtonPressedEvent& e)> func) { m_OnMouseButtonPressed = func; }
-	inline void SetOnMouseButtonReleasedCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) { m_OnMouseButtonReleased = func; }
-	inline void SetOnClickCallback(std::function<void(Viewport*, MouseButtonReleasedEvent& e)> func) { m_OnClick = func; }
-	inline void SetOnDoubleClickCallback(std::function<void(Viewport*, MouseButtonDoubleClickEvent& e)> func) { m_OnDoubleClick = func; }
-
-	inline void SetOnSizeChangedCallback(std::function<void(float, float)> fn) noexcept { m_OnSizeChanged = fn; }
 
 	// Event handling
 	void OnChar(CharEvent& e) override;
@@ -77,21 +76,6 @@ protected:
 	void OnAllowedRegionChanged() override;
 
 	ND inline bool ContainsPoint(float x, float y) const noexcept;
-
-	std::function<void(Viewport*, CharEvent&)> m_OnChar = [](Viewport*, CharEvent&) {};
-	std::function<void(Viewport*, KeyPressedEvent&)> m_OnKeyPressed = [](Viewport*, KeyPressedEvent&) {};
-	std::function<void(Viewport*, KeyReleasedEvent&)> m_OnKeyReleased = [](Viewport*, KeyReleasedEvent&) {};
-	std::function<void(Viewport*, MouseMoveEvent&)> m_OnMouseEntered = [](Viewport*, MouseMoveEvent&) {};
-	std::function<void(Viewport*, MouseMoveEvent&)> m_OnMouseExited = [](Viewport*, MouseMoveEvent&) {};
-	std::function<void(Viewport*, MouseMoveEvent&)> m_OnMouseMoved = [](Viewport*, MouseMoveEvent&) {};
-	std::function<void(Viewport*, MouseScrolledEvent&)> m_OnMouseScrolledVertical = [](Viewport*, MouseScrolledEvent&) {};
-	std::function<void(Viewport*, MouseScrolledEvent&)> m_OnMouseScrolledHorizontal = [](Viewport*, MouseScrolledEvent&) {};
-	std::function<void(Viewport*, MouseButtonPressedEvent&)> m_OnMouseButtonPressed = [](Viewport*, MouseButtonPressedEvent&) {};
-	std::function<void(Viewport*, MouseButtonReleasedEvent&)> m_OnMouseButtonReleased = [](Viewport*, MouseButtonReleasedEvent&) {};
-	std::function<void(Viewport*, MouseButtonReleasedEvent&)> m_OnClick = [](Viewport*, MouseButtonReleasedEvent&) {};
-	std::function<void(Viewport*, MouseButtonDoubleClickEvent&)> m_OnDoubleClick = [](Viewport*, MouseButtonDoubleClickEvent&) {};
-
-	std::function<void(float, float)> m_OnSizeChanged = [](float width, float height) {};
 
 	D3D11_VIEWPORT m_viewport;
 	std::unique_ptr<Layout>	m_layout;

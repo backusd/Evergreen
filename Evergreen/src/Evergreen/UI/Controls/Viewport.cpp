@@ -49,7 +49,7 @@ void Viewport::ViewportChanged()
 		m_viewport.Height
 	);
 
-	m_OnSizeChanged(m_viewport.Width, m_viewport.Height);
+	HandleOnSizeChanged(m_viewport.Width, m_viewport.Height);
 }
 void Viewport::OnMarginChanged()
 {
@@ -80,7 +80,7 @@ void Viewport::OnChar(CharEvent& e)
 
 	if (m_selected)
 	{
-		m_OnChar(this, e);
+		OnChar(e);
 		e.Handled(this);
 	}
 }
@@ -93,7 +93,7 @@ void Viewport::OnKeyPressed(KeyPressedEvent& e)
 
 	if (m_selected)
 	{
-		m_OnKeyPressed(this, e);
+		OnKeyPressed(e);
 		e.Handled(this);
 	}
 }
@@ -106,7 +106,7 @@ void Viewport::OnKeyReleased(KeyReleasedEvent& e)
 
 	if (m_selected)
 	{
-		m_OnKeyReleased(this, e);
+		OnKeyReleased(e);
 		e.Handled(this);
 	}
 }
@@ -124,18 +124,18 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 		if (!currentMouseIsOver)
 		{
 			m_mouseIsOver = false;
-			m_OnMouseExited(this, e);
+			HandleOnMouseExited(e);
 
 			// Continue to track the move events if a button is down
 			if (m_mouseLButtonDown || m_mouseMButtonDown || m_mouseRButtonDown || m_mouseX1ButtonDown || m_mouseX2ButtonDown)
 			{
-				m_OnMouseMoved(this, e);
+				HandleOnMouseMove(e);
 				e.Handled(this);
 			}
 		}
 		else 
 		{
-			m_OnMouseMoved(this, e);
+			HandleOnMouseMove(e);
 			e.Handled(this);
 		}
 	}
@@ -143,7 +143,7 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 	{
 		// NOTE: Don't set m_selected = true because we only want it to be selected after it has been clicked
 		m_mouseIsOver = true;
-		m_OnMouseEntered(this, e);
+		HandleOnMouseEntered(e);
 		e.Handled(this);
 	}
 	else if (m_selected)
@@ -152,7 +152,7 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 		// (this the viewport will become unselected when the user clicks on another control)
 		if (m_mouseLButtonDown || m_mouseMButtonDown || m_mouseRButtonDown || m_mouseX1ButtonDown || m_mouseX2ButtonDown)
 		{
-			m_OnMouseMoved(this, e);
+			HandleOnMouseMove(e);
 		}
 		e.Handled(this);
 	}
@@ -160,7 +160,7 @@ void Viewport::OnMouseMove(MouseMoveEvent& e)
 void Viewport::MouseMoveHandledByPane(MouseMoveEvent& e)
 {
 	m_mouseIsOver = false;
-	m_OnMouseExited(this, e);
+	HandleOnMouseExited(e);
 }
 void Viewport::OnMouseScrolledVertical(MouseScrolledEvent& e)
 {
@@ -171,7 +171,7 @@ void Viewport::OnMouseScrolledVertical(MouseScrolledEvent& e)
 
 	if (m_mouseIsOver)
 	{
-		m_OnMouseScrolledVertical(this, e);
+		HandleOnMouseScrolledVertical(e);
 		e.Handled(this);
 	}
 }
@@ -184,7 +184,7 @@ void Viewport::OnMouseScrolledHorizontal(MouseScrolledEvent& e)
 
 	if (m_mouseIsOver)
 	{
-		m_OnMouseScrolledHorizontal(this, e);
+		HandleOnMouseScrolledHorizontal(e);
 		e.Handled(this);
 	}
 }
@@ -206,7 +206,7 @@ void Viewport::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 		}
 
 		m_selected = true;
-		m_OnMouseButtonPressed(this, e);
+		HandleOnMouseButtonPressed(e);
 		e.Handled(this);
 	}
 	else
@@ -225,8 +225,8 @@ void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (m_mouseLButtonDown)
 		{
 			m_mouseLButtonDown = false;
-			m_OnMouseButtonReleased(this, e);
-			m_OnClick(this, e);
+			HandleOnMouseButtonReleased(e);
+			HandleOnClick(e);
 			e.Handled(this);
 		}
 		else
@@ -238,8 +238,8 @@ void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (m_mouseMButtonDown)
 		{
 			m_mouseMButtonDown = false;
-			m_OnMouseButtonReleased(this, e);
-			m_OnClick(this, e);
+			HandleOnMouseButtonReleased(e);
+			HandleOnClick(e);
 			e.Handled(this);
 		}
 		else
@@ -251,8 +251,8 @@ void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (m_mouseRButtonDown)
 		{
 			m_mouseRButtonDown = false;
-			m_OnMouseButtonReleased(this, e);
-			m_OnClick(this, e);
+			HandleOnMouseButtonReleased(e);
+			HandleOnClick(e);
 			e.Handled(this);
 		}
 		else
@@ -264,8 +264,8 @@ void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (m_mouseX1ButtonDown)
 		{
 			m_mouseX1ButtonDown = false;
-			m_OnMouseButtonReleased(this, e);
-			m_OnClick(this, e);
+			HandleOnMouseButtonReleased(e);
+			HandleOnClick(e);
 			e.Handled(this);
 		}
 		else
@@ -277,8 +277,8 @@ void Viewport::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (m_mouseX2ButtonDown)
 		{
 			m_mouseX2ButtonDown = false;
-			m_OnMouseButtonReleased(this, e);
-			m_OnClick(this, e);
+			HandleOnMouseButtonReleased(e);
+			HandleOnClick(e);
 			e.Handled(this);
 		}
 		else
@@ -297,7 +297,7 @@ void Viewport::OnMouseButtonDoubleClick(MouseButtonDoubleClickEvent& e)
 
 	if (m_mouseIsOver)
 	{
-		m_OnDoubleClick(this, e);
+		HandleOnDoubleClick(e);
 		e.Handled(this);
 	}
 }

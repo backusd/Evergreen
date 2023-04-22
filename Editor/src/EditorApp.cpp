@@ -5,6 +5,7 @@
 #include "Evergreen/UI/JSONLoading/ControlLoaders/SliderIntLoader.h"
 #include "Evergreen/UI/JSONLoading/ControlLoaders/RadioButtonLoader.h"
 #include "Evergreen/UI/JSONLoading/ControlLoaders/TextInputLoader.h"
+#include "Evergreen/UI/JSONLoading/ControlLoaders/ViewportLoader.h"
 
 #include "TestButton.h"
 
@@ -20,6 +21,7 @@ public:
 		JSONLoaders::AddControlLoader("TestSliderInt", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderIntLoader::Load<TestSliderInt>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 		JSONLoaders::AddControlLoader("TestRadioButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RadioButtonLoader::Load<TestRadioButton>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 		JSONLoaders::AddControlLoader("TestTextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return TextInputLoader::Load<TestTextInput>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+		JSONLoaders::AddControlLoader("TestViewport", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ViewportLoader::Load<TestViewport>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 
 
 
