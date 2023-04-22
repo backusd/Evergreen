@@ -63,7 +63,14 @@
 			"Type": "TestViewport",
 			"Row": 0,
 			"RowSpan": 4,
-			"Column": 2
+			"Column": 2,
+
+			"Content": {
+				"Type": "Layout",
+				"RowDefinitions": [ { "Height": "1*" } ],
+				"ColumnDefinitions": [ { "Width": "1*" } ],
+				"Brush": "Red"
+			}
 		}
 	}
 }

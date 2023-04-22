@@ -33,12 +33,12 @@ public:
 	Button& operator=(const Button&) noexcept = delete;
 	virtual ~Button() noexcept override {}
 
-	virtual void OnMouseEntered(MouseMoveEvent&) {};
-	virtual void OnMouseExited(MouseMoveEvent&) {};
-	virtual void OnMouseMoved(MouseMoveEvent&) {};
-	virtual void OnMouseLButtonDown(MouseButtonPressedEvent&) {};
-	virtual void OnMouseLButtonUp(MouseButtonReleasedEvent&) {};
-	virtual void OnClick(MouseButtonReleasedEvent&) {};
+	virtual void HandleOnMouseEntered(MouseMoveEvent&) {}
+	virtual void HandleOnMouseExited(MouseMoveEvent&) {}
+	virtual void HandleOnMouseMove(MouseMoveEvent&) {}
+	virtual void HandleOnMouseLButtonDown(MouseButtonPressedEvent&) {}
+	virtual void HandleOnMouseLButtonUp(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnClick(MouseButtonReleasedEvent&) {}
 
 	// Inherited from Control
 	virtual void OnUpdate(const Timer& timer) override;

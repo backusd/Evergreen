@@ -26,11 +26,11 @@ public:
 	virtual ~SliderInt() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEnteredCircle(MouseMoveEvent&) {};
-	virtual void OnMouseExitedCircle(MouseMoveEvent&) {};
-	virtual void OnBeginDragging(MouseButtonPressedEvent&) {};
-	virtual void OnStoppedDragging(MouseButtonReleasedEvent&) {};
-	virtual void OnValueChanged(SliderIntValueChangedEvent&) {};
+	virtual void HandleOnMouseEnteredCircle(MouseMoveEvent&) {}
+	virtual void HandleOnMouseExitedCircle(MouseMoveEvent&) {}
+	virtual void HandleOnBeginDragging(MouseButtonPressedEvent&) {}
+	virtual void HandleOnStoppedDragging(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnValueChanged(SliderIntValueChangedEvent&) {}
 
 	// Inherited from Control
 	void Render() const override;

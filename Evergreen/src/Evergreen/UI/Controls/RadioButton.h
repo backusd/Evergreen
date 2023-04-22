@@ -29,12 +29,12 @@ public:
 	virtual ~RadioButton() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEntered(MouseMoveEvent&) {};
-	virtual void OnMouseExited(MouseMoveEvent&) {};
-	virtual void OnMouseMoved(MouseMoveEvent&) {};
-	virtual void OnMouseLButtonDown(MouseButtonPressedEvent&) {};
-	virtual void OnMouseLButtonUp(MouseButtonReleasedEvent&) {};
-	virtual void OnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&) {};
+	virtual void HandleOnMouseEntered(MouseMoveEvent&) {}
+	virtual void HandleOnMouseExited(MouseMoveEvent&) {}
+	virtual void HandleOnMouseMove(MouseMoveEvent&) {}
+	virtual void HandleOnMouseLButtonDown(MouseButtonPressedEvent&) {}
+	virtual void HandleOnMouseLButtonUp(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&) {}
 
 	// Inherited from Control
 	void Render() const override;

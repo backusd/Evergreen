@@ -30,14 +30,14 @@ public:
 	virtual ~TextInput() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEntered(MouseMoveEvent&) {};
-	virtual void OnMouseExited(MouseMoveEvent&) {};
-	virtual void OnMouseMoved(MouseMoveEvent&) {};
-	virtual void OnMouseLButtonDown(MouseButtonPressedEvent&) {};
-	virtual void OnMouseLButtonUp(MouseButtonReleasedEvent&) {};
-	virtual void OnClick(MouseButtonReleasedEvent&) {};
-	virtual void OnEnterKey(CharEvent&) {};
-	virtual void OnInputTextChanged(CharEvent&) {};
+	virtual void HandleOnMouseEntered(MouseMoveEvent&) {}
+	virtual void HandleOnMouseExited(MouseMoveEvent&) {}
+	virtual void HandleOnMouseMove(MouseMoveEvent&) {}
+	virtual void HandleOnMouseLButtonDown(MouseButtonPressedEvent&) {}
+	virtual void HandleOnMouseLButtonUp(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnClick(MouseButtonReleasedEvent&) {}
+	virtual void HandleOnEnterKey(CharEvent&) {}
+	virtual void HandleOnInputTextChanged(CharEvent&) {}
 
 	ND Layout* AddRightColumnLayout(RowColumnDefinition rightColumnDefinition);
 	ND inline Layout* GetRightColumnLayout() const noexcept;

@@ -300,7 +300,7 @@ void TextInput::OnChar(CharEvent& e)
 		// First, handle if the user presses ENTER
 		if (key == '\r' || key == '\n')
 		{
-			OnEnterKey(e);
+			HandleOnEnterKey(e);
 			return;
 		}
 
@@ -363,7 +363,7 @@ void TextInput::OnChar(CharEvent& e)
 			}
 		}
 
-		OnInputTextChanged(e);
+		HandleOnInputTextChanged(e);
 	}
 	else
 	{
@@ -439,7 +439,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e)
 	// We are going to just trigger the OnMouseMove callback as long as the mouse is moving over the
 	// control, even though the layout may decide to handle the event
 	if (mouseIsOver)
-		OnMouseMoved(e);
+		HandleOnMouseMove(e);
 
 	// First pass to layout, if the layout does not handle it, then the control can handle it
 	m_layout->OnMouseMove(e);
@@ -454,7 +454,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e)
 			m_mouseState = MouseOverState::OVER;
 			e.Handled(this);
 			Window::SetCursor(Cursor::I_BEAM);
-			OnMouseEntered(e);
+			HandleOnMouseEntered(e);
 		}
 		else if (m_textInputControlIsSelected)
 		{
@@ -468,7 +468,7 @@ void TextInput::OnMouseMove(MouseMoveEvent& e)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
 			Window::SetCursor(Cursor::ARROW);
-			OnMouseExited(e);
+			HandleOnMouseExited(e);
 			return;
 		}
 
@@ -534,7 +534,7 @@ void TextInput::OnMouseButtonPressed(MouseButtonPressedEvent& e)
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseState = MouseOverState::OVER_AND_LBUTTON_DOWN;
-			OnMouseLButtonDown(e);
+			HandleOnMouseLButtonDown(e);
 		}
 	}
 }
@@ -581,15 +581,15 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 			UpdateVerticalBar();
 			
 			e.Handled(this);
-			OnMouseLButtonUp(e);
-			OnClick(e);
+			HandleOnMouseLButtonUp(e);
+			HandleOnClick(e);
 			return;
 		}
 		else if (m_mouseState == MouseOverState::NOT_OVER_AND_LBUTTON_DOWN)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
-			OnMouseLButtonUp(e);
-			OnClick(e);
+			HandleOnMouseLButtonUp(e);
+			HandleOnClick(e);
 			return;
 		}
 	}

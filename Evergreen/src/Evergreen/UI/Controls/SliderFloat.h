@@ -26,11 +26,11 @@ public:
 	virtual ~SliderFloat() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEnteredCircle(MouseMoveEvent&) {};
-	virtual void OnMouseExitedCircle(MouseMoveEvent&) {};
-	virtual void OnBeginDragging(MouseButtonPressedEvent&) {}; 
-	virtual void OnStoppedDragging(MouseButtonReleasedEvent&) {}; 
-	virtual void OnValueChanged(SliderFloatValueChangedEvent&) {};
+	virtual void HandleOnMouseEnteredCircle(MouseMoveEvent&) {}
+	virtual void HandleOnMouseExitedCircle(MouseMoveEvent&) {}
+	virtual void HandleOnBeginDragging(MouseButtonPressedEvent&) {}
+	virtual void HandleOnStoppedDragging(MouseButtonReleasedEvent&) {} 
+	virtual void HandleOnValueChanged(SliderFloatValueChangedEvent&) {}
 
 	// Inherited from Control
 	void Render() const override;

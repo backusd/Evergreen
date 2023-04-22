@@ -25,14 +25,13 @@
 					 	name& operator=(const name&) noexcept = delete;																				\
 					 	virtual ~name() noexcept override {}																					    \
 					 																																\
-					 	virtual void OnMouseEntered(Evergreen::MouseMoveEvent&) override;															\
-					 	virtual void OnMouseExited(Evergreen::MouseMoveEvent&) override;															\
-					 	virtual void OnMouseMoved(Evergreen::MouseMoveEvent&) override;																\
-					 	virtual void OnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;												\
-					 	virtual void OnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;												\
-					 	virtual void OnClick(Evergreen::MouseButtonReleasedEvent&) override;														\
+					 	virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;															\
+					 	virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;															\
+					 	virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;																\
+					 	virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;												\
+					 	virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;												\
+					 	virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;														\
 					 }																																\
-
 
 BUTTON(TestButton);
 
@@ -52,11 +51,11 @@ public:
 	virtual ~TestSliderFloat() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;
-	virtual void OnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
-	virtual void OnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
-	virtual void OnValueChanged(Evergreen::SliderFloatValueChangedEvent&) override;
+	virtual void HandleOnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void HandleOnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnValueChanged(Evergreen::SliderFloatValueChangedEvent&) override;
 };
 
 class TestSliderInt : public Evergreen::SliderInt
@@ -74,11 +73,11 @@ public:
 	virtual ~TestSliderInt() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;
-	virtual void OnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
-	virtual void OnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
-	virtual void OnValueChanged(Evergreen::SliderIntValueChangedEvent&) override;
+	virtual void HandleOnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void HandleOnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnValueChanged(Evergreen::SliderIntValueChangedEvent&) override;
 };
 
 class TestRadioButton : public Evergreen::RadioButton
@@ -100,12 +99,12 @@ public:
 	virtual ~TestRadioButton() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEntered(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseExited(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseMoved(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
-	virtual void OnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
-	virtual void OnIsCheckedChanged(Evergreen::RadioButtonIsCheckedChangedEvent&) override;
+	virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnIsCheckedChanged(Evergreen::RadioButtonIsCheckedChangedEvent&) override;
 };
 
 class TestTextInput : public Evergreen::TextInput
@@ -132,14 +131,14 @@ public:
 	virtual ~TestTextInput() noexcept override {}
 
 	// Event Handlers
-	virtual void OnMouseEntered(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseExited(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseMoved(Evergreen::MouseMoveEvent&) override;
-	virtual void OnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
-	virtual void OnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
-	virtual void OnClick(Evergreen::MouseButtonReleasedEvent&) override;
-	virtual void OnEnterKey(Evergreen::CharEvent&) override;
-	virtual void OnInputTextChanged(Evergreen::CharEvent&) override;
+	virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
+	virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
+	virtual void HandleOnEnterKey(Evergreen::CharEvent&) override;
+	virtual void HandleOnInputTextChanged(Evergreen::CharEvent&) override;
 };
 
 class TestViewport : public Evergreen::Viewport

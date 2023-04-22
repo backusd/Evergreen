@@ -4,135 +4,135 @@ using namespace Evergreen;
 
 
 
-void TestButton::OnMouseEntered(MouseMoveEvent&)
+void TestButton::HandleOnMouseEntered(MouseMoveEvent&)
 {
 
 }
-void TestButton::OnMouseExited(MouseMoveEvent&)
+void TestButton::HandleOnMouseExited(MouseMoveEvent&)
 {
 
 }
-void TestButton::OnMouseMoved(MouseMoveEvent&) 
+void TestButton::HandleOnMouseMove(MouseMoveEvent&)
 {
 
 }
-void TestButton::OnMouseLButtonDown(MouseButtonPressedEvent&)
+void TestButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
 {
 
 }
-void TestButton::OnMouseLButtonUp(MouseButtonReleasedEvent&)
+void TestButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
 {
 
 }
-void TestButton::OnClick(MouseButtonReleasedEvent&)
-{
-
-}
-
-// ==================================================================
-
-void TestSliderFloat::OnMouseEnteredCircle(MouseMoveEvent&)
-{
-
-}
-void TestSliderFloat::OnMouseExitedCircle(MouseMoveEvent&)
-{
-
-}
-void TestSliderFloat::OnBeginDragging(MouseButtonPressedEvent&)
-{
-
-}
-void TestSliderFloat::OnStoppedDragging(MouseButtonReleasedEvent&)
-{
-
-}
-void TestSliderFloat::OnValueChanged(SliderFloatValueChangedEvent&)
+void TestButton::HandleOnClick(MouseButtonReleasedEvent&)
 {
 
 }
 
 // ==================================================================
 
-void TestSliderInt::OnMouseEnteredCircle(MouseMoveEvent&)
+void TestSliderFloat::HandleOnMouseEnteredCircle(MouseMoveEvent&)
 {
 
 }
-void TestSliderInt::OnMouseExitedCircle(MouseMoveEvent&)
+void TestSliderFloat::HandleOnMouseExitedCircle(MouseMoveEvent&)
 {
 
 }
-void TestSliderInt::OnBeginDragging(MouseButtonPressedEvent&)
+void TestSliderFloat::HandleOnBeginDragging(MouseButtonPressedEvent&)
 {
 
 }
-void TestSliderInt::OnStoppedDragging(MouseButtonReleasedEvent&)
+void TestSliderFloat::HandleOnStoppedDragging(MouseButtonReleasedEvent&)
 {
 
 }
-void TestSliderInt::OnValueChanged(SliderIntValueChangedEvent&)
+void TestSliderFloat::HandleOnValueChanged(SliderFloatValueChangedEvent&)
 {
 
 }
 
-// ===================================================================
+// ==================================================================
 
-void TestRadioButton::OnMouseEntered(MouseMoveEvent&)
+void TestSliderInt::HandleOnMouseEnteredCircle(MouseMoveEvent&)
 {
 
 }
-void TestRadioButton::OnMouseExited(MouseMoveEvent&)
+void TestSliderInt::HandleOnMouseExitedCircle(MouseMoveEvent&)
 {
 
 }
-void TestRadioButton::OnMouseMoved(MouseMoveEvent&)
+void TestSliderInt::HandleOnBeginDragging(MouseButtonPressedEvent&)
 {
 
 }
-void TestRadioButton::OnMouseLButtonDown(MouseButtonPressedEvent&)
+void TestSliderInt::HandleOnStoppedDragging(MouseButtonReleasedEvent&)
 {
 
 }
-void TestRadioButton::OnMouseLButtonUp(MouseButtonReleasedEvent&)
-{
-
-}
-void TestRadioButton::OnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&)
+void TestSliderInt::HandleOnValueChanged(SliderIntValueChangedEvent&)
 {
 
 }
 
 // ===================================================================
 
-void TestTextInput::OnMouseEntered(MouseMoveEvent&)
+void TestRadioButton::HandleOnMouseEntered(MouseMoveEvent&)
 {
 
 }
-void TestTextInput::OnMouseExited(MouseMoveEvent&)
+void TestRadioButton::HandleOnMouseExited(MouseMoveEvent&)
 {
 
 }
-void TestTextInput::OnMouseMoved(MouseMoveEvent&)
+void TestRadioButton::HandleOnMouseMove(MouseMoveEvent&)
 {
 
 }
-void TestTextInput::OnMouseLButtonDown(MouseButtonPressedEvent&)
+void TestRadioButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
 {
 
 }
-void TestTextInput::OnMouseLButtonUp(MouseButtonReleasedEvent&)
+void TestRadioButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
 {
 
 }
-void TestTextInput::OnClick(MouseButtonReleasedEvent&)
+void TestRadioButton::HandleOnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&)
 {
 
 }
-void TestTextInput::OnEnterKey(CharEvent&)
+
+// ===================================================================
+
+void TestTextInput::HandleOnMouseEntered(MouseMoveEvent&)
 {
 
 }
-void TestTextInput::OnInputTextChanged(CharEvent&)
+void TestTextInput::HandleOnMouseExited(MouseMoveEvent&)
+{
+
+}
+void TestTextInput::HandleOnMouseMove(MouseMoveEvent&)
+{
+
+}
+void TestTextInput::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
+{
+
+}
+void TestTextInput::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
+{
+
+}
+void TestTextInput::HandleOnClick(MouseButtonReleasedEvent&)
+{
+
+}
+void TestTextInput::HandleOnEnterKey(CharEvent&)
+{
+
+}
+void TestTextInput::HandleOnInputTextChanged(CharEvent&)
 {
 
 }
