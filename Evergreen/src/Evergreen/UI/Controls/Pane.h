@@ -47,12 +47,55 @@ namespace Evergreen
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API Pane : public Control
 {
-//private:
-//	class PaneCloseButton : public Button
-//	{
-//	public:
-//
-//	};
+private:
+	class PaneCloseButton : public Evergreen::Button
+	{
+	public:
+		PaneCloseButton(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+						Evergreen::UI* ui,
+						const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+						std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,
+						std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,
+						const std::array<float, 4>& borderWidths = {},
+						const Evergreen::Margin& margin = { 0 }) noexcept :
+			Evergreen::Button(deviceResources, ui, allowedRegion, std::move(backgroundBrush), std::move(borderBrush), borderWidths, margin)
+		{}
+		PaneCloseButton(const PaneCloseButton&) noexcept = delete;
+		PaneCloseButton& operator=(const PaneCloseButton&) noexcept = delete;
+		virtual ~PaneCloseButton() noexcept override {}
+
+		virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
+		virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
+		virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
+		virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
+		virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
+
+		std::function<void()> m_OnClickCallback = []() {};
+	};
+	class PaneMinimizeButton : public Evergreen::Button
+	{
+	public:
+		PaneMinimizeButton(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+			Evergreen::UI* ui,
+			const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+			std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,
+			std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,
+			const std::array<float, 4>& borderWidths = {},
+			const Evergreen::Margin& margin = { 0 }) noexcept :
+			Evergreen::Button(deviceResources, ui, allowedRegion, std::move(backgroundBrush), std::move(borderBrush), borderWidths, margin)
+		{}
+		PaneMinimizeButton(const PaneMinimizeButton&) noexcept = delete;
+		PaneMinimizeButton& operator=(const PaneMinimizeButton&) noexcept = delete;
+		virtual ~PaneMinimizeButton() noexcept override {}
+
+		virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
+		virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
+		virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
+		virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
+		virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
+
+		std::function<void()> m_OnClickCallback = []() {};
+	};
 
 
 

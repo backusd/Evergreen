@@ -12,6 +12,53 @@ namespace Evergreen
 {
 const float Pane::edgeSensitivity = 3.0f;
 
+void Pane::PaneCloseButton::HandleOnMouseEntered(MouseMoveEvent&)
+{
+	// Set cursor here because it may be entering from outside the pane and be a double arrow
+	Window::SetCursor(Cursor::ARROW);
+	BackgroundBrush(D2D1::ColorF::Crimson);
+}
+void Pane::PaneCloseButton::HandleOnMouseExited(MouseMoveEvent&)
+{
+	BackgroundBrush(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+}
+void Pane::PaneCloseButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
+{
+	BackgroundBrush(D2D1::ColorF::DimGray);
+}
+void Pane::PaneCloseButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
+{
+	BackgroundBrush(D2D1::ColorF::Gray);
+}
+void Pane::PaneCloseButton::HandleOnClick(MouseButtonReleasedEvent& e)
+{
+	m_OnClickCallback();
+	e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
+}
+
+void Pane::PaneMinimizeButton::HandleOnMouseEntered(MouseMoveEvent&)
+{
+	// Set cursor here because it may be entering from outside the pane and be a double arrow
+	Window::SetCursor(Cursor::ARROW);
+	BackgroundBrush(D2D1::ColorF::Gray);
+}
+void Pane::PaneMinimizeButton::HandleOnMouseExited(MouseMoveEvent&)
+{
+	BackgroundBrush(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+}
+void Pane::PaneMinimizeButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
+{
+	BackgroundBrush(D2D1::ColorF::DimGray);
+}
+void Pane::PaneMinimizeButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
+{
+	BackgroundBrush(D2D1::ColorF::Gray);
+}
+void Pane::PaneMinimizeButton::HandleOnClick(MouseButtonReleasedEvent&)
+{
+	m_OnClickCallback();
+}
+
 Pane::Pane(std::shared_ptr<DeviceResources> deviceResources,
 			UI* ui,
 			float top,
@@ -205,156 +252,74 @@ void Pane::CreateTitleBarLayout()
 
 	std::unique_ptr<SolidColorBrush> minimizeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	/*
-	RoundedButton* minimizeButton = m_titleLayout->CreateControl<RoundedButton>(
+	PaneMinimizeButton* minimizeButton = m_titleLayout->CreateControl<PaneMinimizeButton>(
 		minimizeButtonPosition,
 		m_deviceResources,
-		std::move(minimizeBackgroundBrush),
-		nullptr,
-		m_paneCornerRadiusX,
-		m_paneCornerRadiusY
-		);
+		std::move(minimizeBackgroundBrush)
+	);
 
-	minimizeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
-	minimizeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
+	minimizeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f }); 
+	minimizeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f }); 
 
-	std::unique_ptr<SolidColorBrush> whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
-	std::unique_ptr<TextStyle> minimizeTextStyle = std::make_unique<TextStyle>(
-		m_deviceResources,
-		"Pane Close Button TextStyle",
-		Evergreen::FontFamily::Segoe_MDL2_Assets,
-		12.0f,
-		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
-		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER,
-		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-		);
-	std::wstring minimizeString = L"";
-	minimizeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE738", nullptr, 16)));
-	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(whiteBrush), std::move(minimizeTextStyle));
+	std::unique_ptr<SolidColorBrush> whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White)); 
+	std::unique_ptr<TextStyle> minimizeTextStyle = std::make_unique<TextStyle>( 
+		m_deviceResources, 
+		"Pane Close Button TextStyle", 
+		Evergreen::FontFamily::Segoe_MDL2_Assets, 
+		12.0f, 
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR, 
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL, 
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL, 
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER, 
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP 
+	);
+	std::wstring minimizeString = L""; 
+	minimizeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE738", nullptr, 16))); 
+	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(whiteBrush), std::move(minimizeTextStyle)); 
 
-//	minimizeButton->SetOnMouseEnteredCallback(
-//		[](Control* c, Event& e)
-//		{
-//
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	minimizeButton->SetOnMouseExitedCallback(
-//		[](Control* c, Event& e)
-//		{
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	minimizeButton->SetOnMouseLButtonDownCallback(
-//		[](Control* c, Event& e)
-//		{
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	minimizeButton->SetOnMouseLButtonUpCallback(
-//		[](Control* c, Event& e)
-//		{
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	minimizeButton->SetOnClickCallback(
-//		[this](Control* c, Event& e)
-//		{
-//			this->SwitchMinimize();
-//		}
-//	);
-
+	minimizeButton->m_OnClickCallback = [this]() 
+	{ 
+		this->SwitchMinimize(); 
+	};
 
 	// Close Button --------------------------------------------------------------
-	RowColumnPosition closeButtonPosition;
-	closeButtonPosition.Row = 0;
-	closeButtonPosition.Column = 2;
+	RowColumnPosition closeButtonPosition; 
+	closeButtonPosition.Row = 0; 
+	closeButtonPosition.Column = 2; 
+	 
+	std::unique_ptr<SolidColorBrush> closeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f)); 
 
-	std::unique_ptr<SolidColorBrush> closeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-
-	RoundedButton* closeButton = m_titleLayout->CreateControl<RoundedButton>(
+	PaneCloseButton* closeButton = m_titleLayout->CreateControl<PaneCloseButton>(
 		closeButtonPosition,
 		m_deviceResources,
-		std::move(closeBackgroundBrush),
-		nullptr,
-		m_paneCornerRadiusX,
-		m_paneCornerRadiusY
-		);
+		std::move(closeBackgroundBrush)
+	);
 
-	closeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
-	closeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
+	closeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f }); 
+	closeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f }); 
 
-	whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
-	std::unique_ptr<TextStyle> closeTextStyle = std::make_unique<TextStyle>(
-		m_deviceResources,
-		"Pane Close Button TextStyle",
-		Evergreen::FontFamily::Segoe_MDL2_Assets,
-		12.0f,
-		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
-		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,
-		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL,
-		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER,
-		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
-		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
-		);
-	std::wstring closeString = L"";
-	closeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE711", nullptr, 16)));
-	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(whiteBrush), std::move(closeTextStyle));
+	whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White)); 
+	std::unique_ptr<TextStyle> closeTextStyle = std::make_unique<TextStyle>( 
+		m_deviceResources, 
+		"Pane Close Button TextStyle", 
+		Evergreen::FontFamily::Segoe_MDL2_Assets, 
+		12.0f, 
+		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR, 
+		DWRITE_FONT_STYLE::DWRITE_FONT_STYLE_NORMAL,  
+		DWRITE_FONT_STRETCH::DWRITE_FONT_STRETCH_NORMAL, 
+		DWRITE_TEXT_ALIGNMENT::DWRITE_TEXT_ALIGNMENT_CENTER, 
+		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER, 
+		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP 
+	); 
+	std::wstring closeString = L""; 
+	closeString.push_back(static_cast<wchar_t>(std::stoi(L"0xE711", nullptr, 16))); 
+	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(whiteBrush), std::move(closeTextStyle)); 
 
-//	closeButton->SetOnMouseEnteredCallback(
-//		[](Control* c, Event& e)
-//		{
-//			// Set cursor here because it may be entering from outside the pane and be a double arrow
-//			Window::SetCursor(Cursor::ARROW);
-//
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Crimson));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	closeButton->SetOnMouseExitedCallback(
-//		[](Control* c, Event& e)
-//		{
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	closeButton->SetOnMouseLButtonDownCallback(
-//		[](Control* c, Event& e)
-//		{
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	closeButton->SetOnMouseLButtonUpCallback(
-//		[](Control* c, Event& e)
-//		{
-//			Button* button = static_cast<Button*>(c);
-//			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-//			button->BackgroundBrush(std::move(brush));
-//		}
-//	);
-//	closeButton->SetOnClickCallback(
-//		[this](Control* c, Event& e)
-//		{
-//			this->GetUI()->RemovePane(this);
-//			e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
-//		}
-//	);
-	*/
+	closeButton->m_OnClickCallback = [this]()
+	{
+		this->GetUI()->RemovePane(this);
+	};
 }
 
 void Pane::ClearTitleBarLayoutAndAddTitle(const std::string& title, std::unique_ptr<ColorBrush> titleBrush)
