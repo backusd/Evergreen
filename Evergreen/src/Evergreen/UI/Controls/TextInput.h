@@ -3,6 +3,41 @@
 #include "Text.h"
 #include "Evergreen/UI/Layout.h"
 
+// Macro for declaring a derived class
+#define TEXTINPUT(name)	class name : public Evergreen::TextInput																							\
+						{																																	\
+						public:																																\
+							name(std::shared_ptr<Evergreen::DeviceResources> deviceResources,																\
+								Evergreen::UI* ui,																											\
+								const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),												\
+								const std::wstring& placeholderText = L"",																					\
+								std::unique_ptr<Evergreen::ColorBrush> placeholderBrush = nullptr,															\
+								std::unique_ptr<Evergreen::TextStyle> placeholderStyle = nullptr,															\
+								std::unique_ptr<Evergreen::ColorBrush> inputTextBrush = nullptr,															\
+								std::unique_ptr<Evergreen::TextStyle> inputTextStyle = nullptr,																\
+								std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,															\
+								std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,																\
+								float borderWidth = 0.0f,																									\
+								const Evergreen::Margin& margin = { 0 }) noexcept :																			\
+								Evergreen::TextInput(deviceResources, ui, allowedRegion, placeholderText,													\
+									std::move(placeholderBrush), std::move(placeholderStyle), std::move(inputTextBrush),									\
+									std::move(inputTextStyle), std::move(backgroundBrush), std::move(borderBrush), borderWidth, margin)						\
+							{}																																\
+							name(const name&) noexcept = delete;																							\
+							name& operator=(const name&) noexcept = delete;																					\
+							virtual ~name() noexcept override {}																							\
+																																							\
+							virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;															\
+							virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;															\
+							virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;															\
+							virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;											\
+							virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;												\
+							virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;														\
+							virtual void HandleOnEnterKey(Evergreen::CharEvent&) override;																	\
+							virtual void HandleOnInputTextChanged(Evergreen::CharEvent&) override;															\
+						};																																	\
+
+
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 

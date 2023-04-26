@@ -1,7 +1,41 @@
 #pragma once
 #include "pch.h"
 #include "Control.h"
+#include "Button.h"
 #include "../Layout.h"
+
+// Macro for declaring a derived class
+#define PANE(name)	class name : public Evergreen::Pane																										\
+					{																																		\
+					public:																																	\
+						TestPane(std::shared_ptr<Evergreen::DeviceResources> deviceResources,																\
+							Evergreen::UI* ui,																												\
+							float top,																														\
+							float left,																														\
+							float height,																													\
+							float width,																													\
+							bool resizable = true,																											\
+							bool relocatable = true,																										\
+							std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,																\
+							std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,																	\
+							const std::array<float, 4>& borderWidths = {},																					\
+							bool includeTitleBar = true,																									\
+							std::unique_ptr<Evergreen::ColorBrush> titleBarBrush = nullptr,																	\
+							float titleBarHeight = 20.0f) :																									\
+							Evergreen::Pane(deviceResources, ui, top, left, height, width, resizable, relocatable, std::move(backgroundBrush),				\
+								std::move(borderBrush), borderWidths, includeTitleBar, std::move(titleBarBrush), titleBarHeight)							\
+						{}																																	\
+						name(const name&) noexcept = delete;																								\
+						name& operator=(const name&) noexcept = delete;																						\
+						virtual ~name() noexcept override {}																								\
+																																							\
+						virtual void HandleOnMouseEnteredTitleBar(Evergreen::MouseMoveEvent&) override;														\
+						virtual void HandleOnMouseExitedTitleBar(Evergreen::MouseMoveEvent&) override;														\
+						virtual void HandleOnMouseEnteredContentRegion(Evergreen::MouseMoveEvent&) override;												\
+						virtual void HandleOnMouseExitedContentRegion(Evergreen::MouseMoveEvent&) override;													\
+						virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;																\
+					};																																		\
+
 
 
 namespace Evergreen
@@ -13,6 +47,15 @@ namespace Evergreen
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API Pane : public Control
 {
+//private:
+//	class PaneCloseButton : public Button
+//	{
+//	public:
+//
+//	};
+
+
+
 public:
 	Pane(std::shared_ptr<DeviceResources> deviceResources,
 		UI* ui,

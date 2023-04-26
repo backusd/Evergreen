@@ -6,6 +6,29 @@
 #include "Evergreen/UI/Controls/Text.h"
 #include "Evergreen/UI/Controls/TextInput.h"
 
+// Macro for declaring a derived class
+#define SLIDERINT(name)	class name : public Evergreen::SliderInt																							\
+						{																																	\
+						public:																																\
+							name(std::shared_ptr<Evergreen::DeviceResources> deviceResources,																\
+								Evergreen::UI* ui,																											\
+								const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),												\
+								int minValue = 0, int maxValue = 100, int initialValue = 0,																	\
+								const Evergreen::Margin& margin = { 0 }) noexcept :																			\
+								Evergreen::SliderInt(deviceResources, ui, allowedRegion, minValue, maxValue, initialValue, margin)							\
+							{}																																\
+							name(const name&) noexcept = delete;																							\
+							name& operator=(const name&) noexcept = delete;																					\
+							virtual ~name() noexcept override {}																							\
+																																							\
+							virtual void HandleOnMouseEnteredCircle(Evergreen::MouseMoveEvent&) override;													\
+							virtual void HandleOnMouseExitedCircle(Evergreen::MouseMoveEvent&) override;													\
+							virtual void HandleOnBeginDragging(Evergreen::MouseButtonPressedEvent&) override;												\
+							virtual void HandleOnStoppedDragging(Evergreen::MouseButtonReleasedEvent&) override;											\
+							virtual void HandleOnValueChanged(Evergreen::SliderIntValueChangedEvent&) override;												\
+						};																																	\
+
+
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 
