@@ -191,3 +191,26 @@ void TestViewport::HandleOnSizeChanged(float width, float height)
 {
 
 }
+
+// ===================================================================
+
+void TestPane::HandleOnMouseEnteredTitleBar(MouseMoveEvent&)
+{
+
+}
+void TestPane::HandleOnMouseExitedTitleBar(MouseMoveEvent&)
+{
+
+}
+void TestPane::HandleOnMouseEnteredContentRegion(MouseMoveEvent&)
+{
+
+}
+void TestPane::HandleOnMouseExitedContentRegion(MouseMoveEvent&)
+{
+
+}
+void TestPane::HandleOnMouseMove(MouseMoveEvent&)
+{
+
+}

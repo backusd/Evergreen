@@ -42,7 +42,7 @@ UI::UI(std::shared_ptr<DeviceResources> deviceResources, std::shared_ptr<Window>
 	//JSONLoaders::AddControlLoader("RoundedButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RoundedButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	JSONLoaders::AddControlLoader("ScrollableLayout", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ScrollableLayoutLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	//JSONLoaders::AddControlLoader("TextInput", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return TextInputLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
-	JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
+	//JSONLoaders::AddControlLoader("Pane", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return PaneLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	//JSONLoaders::AddControlLoader("SliderFloat", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderFloatLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	//JSONLoaders::AddControlLoader("SliderInt", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return SliderIntLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 	//JSONLoaders::AddControlLoader("RadioButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return RadioButtonLoader::Load(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
@@ -1020,16 +1020,6 @@ Layout* UI::GetLayoutByName(const std::string& name) noexcept
 	return m_rootLayout->GetLayoutByName(name);
 }
 
-Pane* UI::AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept
-{
-	EG_CORE_ASSERT(m_panesMap.find(name) == m_panesMap.end(), std::format("Pane with name '{}' already exists", name));
-	EG_CORE_ASSERT(name.size() > 0, "Pane name cannot be empty");
-	EG_CORE_ASSERT(pane != nullptr, "Input pane should not be nullptr");
-
-	m_panes.push_back(std::move(pane));
-	m_panesMap[name] = m_panes.back().get();
-	return m_panes.back().get();
-}
 Pane* UI::GetPane(const std::string& name) noexcept
 {
 	EG_CORE_ASSERT(name.size() > 0, "Pane search name should not be empty");

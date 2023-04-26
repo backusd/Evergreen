@@ -57,7 +57,8 @@ public:
 
 	ND Layout* GetLayoutByName(const std::string& name) noexcept;
 
-	inline Pane* AddPane(std::unique_ptr<Pane> pane, const std::string& name) noexcept;
+	template<typename T>
+	inline Pane* AddPane(std::unique_ptr<T> derivedPane, const std::string& name) noexcept requires (std::is_base_of_v<Pane, T>);
 	ND inline Pane* GetPane(const std::string& name) noexcept;
 	void RemovePane(Pane* pane) noexcept;
 	void RemovePane(const std::string& name) noexcept;
@@ -125,6 +126,19 @@ T* UI::GetControlByID(unsigned int id) const noexcept
 	}
 
 	return m_rootLayout->GetControlByID<T>(id);
+}
+
+template<typename T>
+Pane* UI::AddPane(std::unique_ptr<T> derivedPane, const std::string& name) noexcept requires (std::is_base_of_v<Pane, T>)
+{
+	EG_CORE_ASSERT(m_panesMap.find(name) == m_panesMap.end(), std::format("Pane with name '{}' already exists", name));
+	EG_CORE_ASSERT(name.size() > 0, "Pane name cannot be empty");
+	EG_CORE_ASSERT(derivedPane != nullptr, "Input pane should not be nullptr");
+
+	// NOTE: Must cast the derived Pane class to Pane* which can then be stored in the vector
+	m_panes.push_back(std::move(std::unique_ptr<Pane>(static_cast<Pane*>(derivedPane.release()))));
+	m_panesMap[name] = m_panes.back().get();
+	return m_panes.back().get();
 }
 
 }

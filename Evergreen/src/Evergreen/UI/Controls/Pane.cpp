@@ -791,12 +791,12 @@ void Pane::ForceMouseToBeNotOverTitleAndContent(MouseMoveEvent& e) noexcept
 	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
 	{
 		m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
-		m_OnMouseExitedTitleBar(this, e);
+		HandleOnMouseExitedTitleBar(e);
 	}
 	else if (m_mouseContentRegionState == MouseOverDraggableAreaState::OVER)
 	{
 		m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
-		m_OnMouseExitedContentRegion(this, e);
+		HandleOnMouseExitedContentRegion(e);
 	}
 }
 
@@ -848,7 +848,7 @@ void Pane::OnMouseMove(MouseMoveEvent& e)
 		return;
 
 	if (RectContainsPoint(m_allowedRegion, e.GetX(), e.GetY()))
-		m_OnMouseMoved(this, e);
+		HandleOnMouseMove(e);
 
 	// Only perform the DRAGGING checks if the pane is resizeable
 	if (m_resizable)
@@ -1333,12 +1333,12 @@ void Pane::OnMouseMove(MouseMoveEvent& e)
 			{
 				m_mouseTitleBarState = MouseOverDraggableAreaState::OVER;
 				e.Handled(this);
-				m_OnMouseEnteredTitleBar(this, e);
+				HandleOnMouseEnteredTitleBar(e);
 
 				if (m_mouseContentRegionState == MouseOverDraggableAreaState::OVER)
 				{
 					m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
-					m_OnMouseExitedContentRegion(this, e);
+					HandleOnMouseExitedContentRegion(e);
 				}
 
 				return;
@@ -1349,7 +1349,7 @@ void Pane::OnMouseMove(MouseMoveEvent& e)
 			if (!mouseIsOverTitleBar)
 			{
 				m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
-				m_OnMouseExitedTitleBar(this, e);
+				HandleOnMouseExitedTitleBar(e);
 			}
 		}
 	}
@@ -1365,13 +1365,13 @@ void Pane::OnMouseMove(MouseMoveEvent& e)
 			if (mouseIsOverContentRect)
 			{
 				m_mouseContentRegionState = MouseOverDraggableAreaState::OVER;
-				m_OnMouseEnteredContentRegion(this, e);
+				HandleOnMouseEnteredContentRegion(e);
 			}
 		}
 		else if (!mouseIsOverContentRect)
 		{
 			m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
-			m_OnMouseExitedContentRegion(this, e);
+			HandleOnMouseExitedContentRegion(e);
 		}
 	}
 
@@ -1389,12 +1389,12 @@ void Pane::MouseMoveHandledByPane(MouseMoveEvent& e)
 	if (m_mouseTitleBarState == MouseOverDraggableAreaState::OVER)
 	{
 		m_mouseTitleBarState = MouseOverDraggableAreaState::NOT_OVER;
-		m_OnMouseExitedTitleBar(this, e);
+		HandleOnMouseExitedTitleBar(e);
 	}
 	else if (m_mouseContentRegionState == MouseOverDraggableAreaState::OVER)
 	{
 		m_mouseContentRegionState = MouseOverDraggableAreaState::NOT_OVER;
-		m_OnMouseExitedContentRegion(this, e);
+		HandleOnMouseExitedContentRegion(e);
 	}
 }
 void Pane::OnMouseScrolledVertical(MouseScrolledEvent& e)

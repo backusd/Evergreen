@@ -3,6 +3,7 @@
 #include "ControlLoader.h"
 #include "Evergreen/UI/JSONLoading/JSONLoaders.h"
 #include "Evergreen/UI/Controls/Pane.h"
+#include "Evergreen/UI/UI.h"
 
 namespace Evergreen
 {
@@ -18,7 +19,11 @@ public:
 	PaneLoader& operator=(const PaneLoader&) = delete;
 	~PaneLoader() noexcept override {}
 
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadImpl(deviceResources, parent, data, name, rowColumnPositionOverride); }
+	template<typename T>
+	ND static inline Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<Pane, T>)
+	{
+		return Get().LoadImpl<T>(deviceResources, parent, data, name, rowColumnPositionOverride);
+	}
 
 private:
 	PaneLoader() noexcept = default;
@@ -29,7 +34,8 @@ private:
 		return loader;
 	}
 
-	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride);
+	template<typename T>
+	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<Pane, T>);
 
 	// Pane is special in that row/column positioning and margin doesn't make sense
 	// So if the user included them, just log a warning message and delete that piece of data
@@ -56,14 +62,94 @@ private:
 
 	void ParseTitle(Pane* pane, json& data);
 	void ParseContent(Pane* pane, json& data);
-	
-	void ParseOnMouseEnteredTitleBar(Pane* pane, json& data);
-	void ParseOnMouseExitedTitleBar(Pane* pane, json& data);
-	void ParseOnMouseEnteredContentRegion(Pane* pane, json& data);
-	void ParseOnMouseExitedContentRegion(Pane* pane, json& data);
-	void ParseOnMouseMoved(Pane* pane, json& data);
 
 };
 #pragma warning( pop )
+
+template<typename T>
+Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<Pane, T>)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
+	// NOTE: The pane will not be created as a child control of the parent layout. However, in order to keep the 
+	// same function signature, we include a Layout* parameter. We are also going to require it not be nullptr
+	// so that we can get the UI* which is how we will end up storing the created Pane
+	EG_CORE_ASSERT(parent != nullptr, "No parent layout");
+	UI* ui = parent->GetUI();
+	EG_CORE_ASSERT(ui != nullptr, "No UI");
+
+	m_name = name;
+	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
+
+	// Pane is special in that row/column positioning and margin doesn't make sense
+	// So if the user included them, just log a warning message and delete that piece of data
+	LogWarningForRowColumnPositionAndMarginKeywords(data);
+
+	float top = ParseTop(data);
+	float left = ParseLeft(data);
+	float height = ParseHeight(data);
+	float width = ParseWidth(data);
+
+	bool resizable = ParseResizable(data);
+	bool relocatable = ParseRelocatable(data);
+
+	// Parse Brushes
+	std::unique_ptr<ColorBrush> backgroundBrush = ParseBackgroundBrush(deviceResources, data);
+	std::unique_ptr<ColorBrush> borderBrush = ParseBorderBrush(deviceResources, data);
+
+	// Border Width
+	std::array<float, 4> borderWidths = ParseBorderWidth(data);
+
+	// Title attributes
+	bool includeTitleBar = ParseIncludeTitleBar(data);
+	std::unique_ptr<ColorBrush> titleBarBrush = ParseTitleBarBrush(deviceResources, data);
+	float titleBarHeight = ParseTitleBarHeight(data);
+
+	// Warn about unrecognized keys
+	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Title", "Top", "Left", "Height", "Width", "Resizable",
+	"Relocatable", "BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadius", "CornerRadiusX", "CornerRadiusY",
+	"IncludeTitleBar", "TitleBarBrush", "TitleBarHeight", "IsMinimized", "IsVisible", "Content",
+	"BorderTopLeftOffsetX", "BorderTopLeftOffsetY", "BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX",
+	"BorderBottomLeftOffsetY", "BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
+	for (auto& [key, value] : data.items())
+	{
+		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
+			EG_CORE_WARN("{}:{} - Pane control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
+	}
+
+	// Create the new Text control
+	std::unique_ptr<T> p = std::make_unique<T>(
+		deviceResources,
+		ui, // UI*
+		top, // top
+		left, // left
+		height, // height
+		width, // width
+		resizable, // resizable 
+		relocatable, // relocatable
+		std::move(backgroundBrush), // background brush
+		std::move(borderBrush), // border brush
+		borderWidths, // border width
+		includeTitleBar, // includeTitleBar
+		std::move(titleBarBrush), // TitleBarBrush
+		titleBarHeight // TitleBar height
+	);
+	EG_CORE_ASSERT(p != nullptr, "Something went wrong, pane is nullptr");
+	Pane* pane = ui->AddPane<T>(std::move(p), name);
+	EG_CORE_ASSERT(pane != nullptr, "Something went wrong, pane is nullptr");
+
+	pane->Name(name);
+	pane->ID(ParseID(data));
+
+	ParseBorderOffsets(pane, data);
+
+	ParseCornerRadius(pane, data);
+	ParseIsMinimized(pane, data);
+	ParseIsVisible(pane, data);
+
+	ParseTitle(pane, data);
+	ParseContent(pane, data);
+
+	return pane;
+}
 
 }

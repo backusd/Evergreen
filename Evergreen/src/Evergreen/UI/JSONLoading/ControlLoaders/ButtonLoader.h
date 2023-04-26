@@ -20,7 +20,7 @@ public:
 	~ButtonLoader() noexcept override {}
 
 	template<typename T>
-	static Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<Button, T>)
+	ND static inline Control* Load(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) requires (std::is_base_of_v<Button, T>)
 	{ 
 		return Get().LoadImpl<T>(deviceResources, parent, data, name, rowColumnPositionOverride); 
 	}

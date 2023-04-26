@@ -1,101 +1,8 @@
 #include "pch.h"
 #include "PaneLoader.h"
-#include "Evergreen/UI/UI.h"
 
 namespace Evergreen
 {
-Control* PaneLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride)
-{
-	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources");
-	// NOTE: The pane will not be created as a child control of the parent layout. However, in order to keep the 
-	// same function signature, we include a Layout* parameter. We are also going to require it not be nullptr
-	// so that we can get the UI* which is how we will end up storing the created Pane
-	EG_CORE_ASSERT(parent != nullptr, "No parent layout"); 
-	UI* ui = parent->GetUI();
-	EG_CORE_ASSERT(ui != nullptr, "No UI");
-
-	m_name = name;
-	JSONLoaders::AddControlName(name); // Add control name so we can force names to be unique
-
-
-	// Pane is special in that row/column positioning and margin doesn't make sense
-	// So if the user included them, just log a warning message and delete that piece of data
-	LogWarningForRowColumnPositionAndMarginKeywords(data);
-
-	float top = ParseTop(data);
-	float left = ParseLeft(data);
-	float height = ParseHeight(data);
-	float width = ParseWidth(data);
-
-	bool resizable = ParseResizable(data);
-	bool relocatable = ParseRelocatable(data);
-	
-	// Parse Brushes
-	std::unique_ptr<ColorBrush> backgroundBrush = ParseBackgroundBrush(deviceResources, data);
-	std::unique_ptr<ColorBrush> borderBrush = ParseBorderBrush(deviceResources, data);
-
-	// Border Width
-	std::array<float, 4> borderWidths = ParseBorderWidth(data);
-
-	// Title attributes
-	bool includeTitleBar = ParseIncludeTitleBar(data);
-	std::unique_ptr<ColorBrush> titleBarBrush = ParseTitleBarBrush(deviceResources, data);
-	float titleBarHeight = ParseTitleBarHeight(data);
-
-	// Warn about unrecognized keys
-	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Title", "Top", "Left", "Height", "Width", "Resizable",
-	"Relocatable", "BackgroundBrush", "BorderBrush", "BorderWidth", "CornerRadius", "CornerRadiusX", "CornerRadiusY", 
-	"IncludeTitleBar", "TitleBarBrush", "TitleBarHeight", "IsMinimized", "IsVisible", "Content", "OnMouseEnteredTitleBar", 
-	"OnMouseExitedTitleBar", "OnMouseEnteredContentRegion", "OnMouseExitedContentRegion", "OnMouseMoved",
-	"BorderTopLeftOffsetX", "BorderTopLeftOffsetY", "BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", 
-	"BorderBottomLeftOffsetY", "BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
-	for (auto& [key, value] : data.items())
-	{
-		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
-			EG_CORE_WARN("{}:{} - Pane control with name '{}'. Unrecognized key: '{}'.", __FILE__, __LINE__, m_name, key);
-	}
-
-	// Create the new Text control
-	std::unique_ptr<Pane> p = std::make_unique<Pane>(
-		deviceResources,
-		ui, // UI*
-		top, // top
-		left, // left
-		height, // height
-		width, // width
-		resizable, // resizable 
-		relocatable, // relocatable
-		std::move(backgroundBrush), // background brush
-		std::move(borderBrush), // border brush
-		borderWidths, // border width
-		includeTitleBar, // includeTitleBar
-		std::move(titleBarBrush), // TitleBarBrush
-		titleBarHeight // TitleBar height
-		);
-	Pane* pane = ui->AddPane(std::move(p), name);
-	EG_CORE_ASSERT(pane != nullptr, "Something went wrong, button is nullptr");
-
-	pane->Name(name);
-	pane->ID(ParseID(data));
-
-	ParseBorderOffsets(pane, data);
-
-	ParseCornerRadius(pane, data);
-	ParseIsMinimized(pane, data);
-	ParseIsVisible(pane, data);
-
-	ParseTitle(pane, data);
-	ParseContent(pane, data);
-
-	ParseOnMouseEnteredTitleBar(pane, data);
-	ParseOnMouseExitedTitleBar(pane, data);
-	ParseOnMouseEnteredContentRegion(pane, data);
-	ParseOnMouseExitedContentRegion(pane, data);
-	ParseOnMouseMoved(pane, data);
-
-	return pane;
-}
-
 void PaneLoader::LogWarningForRowColumnPositionAndMarginKeywords(json& data)
 {
 	constexpr std::array keysToIgnore{ "Row", "Column", "RowSpan", "ColumnSpane", "Margin"};
@@ -381,16 +288,22 @@ void PaneLoader::ParseTitle(Pane* pane, json& data)
 		return;
 	}
 
-	JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("Title"), "Pane control with name '{}': When 'IncludeTitleBar' field is true, a 'Title' field must also be present. Invalid Pane object: {}", m_name, data.dump(4));
-
-	if (data["Title"].is_string())
+	if (data.contains("Title"))
 	{
-		pane->ClearTitleBarLayoutAndAddTitle(data["Title"].get<std::string>());
+		if (data["Title"].is_string())
+		{
+			pane->ClearTitleBarLayoutAndAddTitle(data["Title"].get<std::string>());
+		}
+		else
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["Title"].is_object(), "Pane control with name '{}': 'Title' field must either be a string or a json object that represents a Layout. Invalid Pane object: {}", m_name, data.dump(4));
+			JSONLoaders::LoadLayout(pane->GetDeviceResources(), pane->GetTitleBarLayout(), data["Title"]);
+		}
 	}
 	else
 	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["Title"].is_object(), "Pane control with name '{}': 'Title' field must either be a string or a json object that represents a Layout. Invalid Pane object: {}", m_name, data.dump(4));
-		JSONLoaders::LoadLayout(pane->GetDeviceResources(), pane->GetTitleBarLayout(), data["Title"]);
+		// Just let the title be empty
+		pane->ClearTitleBarLayoutAndAddTitle("");
 	}
 }
 void PaneLoader::ParseContent(Pane* pane, json& data)
@@ -398,76 +311,6 @@ void PaneLoader::ParseContent(Pane* pane, json& data)
 	JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("Content"), "Pane control with name '{}': 'Content' field is required. Incomplete Pane object: {}", m_name, data.dump(4));
 	JSON_LOADER_EXCEPTION_IF_FALSE(data["Content"].is_object(), "Pane control with name '{}': 'Content' field must be a json object that represents a Layout. Invalid Pane object: {}", m_name, data.dump(4));
 	JSONLoaders::LoadLayout(pane->GetDeviceResources(), pane->GetContentLayout(), data["Content"]);
-}
-void PaneLoader::ParseOnMouseEnteredTitleBar(Pane* pane, json& data)
-{
-	EG_CORE_ASSERT(pane != nullptr, "Pane cannot be nullptr");
-
-	if (data.contains("OnMouseEnteredTitleBar"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnteredTitleBar"].is_string(), "Pane control with name '{}': 'OnMouseEnteredTitleBar' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseEnteredTitleBar"].get<std::string>();
-		
-		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseEnteredTitleBar' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseEnteredTitleBarCallback(callback);
-	}
-}
-void PaneLoader::ParseOnMouseExitedTitleBar(Pane* pane, json& data)
-{
-	EG_CORE_ASSERT(pane != nullptr, "Pane cannot be nullptr");
-
-	if (data.contains("OnMouseExitedTitleBar"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExitedTitleBar"].is_string(), "Pane control with name '{}': 'OnMouseExitedTitleBar' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseExitedTitleBar"].get<std::string>();
-
-		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseExitedTitleBar' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseExitedTitleBarCallback(callback);
-	}
-}
-void PaneLoader::ParseOnMouseEnteredContentRegion(Pane* pane, json& data)
-{
-	EG_CORE_ASSERT(pane != nullptr, "Pane cannot be nullptr");
-
-	if (data.contains("OnMouseEnteredContentRegion"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseEnteredContentRegion"].is_string(), "Pane control with name '{}': 'OnMouseEnteredContentRegion' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseEnteredContentRegion"].get<std::string>();
-
-		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseEnteredContentRegion' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseEnteredContentRegionCallback(callback);
-	}
-}
-void PaneLoader::ParseOnMouseExitedContentRegion(Pane* pane, json& data)
-{
-	EG_CORE_ASSERT(pane != nullptr, "Pane cannot be nullptr");
-
-	if (data.contains("OnMouseExitedContentRegion"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseExitedContentRegion"].is_string(), "Pane control with name '{}': 'OnMouseExitedContentRegion' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseExitedContentRegion"].get<std::string>();
-
-		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseExitedContentRegion' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseExitedContentRegionCallback(callback);
-	}
-}
-void PaneLoader::ParseOnMouseMoved(Pane* pane, json& data)
-{
-	EG_CORE_ASSERT(pane != nullptr, "Pane cannot be nullptr");
-
-	if (data.contains("OnMouseMoved"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseMoved"].is_string(), "Pane control with name '{}': 'OnMouseMoved' value must be a string. Invalid Pane object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseMoved"].get<std::string>();
-
-		auto callback = JSONLoaders::GetCallback<Pane, MouseMoveEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Pane control with name '{}': 'OnMouseMoved' callback not found for key '{}'. Invalid Pane object: {}", m_name, key, data.dump(4));
-		pane->SetOnMouseMovedCallback(callback);
-	}
 }
 
 }

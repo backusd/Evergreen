@@ -6,6 +6,7 @@
 #include "Evergreen/UI/Controls/RadioButton.h"
 #include "Evergreen/UI/Controls/TextInput.h"
 #include "Evergreen/UI/Controls/Viewport.h"
+#include "Evergreen/UI/Controls/Pane.h"
 
 
 
@@ -168,4 +169,36 @@ public:
 	virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
 	virtual void HandleOnDoubleClick(Evergreen::MouseButtonDoubleClickEvent&) override;
 	virtual void HandleOnSizeChanged(float width, float height) override;
+};
+
+class TestPane : public Evergreen::Pane
+{
+public:
+	TestPane(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+			Evergreen::UI* ui,
+			float top,
+			float left,
+			float height,
+			float width,
+			bool resizable = true,
+			bool relocatable = true,
+			std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,
+			std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,
+			const std::array<float, 4>& borderWidths = {},
+			bool includeTitleBar = true,
+			std::unique_ptr<Evergreen::ColorBrush> titleBarBrush = nullptr,
+			float titleBarHeight = 20.0f) :
+		Evergreen::Pane(deviceResources, ui, top, left, height, width, resizable, relocatable, std::move(backgroundBrush),
+			std::move(borderBrush), borderWidths, includeTitleBar, std::move(titleBarBrush), titleBarHeight)
+	{}
+	TestPane(const TestPane&) noexcept = delete;
+	TestPane& operator=(const TestPane&) noexcept = delete;
+	virtual ~TestPane() noexcept override {}
+
+	// Event Handlers
+	virtual void HandleOnMouseEnteredTitleBar(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExitedTitleBar(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseEnteredContentRegion(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseExitedContentRegion(Evergreen::MouseMoveEvent&) override;
+	virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;
 };

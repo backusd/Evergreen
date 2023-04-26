@@ -9,7 +9,6 @@
 	"Pane1": {
 		"Type": "Pane",
 		"Title": "Suck weeners", // (optional) - Title that will appear in the title bar of the Pane.
-		//                                     - Title is required if 'IncludeTitleBar' is true
 		//                                     - Can either specify a string or a json object that represents a Layout (see next Pane example below)
 		//
 		// Row/Column/RowSpan/ColumnSpan/Margin - NOTE: These keys are NOT valid for a Pane control
