@@ -297,7 +297,12 @@ void PaneLoader::ParseTitle(Pane* pane, json& data)
 		else
 		{
 			JSON_LOADER_EXCEPTION_IF_FALSE(data["Title"].is_object(), "Pane control with name '{}': 'Title' field must either be a string or a json object that represents a Layout. Invalid Pane object: {}", m_name, data.dump(4));
-			JSONLoaders::LoadLayout(pane->GetDeviceResources(), pane->GetTitleBarLayout(), data["Title"]);
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["Title"].contains("Type"), "Pane control with name '{}': When 'Title' field is a json object that represents a Layout, it must contain the 'Type' field. Invalid Pane object: {}", m_name, data.dump(4));
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["Title"]["Type"].is_string(), "Pane control with name '{}': When 'Title' field is a json object that represents a Layout, the 'Type' field must be a string. Invalid Pane object: {}", m_name, data.dump(4));
+			std::string type = data["Title"]["Type"].get<std::string>();
+			JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::IsLayoutKey(type), "Pane control with name '{}': Title Layout 'Type' of '{}' was not found in the map of Layout loaders. Invalid Pane object: {}", m_name, type, data.dump(4));
+
+			JSONLoaders::LoadLayout(pane->GetDeviceResources(), type, pane->GetTitleBarLayout(), data["Title"], std::format("{}_TitleLayout", m_name));
 		}
 	}
 	else
@@ -310,7 +315,12 @@ void PaneLoader::ParseContent(Pane* pane, json& data)
 {
 	JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("Content"), "Pane control with name '{}': 'Content' field is required. Incomplete Pane object: {}", m_name, data.dump(4));
 	JSON_LOADER_EXCEPTION_IF_FALSE(data["Content"].is_object(), "Pane control with name '{}': 'Content' field must be a json object that represents a Layout. Invalid Pane object: {}", m_name, data.dump(4));
-	JSONLoaders::LoadLayout(pane->GetDeviceResources(), pane->GetContentLayout(), data["Content"]);
+	JSON_LOADER_EXCEPTION_IF_FALSE(data["Content"].contains("Type"), "Pane control with name '{}': 'Content' field must be a json object that represents a Layout and must contain the 'Type' field. Invalid Pane object: {}", m_name, data.dump(4));
+	JSON_LOADER_EXCEPTION_IF_FALSE(data["Content"]["Type"].is_string(), "Pane control with name '{}': 'Content' field must be a json object that represents a Layout and the 'Type' field must be a string. Invalid Pane object: {}", m_name, data.dump(4));
+	std::string type = data["Content"]["Type"].get<std::string>();
+	JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::IsLayoutKey(type), "Pane control with name '{}': Title Layout 'Type' of '{}' was not found in the map of Layout loaders. Invalid Pane object: {}", m_name, type, data.dump(4));
+
+	JSONLoaders::LoadLayout(pane->GetDeviceResources(), type, pane->GetContentLayout(), data["Content"], std::format("{}_ContentLayout", m_name));
 }
 
 }

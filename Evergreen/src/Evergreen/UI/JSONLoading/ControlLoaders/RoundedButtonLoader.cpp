@@ -118,7 +118,8 @@ void RoundedButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceRe
 			EG_CORE_WARN("{}:{} - RoundedButton control with name '{}': 'Content' layout object should not contain 'Brush' keyword. Ignoring 'Brush' value for json object: {}", __FILE__, __LINE__, m_name, data.dump(4));
 		}
 		content["Brush"] = data["BackgroundBrush"];
-		JSONLoaders::LoadLayout(deviceResources, layout, content);
+
+		JSONLoaders::LoadLayout(deviceResources, "Layout", layout, content, "RoundedButtonLayout");
 	}
 	else
 	{

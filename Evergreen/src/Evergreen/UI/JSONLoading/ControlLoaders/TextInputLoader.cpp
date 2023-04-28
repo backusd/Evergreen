@@ -148,7 +148,7 @@ void TextInputLoader::ParseRightSideLayout(TextInput* textInput, json& data)
 		Layout* rightLayout = textInput->AddRightColumnLayout({ rowColType, rowColSize });
 		EG_CORE_ASSERT(rightLayout != nullptr, "should not be able to return nullptr");
 
-		JSONLoaders::LoadLayout(textInput->GetDeviceResources(), rightLayout, data["RightSideLayout"]);
+		JSONLoaders::LoadLayout(textInput->GetDeviceResources(), "Layout", rightLayout, data["RightSideLayout"], std::format("{}_RightSideLayout", m_name));
 	}
 	else
 	{

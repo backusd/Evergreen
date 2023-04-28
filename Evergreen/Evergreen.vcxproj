@@ -43,6 +43,7 @@
     <ClInclude Include="src\Evergreen\UI\Controls\TextInput.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Viewport.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.h" />
+    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\LayoutLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.h" />
@@ -100,6 +101,7 @@
     <ClCompile Include="src\Evergreen\UI\Controls\TextInput.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Viewport.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.cpp" />
+    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\LayoutLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.cpp" />

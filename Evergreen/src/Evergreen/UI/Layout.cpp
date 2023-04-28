@@ -865,7 +865,7 @@ void Layout::Resize(const D2D1_RECT_F& rect) noexcept
 	m_height = rect.bottom - rect.top;
 	UpdateLayout();
 
-	m_OnResizeCallback(this);
+	HandleOnResize();
 }
 void Layout::Resize(float top, float left, float width, float height) noexcept
 {
@@ -878,7 +878,7 @@ void Layout::Resize(float top, float left, float width, float height) noexcept
 	m_height = height;
 	UpdateLayout();
 
-	m_OnResizeCallback(this);
+	HandleOnResize();
 }
 void Layout::Resize(float width, float height) noexcept
 {
@@ -889,7 +889,7 @@ void Layout::Resize(float width, float height) noexcept
 	m_height = height;
 	UpdateLayout();
 
-	m_OnResizeCallback(this);
+	HandleOnResize();
 }
 
 void Layout::OnChar(CharEvent& e)

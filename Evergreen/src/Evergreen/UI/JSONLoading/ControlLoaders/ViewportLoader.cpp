@@ -23,10 +23,10 @@ void ViewportLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResourc
 	JSON_LOADER_EXCEPTION_IF_FALSE(content.contains("Type"), "Viewport control with name '{}': 'Content' json object must contain key 'Type'. Invalid Viewport object: {}", m_name, data.dump(4));
 	JSON_LOADER_EXCEPTION_IF_FALSE(content["Type"].is_string(), "Viewport control with name '{}': 'Content' json object key 'Type' must have a string value. Invalid Viewport object: {}", m_name, data.dump(4));
 
-	std::string contentType = content["Type"].get<std::string>();
-	JSON_LOADER_EXCEPTION_IF_FALSE(contentType.compare("Layout") == 0, "Viewport control with name '{}': 'Content'->'Type' must have the value 'Layout'. Invalid Viewport object: {}", m_name, data.dump(4));
-
-	JSONLoaders::LoadLayout(deviceResources, layout, content);
+	std::string type = content["Type"].get<std::string>();
+	JSON_LOADER_EXCEPTION_IF_FALSE(JSONLoaders::IsLayoutKey(type), "Viewport control with name '{}': The 'Content'->'Type' value '{}' was not found in the map of Layout loaders. Invalid Viewport object: {}", m_name, type, data.dump(4));
+	
+	JSONLoaders::LoadLayout(deviceResources, type, layout, content, std::format("{}_ContentLayout", m_name));
 }
 
 }

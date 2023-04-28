@@ -104,7 +104,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadGradientBrush(std::shared_ptr<Devic
 
 	for (auto& stopObject : data["Stops"])
 	{
-		D2D1_GRADIENT_STOP stop;
+		D2D1_GRADIENT_STOP stop{};
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(stopObject.is_object(), "'Stops' array values must be json objects. Invalid 'Stops' object: {}", stopObject.dump(4));
 		JSON_LOADER_EXCEPTION_IF_FALSE(stopObject.contains("Color"), "Each 'Stops' array values must contain the key 'Color'. Invalid 'Stops' object: {}", stopObject.dump(4));
@@ -213,7 +213,7 @@ std::unique_ptr<ColorBrush> JSONLoaders::LoadRadialBrush(std::shared_ptr<DeviceR
 
 	for (auto& stopObject : data["Stops"])
 	{
-		D2D1_GRADIENT_STOP stop;
+		D2D1_GRADIENT_STOP stop{};
 
 		JSON_LOADER_EXCEPTION_IF_FALSE(stopObject.is_object(), "'Stops' array values must be json objects. Invalid 'Stops' object: {}", stopObject.dump(4));
 		JSON_LOADER_EXCEPTION_IF_FALSE(stopObject.contains("Color"), "Each 'Stops' array values must contain the key 'Color'. Invalid 'Stops' object: {}", stopObject.dump(4));
@@ -425,6 +425,15 @@ Control* JSONLoaders::LoadControlImpl(std::shared_ptr<DeviceResources> deviceRes
 
 	return m_controlLoaders[key](deviceResources, parent, data, name, rowColumnPositionOverride);
 }
+void JSONLoaders::LoadLayoutImpl(std::shared_ptr<DeviceResources> deviceResources, const std::string& type, Layout* layout, json& data, const std::string& name)
+{
+	EG_CORE_ASSERT(deviceResources != nullptr, "No device resources"); 
+	EG_CORE_ASSERT(layout != nullptr, "Layout should never be nullptr");
+
+	JSON_LOADER_EXCEPTION_IF_FALSE(m_layoutLoaders.find(type) != m_layoutLoaders.end(), "JSONLoaders: Failed to load layout with name '{}'. No layout loader for type: {}", name, type);
+
+	m_layoutLoaders[type](deviceResources, layout, data, name);
+}
 
 bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept
 {
@@ -446,7 +455,10 @@ bool JSONLoaders::LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, c
 		LoadGlobalStyles(deviceResources);
 
 		// Load all the json data under the 'root' key
- 		LoadLayoutDetails(deviceResources, rootLayout, m_jsonRoot["root"]);
+		JSON_LOADER_EXCEPTION_IF_FALSE(m_jsonRoot.contains("root"), "{}", "JSONLoaders: Failed to load root layout. No 'root' key found");
+		JSON_LOADER_EXCEPTION_IF_FALSE(m_jsonRoot["root"].contains("Type"), "{}", "JSONLoaders: Failed to load root layout. Root Layout MUST contain 'Type' key.");
+		JSON_LOADER_EXCEPTION_IF_FALSE(m_jsonRoot["root"]["Type"].is_string(), "{}", "JSONLoaders: Failed to load root layout. Root Layout 'Type' value must be a string.");
+		LoadLayoutImpl(deviceResources, m_jsonRoot["root"]["Type"].get<std::string>(), rootLayout, m_jsonRoot["root"], "root");
 
 		// Finally, load all panes
 		LoadPanes(deviceResources, rootLayout);
@@ -572,13 +584,14 @@ void JSONLoaders::LoadLayoutFromFileImpl(const std::string& fileName, Layout* la
 
 			std::string type = data[key]["Type"].get<std::string>(); 
 
-			if (type.compare("Layout") == 0)
+			if (IsLayoutKeyImpl(type))
 			{
 				// Clear all layout contents (rows, columns, controls, and sublayouts)
 				layoutToFill->ClearContents();
 
 				// Load the new contents
-				LoadLayoutDetails(layoutToFill->GetDeviceResources(), layoutToFill, data[key]);
+				//LoadLayoutDetails(layoutToFill->GetDeviceResources(), layoutToFill, data[key]);
+				LoadLayoutImpl(layoutToFill->GetDeviceResources(), type, layoutToFill, data[key], key);
 			}
 			else
 			{
@@ -663,6 +676,7 @@ void JSONLoaders::LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResour
 		}
 	}
 }
+/*
 void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
 	// First, import any necessary data
@@ -680,9 +694,6 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 
 	// Load Layout Border details
 	LoadLayoutBorder(deviceResources, layout, data);
-
-	// Load Layout Callbacks
-	LoadLayoutCallbacks(layout, data);
 
 	// Now iterate over the controls and sublayouts within the layout
 	for (auto& [key, value] : data.items())
@@ -735,6 +746,7 @@ void JSONLoaders::LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResou
 		}
 	}
 }
+*/
 void JSONLoaders::LoadPanes(std::shared_ptr<DeviceResources> deviceResources, Layout* layout)
 {
 	for (auto& [key, value] : m_jsonRoot.items())
@@ -805,6 +817,7 @@ void JSONLoaders::ImportJSONImpl(json& data)
 		data.erase("import");
 	}
 }
+/*
 void JSONLoaders::LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
 	EG_CORE_ASSERT(layout != nullptr, "Layout cannot be nullptr");
@@ -1046,26 +1059,6 @@ void JSONLoaders::LoadLayoutBorder(std::shared_ptr<DeviceResources> deviceResour
 		layout->BorderBottomRightOffsetY(value);
 	}
 }
-void JSONLoaders::LoadLayoutCallbacks(Layout* layout, json& data)
-{
-	EG_CORE_ASSERT(layout != nullptr, "No layout");
-
-	if (data.contains("OnResize"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnResize"].is_string(), "Layout with name '{}': 'OnResize' value must be a string. Invalid Layout object: {}", layout->Name(), data.dump(4));
-
-		std::string key = data["OnResize"].get<std::string>();
-
-		auto callback = JSONLoaders::GetLayoutCallback(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Layout with name '{}': 'OnResize' callback not found for key '{}'. Invalid Layout object: {}", layout->Name(), key, data.dump(4));
-		layout->SetOnResizeCallback(callback);
-
-		// NOTE: It might be tempting to immediately call layout->TriggerOnResizeCallback() to allow the
-		//		 callback to alter the layout in some way. However, it is very possible that the callback
-		//		 will perform a lookup of another Layout or Control that has not yet been created. Therefore,
-		//		 we MUST defer triggering the callback until the entire UI has been loaded.
-	}
-}
 void JSONLoaders::LoadLayoutID(Layout* layout, json& data)
 {
 	EG_CORE_ASSERT(layout != nullptr, "No layout");
@@ -1131,6 +1124,7 @@ void JSONLoaders::LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources
 	Layout* sublayout = parent->AddSubLayout(position, name);
 	return LoadLayoutDetails(deviceResources, sublayout, data);
 }
+*/
 
 RowColumnPosition JSONLoaders::ParseRowColumnPosition(json& data)
 {

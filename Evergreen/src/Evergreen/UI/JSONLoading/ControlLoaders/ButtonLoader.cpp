@@ -92,13 +92,13 @@ void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources
 
 		JSONLoaders::LoadControl(deviceResources, "Text", layout, content, m_name + "_Text");
 	}
-	else if (contentType.compare("Layout") == 0)
+	else if (JSONLoaders::IsLayoutKey(contentType))
 	{
-		JSONLoaders::LoadLayout(deviceResources, layout, content);
+		JSONLoaders::LoadLayout(deviceResources, contentType, layout, content, std::format("{}_ContentLayout", m_name));
 	}
 	else
 	{
-		JSON_LOADER_EXCEPTION("Button control with name '{}': 'Content' json object key 'Type' value ('{}') was not recoginized - value must either be 'Text' or 'Layout'. Invalid Button object: {}", m_name, contentType, data.dump(4));
+		JSON_LOADER_EXCEPTION("Button control with name '{}': 'Content' json object key 'Type' value ('{}') was not recognized - value must either be 'Text' or a Layout type. Invalid Button object: {}", m_name, contentType, data.dump(4));
 	}
 }
 

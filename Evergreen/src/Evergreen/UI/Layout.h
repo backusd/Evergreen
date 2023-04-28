@@ -165,10 +165,10 @@ public:
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr, const std::string& name = "Unnamed") noexcept;
 	Layout(const Layout&) = delete;
 	Layout& operator=(const Layout&) = delete;
-	~Layout() 
-	{
-		// EG_CORE_TRACE("~Layout: {}", m_name);
-	}
+	virtual ~Layout() {}
+
+	// Handlers for Event callbacks
+	virtual void HandleOnResize() {}
 
 	Layout* AddSubLayout(RowColumnPosition position, const std::string& name = "Unnamed");
 
@@ -244,9 +244,6 @@ public:
 	void Resize(float top, float left, float width, float height) noexcept;
 	void Resize(float width, float height) noexcept;
 
-	void SetOnResizeCallback(std::function<void(Layout*)> fn) noexcept { m_OnResizeCallback = fn; }
-	void TriggerOnResizeCallback() { m_OnResizeCallback(this); }
-
 	void OnChar(CharEvent& e);
 	void OnKeyPressed(KeyPressedEvent& e);
 	void OnKeyReleased(KeyReleasedEvent& e);
@@ -290,8 +287,6 @@ private:
 
 	ND std::optional<unsigned int> MouseOverAdjustableColumn(float mouseX, float mouseY) const noexcept;
 	ND std::optional<unsigned int> MouseOverAdjustableRow(float mouseX, float mouseY) const noexcept;
-
-	std::function<void(Layout*)> m_OnResizeCallback = [](Layout* layout) {};
 
 	std::shared_ptr<DeviceResources> m_deviceResources;
 	UI* m_ui;
