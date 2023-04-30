@@ -25,7 +25,11 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_borderBottomLeftOffsetX(0.0f),
 	m_borderBottomLeftOffsetY(0.0f),
 	m_borderBottomRightOffsetX(0.0f),
-	m_borderBottomRightOffsetY(0.0f)
+	m_borderBottomRightOffsetY(0.0f),
+	m_cornerRadiusX(0.0f),
+	m_cornerRadiusY(0.0f),
+	m_roundedRect{},
+	m_roundedRectGeometry(nullptr)
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -63,7 +67,11 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_borderBottomLeftOffsetX(0.0f),
 	m_borderBottomLeftOffsetY(0.0f),
 	m_borderBottomRightOffsetX(0.0f),
-	m_borderBottomRightOffsetY(0.0f)
+	m_borderBottomRightOffsetY(0.0f),
+	m_cornerRadiusX(0.0f),
+	m_cornerRadiusY(0.0f),
+	m_roundedRect{},
+	m_roundedRectGeometry(nullptr)
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
@@ -87,6 +95,14 @@ void Button::OnUpdate(const Timer& timer)
 }
 
 void Button::Render() const
+{
+	if (m_cornerRadiusX > 0.0f && m_cornerRadiusY > 0.0f)
+		RenderRoundedRect();
+	else
+		RenderRect();
+}
+
+void Button::RenderRect() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
@@ -220,6 +236,24 @@ void Button::Render() const
 		}
 	}
 }
+void Button::RenderRoundedRect() const
+{
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+
+	auto context = m_deviceResources->D2DDeviceContext();
+
+	context->FillRoundedRectangle(m_roundedRect, m_backgroundBrush->Get());
+
+	m_layout->Render();
+
+	// Draw the border last so it appears on top
+	// NOTE: We do NOT support drawing partial borders when drawing a rounded rect, so just use the first border width in the array
+	if (m_borderWidths[0] > 0.0f)
+		context->DrawRoundedRectangle(m_roundedRect, m_borderBrush->Get(), m_borderWidths[0]);
+}
 
 void Button::ButtonChanged()
 {
@@ -230,6 +264,16 @@ void Button::ButtonChanged()
 	m_backgroundRect.top = m_allowedRegion.top + m_margin.Top;
 	m_backgroundRect.right = m_allowedRegion.right - m_margin.Right;
 	m_backgroundRect.bottom = m_allowedRegion.bottom - m_margin.Bottom;
+
+	if (m_cornerRadiusX > 0.0f && m_cornerRadiusY > 0.0f)
+	{
+		m_roundedRect = D2D1::RoundedRect(m_backgroundRect, m_cornerRadiusX, m_cornerRadiusY);
+
+		// Create the rounded rect geometry (used for determining if mouse is over button)
+		GFX_THROW_INFO(
+			m_deviceResources->D2DFactory()->CreateRoundedRectangleGeometry(m_roundedRect, m_roundedRectGeometry.ReleaseAndGetAddressOf())
+		)
+	}
 
 	m_layout->Resize(m_backgroundRect);
 }
@@ -252,6 +296,14 @@ void Button::OnAllowedRegionChanged()
 
 bool Button::ContainsPoint(float x, float y) const noexcept
 {
+	if (m_cornerRadiusX > 0.0f && m_cornerRadiusY > 0.0f)
+	{
+		EG_CORE_ASSERT(m_roundedRectGeometry != nullptr, "No rounded rect geometry");
+		BOOL b;
+		m_roundedRectGeometry->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
+		return static_cast<bool>(b);
+	}
+
 	return m_layout->ContainsPoint(x, y);
 }
 

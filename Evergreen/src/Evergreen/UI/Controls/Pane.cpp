@@ -645,11 +645,11 @@ void Pane::SetCornerRadius(float xAndY) noexcept
 
 	if (m_titleLayout != nullptr)
 	{
-		RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
-		rb->SetCornerRadius(xAndY);
+		Button* button = static_cast<Button*>(m_titleLayout->GetControl(0));
+		button->SetCornerRadius(xAndY);
 
-		rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
-		rb->SetCornerRadius(xAndY);
+		button = static_cast<Button*>(m_titleLayout->GetControl(1));
+		button->SetCornerRadius(xAndY);
 	}
 }
 void Pane::SetCornerRadius(float x, float y) noexcept 
@@ -659,11 +659,11 @@ void Pane::SetCornerRadius(float x, float y) noexcept
 
 	if (m_titleLayout != nullptr)
 	{
-		RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
-		rb->SetCornerRadius(x, y);
+		Button* button = static_cast<Button*>(m_titleLayout->GetControl(0));
+		button->SetCornerRadius(x, y);
 
-		rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
-		rb->SetCornerRadius(x, y);
+		button = static_cast<Button*>(m_titleLayout->GetControl(1));
+		button->SetCornerRadius(x, y);
 	}
 }
 void Pane::SetTitleBarHeight(float height) noexcept

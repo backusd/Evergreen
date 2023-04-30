@@ -63,6 +63,32 @@ std::array<float, 4> ButtonLoader::ParseBorderWidth(json& data)
 
 	return borderWidths;
 }
+void ButtonLoader::ParseRadiusX(Button* button, json& data)
+{
+	if (data.contains("CornerRadiusX"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusX"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+
+		float radiusX = data["CornerRadiusX"].get<float>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(radiusX >= 0, "Button control with name '{}': 'CornerRadiusX' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+		button->SetCornerRadiusX(radiusX);
+	}
+}
+void ButtonLoader::ParseRadiusY(Button* button, json& data)
+{
+	if (data.contains("CornerRadiusY"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusY"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+
+		float radiusY = data["CornerRadiusY"].get<float>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(radiusY >= 0, "Button control with name '{}': 'CornerRadiusY' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+		button->SetCornerRadiusY(radiusY);
+	}
+}
 void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
 	EG_CORE_ASSERT(layout != nullptr, "layout is nullptr");

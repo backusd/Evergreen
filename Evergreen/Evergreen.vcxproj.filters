@@ -150,16 +150,10 @@
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\Controls.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h">
@@ -314,13 +308,7 @@
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ButtonLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Evergreen\UI\Controls\ScrollableLayout.cpp">

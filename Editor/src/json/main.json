@@ -23,6 +23,9 @@
 			"Column": 1,
 			"BackgroundBrush": "Blue",
 
+			"CornerRadiusX": 10.0,
+			"CornerRadiusY": 10.0,
+
 			"Content": {
 				"Type": "Text",
 				"Text": "Some Text",

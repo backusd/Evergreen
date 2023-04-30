@@ -36,7 +36,6 @@
     <ClInclude Include="src\Evergreen\UI\Controls\Button.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\RadioButton.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\Rectangle.h" />
-    <ClInclude Include="src\Evergreen\UI\Controls\RoundedButton.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\ScrollableLayout.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\SliderFloat.h" />
     <ClInclude Include="src\Evergreen\UI\Controls\SliderInt.h" />
@@ -47,7 +46,6 @@
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.h" />
-    <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderFloatLoader.h" />
     <ClInclude Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderIntLoader.h" />
@@ -94,7 +92,6 @@
     <ClCompile Include="src\Evergreen\UI\Controls\Button.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\RadioButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\Rectangle.cpp" />
-    <ClCompile Include="src\Evergreen\UI\Controls\RoundedButton.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\ScrollableLayout.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\SliderFloat.cpp" />
     <ClCompile Include="src\Evergreen\UI\Controls\SliderInt.cpp" />
@@ -105,7 +102,6 @@
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\PaneLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RadioButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RectangleLoader.cpp" />
-    <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\RoundedButtonLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\ScrollableLayoutLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderFloatLoader.cpp" />
     <ClCompile Include="src\Evergreen\UI\JSONLoading\ControlLoaders\SliderIntLoader.cpp" />

@@ -68,8 +68,10 @@ public:
 	virtual void HandleOnClick(MouseButtonReleasedEvent&) {}
 
 	// Inherited from Control
-	virtual void OnUpdate(const Timer& timer) override;
-	virtual void Render() const override;
+	void OnUpdate(const Timer& timer) override;
+	void Render() const override;
+	void RenderRect() const;
+	void RenderRoundedRect() const;
 
 	// There is a special case where a Pane has handled a move event, but this Control was previously handling
 	// the move events. Therefore, we need to inform this Control that the mouse is no longer over the Control
@@ -97,7 +99,9 @@ public:
 	ND inline ColorBrush* BorderBrush() const noexcept { return m_borderBrush.get(); }
 	ND inline Layout* GetLayout() const noexcept { return m_layout.get(); }
 	ND inline std::array<float, 4> BorderWidth() const noexcept { return m_borderWidths; }
+
 	ND inline const D2D1_RECT_F& BackgroundRect() const noexcept { return m_backgroundRect; }
+	ND inline const D2D1_ROUNDED_RECT& BackgroundRoundedRect() const noexcept { return m_roundedRect; }
 
 	void BackgroundBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_backgroundBrush = std::move(brush); }
 	void BorderBrush(std::unique_ptr<ColorBrush> brush) noexcept { m_borderBrush = std::move(brush); }
@@ -119,6 +123,12 @@ public:
 	inline void BackgroundBrushAndTextColor(const D2D1_COLOR_F& buttonColor, D2D1::ColorF::Enum textColor);
 	inline void BackgroundBrushAndTextColor(D2D1::ColorF::Enum buttonColor, D2D1::ColorF::Enum textColor);
 
+	void SetCornerRadius(float xAndY) noexcept { m_cornerRadiusX = xAndY; m_cornerRadiusY = xAndY; ButtonChanged(); }
+	void SetCornerRadius(float x, float y) noexcept { m_cornerRadiusX = x; m_cornerRadiusY = y; ButtonChanged(); }
+	void SetCornerRadiusX(float radiusX) noexcept { m_cornerRadiusX = radiusX; ButtonChanged(); }
+	void SetCornerRadiusY(float radiusY) noexcept { m_cornerRadiusY = radiusY; ButtonChanged(); }
+
+
 	ND inline bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 
 	ND virtual bool ContainsPoint(float x, float y) const noexcept;
@@ -137,6 +147,11 @@ protected:
 	std::unique_ptr<Layout>		m_layout;
 	std::array<float, 4>		m_borderWidths;
 	D2D1_RECT_F					m_backgroundRect;
+
+	float m_cornerRadiusX;
+	float m_cornerRadiusY;
+	D2D1_ROUNDED_RECT m_roundedRect;
+	Microsoft::WRL::ComPtr<ID2D1RoundedRectangleGeometry> m_roundedRectGeometry;
 
 	float m_borderTopLeftOffsetX;
 	float m_borderTopLeftOffsetY;
