@@ -25,6 +25,13 @@
 		"BorderBottomRightOffsetX": 5.0,
 		"BorderBottomRightOffsetY": 5.0,
 
+		// Corner Radius
+		// - You should either use 'CornerRadius' OR 'CornerRadiusX' and 'CornerRadiusY'
+		"CornerRadius": 10.0, // (optional) Set BOTH the X and Y corner radius values to the same value. Default will be 0 (non-rounded corners)
+		// OR
+		"CornerRadiusX": 15.0,
+		"CornerRadiusY": 25.0,
+
 
 		// Button Content: Must be a json object with the 'Type' key having a value of either 'Text' or 'Layout'
 		//                 If the value is 'Text', the button will contain a single Text control (See Text.json for how to specify Text attributes)

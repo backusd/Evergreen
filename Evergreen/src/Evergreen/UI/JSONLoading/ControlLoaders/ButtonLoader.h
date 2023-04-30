@@ -43,9 +43,7 @@ private:
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
 	void ParseBorderOffsets(Button* button, json& data);
-	void ParseRadiusX(Button* button, json& data);
-	void ParseRadiusY(Button* button, json& data);
-
+	void ParseCornerRadius(Button* button, json& data);
 };
 #pragma warning( pop )
 
@@ -79,7 +77,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin", 
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
 	"BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", "BorderBottomLeftOffsetY",
-	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY", "CornerRadiusX", "CornerRadiusY" };
+	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY", "CornerRadiusX", "CornerRadiusY", "CornerRadius" };
 	for (auto& [key, value] : data.items()) 
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end()) 
@@ -95,8 +93,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 
 	ParseContent(deviceResources, button->GetLayout(), data); 
 	ParseBorderOffsets(button, data); 
-	ParseRadiusX(button, data);
-	ParseRadiusY(button, data);
+	ParseCornerRadius(button, data);
 
 	return button;
 }

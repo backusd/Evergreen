@@ -63,31 +63,53 @@ std::array<float, 4> ButtonLoader::ParseBorderWidth(json& data)
 
 	return borderWidths;
 }
-void ButtonLoader::ParseRadiusX(Button* button, json& data)
+void ButtonLoader::ParseCornerRadius(Button* button, json& data)
 {
-	if (data.contains("CornerRadiusX"))
+	if (data.contains("CornerRadius"))
 	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusX"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		if (data.contains("CornerRadiusX"))
+		{
+			EG_CORE_WARN("Button control with name '{}': Ignoring key 'CornerRadiusX' because key 'CornerRadius' was found and takes precendent. You should either only use 'CornerRadius' or use BOTH 'CornerRadiusX' and 'CornerRadiusY'.", m_name);
+		}
+		if (data.contains("CornerRadiusY"))
+		{
+			EG_CORE_WARN("Button control with name '{}': Ignoring key 'CornerRadiusY' because key 'CornerRadius' was found and takes precendent. You should either only use 'CornerRadius' or use BOTH 'CornerRadiusX' and 'CornerRadiusY'.", m_name);
+		}
 
-		float radiusX = data["CornerRadiusX"].get<float>();
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadius"].is_number(), "Button control with name '{}': 'CornerRadius' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(radiusX >= 0, "Button control with name '{}': 'CornerRadiusX' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+		float radius = data["CornerRadius"].get<float>();
 
-		button->SetCornerRadiusX(radiusX);
+		JSON_LOADER_EXCEPTION_IF_FALSE(radius >= 0, "Button control with name '{}': 'CornerRadius' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+		button->SetCornerRadius(radius);
 	}
-}
-void ButtonLoader::ParseRadiusY(Button* button, json& data)
-{
-	if (data.contains("CornerRadiusY"))
+	else
 	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusY"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+		if (data.contains("CornerRadiusX"))
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusX"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
 
-		float radiusY = data["CornerRadiusY"].get<float>();
+			float radiusX = data["CornerRadiusX"].get<float>();
 
-		JSON_LOADER_EXCEPTION_IF_FALSE(radiusY >= 0, "Button control with name '{}': 'CornerRadiusY' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+			JSON_LOADER_EXCEPTION_IF_FALSE(radiusX >= 0, "Button control with name '{}': 'CornerRadiusX' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
 
-		button->SetCornerRadiusY(radiusY);
+			button->SetCornerRadiusX(radiusX);
+		}
+
+		if (data.contains("CornerRadiusY"))
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusY"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+
+			float radiusY = data["CornerRadiusY"].get<float>();
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(radiusY >= 0, "Button control with name '{}': 'CornerRadiusY' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+			button->SetCornerRadiusY(radiusY);
+		}
 	}
+
+
 }
 void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
