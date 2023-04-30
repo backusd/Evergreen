@@ -189,7 +189,7 @@ void ScrollableLayoutLoader::ParseRowDefinitions(ScrollableLayout* scrollableLay
 		JSON_LOADER_EXCEPTION_IF_FALSE(rowDefinition.contains("Height"), "ScrollableLayout control with name '{}': RowDefinition does not contain 'Height' key: {}", m_name, rowDefinition.dump(4));
 
 		// Get the Row type and size
-		auto [rowColType, rowColSize] = JSONLoaders::ParseRowColumnTypeAndSize(rowDefinition["Height"], m_name);
+		auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(rowDefinition["Height"]);
 
 		// If we can scroll vertically, the row type MUST be fixed
 		if (canScrollVertical)
@@ -220,12 +220,12 @@ void ScrollableLayoutLoader::ParseRowDefinitions(ScrollableLayout* scrollableLay
 			}
 			else if (key.compare("MaxHeight") == 0)
 			{
-				auto [type, size] = JSONLoaders::ParseRowColumnTypeAndSize(rowDefinition[key], m_name);
+				auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key]);
 				row->MaxHeight({ type, size });
 			}
 			else if (key.compare("MinHeight") == 0)
 			{
-				auto [type, size] = JSONLoaders::ParseRowColumnTypeAndSize(rowDefinition[key], m_name);
+				auto [type, size] = ParseRowColumnTypeAndSize(rowDefinition[key]);
 				row->MinHeight({ type, size });
 			}
 			else
@@ -260,7 +260,7 @@ void ScrollableLayoutLoader::ParseColumnDefinitions(ScrollableLayout* scrollable
 		JSON_LOADER_EXCEPTION_IF_FALSE(columnDefinition.contains("Width"), "ScrollableLayout control with name '{}': ColumnDefinition does not contain 'Width' key: {}", m_name, columnDefinition.dump(4));
 
 		// Get the Column type and size
-		auto [rowColType, rowColSize] = JSONLoaders::ParseRowColumnTypeAndSize(columnDefinition["Width"], m_name);
+		auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(columnDefinition["Width"]);
 
 		// If we can scroll horizontally, the column type MUST be fixed
 		if (canScrollHorizontal)
@@ -291,12 +291,12 @@ void ScrollableLayoutLoader::ParseColumnDefinitions(ScrollableLayout* scrollable
 			}
 			else if (key.compare("MaxWidth") == 0)
 			{
-				auto [type, size] = JSONLoaders::ParseRowColumnTypeAndSize(columnDefinition[key], m_name);
+				auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key]);
 				column->MaxWidth({ type, size });
 			}
 			else if (key.compare("MinWidth") == 0)
 			{
-				auto [type, size] = JSONLoaders::ParseRowColumnTypeAndSize(columnDefinition[key], m_name);
+				auto [type, size] = ParseRowColumnTypeAndSize(columnDefinition[key]);
 				column->MinWidth({ type, size });
 			}
 			else
@@ -623,4 +623,124 @@ void ScrollableLayoutLoader::LoadControls(std::shared_ptr<DeviceResources> devic
 	}
 
 }
+
+std::tuple<RowColumnType, float> ScrollableLayoutLoader::ParseRowColumnTypeAndSize(json& data)
+{
+	// The data must be an int, float, or string
+	// If int or float, the type is automatically FIXED
+	// If string & last character is % -> type is PERCENT
+	// If string & last character is * -> type is STAR
+	// Else -> type is FIXED
+
+	RowColumnType type = RowColumnType::FIXED;
+	float size = 1.0f;
+
+	if (data.is_number())
+	{
+		type = RowColumnType::FIXED;
+		size = data.get<float>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for ScrollableLayout with name '{}' must be greater than 0.\nInvalid value: {}", m_name, size);
+
+		return std::make_tuple(type, size);
+	}
+	else if (data.is_string())
+	{
+		std::string dataString = data.get<std::string>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(dataString.size() > 0, "Height/Width value for ScrollableLayout with name '{}' must not be empty.", m_name);
+
+		try {
+			// Don't need to take a substring of datastring to remove '%' or '*' because stof will read all valid
+			// digits and stop once it hits the end of the string or a non-numeric character
+			size = std::stof(dataString);
+		}
+		catch (const std::invalid_argument& e)
+		{
+			JSON_LOADER_EXCEPTION("Invalid Height/Width value for ScrollableLayout with name ({}) could not be parsed to a float: {}.\nException Message: {}", m_name, dataString, e.what());
+		}
+		catch (const std::out_of_range& e)
+		{
+			JSON_LOADER_EXCEPTION("Invalid Height/Width value for ScrollableLayout with name ({}). Caught out of range exception for value '{}'.\nException Message: {}", m_name, dataString, e.what());
+		}
+
+		// Get the type and perform some bounds checking
+		switch (dataString.back())
+		{
+		case '%':
+			type = RowColumnType::PERCENT;
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f && size <= 100.0f, "Percent Height/Width value for ScrollableLayout with name '{}' must be in the range (0, 100].\nInvalid value: {}", m_name, size);
+
+			size /= 100.0f; // Must divide by 100 to stay within the range [0, 1]
+
+			break;
+		case '*':
+			type = RowColumnType::STAR;
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Star Height/Width value for ScrollableLayout with name '{}' must be greater than 0.\nInvalid value: {}", m_name, size);
+
+			break;
+		default:
+			type = RowColumnType::FIXED;
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for ScrollableLayout with name '{}' must be greater than 0.\nInvalid value: {}", m_name, size);
+
+			break;
+		}
+
+		return std::make_tuple(type, size);
+	}
+
+	JSON_LOADER_EXCEPTION("Height/Width value must be either a number or a string.\nScrollableLayout name: {}\nInvalid value: {}", m_name, data.dump(4));
+}
+RowColumnPosition ScrollableLayoutLoader::ParseRowColumnPosition(json& data)
+{
+	RowColumnPosition position;
+	position.Row = 0;
+	position.Column = 0;
+	position.RowSpan = 1;
+	position.ColumnSpan = 1;
+
+	if (data.contains("Row"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["Row"].is_number_unsigned(), "ScrollableLayout name: {} - 'Row' value must be an unsigned int.\nInvalid value: {}", m_name, data["Row"].dump(4));
+		position.Row = data["Row"].get<unsigned int>();
+	}
+
+	if (data.contains("Column"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["Column"].is_number_unsigned(), "ScrollableLayout name: {} - 'Column' value must be an unsigned int.\nInvalid value: {}", m_name, data["Column"].dump(4));
+		position.Column = data["Column"].get<unsigned int>();
+	}
+
+	if (data.contains("RowSpan"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["RowSpan"].is_number_unsigned(), "ScrollableLayout name: {} - 'RowSpan' value must be an unsigned int.\nInvalid value : {}", m_name, data["RowSpan"].dump(4));
+
+		position.RowSpan = data["RowSpan"].get<unsigned int>();
+
+		if (position.RowSpan == 0)
+		{
+			EG_CORE_WARN("{}:{} - ScrollableLayout name: {} - Found 'RowSpan' with value of 0. Setting rowSpan = 1", __FILE__, __LINE__, m_name);
+			position.RowSpan = 1;
+		}
+	}
+
+	if (data.contains("ColumnSpan"))
+	{
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["ColumnSpan"].is_number_unsigned(), "ScrollableLayout name: {} - 'ColumnSpan' value must be an unsigned int.\nInvalid value : {}", m_name, data["ColumnSpan"].dump(4));
+
+		position.ColumnSpan = data["ColumnSpan"].get<unsigned int>();
+
+		if (position.ColumnSpan == 0)
+		{
+			EG_CORE_WARN("{}:{} - ScrollableLayout name: {} - Found 'ColumnSpan' with value of 0. Setting columnSpan = 1", __FILE__, __LINE__, m_name);
+			position.ColumnSpan = 1;
+		}
+	}
+
+	return position;
+}
+
 }

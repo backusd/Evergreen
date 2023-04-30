@@ -144,7 +144,7 @@ void TextInputLoader::ParseRightSideLayout(TextInput* textInput, json& data)
 		JSON_LOADER_EXCEPTION_IF_FALSE(data.contains("RightSideLayout"), "TextInput control with name '{}': 'RightSideLayout' value must be specified if 'RightSideLayoutColumnWidth' is specified. Invalid TextInput object: {}", m_name, data.dump(4));
 		JSON_LOADER_EXCEPTION_IF_FALSE(data["RightSideLayout"].is_object(), "TextInput control with name '{}': 'RightSideLayout' value must be a json object. Invalid TextInput object: {}", m_name, data.dump(4));
 
-		auto [rowColType, rowColSize] = JSONLoaders::ParseRowColumnTypeAndSize(data["RightSideLayoutColumnWidth"], m_name);
+		auto [rowColType, rowColSize] = ParseRowColumnTypeAndSize(data["RightSideLayoutColumnWidth"]);
 		Layout* rightLayout = textInput->AddRightColumnLayout({ rowColType, rowColSize });
 		EG_CORE_ASSERT(rightLayout != nullptr, "should not be able to return nullptr");
 
@@ -155,4 +155,76 @@ void TextInputLoader::ParseRightSideLayout(TextInput* textInput, json& data)
 		JSON_LOADER_EXCEPTION_IF_FALSE(!data.contains("RightSideLayout"), "TextInput control with name '{}': When 'RightSideLayout' value is specified, 'RightSideLayoutColumnWidth' is required. Invalid TextInput object: {}", m_name, data.dump(4));
 	}
 }
+
+std::tuple<RowColumnType, float> TextInputLoader::ParseRowColumnTypeAndSize(json& data)
+{
+	// The data must be an int, float, or string
+	// If int or float, the type is automatically FIXED
+	// If string & last character is % -> type is PERCENT
+	// If string & last character is * -> type is STAR
+	// Else -> type is FIXED
+
+	RowColumnType type = RowColumnType::FIXED;
+	float size = 1.0f;
+
+	if (data.is_number())
+	{
+		type = RowColumnType::FIXED;
+		size = data.get<float>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for TextInputLoader with name '{}' must be greater than 0.\nInvalid value: {}", m_name, size);
+
+		return std::make_tuple(type, size);
+	}
+	else if (data.is_string())
+	{
+		std::string dataString = data.get<std::string>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(dataString.size() > 0, "Height/Width value for TextInputLoader with name '{}' must not be empty.", m_name);
+
+		try {
+			// Don't need to take a substring of datastring to remove '%' or '*' because stof will read all valid
+			// digits and stop once it hits the end of the string or a non-numeric character
+			size = std::stof(dataString);
+		}
+		catch (const std::invalid_argument& e)
+		{
+			JSON_LOADER_EXCEPTION("Invalid Height/Width value for TextInputLoader with name ({}) could not be parsed to a float: {}.\nException Message: {}", m_name, dataString, e.what());
+		}
+		catch (const std::out_of_range& e)
+		{
+			JSON_LOADER_EXCEPTION("Invalid Height/Width value for TextInputLoader with name ({}). Caught out of range exception for value '{}'.\nException Message: {}", m_name, dataString, e.what());
+		}
+
+		// Get the type and perform some bounds checking
+		switch (dataString.back())
+		{
+		case '%':
+			type = RowColumnType::PERCENT;
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f && size <= 100.0f, "Percent Height/Width value for TextInputLoader with name '{}' must be in the range (0, 100].\nInvalid value: {}", m_name, size);
+
+			size /= 100.0f; // Must divide by 100 to stay within the range [0, 1]
+
+			break;
+		case '*':
+			type = RowColumnType::STAR;
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Star Height/Width value for TextInputLoader with name '{}' must be greater than 0.\nInvalid value: {}", m_name, size);
+
+			break;
+		default:
+			type = RowColumnType::FIXED;
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(size > 0.0f, "Fixed Height/Width value for TextInputLoader with name '{}' must be greater than 0.\nInvalid value: {}", m_name, size);
+
+			break;
+		}
+
+		return std::make_tuple(type, size);
+	}
+
+	JSON_LOADER_EXCEPTION("Height/Width value must be either a number or a string.\nTextInputLoader name: {}\nInvalid value: {}", m_name, data.dump(4));
+}
+
 }

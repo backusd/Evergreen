@@ -110,5 +110,4 @@ unsigned int ControlLoader::ParseID(json& data)
 
 	return 0;
 }
-
 }

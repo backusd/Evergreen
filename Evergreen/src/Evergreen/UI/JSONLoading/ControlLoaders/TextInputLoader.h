@@ -38,6 +38,8 @@ private:
 	Control* LoadImpl(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride) requires (std::is_base_of_v<TextInput, T>);
 
 	std::wstring ParsePlaceholderText(json& data);
+
+	std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data);
 	
 	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);

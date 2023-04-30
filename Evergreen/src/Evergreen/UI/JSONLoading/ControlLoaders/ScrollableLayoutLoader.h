@@ -35,6 +35,9 @@ private:
 	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	float ParseBorderWidth(json& data);
 
+	std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data);
+	RowColumnPosition ParseRowColumnPosition(json& data);
+
 	bool ParseScrollVertical(json& data);
 	bool ParseScrollHorizontal(json& data);
 

@@ -83,6 +83,8 @@
 			"Height": 100,
 			"Width": 150,
 
+			"CornerRadius": 10.0,
+
 			"Content": {
 				"Type": "Layout",
 				"RowDefinitions": [ { "Height": "1*" } ],

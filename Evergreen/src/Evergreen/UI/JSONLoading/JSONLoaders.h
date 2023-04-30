@@ -37,7 +37,6 @@ public:
 	static void LoadControlsFromFile(const std::string& fileName, Layout* parentLayout, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { Get().LoadControlsFromFileImpl(fileName, parentLayout, rowColumnPositionOverride); }
 	static void LoadLayoutFromFile(const std::string& fileName, Layout* layoutToFill) { Get().LoadLayoutFromFileImpl(fileName, layoutToFill); }
 
-	//static void LoadLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data) { Get().LoadLayoutDetails(deviceResources, layout, data); }
 	static inline void LoadLayout(std::shared_ptr<DeviceResources> deviceResources, const std::string& type, Layout* layout, json& data, const std::string& name) { Get().LoadLayoutImpl(deviceResources, type, layout, data, name); }
 	
 	static Control* LoadControl(std::shared_ptr<DeviceResources> deviceResources, const std::string& key, Layout* parent, json& data, const std::string& name, std::optional<RowColumnPosition> rowColumnPositionOverride = std::nullopt) { return Get().LoadControlImpl(deviceResources, key, parent, data, name, rowColumnPositionOverride); }
@@ -57,8 +56,6 @@ public:
 
 	static void AddControlName(const std::string& name) { Get().AddControlNameImpl(name); }
 	static void ClearCache() noexcept { Get().ClearCacheImpl(); }
-
-	static std::tuple<RowColumnType, float> ParseRowColumnTypeAndSize(json& data, const std::string& layoutName) { return Get().ParseRowColumnTypeAndSizeImpl(data, layoutName); }
 
 
 
@@ -91,20 +88,7 @@ private:
 
 	bool LoadUIImpl(std::shared_ptr<DeviceResources> deviceResources, const std::filesystem::path& rootDirectory, const std::string& rootFile, Layout* rootLayout) noexcept;
 	void LoadGlobalStyles(std::shared_ptr<DeviceResources> deviceResources);
-	//void LoadLayoutDetails(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 	void LoadPanes(std::shared_ptr<DeviceResources> deviceResources, Layout* layout);
-
-
-//	void LoadLayoutBrush(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
-//	void LoadLayoutRowDefinitions(Layout* layout, json& data);
-//	void LoadLayoutColumnDefinitions(Layout* layout, json& data);
-//	void LoadLayoutMargin(Layout* layout, json& data);
-//	void LoadLayoutBorder(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
-//	void LoadLayoutID(Layout* layout, json& data);
-//	void LoadSubLayout(std::shared_ptr<DeviceResources> deviceResources, Layout* parent, json& data, const std::string& name);
-
-	RowColumnPosition ParseRowColumnPosition(json& data);
-	std::tuple<RowColumnType, float> ParseRowColumnTypeAndSizeImpl(json& data, const std::string& layoutName);
 
 	void ImportJSONImpl(json& data);
 
