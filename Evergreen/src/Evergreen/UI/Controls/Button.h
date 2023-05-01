@@ -123,6 +123,11 @@ protected:
 	std::array<float, 4>		m_borderWidths;
 	D2D1_RECT_F					m_backgroundRect;
 
+	float m_cornerRadiusX;
+	float m_cornerRadiusY;
+	D2D1_ROUNDED_RECT m_roundedRect;
+	Microsoft::WRL::ComPtr<ID2D1RoundedRectangleGeometry> m_roundedRectGeometry;
+
 	float m_borderTopLeftOffsetX;
 	float m_borderTopLeftOffsetY;
 	float m_borderTopRightOffsetX;
