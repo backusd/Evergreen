@@ -260,6 +260,16 @@ void Button::ButtonChanged()
 	m_backgroundRect.right = m_allowedRegion.right - m_margin.Right;
 	m_backgroundRect.bottom = m_allowedRegion.bottom - m_margin.Bottom;
 
+	if (m_cornerRadiusX > 0.0f && m_cornerRadiusY > 0.0f)
+	{
+		m_roundedRect = D2D1::RoundedRect(m_backgroundRect, m_cornerRadiusX, m_cornerRadiusY);
+
+		// Create the rounded rect geometry (used for determining if mouse is over button)
+		GFX_THROW_INFO(
+			m_deviceResources->D2DFactory()->CreateRoundedRectangleGeometry(m_roundedRect, m_roundedRectGeometry.ReleaseAndGetAddressOf())
+		)
+	}
+
 	m_layout->Resize(m_backgroundRect);
 }
 
