@@ -127,7 +127,7 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 		DWRITE_PARAGRAPH_ALIGNMENT::DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
 		DWRITE_WORD_WRAPPING::DWRITE_WORD_WRAPPING_NO_WRAP
 		);
-	m_valueTextInputOnRight = std::make_unique<TextInput>(
+	m_valueTextInputOnRight = std::make_unique<SliderFloatTextInput>(
 		m_deviceResources,
 		m_ui,
 		GetValueTextOnRightAllowedRegion(),
@@ -141,14 +141,9 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 		1.0f // border width
 		);
 	m_valueTextInputOnRight->SetInputText(std::format(L"{:.2f}", m_value));
-/*
-	m_valueTextInputOnRight->SetOnEnterKeyCallback(
-		[this](Control* control, Event& e)
-		{
-			EG_CORE_ASSERT(this != nullptr, "Something went wrong!!");
-			EG_CORE_ASSERT(control != nullptr, "Something went wrong!!");
 
-			TextInput* ti = static_cast<TextInput*>(control);
+	m_valueTextInputOnRight->m_OnEnterKeyCallback =	[this](SliderFloatTextInput* ti)
+		{
 			std::wstring text = ti->GetInputText();
 			if (text.size() == 0)
 			{
@@ -182,9 +177,7 @@ SliderFloat::SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 				EG_CORE_WARN("{}:{} - SliderFloat with name '{}': caught std::out_of_range exception with message: {}", __FILE__, __LINE__, this->Name(), ex.what());
 				this->UpdateValueTexts(); // Just reset the text to whatever it was previously
 			}
-		}
-	);
-*/
+		};
 
 	// Value Text On Pop Up
 	std::unique_ptr<TextStyle> valueTextOnPopUpTextStyle = std::make_unique<TextStyle>(

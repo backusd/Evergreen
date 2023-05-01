@@ -38,6 +38,35 @@ namespace Evergreen
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API SliderFloat : public Control
 {
+private:
+	class SliderFloatTextInput : public Evergreen::TextInput																							
+	{																																	
+	public:																																
+		SliderFloatTextInput(std::shared_ptr<Evergreen::DeviceResources> deviceResources,																
+			Evergreen::UI* ui,																											
+			const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),												
+			const std::wstring& placeholderText = L"",																					
+			std::unique_ptr<Evergreen::ColorBrush> placeholderBrush = nullptr,															
+			std::unique_ptr<Evergreen::TextStyle> placeholderStyle = nullptr,															
+			std::unique_ptr<Evergreen::ColorBrush> inputTextBrush = nullptr,															
+			std::unique_ptr<Evergreen::TextStyle> inputTextStyle = nullptr,																
+			std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,															
+			std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,																
+			float borderWidth = 0.0f,																									
+			const Evergreen::Margin& margin = { 0 }) noexcept :																			
+			Evergreen::TextInput(deviceResources, ui, allowedRegion, placeholderText,													
+				std::move(placeholderBrush), std::move(placeholderStyle), std::move(inputTextBrush),									
+				std::move(inputTextStyle), std::move(backgroundBrush), std::move(borderBrush), borderWidth, margin)						
+		{}																																
+		SliderFloatTextInput(const SliderFloatTextInput&) noexcept = delete;																							
+		SliderFloatTextInput& operator=(const SliderFloatTextInput&) noexcept = delete;																					
+		virtual ~SliderFloatTextInput() noexcept override {}	
+
+		virtual void HandleOnEnterKey(Evergreen::CharEvent&) override { m_OnEnterKeyCallback(this); }
+	
+		std::function<void(SliderFloatTextInput*)> m_OnEnterKeyCallback = [](SliderFloatTextInput*) {};
+	};		
+
 public:
 	SliderFloat(std::shared_ptr<DeviceResources> deviceResources,
 		UI* ui,
@@ -215,7 +244,7 @@ protected:
 	std::wstring m_valueFormatString;
 
 	// Value TextInput On Right
-	std::unique_ptr<TextInput> m_valueTextInputOnRight;
+	std::unique_ptr<SliderFloatTextInput> m_valueTextInputOnRight;
 	bool m_showValueRightOfSlider;
 	float m_marginRightOfSlider;
 	float m_valueTextInputOnRightWidth;

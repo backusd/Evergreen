@@ -38,6 +38,35 @@ namespace Evergreen
 #pragma warning( disable : 4251 ) // needs to have dll-interface to be used by clients of class
 class EVERGREEN_API SliderInt : public Control
 {
+private:
+	class SliderIntTextInput : public Evergreen::TextInput
+	{
+	public:
+		SliderIntTextInput(std::shared_ptr<Evergreen::DeviceResources> deviceResources,
+			Evergreen::UI* ui,
+			const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
+			const std::wstring& placeholderText = L"",
+			std::unique_ptr<Evergreen::ColorBrush> placeholderBrush = nullptr,
+			std::unique_ptr<Evergreen::TextStyle> placeholderStyle = nullptr,
+			std::unique_ptr<Evergreen::ColorBrush> inputTextBrush = nullptr,
+			std::unique_ptr<Evergreen::TextStyle> inputTextStyle = nullptr,
+			std::unique_ptr<Evergreen::ColorBrush> backgroundBrush = nullptr,
+			std::unique_ptr<Evergreen::ColorBrush> borderBrush = nullptr,
+			float borderWidth = 0.0f,
+			const Evergreen::Margin& margin = { 0 }) noexcept :
+			Evergreen::TextInput(deviceResources, ui, allowedRegion, placeholderText,
+				std::move(placeholderBrush), std::move(placeholderStyle), std::move(inputTextBrush),
+				std::move(inputTextStyle), std::move(backgroundBrush), std::move(borderBrush), borderWidth, margin)
+		{}
+		SliderIntTextInput(const SliderIntTextInput&) noexcept = delete;
+		SliderIntTextInput& operator=(const SliderIntTextInput&) noexcept = delete;
+		virtual ~SliderIntTextInput() noexcept override {}
+
+		virtual void HandleOnEnterKey(Evergreen::CharEvent&) override { m_OnEnterKeyCallback(this); }
+
+		std::function<void(SliderIntTextInput*)> m_OnEnterKeyCallback = [](SliderIntTextInput*) {};
+	};
+
 public:
 	SliderInt(std::shared_ptr<DeviceResources> deviceResources,
 		UI* ui,
@@ -215,7 +244,7 @@ protected:
 	std::wstring m_valueFormatString;
 
 	// Value TextInput On Right
-	std::unique_ptr<TextInput> m_valueTextInputOnRight;
+	std::unique_ptr<SliderIntTextInput> m_valueTextInputOnRight;
 	bool m_showValueRightOfSlider;
 	float m_marginRightOfSlider;
 	float m_valueTextInputOnRightWidth;
