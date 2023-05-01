@@ -48,7 +48,7 @@
     <ClCompile Include="src\Utils\JSONHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\helper.cpp">
+    <ClCompile Include="src\UI\MenuBar\MenuBarControls.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -116,7 +116,7 @@
     <ClInclude Include="src\Utils\JSONHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\helper.h">
+    <ClInclude Include="src\UI\MenuBar\MenuBarControls.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include "MoleculesApp.h"
 #include "Utils/JSONHelper.h"
 
-#include "helper.h"
+#include "UI/MenuBar/MenuBarControls.h"
 
 using namespace Evergreen;
 
@@ -251,253 +251,22 @@ void MoleculesApp::SetViewportCallbacks()
 void MoleculesApp::SetMenuBarCallbacks()
 {
 	// File ----------------------------------------------------------------------------------------------
-//	JSONLoaders::AddCallback("FileDropDownButtonOnMouseEnter",
-//		[this](Button* button, MouseMoveEvent& e)
-//		{
-//			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-//			if (filePane->GetVisible())
-//			{
-//				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-//				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-//			}
-//			else
-//			{
-//				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-//				button->BorderWidth(0.0f);
-//			}
-//		}
-//	);
-
 	JSONLoaders::AddCallback("FileDropDownButtonOnMouseEnter", &FileDropDownOnMouseEnter); 
-
-	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-
-			// First if the file pane is visible, check if the mouse is now over the Edit button
-			if (filePane->GetVisible())
-			{
-				Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
-				if (editButton->ContainsPoint(e.GetX(), e.GetY()))
-				{
-					filePane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-
-					Pane* editPane = m_ui->GetPane("EditDropDownPane");
-					editPane->SetVisible(true);
-				}
-				else if (filePane->ContainsPoint(e.GetX(), e.GetY()))
-				{
-					this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				}
-				else
-				{
-					// Mouse is not over the button or pane, so close the pane
-					filePane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-				}
-			}
-			else
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-			}
-		}
-	);
-	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
-		{
-			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-		}
-	);
-	JSONLoaders::AddCallback("FileDropDownButtonOnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			filePane->SwitchVisible();
-
-			if (filePane->GetVisible())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-			}
-			else if (button->MouseIsOver())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-				button->BorderWidth(0.0f);
-			}
-		}
-	);
+	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLeave", &FileDropDownOnMouseLeave);
+	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLButtonDown", &MenuBarButtonOnMouseLButtonDown);
+	JSONLoaders::AddCallback("FileDropDownButtonOnClick", &FileDropDownOnClick);
 
 	// Edit ----------------------------------------------------------------------------------------------
-	JSONLoaders::AddCallback("EditDropDownButtonOnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-			if (editPane->GetVisible())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-			}
-			else
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-				button->BorderWidth(0.0f);
-			}
-		}
-	);
-	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-
-			// First if the edit pane is visible, check if the mouse is now over the File button or View Button
-			if (editPane->GetVisible())
-			{
-				Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-				Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-				if (fileButton->ContainsPoint(mme.GetX(), mme.GetY()))
-				{
-					editPane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-
-					Pane* filePane = m_ui->GetPane("FileDropDownPane");
-					filePane->SetVisible(true);
-				}
-				else if (viewButton->ContainsPoint(mme.GetX(), mme.GetY()))
-				{
-					editPane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-
-					Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-					viewPane->SetVisible(true);
-				}
-				else if (editPane->ContainsPoint(mme.GetX(), mme.GetY()))
-				{
-					this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				}
-				else
-				{
-					// Mouse is not over the button or pane, so close the pane
-					editPane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-				}
-			}
-			else
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-			}
-		}
-	);
-	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
-		{
-			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-		}
-	);
-	JSONLoaders::AddCallback("EditDropDownButtonOnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-			editPane->SwitchVisible();
-
-			if (editPane->GetVisible())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-			}
-			else if (button->MouseIsOver())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-				button->BorderWidth(0.0f);
-			}
-		}
-	);
+	JSONLoaders::AddCallback("EditDropDownButtonOnMouseEnter", &EditDropDownOnMouseEnter);
+	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLeave", &EditDropDownOnMouseLeave);
+	JSONLoaders::AddCallback("EditDropDownButtonOnMouseLButtonDown", &MenuBarButtonOnMouseLButtonDown);
+	JSONLoaders::AddCallback("EditDropDownButtonOnClick", &EditDropDownOnClick);
 
 	// View ----------------------------------------------------------------------------------------------
-	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-			if (viewPane->GetVisible())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-			}
-			else
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-				button->BorderWidth(0.0f);
-			}
-		}
-	);
-	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-
-			// First if the view pane is visible, check if the mouse is now over the Edit button
-			if (viewPane->GetVisible())
-			{
-				Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
-				MouseMoveEvent& mme = dynamic_cast<MouseMoveEvent&>(e);
-				if (editButton->ContainsPoint(mme.GetX(), mme.GetY()))
-				{
-					viewPane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-
-					Pane* editPane = m_ui->GetPane("EditDropDownPane");
-					editPane->SetVisible(true);
-				}
-				else if (viewPane->ContainsPoint(mme.GetX(), mme.GetY()))
-				{
-					this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				}
-				else
-				{
-					// Mouse is not over the button or pane, so close the pane
-					viewPane->SetVisible(false);
-					this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-					button->BorderWidth(0.0f);
-				}
-			}
-			else
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorDefault);
-			}
-		}
-	);
-	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
-		{
-			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-		}
-	);
-	JSONLoaders::AddCallback("ViewDropDownButtonOnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-			viewPane->SwitchVisible();
-
-			if (viewPane->GetVisible())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-			}
-			else if (button->MouseIsOver())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-				button->BorderWidth(0.0f);
-			}
-		}
-	);
+	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseEnter", &ViewDropDownOnMouseEnter);
+	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLeave", &ViewDropDownOnMouseLeave);
+	JSONLoaders::AddCallback("ViewDropDownButtonOnMouseLButtonDown", &MenuBarButtonOnMouseLButtonDown);
+	JSONLoaders::AddCallback("ViewDropDownButtonOnClick", &ViewDropDownOnClick);
 
 	// Pane ----------------------------------------------------------------------------------------------
 	JSONLoaders::AddCallback("MenuBarDropDownPaneOnMouseExitedContentRegion",

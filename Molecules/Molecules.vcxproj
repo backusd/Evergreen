@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Entry.cpp" />
-    <ClCompile Include="src\helper.cpp" />
+    <ClCompile Include="src\UI\MenuBar\MenuBarControls.cpp" />
     <ClCompile Include="src\MoleculesApp.cpp" />
     <ClCompile Include="src\Rendering\Camera.cpp" />
     <ClCompile Include="src\Rendering\MeshSet.cpp" />
@@ -171,7 +171,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\helper.h" />
+    <ClInclude Include="src\UI\MenuBar\MenuBarControls.h" />
     <ClInclude Include="src\MoleculesApp.h" />
     <ClInclude Include="src\Rendering\BlendState.h" />
     <ClInclude Include="src\Rendering\Camera.h" />
