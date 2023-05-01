@@ -1,30 +1,16 @@
 {
-	// Basics:	Declare a Viewport control by specifying the name of the control and specify the Type as "Viewport"
+	// Basics:	Declare a Viewport control by specifying the name of the control and specify the Type as a derived Viewport class
 	//					See example below for available attributes
-	"MainViewport": {
-		"Type": "Viewport",
+	"CustomViewportClassName": {
+		"Type": "CustomViewportClassName", // The Type of the Viewport must be the name of a class that derives from Viewport
+		//                                    Use the macro VIEWPORT(CustomViewportClassName) to create a derived Viewport class
+
 		"id": 12, // (optional) Unique integer associated with this control
 		"Margin": [ 0, 0, 0, 0 ], // (optional) Specify margin in order: left/top/right/bottom
 		"Row": 0, // (optional) Row/Column: 0-indexed value specifying which Row/Column the control belongs to
 		"Column": 0,
 		"RowSpan": 1, // (optional) RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
 		"ColumnSpan": 1,
-
-		// On* callbacks: Specify functions to execute when the Viewport triggers certain events.
-		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
-		//                can be set by calling JSONLoaders::AddCallback()
-		"OnChar": "ViewportExample_OnChar",
-		"OnKeyPressed": "ViewportExample_OnKeyPressed",
-		"OnKeyReleased": "ViewportExample_OnKeyReleased",
-		"OnMouseEntered": "ViewportExample_OnMouseEntered",
-		"OnMouseExited": "ViewportExample_OnMouseExited",
-		"OnMouseMoved": "ViewportExample_OnMouseMoved",
-		"OnMouseScrolledVertical": "ViewportExample_OnMouseScrolledVertical",
-		"OnMouseScrolledHorizontal": "ViewportExample_OnMouseScrolledHorizontal",
-		"OnMouseButtonPressed": "ViewportExample_OnMouseButtonPressed",
-		"OnMouseButtonReleased": "ViewportExample_OnMouseButtonReleased",
-		"OnClick": "ViewportExample_OnClick",
-		"OnDoubleClick": "ViewportExample_OnDoubleClick",
 
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
 		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
@@ -39,5 +25,28 @@
 			"ColumnDefinitions": [ { "Width": "1*" } ],
 			"..."
 		}
+
+		// Event Callbacks
+		// The Viewport class has the following virtual methods that can be overridden to handle events:
+		//
+		// virtual void HandleOnChar(CharEvent&) {}
+		// virtual void HandleOnKeyPressed(KeyPressedEvent&) {}
+		// virtual void HandleOnKeyReleased(KeyReleasedEvent&) {}
+		// virtual void HandleOnMouseEntered(MouseMoveEvent&) {}
+		// virtual void HandleOnMouseExited(MouseMoveEvent&) {}
+		// virtual void HandleOnMouseMove(MouseMoveEvent&) {}
+		// virtual void HandleOnMouseScrolledVertical(MouseScrolledEvent&) {}
+		// virtual void HandleOnMouseScrolledHorizontal(MouseScrolledEvent&) {}
+		// virtual void HandleOnMouseButtonPressed(MouseButtonPressedEvent&) {}
+		// virtual void HandleOnMouseButtonReleased(MouseButtonReleasedEvent&) {}
+		// virtual void HandleOnClick(MouseButtonReleasedEvent&) {}
+		// virtual void HandleOnDoubleClick(MouseButtonDoubleClickEvent&) {}
+		// virtual void HandleOnSizeChanged(float width, float height) {}
+		//
+		// To implement a custom Viewport, use the macro:
+		//
+		//     VIEWPORT(custom_name);
+		//
+		// and override the virtual methods above.
 	}
 }

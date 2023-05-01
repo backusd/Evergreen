@@ -1,6 +1,10 @@
 {
-	"TextInput1": {
-		"Type": "TextInput",
+	// Basics:	Declare a TextInput control by specifying the name of the control and specify the Type as a derived TextInput class
+	//					See example below for available attributes
+	"CustomTextInputClassName": {
+		"Type": "CustomTextInputClassName", // The Type of the TextInput must be the name of a class that derives from TextInput
+		//                                     Use the macro TEXTINPUT(CustomTextInputClassName) to create a derived TextInput class
+
 		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
 		"Column": 1,
 		"RowSpan": 1, // RowSpan/ColumnSpan: Number of Rows/Columns the control is to occupy
@@ -30,18 +34,6 @@
 		"VerticalBarBrush": "Black", // (optional) vertical bar brush - See Brushes.json for details on using a color brush
 		"VerticalBarWidth": 2.0, // (optional) vertical bar width - Should be >= 0
 
-		// On* callbacks: Specify functions to execute when the control triggers certain events.
-		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
-		//                can be set by calling JSONLoaders::AddCallback(). Each one of these are OPTIONAL
-		"OnMouseEntered": "TextInput_OnMouseEntered",
-		"OnMouseExited": "TextInput_OnMouseExited",
-		"OnMouseMoved": "TextInput_OnMouseMoved",
-		"OnMouseLButtonDown": "TextInput_OnMouseLButtonDown",
-		"OnMouseLButtonUp": "TextInput_OnMouseLButtonUp",
-		"OnClick": "TextInput_OnClick",
-		"OnEnterKey": "TextInput_OnEnterKey",
-		"OnInputTextChanged": "TextInput_OnInputTextChanged",
-
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
 		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
 		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
@@ -62,5 +54,23 @@
 				"..."
 			}
 		}
+
+		// Event Callbacks
+		// The TextInput class has the following virtual methods that can be overridden to handle events:
+		//
+		// virtual void HandleOnMouseEntered(MouseMoveEvent&) {}
+		// virtual void HandleOnMouseExited(MouseMoveEvent&) {}
+		// virtual void HandleOnMouseMove(MouseMoveEvent&) {}
+		// virtual void HandleOnMouseLButtonDown(MouseButtonPressedEvent&) {}
+		// virtual void HandleOnMouseLButtonUp(MouseButtonReleasedEvent&) {}
+		// virtual void HandleOnClick(MouseButtonReleasedEvent&) {}
+		// virtual void HandleOnEnterKey(CharEvent&) {}
+		// virtual void HandleOnInputTextChanged(CharEvent&) {}
+		//
+		// To implement a custom TextInput, use the macro:
+		//
+		//     TEXTINPUT(custom_name);
+		//
+		// and override the virtual methods above.
 	}
 }

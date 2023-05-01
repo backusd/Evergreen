@@ -1,8 +1,10 @@
 {
-	// Basics:	Declare a RadioButton control by specifying the name of the control and specify the Type as "RadioButton"
+	// Basics:	Declare a RadioButton control by specifying the name of the control and specify the Type as a derived RadioButton class
 	//					See example below for available attributes
-	"RadioButtonExample": {
-		"Type": "RadioButton",
+	"CustomRadioButtonClass": {
+		"Type": "CustomRadioButtonClass", // The Type of the RadioButton must be the name of a class that derives from RadioButton
+		//                                  Use the macro RADIOBUTTON(CustomRadioButtonClass) to create a derived RadioButton class
+
 		"id": 223, // (optional) Unique integer associated with this control
 		"Margin": [ 0, 0, 0, 0 ], // (optional) Specify margin in order: left/top/right/bottom
 		"Row": 0, // (optional) Row/Column: 0-indexed value specifying which Row/Column the control belongs to
@@ -19,19 +21,25 @@
 		"OuterBrush": "Purple", // (optional) Outer circle color - See Brushes.json for details on using a color brush
 		"OuterBrushLineWidth": 1.5, // (optional) Line width for the outer circle - Default is 1.5
 
-		// On* callbacks: Specify functions to execute when the RadioButton triggers certain events.
-		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
-		//                can be set by calling JSONLoaders::AddCallback()
-		"OnMouseEntered": "RadioButtonExample_OnMouseEntered",
-		"OnMouseExited": "RadioButtonExample_OnMouseExited",
-		"OnMouseMoved": "RadioButtonExample_OnMouseMoved",
-		"OnMouseLButtonDown": "RadioButtonExample_OnMouseLButtonDown",
-		"OnMouseLButtonUp": "RadioButtonExample_OnMouseLButtonUp",
-		"OnIsCheckedChanged": "RadioButtonExample_OnIsCheckedChanged",
-
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
 		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
 		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
 		"OnUpdate": "RadioButtonExample_OnUpdate"
+
+		// Event Callbacks
+		// The RadioButton class has the following virtual methods that can be overridden to handle events:
+		//
+	  // virtual void HandleOnMouseEntered(MouseMoveEvent&)
+	  // virtual void HandleOnMouseExited(MouseMoveEvent&)
+	  // virtual void HandleOnMouseMove(MouseMoveEvent&)
+	  // virtual void HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
+	  // virtual void HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
+	  // virtual void HandleOnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&)
+		//
+		// To implement a custom RadioButton, use the macro:
+		//
+		//     RADIOBUTTON(custom_name);
+		//
+		// and override the virtual methods above.
 	}
 }

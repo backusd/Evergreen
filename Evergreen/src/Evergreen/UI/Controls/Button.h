@@ -31,7 +31,6 @@
 					 }																																		\
 
 
-
 namespace Evergreen
 {
 // Drop this warning because the private members are not accessible by the client application, but 

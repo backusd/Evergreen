@@ -1,8 +1,10 @@
 {
-	// Basics:	Declare a SliderFloat control by specifying the name of the control and specify the Type as "SliderFloat"
+	// Basics:	Declare a SliderFloat control by specifying the name of the control and specify the Type as a derived SliderFloat class
 	//					See example below for available attributes
-	"SliderFloatExample": {
-		"Type": "SliderFloat",
+	"CustomSliderFloatClassName": {
+		"Type": "CustomSliderFloatClassName", // The Type of the SliderFloat must be the name of a class that derives from SliderFloat
+		//                                       Use the macro SLIDERFLOAT(CustomSliderFloatClassName) to create a derived SliderFloat class
+
 		"id": 223, // Unique integer associated with this control
 		"Margin": [ 10, 0, 10, 0 ], // Specify margin in order: left/top/right/bottom
 		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
@@ -80,18 +82,24 @@
 		//																											 NOTE: In order to allow for a single global TextStyle to be used for all 4 possible Text values (min/max/text input/pop up), the 'TextAlignment' and 'ParagraphAlignment'
 		//																									 					 fields are ignored. For the PopUpTextStyle, it is forced be centered vertically and horizontally
 
-		// On* callbacks: Specify functions to execute when the slider triggers certain events.
-		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
-		//                can be set by calling JSONLoaders::AddCallback()
-		"OnMouseEnteredCircle": "SliderFloatExample_OnMouseEnteredCircle",
-		"OnMouseExitedCircle": "SliderFloatExample_OnMouseExitedCircle",
-		"OnBeginDragging": "SliderFloatExample_OnBeginDragging",
-		"OnStoppedDragging": "SliderFloatExample_OnStoppedDragging",
-		"OnValueChanged": "SliderFloatExample_OnValueChanged",
-
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
 		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
 		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
 		"OnUpdate": "SliderFloatExample_OnUpdate"
+
+		// Event Callbacks
+		// The SliderFloat class has the following virtual methods that can be overridden to handle events:
+		//
+	  // virtual void HandleOnMouseEnteredCircle(MouseMoveEvent&) {}
+	  // virtual void HandleOnMouseExitedCircle(MouseMoveEvent&) {}
+	  // virtual void HandleOnBeginDragging(MouseButtonPressedEvent&) {}
+	  // virtual void HandleOnStoppedDragging(MouseButtonReleasedEvent&) {} 
+	  // virtual void HandleOnValueChanged(SliderFloatValueChangedEvent&) {}
+		//
+		// To implement a custom SliderFloat, use the macro:
+		//
+		//     SLIDERFLOAT(custom_name);
+		//
+		// and override the virtual methods above.
 	}
 }

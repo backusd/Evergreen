@@ -1,8 +1,10 @@
 {
-	// Basics:	Declare a button control by specifying the name of the control and specify the Type as "Button"
+	// Basics:	Declare a button control by specifying the name of the control and specify the Type as a derived Button class
 	//					See example below for available attributes
-	"ButtonName": {
-		"Type": "Button",
+	"CustomButtonClassName": {
+		"Type": "CustomButtonClassName", // The Type of the Button must be the name of a class that derives from Button
+		//                                  Use the macro BUTTON(CustomButtonClassName) to create a derived Button class
+
 		"id": 22, // Unique integer associated with this control
 		"Row": 0, // Row/Column: 0-indexed value specifying which Row/Column the control belongs to
 		"Column": 1,
@@ -32,7 +34,6 @@
 		"CornerRadiusX": 15.0,
 		"CornerRadiusY": 25.0,
 
-
 		// Button Content: Must be a json object with the 'Type' key having a value of either 'Text' or 'Layout'
 		//                 If the value is 'Text', the button will contain a single Text control (See Text.json for how to specify Text attributes)
 		//                 If the value is 'Layout', the button will contain a single Layout that can house any number of different controls (See Layout.json for how to specify a Layout)
@@ -44,20 +45,26 @@
 			"FontSize": 12
 		},
 
-		// On* callbacks: Specify functions to execute when the button triggers certain events.
-		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
-		//                can be set by calling JSONLoaders::AddCallback()
-		"OnMouseEnter": "TestButtonOnMouseEnter",
-		"OnMouseLeave": "TestButtonOnMouseLeave",
-		"OnMouseMoved": "TestButtonOnMouseMoved",
-		"OnMouseLButtonDown": "TestButtonOnMouseLButtonDown",
-		"OnMouseLButtonUp": "TestButtonOnMouseLButtonUp",
-		"OnClick": "TestButtonOnClick",
-
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
 		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
 		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
 		"OnUpdate": "TestButtonOnUpdate"
+
+		// Event Callbacks
+		// The Button class has the following virtual methods that can be overridden to handle events:
+		//
+		// virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&);
+		// virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&);
+		// virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&);
+		// virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&);
+		// virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&);
+		// virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&);
+		//
+		// To implement a custom Button, use the macro:
+		//
+		//     BUTTON(custom_name);
+		//
+		// and override the virtual methods above.
 	},
 
 

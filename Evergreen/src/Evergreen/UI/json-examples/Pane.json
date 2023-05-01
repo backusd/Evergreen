@@ -1,13 +1,15 @@
 {
-	// Basics: Declare a Pane control by specifying the name of the control and specify the Type as "Pane"
+	// Basics: Declare a Pane control by specifying the name of the control and specify the Type as a derived Pane class
 	// NOTE: Because a Pane is not a child control of a layout, we allow for Panes to be declared outside of 
 	//       the "root" layout in the json file. However, because a Pane may be associated with a control that
 	//       lives in the root layout, we also allow a Pane to be declared anywhere within the root layout so
 	//       that it may be declared in proximity to the associated control. For example, in the case of a drop
 	//       down effect, we may want the drop down Pane to be declared next to the Button that will control
 	//       the visibility of the drop down Pane.
-	"Pane1": {
-		"Type": "Pane",
+	"CustomPaneClassName": {
+		"Type": "CustomPaneClassName", // The Type of the Pane must be the name of a class that derives from Pane
+		//                                Use the macro PANE(CustomPaneClassName) to create a derived Pane class
+
 		"Title": "Suck weeners", // (optional) - Title that will appear in the title bar of the Pane.
 		//                                     - Can either specify a string or a json object that represents a Layout (see next Pane example below)
 		//
@@ -23,7 +25,7 @@
 		"BorderWidth": [ 1.0, 1.0, 1.0, 0.0 ], // (optional) Border width [left, top, right, bottom] - default will be 0. 
 		//                                                   Value can also be a single float that would get applied to all sides
 		//                                                   NOTE: When using rounded corners, ONLY the first border width value is used, so you might as well just specify a single float value
-		
+
 		// Border Offsets: If you want to draw a border around a button, but have it not completely span the length of an edge
 		//                 you can assign an offset so the border will stop short of the intended corner
 		"BorderTopLeftOffsetX": 5.0, // All offset DEFAULT values will be 0
@@ -53,19 +55,25 @@
 
 		},
 
-		// On* callbacks: Specify functions to execute when the Pane triggers certain events.
-		//                Each value must be a string and exist as a key in one of the CONTROL_EVENT_MAP's, which
-		//                can be set by calling JSONLoaders::AddCallback()
-		"OnMouseEnteredTitleBar": "Pane1_OnMouseEnteredTitleBar",
-		"OnMouseExitedTitleBar": "Pane1_OnMouseExitedTitleBar",
-		"OnMouseEnteredContentRegion": "Pane1_OnMouseEnteredContentRegion",
-		"OnMouseExitedContentRegion": "Pane1_OnMouseExitedContentRegion",
-		"OnMouseMoved": "Pane1_OnMouseMoved",
-
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame
 		//										The value must be a string and exist as a key in JSONLoaders::m_onUpdateCallbacksMap, which can
 		//                    be done by calling JSONLoaders::AddOnUpdateCallback()
 		"OnUpdate": "Pane1_OnUpdate"
+
+		// Event Callbacks
+		// The Pane class has the following virtual methods that can be overridden to handle events:
+		//
+	  // virtual void HandleOnMouseEnteredTitleBar(MouseMoveEvent&);
+	  // virtual void HandleOnMouseExitedTitleBar(MouseMoveEvent&);
+	  // virtual void HandleOnMouseEnteredContentRegion(MouseMoveEvent&);
+	  // virtual void HandleOnMouseExitedContentRegion(MouseMoveEvent&);
+	  // virtual void HandleOnMouseMove(MouseMoveEvent&);
+		//
+		// To implement a custom Pane, use the macro:
+		//
+		//     PANE(custom_name);
+		//
+		// and override the virtual methods above.
 	},
 
 
@@ -112,7 +120,7 @@
 		// Example of using 'CornerRadiusX' and 'CornerRadiusY' instead of 'CornerRadius'
 		"CornerRadiusX": 15.0,
 		"CornerRadiusY": 20.0,
-	
-		...
+
+		"..."
 	}
 }
