@@ -97,7 +97,6 @@ void Button::Render() const
 	else
 		RenderRect();
 }
-
 void Button::RenderRect() const
 {
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
