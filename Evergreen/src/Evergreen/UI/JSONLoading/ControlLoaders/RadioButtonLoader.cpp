@@ -33,7 +33,7 @@ Control* RadioButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"IsChecked", "InnerRadius", "OuterRadius", "InnerBrush", "OuterBrush", "OuterBrushLineWidth",
-	"OnMouseEntered", "OnMouseExited", "OnMouseMoved", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnIsCheckedChanged",
+	"OnMouseEntered", "OnMouseExited", "OnMouseMoved", "OnMouseLButtonDown", "OnIsCheckedChanged",
 	"OnUpdate" };
 	for (auto& [key, value] : data.items())
 	{
@@ -63,7 +63,6 @@ Control* RadioButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceReso
 	ParseOnMouseExited(rb, data);
 	ParseOnMouseMoved(rb, data);
 	ParseOnMouseLButtonDown(rb, data);
-	ParseOnMouseLButtonUp(rb, data);
 	ParseOnIsCheckedChanged(rb, data);
 
 	ParseOnUpdateCallback(rb, data);
@@ -182,19 +181,6 @@ void RadioButtonLoader::ParseOnMouseLButtonDown(RadioButton* rb, json& data)
 		auto callback = JSONLoaders::GetCallback<RadioButton, MouseButtonPressedEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RadioButton control with name '{}': 'OnMouseLButtonDown' callback not found for key '{}'. Invalid RadioButton object: {}", m_name, key, data.dump(4));
 		rb->SetOnMouseLButtonDownCallback(callback);
-	}
-}
-void RadioButtonLoader::ParseOnMouseLButtonUp(RadioButton* rb, json& data)
-{
-	EG_CORE_ASSERT(rb != nullptr, "radio button is nullptr");
-
-	if (data.contains("OnMouseLButtonUp"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonUp"].is_string(), "RadioButton control with name '{}': 'OnMouseLButtonUp' value must be a string. Invalid RadioButton object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseLButtonUp"].get<std::string>();
-		auto callback = JSONLoaders::GetCallback<RadioButton, MouseButtonReleasedEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "RadioButton control with name '{}': 'OnMouseLButtonUp' callback not found for key '{}'. Invalid RadioButton object: {}", m_name, key, data.dump(4));
-		rb->SetOnMouseLButtonUpCallback(callback);
 	}
 }
 void RadioButtonLoader::ParseOnIsCheckedChanged(RadioButton* rb, json& data)

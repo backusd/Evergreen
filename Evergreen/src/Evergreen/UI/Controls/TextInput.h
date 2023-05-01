@@ -82,7 +82,6 @@ public:
 	void SetOnMouseExitedCallback(std::function<void(TextInput*, MouseMoveEvent&)> func) noexcept { m_OnMouseExited = func; }
 	void SetOnMouseMovedCallback(std::function<void(TextInput*, MouseMoveEvent&)> func) noexcept { m_OnMouseMoved = func; }
 	void SetOnMouseLButtonDownCallback(std::function<void(TextInput*, MouseButtonPressedEvent&)> func) noexcept { m_OnMouseLButtonDown = func; }
-	void SetOnMouseLButtonUpCallback(std::function<void(TextInput*, MouseButtonReleasedEvent&)> func) noexcept { m_OnMouseLButtonUp = func; }
 	void SetOnClickCallback(std::function<void(TextInput*, MouseButtonReleasedEvent&)> func) noexcept { m_OnClick = func; }
 	void SetOnEnterKeyCallback(std::function<void(TextInput*, CharEvent&)> func) noexcept { m_OnEnterKey = func; }
 	void SetOnInputTextChangedCallback(std::function<void(TextInput*, CharEvent&)> func) noexcept { m_OnInputTextChanged = func; }
@@ -94,7 +93,6 @@ private:
 	std::function<void(TextInput*, MouseMoveEvent&)> m_OnMouseExited = [](TextInput*, MouseMoveEvent&) {};
 	std::function<void(TextInput*, MouseMoveEvent&)> m_OnMouseMoved = [](TextInput*, MouseMoveEvent&) {};
 	std::function<void(TextInput*, MouseButtonPressedEvent&)> m_OnMouseLButtonDown = [](TextInput*, MouseButtonPressedEvent&) {};
-	std::function<void(TextInput*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](TextInput*, MouseButtonReleasedEvent&) {};
 	std::function<void(TextInput*, MouseButtonReleasedEvent&)> m_OnClick = [](TextInput*, MouseButtonReleasedEvent&) {};
 	std::function<void(TextInput*, CharEvent&)> m_OnEnterKey = [](TextInput*, CharEvent&) {};
 	std::function<void(TextInput*, CharEvent&)> m_OnInputTextChanged = [](TextInput*, CharEvent&) {};

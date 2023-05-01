@@ -78,12 +78,11 @@ public:
 	void SetInnerRadius(float width) { m_innerRadius = width; RadioButtonChanged(); }
 	void SetOuterRadius(float width) { m_outerRadius = width; RadioButtonChanged(); }
 
-	inline void SetOnMouseEnteredCallback(std::function<void(RadioButton*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
-	inline void SetOnMouseExitedCallback(std::function<void(RadioButton*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
-	inline void SetOnMouseMovedCallback(std::function<void(RadioButton*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
-	inline void SetOnMouseLButtonDownCallback(std::function<void(RadioButton*, MouseButtonPressedEvent& e)> func) noexcept { m_OnMouseLButtonDown = func; }
-	inline void SetOnMouseLButtonUpCallback(std::function<void(RadioButton*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnMouseLButtonUp = func; }
-	inline void SetOnIsCheckedChanged(std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent& e)> func) noexcept { m_OnIsCheckedChanged = func; }
+	inline void SetOnMouseEnteredCallback(std::function<void(RadioButton*, MouseMoveEvent&)> func) noexcept { m_OnMouseEntered = func; }
+	inline void SetOnMouseExitedCallback(std::function<void(RadioButton*, MouseMoveEvent&)> func) noexcept { m_OnMouseExited = func; }
+	inline void SetOnMouseMovedCallback(std::function<void(RadioButton*, MouseMoveEvent&)> func) noexcept { m_OnMouseMoved = func; }
+	inline void SetOnMouseLButtonDownCallback(std::function<void(RadioButton*, MouseButtonPressedEvent&)> func) noexcept { m_OnMouseLButtonDown = func; }
+	inline void SetOnIsCheckedChanged(std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent&)> func) noexcept { m_OnIsCheckedChanged = func; }
 
 	virtual ControlType GetControlType() const noexcept override { return ControlType::RadioButton; }
 
@@ -105,7 +104,6 @@ protected:
 	std::function<void(RadioButton*, MouseMoveEvent&)> m_OnMouseExited = [](RadioButton*, MouseMoveEvent&) {};
 	std::function<void(RadioButton*, MouseMoveEvent&)> m_OnMouseMoved = [](RadioButton*, MouseMoveEvent&) {};
 	std::function<void(RadioButton*, MouseButtonPressedEvent&)> m_OnMouseLButtonDown = [](RadioButton*, MouseButtonPressedEvent&) {};
-	std::function<void(RadioButton*, MouseButtonReleasedEvent&)> m_OnMouseLButtonUp = [](RadioButton*, MouseButtonReleasedEvent&) {};
 	std::function<void(RadioButton*, RadioButtonIsCheckedChangedEvent&)> m_OnIsCheckedChanged = [](RadioButton*, RadioButtonIsCheckedChangedEvent&) {};
 
 	bool						m_isChecked;

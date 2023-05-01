@@ -505,7 +505,6 @@
 				"OnMouseExited": "TextInput1_OnMouseExited",
 				"OnMouseMoved": "TextInput1_OnMouseMoved",
 				"OnMouseLButtonDown": "TextInput1_OnMouseLButtonDown",
-				"OnMouseLButtonUp": "TextInput1_OnMouseLButtonUp",
 				"OnClick": "TextInput1_OnClick",
 				"OnEnterKey": "TextInput1_OnEnterKey",
 				"OnInputTextChanged": "TextInput1_OnInputTextChanged",

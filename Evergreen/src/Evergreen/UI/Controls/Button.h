@@ -79,11 +79,11 @@ public:
 	inline void BackgroundBrushAndTextColor(const D2D1_COLOR_F& buttonColor, D2D1::ColorF::Enum textColor);
 	inline void BackgroundBrushAndTextColor(D2D1::ColorF::Enum buttonColor, D2D1::ColorF::Enum textColor);
 
-	inline void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
-	inline void SetOnMouseExitedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
-	inline void SetOnMouseMovedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
-	inline void SetOnMouseLButtonDownCallback(std::function<void(Button*, MouseButtonPressedEvent& e)> func) noexcept { m_OnMouseLButtonDown = func; }
-	inline void SetOnClickCallback(std::function<void(Button*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnClick = func; }
+	inline void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent&)> func) noexcept { m_OnMouseEntered = func; }
+	inline void SetOnMouseExitedCallback(std::function<void(Button*, MouseMoveEvent&)> func) noexcept { m_OnMouseExited = func; }
+	inline void SetOnMouseMovedCallback(std::function<void(Button*, MouseMoveEvent&)> func) noexcept { m_OnMouseMoved = func; }
+	inline void SetOnMouseLButtonDownCallback(std::function<void(Button*, MouseButtonPressedEvent&)> func) noexcept { m_OnMouseLButtonDown = func; }
+	inline void SetOnClickCallback(std::function<void(Button*, MouseButtonReleasedEvent&)> func) noexcept { m_OnClick = func; }
 
 	void SetCornerRadius(float xAndY) noexcept { m_cornerRadiusX = xAndY; m_cornerRadiusY = xAndY; ButtonChanged(); }
 	void SetCornerRadius(float x, float y) noexcept { m_cornerRadiusX = x; m_cornerRadiusY = y; ButtonChanged(); }

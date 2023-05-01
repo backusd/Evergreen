@@ -52,7 +52,6 @@ private:
 	void ParseOnMouseExited(TextInput* textInput, json& data);
 	void ParseOnMouseMoved(TextInput* textInput, json& data);
 	void ParseOnMouseLButtonDown(TextInput* textInput, json& data);
-	void ParseOnMouseLButtonUp(TextInput* textInput, json& data);
 	void ParseOnClick(TextInput* textInput, json& data);
 	void ParseOnEnterKey(TextInput* textInput, json& data);
 	void ParseOnInputTextChanged(TextInput* textInput, json& data);

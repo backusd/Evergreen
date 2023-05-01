@@ -55,7 +55,7 @@ Control* TextInputLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResour
 	constexpr std::array recognizedKeys{ "id", "Type", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "PlaceholderText", "PlaceholderTextBrush", "PlaceholderTextStyle", 
 	"InputTextBrush", "InputTextStyle", "VerticalBarBrush", "VerticalBarWidth", "OnMouseEntered", "OnMouseExited",
-	"OnMouseMoved", "OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnEnterKey", "OnInputTextChanged", 
+	"OnMouseMoved", "OnMouseLButtonDown", "OnClick", "OnEnterKey", "OnInputTextChanged", 
 	"RightSideLayoutColumnWidth", "RightSideLayout", "OnUpdate" };
 	for (auto& [key, value] : data.items())
 	{
@@ -89,7 +89,6 @@ Control* TextInputLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResour
 	ParseOnMouseExited(textInput, data);
 	ParseOnMouseMoved(textInput, data);
 	ParseOnMouseLButtonDown(textInput, data);
-	ParseOnMouseLButtonUp(textInput, data);
 	ParseOnClick(textInput, data);
 	ParseOnEnterKey(textInput, data);
 	ParseOnInputTextChanged(textInput, data);
@@ -307,20 +306,6 @@ void TextInputLoader::ParseOnMouseLButtonDown(TextInput* textInput, json& data)
 		auto callback = JSONLoaders::GetCallback<TextInput, MouseButtonPressedEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseLButtonDown' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
 		textInput->SetOnMouseLButtonDownCallback(callback);
-	}
-}
-void TextInputLoader::ParseOnMouseLButtonUp(TextInput* textInput, json& data)
-{
-	EG_CORE_ASSERT(textInput != nullptr, "textInput should not be nullptr");
-
-	if (data.contains("OnMouseLButtonUp"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonUp"].is_string(), "TextInput control with name '{}': 'OnMouseLButtonUp' value must be a string. Invalid TextInput object: {}", m_name, data.dump(4));
-		std::string key = data["OnMouseLButtonUp"].get<std::string>();
-
-		auto callback = JSONLoaders::GetCallback<TextInput, MouseButtonReleasedEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "TextInput control with name '{}': 'OnMouseLButtonUp' callback not found for key '{}'. Invalid TextInput object: {}", m_name, key, data.dump(4));
-		textInput->SetOnMouseLButtonUpCallback(callback);
 	}
 }
 void TextInputLoader::ParseOnClick(TextInput* textInput, json& data)

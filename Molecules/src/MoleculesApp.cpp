@@ -162,16 +162,11 @@ void MoleculesApp::SetSearchTextInputCallbacks()
 			textInput->SetBackgroundBrush(std::move(bkgdBrush));
 		}
 	);
-	JSONLoaders::AddCallback("TextInput1_OnMouseLButtonUp",
+	JSONLoaders::AddCallback("TextInput1_OnClick",
 		[](TextInput* textInput, MouseButtonReleasedEvent& e)
 		{
 			std::unique_ptr<SolidColorBrush> bkgdBrush = std::make_unique<SolidColorBrush>(textInput->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::LightCoral));
 			textInput->SetBackgroundBrush(std::move(bkgdBrush));
-		}
-	);
-	JSONLoaders::AddCallback("TextInput1_OnClick",
-		[](TextInput* textInput, MouseButtonReleasedEvent& e)
-		{
 		}
 	);
 	JSONLoaders::AddCallback("TextInput1_OnEnterKey",

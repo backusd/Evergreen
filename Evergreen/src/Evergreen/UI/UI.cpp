@@ -611,7 +611,7 @@ void UI::LoadDefaultUI() noexcept
 		}
 	);
 
-	ti->SetOnMouseLButtonUpCallback(
+	ti->SetOnClickCallback(
 		[](Control* c, Event& e)
 		{
 			TextInput* textInput = static_cast<TextInput*>(c);
@@ -872,12 +872,6 @@ void UI::LoadDefaultUI() noexcept
 		[](RadioButton* rb, MouseButtonPressedEvent& e)
 		{
 			EG_CORE_INFO("LButton PRESSED: {}, {}", e.GetX(), e.GetY());
-		}
-	);
-	rb->SetOnMouseLButtonUpCallback(
-		[](RadioButton* rb, MouseButtonReleasedEvent& e)
-		{
-			EG_CORE_INFO("LButton RELEASED: {}, {}", e.GetX(), e.GetY());
 		}
 	);
 	rb->SetOnIsCheckedChanged(

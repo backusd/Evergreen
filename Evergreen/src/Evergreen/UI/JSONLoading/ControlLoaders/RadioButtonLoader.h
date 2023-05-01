@@ -44,7 +44,6 @@ private:
 	void ParseOnMouseExited(RadioButton* rb, json& data);
 	void ParseOnMouseMoved(RadioButton* rb, json& data);
 	void ParseOnMouseLButtonDown(RadioButton* rb, json& data);
-	void ParseOnMouseLButtonUp(RadioButton* rb, json& data);
 	void ParseOnIsCheckedChanged(RadioButton* rb, json& data);
 
 };
