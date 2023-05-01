@@ -38,6 +38,7 @@ private:
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
 	void ParseBorderOffsets(Button* button, json& data);
+	void ParseCornerRadius(Button* button, json& data);
 
 	void ParseOnMouseEntered(Button* button, json& data);
 	void ParseOnMouseExited(Button* button, json& data);
