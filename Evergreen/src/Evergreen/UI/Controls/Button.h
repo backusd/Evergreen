@@ -78,6 +78,13 @@ public:
 	inline void BorderBottomRightOffsetX(float offset) noexcept { m_borderBottomRightOffsetX = offset; }
 	inline void BorderBottomRightOffsetY(float offset) noexcept { m_borderBottomRightOffsetY = offset; }
 
+	inline void BackgroundBrush(const D2D1_COLOR_F& color);
+	inline void BackgroundBrush(D2D1::ColorF::Enum color);
+	inline void BackgroundBrushAndTextColor(const D2D1_COLOR_F& buttonColor, const D2D1_COLOR_F& textColor);
+	inline void BackgroundBrushAndTextColor(D2D1::ColorF::Enum buttonColor, const D2D1_COLOR_F& textColor);
+	inline void BackgroundBrushAndTextColor(const D2D1_COLOR_F& buttonColor, D2D1::ColorF::Enum textColor);
+	inline void BackgroundBrushAndTextColor(D2D1::ColorF::Enum buttonColor, D2D1::ColorF::Enum textColor);
+
 	inline void SetOnMouseEnteredCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseEntered = func; }
 	inline void SetOnMouseExitedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseExited = func; }
 	inline void SetOnMouseMovedCallback(std::function<void(Button*, MouseMoveEvent& e)> func) noexcept { m_OnMouseMoved = func; }
