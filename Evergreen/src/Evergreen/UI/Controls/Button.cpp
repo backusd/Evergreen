@@ -291,6 +291,14 @@ void Button::OnAllowedRegionChanged()
 
 bool Button::ContainsPoint(float x, float y) const noexcept
 {
+	if (m_cornerRadiusX > 0.0f && m_cornerRadiusY > 0.0f)
+	{
+		EG_CORE_ASSERT(m_roundedRectGeometry != nullptr, "No rounded rect geometry");
+		BOOL b;
+		m_roundedRectGeometry->FillContainsPoint(D2D1::Point2F(x, y), D2D1::Matrix3x2F::Identity(), &b);
+		return static_cast<bool>(b);
+	}
+
 	return m_layout->ContainsPoint(x, y);
 }
 
