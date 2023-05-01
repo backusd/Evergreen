@@ -36,7 +36,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
 	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
 	"BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", "BorderBottomLeftOffsetY",
-	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY" };
+	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY", "CornerRadiusX", "CornerRadiusY", "CornerRadius" };
 	for (auto& [key, value] : data.items())
 	{
 		if (std::find(recognizedKeys.begin(), recognizedKeys.end(), key) == recognizedKeys.end())
