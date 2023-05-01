@@ -1,6 +1,8 @@
 #include "MoleculesApp.h"
 #include "Utils/JSONHelper.h"
 
+#include "helper.h"
+
 using namespace Evergreen;
 
 MoleculesApp::MoleculesApp() :
@@ -254,22 +256,25 @@ void MoleculesApp::SetViewportCallbacks()
 void MoleculesApp::SetMenuBarCallbacks()
 {
 	// File ----------------------------------------------------------------------------------------------
-	JSONLoaders::AddCallback("FileDropDownButtonOnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			if (filePane->GetVisible())
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
-			}
-			else
-			{
-				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-				button->BorderWidth(0.0f);
-			}
-		}
-	);
+//	JSONLoaders::AddCallback("FileDropDownButtonOnMouseEnter",
+//		[this](Button* button, MouseMoveEvent& e)
+//		{
+//			Pane* filePane = m_ui->GetPane("FileDropDownPane");
+//			if (filePane->GetVisible())
+//			{
+//				this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
+//				button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
+//			}
+//			else
+//			{
+//				this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
+//				button->BorderWidth(0.0f);
+//			}
+//		}
+//	);
+
+	JSONLoaders::AddCallback("FileDropDownButtonOnMouseEnter", &FileDropDownOnMouseEnter); 
+
 	JSONLoaders::AddCallback("FileDropDownButtonOnMouseLeave",
 		[this](Button* button, MouseMoveEvent& e)
 		{
