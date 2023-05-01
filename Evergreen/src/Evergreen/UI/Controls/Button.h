@@ -36,6 +36,8 @@ public:
 	// Inherited from Control
 	virtual void OnUpdate(const Timer& timer) override;
 	virtual void Render() const override;
+	void RenderRect() const;
+	void RenderRoundedRect() const;
 
 	// There is a special case where a Pane has handled a move event, but this Control was previously handling
 	// the move events. Therefore, we need to inform this Control that the mouse is no longer over the Control
