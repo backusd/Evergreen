@@ -34,7 +34,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
-	"OnMouseLButtonDown", "OnMouseLButtonUp", "OnClick", "OnUpdate", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
+	"OnMouseLButtonDown", "OnClick", "OnUpdate", "BorderTopLeftOffsetX", "BorderTopLeftOffsetY",
 	"BorderTopRightOffsetX", "BorderTopRightOffsetY", "BorderBottomLeftOffsetX", "BorderBottomLeftOffsetY",
 	"BorderBottomRightOffsetX", "BorderBottomRightOffsetY", "CornerRadiusX", "CornerRadiusY", "CornerRadius" };
 	for (auto& [key, value] : data.items())
@@ -59,7 +59,6 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	ParseOnMouseExited(button, data);
 	ParseOnMouseMoved(button, data);
 	ParseOnMouseLButtonDown(button, data);
-	ParseOnMouseLButtonUp(button, data);
 	ParseOnClick(button, data);
 
 	ParseOnUpdateCallback(button, data);
@@ -286,21 +285,6 @@ void ButtonLoader::ParseOnMouseLButtonDown(Button* button, json& data)
 		button->SetOnMouseLButtonDownCallback(callback);
 	}
 }
-void ButtonLoader::ParseOnMouseLButtonUp(Button* button, json& data)
-{
-	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
-
-	if (data.contains("OnMouseLButtonUp"))
-	{
-		JSON_LOADER_EXCEPTION_IF_FALSE(data["OnMouseLButtonUp"].is_string(), "Button control with name '{}': 'OnMouseLButtonUp' value must be a string. Invalid Button object: {}", m_name, data.dump(4));
-
-		std::string key = data["OnMouseLButtonUp"].get<std::string>();
-
-		auto callback = JSONLoaders::GetCallback<Button, MouseButtonReleasedEvent>(key);
-		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnMouseLButtonUp' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
-		button->SetOnMouseLButtonUpCallback(callback);
-	}
-}
 void ButtonLoader::ParseOnClick(Button* button, json& data)
 {
 	EG_CORE_ASSERT(button != nullptr, "button is nullptr");
@@ -314,6 +298,53 @@ void ButtonLoader::ParseOnClick(Button* button, json& data)
 		auto callback = JSONLoaders::GetCallback<Button, MouseButtonReleasedEvent>(key);
 		JSON_LOADER_EXCEPTION_IF_FALSE(callback != nullptr, "Button control with name '{}': 'OnClick' callback not found for key '{}'. Invalid Button object: {}", m_name, key, data.dump(4));
 		button->SetOnClickCallback(callback);
+	}
+}
+
+void ButtonLoader::ParseCornerRadius(Button* button, json& data)
+{
+	if (data.contains("CornerRadius"))
+	{
+		if (data.contains("CornerRadiusX"))
+		{
+			EG_CORE_WARN("Button control with name '{}': Ignoring key 'CornerRadiusX' because key 'CornerRadius' was found and takes precendent. You should either only use 'CornerRadius' or use BOTH 'CornerRadiusX' and 'CornerRadiusY'.", m_name);
+		}
+		if (data.contains("CornerRadiusY"))
+		{
+			EG_CORE_WARN("Button control with name '{}': Ignoring key 'CornerRadiusY' because key 'CornerRadius' was found and takes precendent. You should either only use 'CornerRadius' or use BOTH 'CornerRadiusX' and 'CornerRadiusY'.", m_name);
+		}
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadius"].is_number(), "Button control with name '{}': 'CornerRadius' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+
+		float radius = data["CornerRadius"].get<float>();
+
+		JSON_LOADER_EXCEPTION_IF_FALSE(radius >= 0, "Button control with name '{}': 'CornerRadius' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+		button->SetCornerRadius(radius);
+	}
+	else
+	{
+		if (data.contains("CornerRadiusX"))
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusX"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+
+			float radiusX = data["CornerRadiusX"].get<float>();
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(radiusX >= 0, "Button control with name '{}': 'CornerRadiusX' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+			button->SetCornerRadiusX(radiusX);
+		}
+
+		if (data.contains("CornerRadiusY"))
+		{
+			JSON_LOADER_EXCEPTION_IF_FALSE(data["CornerRadiusY"].is_number(), "Button control with name '{}': 'CornerRadiusX' value must be a number. Invalid Button object: {}", m_name, data.dump(4));
+
+			float radiusY = data["CornerRadiusY"].get<float>();
+
+			JSON_LOADER_EXCEPTION_IF_FALSE(radiusY >= 0, "Button control with name '{}': 'CornerRadiusY' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
+
+			button->SetCornerRadiusY(radiusY);
+		}
 	}
 }
 

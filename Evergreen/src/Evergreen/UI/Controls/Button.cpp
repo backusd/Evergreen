@@ -403,7 +403,6 @@ void Button::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 		if (e.GetMouseButton() == MOUSE_BUTTON::EG_LBUTTON)
 		{
 			m_mouseLButtonIsDown = false;
-			m_OnMouseLButtonUp(this, e);
 			m_OnClick(this, e);
 		}
 	}

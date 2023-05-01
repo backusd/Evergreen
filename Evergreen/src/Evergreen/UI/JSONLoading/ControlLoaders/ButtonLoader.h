@@ -44,7 +44,6 @@ private:
 	void ParseOnMouseExited(Button* button, json& data);
 	void ParseOnMouseMoved(Button* button, json& data);
 	void ParseOnMouseLButtonDown(Button* button, json& data);
-	void ParseOnMouseLButtonUp(Button* button, json& data);
 	void ParseOnClick(Button* button, json& data);
 
 };
