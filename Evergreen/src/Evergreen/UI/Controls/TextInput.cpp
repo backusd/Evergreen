@@ -581,14 +581,12 @@ void TextInput::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 			UpdateVerticalBar();
 			
 			e.Handled(this);
-			HandleOnMouseLButtonUp(e);
 			HandleOnClick(e);
 			return;
 		}
 		else if (m_mouseState == MouseOverState::NOT_OVER_AND_LBUTTON_DOWN)
 		{
 			m_mouseState = MouseOverState::NOT_OVER;
-			HandleOnMouseLButtonUp(e);
 			HandleOnClick(e);
 			return;
 		}

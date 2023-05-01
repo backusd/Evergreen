@@ -108,12 +108,12 @@ void LayoutLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources, La
 		if (type.compare("Layout") == 0 || JSONLoaders::IsLayoutKey(type))
 		{
 			// First, import any necessary data
-			JSONLoaders::ImportJSON(data);
+			JSONLoaders::ImportJSON(data[key]);
 
 			// Parse the row/column/rowspan/columnspan values
-			RowColumnPosition position = ParseRowColumnPosition(data);
+			RowColumnPosition position = ParseRowColumnPosition(data[key]);
 
-			Layout* sublayout = layout->AddSubLayout(position, name); 
+			Layout* sublayout = layout->AddSubLayout(position, key); 
 			JSONLoaders::LoadLayout(deviceResources, type, sublayout, data[key], key);
 		}
 		else if (JSONLoaders::IsControlKey(type))

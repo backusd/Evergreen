@@ -30,7 +30,6 @@
 								virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;														\
 								virtual void HandleOnMouseMove(Evergreen::MouseMoveEvent&) override;														\
 								virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;										\
-								virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;											\
 								virtual void HandleOnIsCheckedChanged(Evergreen::RadioButtonIsCheckedChangedEvent&) override;								\
 							};																																\
 
@@ -63,7 +62,6 @@ public:
 	virtual void HandleOnMouseExited(MouseMoveEvent&) {}
 	virtual void HandleOnMouseMove(MouseMoveEvent&) {}
 	virtual void HandleOnMouseLButtonDown(MouseButtonPressedEvent&) {}
-	virtual void HandleOnMouseLButtonUp(MouseButtonReleasedEvent&) {}
 	virtual void HandleOnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&) {}
 
 	// Inherited from Control

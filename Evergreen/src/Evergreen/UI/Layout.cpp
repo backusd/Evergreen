@@ -342,7 +342,7 @@ void Layout::UpdateColumns() noexcept
 	if (totalFixedWidth > availableWidth)
 	{
 		EG_CORE_ERROR("{}:{} - Layout (name: {}) has column definitions FIXED + PERCENT sizing ({}) greater than the available width ({})", __FILE__, __LINE__, m_name, totalFixedWidth, availableWidth);
-		EG_CORE_ERROR("    Unable to add all the column... Removing last column and trying again");
+		EG_CORE_ERROR("    Unable to add all the columns... Removing last column and trying again");
 		m_columnDefinitions.pop_back();
 		UpdateColumns();
 	}

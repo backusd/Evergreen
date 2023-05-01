@@ -26,12 +26,9 @@ void Pane::PaneCloseButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
 {
 	BackgroundBrush(D2D1::ColorF::DimGray);
 }
-void Pane::PaneCloseButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
-{
-	BackgroundBrush(D2D1::ColorF::Gray);
-}
 void Pane::PaneCloseButton::HandleOnClick(MouseButtonReleasedEvent& e)
 {
+	BackgroundBrush(D2D1::ColorF::Gray);
 	m_OnClickCallback();
 	e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
 }
@@ -50,12 +47,9 @@ void Pane::PaneMinimizeButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&
 {
 	BackgroundBrush(D2D1::ColorF::DimGray);
 }
-void Pane::PaneMinimizeButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
-{
-	BackgroundBrush(D2D1::ColorF::Gray);
-}
 void Pane::PaneMinimizeButton::HandleOnClick(MouseButtonReleasedEvent&)
 {
+	BackgroundBrush(D2D1::ColorF::Gray);
 	m_OnClickCallback();
 }
 

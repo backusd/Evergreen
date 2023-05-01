@@ -67,7 +67,6 @@ private:
 		virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
 		virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
 		virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
-		virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
 		virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
 
 		std::function<void()> m_OnClickCallback = []() {};
@@ -91,7 +90,6 @@ private:
 		virtual void HandleOnMouseEntered(Evergreen::MouseMoveEvent&) override;
 		virtual void HandleOnMouseExited(Evergreen::MouseMoveEvent&) override;
 		virtual void HandleOnMouseLButtonDown(Evergreen::MouseButtonPressedEvent&) override;
-		virtual void HandleOnMouseLButtonUp(Evergreen::MouseButtonReleasedEvent&) override;
 		virtual void HandleOnClick(Evergreen::MouseButtonReleasedEvent&) override;
 
 		std::function<void()> m_OnClickCallback = []() {};

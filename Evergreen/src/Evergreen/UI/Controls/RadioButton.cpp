@@ -153,7 +153,6 @@ void RadioButton::OnMouseButtonReleased(MouseButtonReleasedEvent& e)
 	{
 		m_isChecked = !m_isChecked;
 		m_mouseState = MouseOverState::OVER;
-		HandleOnMouseLButtonUp(e);
 
 		RadioButtonIsCheckedChangedEvent e(m_isChecked);
 		HandleOnIsCheckedChanged(e);

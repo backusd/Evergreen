@@ -20,10 +20,6 @@ void TestButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
 {
 
 }
-void TestButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
-{
-
-}
 void TestButton::HandleOnClick(MouseButtonReleasedEvent&)
 {
 
@@ -93,10 +89,6 @@ void TestRadioButton::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
 {
 
 }
-void TestRadioButton::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
-{
-
-}
 void TestRadioButton::HandleOnIsCheckedChanged(RadioButtonIsCheckedChangedEvent&)
 {
 
@@ -117,10 +109,6 @@ void TestTextInput::HandleOnMouseMove(MouseMoveEvent&)
 
 }
 void TestTextInput::HandleOnMouseLButtonDown(MouseButtonPressedEvent&)
-{
-
-}
-void TestTextInput::HandleOnMouseLButtonUp(MouseButtonReleasedEvent&)
 {
 
 }

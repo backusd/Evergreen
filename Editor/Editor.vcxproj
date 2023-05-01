@@ -139,6 +139,7 @@
   <ItemGroup>
     <ClCompile Include="src\EditorApp.cpp" />
     <ClCompile Include="src\TestButton.cpp" />
+    <ClCompile Include="src\UI\MenuBar\MenuBarButtons.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Evergreen\Evergreen.vcxproj">
@@ -150,6 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\TestButton.h" />
+    <ClInclude Include="src\UI\MenuBar\MenuBarButtons.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

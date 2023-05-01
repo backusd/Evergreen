@@ -60,6 +60,7 @@ public:
 	template<typename T>
 	inline Pane* AddPane(std::unique_ptr<T> derivedPane, const std::string& name) noexcept requires (std::is_base_of_v<Pane, T>);
 	ND inline Pane* GetPane(const std::string& name) noexcept;
+	ND inline bool PaneExists(const std::string& name) const noexcept { return m_panesMap.find(name) != m_panesMap.end(); }
 	void RemovePane(Pane* pane) noexcept;
 	void RemovePane(const std::string& name) noexcept;
 	void BringPaneToForeground(Pane* pane) noexcept;

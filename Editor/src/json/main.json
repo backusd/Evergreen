@@ -1,95 +1,120 @@
 {
+	"MenuBarDropDownButtonStyle": {
+		"Type": "TextStyle",
+		"FontFamily": "Calibri",
+		"FontSize": 14,
+		"FontWeight": "UltraLight",
+		"FontStyle": "Normal",
+		"FontStretch": "Normal",
+		"TextAlignment": "Center",
+		"ParagraphAlignment": "Center",
+		"WordWrapping": "None"
+	},
+	"MenuBarDropDownTextContentsStyle": {
+		"Type": "TextStyle",
+		"Brush": "Green",
+		"FontFamily": "Calibri",
+		"FontSize": 14,
+		"FontWeight": "UltraLight",
+		"FontStyle": "Normal",
+		"FontStretch": "Normal",
+		"TextAlignment": "Leading",
+		"ParagraphAlignment": "Center",
+		"WordWrapping": "None"
+	},
+	"MenuBarDropDownIconStyle": {
+		"Type": "TextStyle",
+		"Brush": "Green",
+		"FontFamily": "Segoe MDL2 Assets",
+		"FontSize": 14,
+		"FontWeight": "UltraLight",
+		"FontStyle": "Normal",
+		"FontStretch": "Normal",
+		"TextAlignment": "Center",
+		"ParagraphAlignment": "Center",
+		"WordWrapping": "None"
+	},
+
+
 	"root": {
 		"Type": "Layout",
+		"Brush": "Yellow",
 		"RowDefinitions": [
-			{ "Height": "1*" },
-			{ "Height": "50" },
-			{ "Height": "50" },
-			{ "Height": "50" },
-			{ "Height": "50" },
-			{ "Height": "50" },
+			{ "Height": "25" },
 			{ "Height": "1*" }
 		],
 		"ColumnDefinitions": [
-			{ "Width": "1*" },
-			{ "Width": "200" },
-			{ "Width": "1*" }
+			{
+				"Width": 300,
+				"RightAdjustable": true,
+				"MinWidth": 100,
+				"MaxWidth": 400
+			},
+			{
+				"Width": "1*",
+				"LeftAdjustable": true,
+				"RightAdjustable": true
+			},
+			{
+				"Width": 300,
+				"LeftAdjustable": true,
+				"MinWidth": 100,
+				"MaxWidth": 400
+			}
 		],
-		"Brush": "Green",
 
-		"TestButton": {
-			"Type": "TestButton",
-			"Row": 1,
-			"Column": 1,
-			"BackgroundBrush": "Blue",
+		"MenuBarLayout": {
+			"Type": "Layout",
+			"Brush": [ 0.16, 0.16, 0.16 ],
+			"ColumnSpan": 3,
+			"RowDefinitions": [ { "Height": "1*" } ],
+			"ColumnDefinitions": [
+				{ "Width": 50 },
+				{ "Width": 50 },
+				{ "Width": 50 },
+				{ "Width": "1*" },
+				{ "Width": 200 }
+			],
 
-			"CornerRadius": 15.0,
+			"FileDropDownButton": {
+				"Type": "FileDropDownButton",
+				"Margin": [ 5, 1, 0, 1 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"BorderBrush": "Gray",
+				"Content": {
+					"Type": "Text",
+					"Text": "File",
+					"Brush": "White",
+					"Style": "MenuBarDropDownButtonStyle"
+				}
+			},
 
-			"Content": {
-				"Type": "Text",
-				"Text": "Some Text",
-				"Brush": "White"
-			}
-		},
+			"EditDropDownButton": {
+				"Type": "EditDropDownButton",
+				"Column": 1,
+				"Margin": [ 1, 1, 1, 1 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"BorderBrush": "Gray",
+				"Content": {
+					"Type": "Text",
+					"Text": "Edit",
+					"Brush": "White",
+					"Style": "MenuBarDropDownButtonStyle"
+				}
+			},
 
-		"TestSliderFloat": {
-			"Type": "TestSliderFloat",
-			"Row": 2,
-			"Column": 1,
-			"MinimumValue": 0.0,
-			"MaximumValue": 10.0,
-			"Value": 5.0
-		},
-
-		"TestSliderInt": {
-			"Type": "TestSliderInt",
-			"Row": 3,
-			"Column": 1,
-			"MinimumValue": 0,
-			"MaximumValue": 10,
-			"Value": 3
-		},
-
-		"TestRadioButton": {
-			"Type": "TestRadioButton",
-			"Row": 4,
-			"Column": 1
-		},
-
-		"TestTextInput": {
-			"Type": "TestTextInput",
-			"Row": 5,
-			"Column": 1
-		},
-
-		"TestViewport": {
-			"Type": "TestViewport",
-			"Row": 0,
-			"RowSpan": 4,
-			"Column": 2,
-
-			"Content": {
-				"Type": "Layout",
-				"RowDefinitions": [ { "Height": "1*" } ],
-				"ColumnDefinitions": [ { "Width": "1*" } ],
-				"Brush": "Red"
-			}
-		},
-
-		"TestPane": {
-			"Type": "TestPane",
-			"Top": 50,
-			"Left": 50,
-			"Height": 100,
-			"Width": 150,
-
-			"CornerRadius": 10.0,
-
-			"Content": {
-				"Type": "Layout",
-				"RowDefinitions": [ { "Height": "1*" } ],
-				"ColumnDefinitions": [ { "Width": "1*" } ]
-
+			"ViewDropDownButton": {
+				"Type": "ViewDropDownButton",
+				"Column": 2,
+				"Margin": [ 0, 1, 0, 1 ],
+				"BackgroundBrush": [ 0.16, 0.16, 0.16 ],
+				"BorderBrush": "Gray",
+				"Content": {
+					"Type": "Text",
+					"Text": "View",
+					"Brush": "White",
+					"Style": "MenuBarDropDownButtonStyle"
+				}
 			}
 		}
 	}
