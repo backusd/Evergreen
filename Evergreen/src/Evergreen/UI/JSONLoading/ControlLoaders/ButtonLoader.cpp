@@ -28,9 +28,6 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	//       Note: this function IS allowed to be nullptr and if so, the Button will just create a default brush
 	std::unique_ptr<ColorBrush> borderBrush = ParseBorderBrush(deviceResources, data);
 
-	// Border Width
-	std::array<float, 4> borderWidths = ParseBorderWidth(data);
-
 	// Warn about unrecognized keys
 	constexpr std::array recognizedKeys{ "id", "Type", "Text", "Row", "Column", "RowSpan", "ColumnSpan", "Margin",
 	"BackgroundBrush", "BorderBrush", "BorderWidth", "Content", "OnMouseEnter", "OnMouseLeave", "OnMouseMoved",
@@ -44,7 +41,7 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	}
 
 	// Create the new Button control
-	Button* button = parent->CreateControl<Button>(rowCol, deviceResources, std::move(backgroundBrush), std::move(borderBrush), borderWidths, margin);
+	Button* button = parent->CreateControl<Button>(rowCol, deviceResources, std::move(backgroundBrush), std::move(borderBrush), margin);
 	EG_CORE_ASSERT(button != nullptr, "Something went wrong, button is nullptr");
 
 	button->Name(name);
@@ -52,6 +49,8 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 
 	ParseContent(deviceResources, button->GetLayout(), data);
 
+	// Border Width
+	ParseBorderWidth(button, data);
 	ParseBorderOffsets(button, data);
 	ParseCornerRadius(button, data);
 
@@ -90,22 +89,19 @@ std::unique_ptr<ColorBrush> ButtonLoader::ParseBorderBrush(std::shared_ptr<Devic
 	// Note: we are allowed to return nullptr here because the Button class will just create a default border brush
 	return nullptr;
 }
-std::array<float, 4> ButtonLoader::ParseBorderWidth(json& data)
+void ButtonLoader::ParseBorderWidth(Button* button, json& data)
 {
-	std::array<float, 4> borderWidths{ 0.0f, 0.0f, 0.0f, 0.0f };
-
 	if (data.contains("BorderWidth"))
 	{
 		if (data["BorderWidth"].is_number())
 		{
 			float width = data["BorderWidth"].get<float>();
 			JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "Button control with name '{}': 'BorderWidth' is not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
-			borderWidths.fill(width);
-			return borderWidths;
+			button->BorderWidth(width);
 		}
-
-		if (data["BorderWidth"].is_array())
+		else if (data["BorderWidth"].is_array())
 		{
+			std::array<float, 4> borderWidths{ 0.0f, 0.0f, 0.0f, 0.0f };
 			JSON_LOADER_EXCEPTION_IF_FALSE(data["BorderWidth"].size() == 4, "Button control with name '{}': When specificying 'BorderWidth' as an array of floats, there must be exactly 4 values in the array. Invalid Button object: {}", m_name, data.dump(4));
 
 			float width = 0.0f;
@@ -116,13 +112,14 @@ std::array<float, 4> ButtonLoader::ParseBorderWidth(json& data)
 				JSON_LOADER_EXCEPTION_IF_FALSE(width >= 0.0f, "Button control with name '{}': 'BorderWidth' array values are not allowed to be less than 0. Invalid Button object: {}", m_name, data.dump(4));
 				borderWidths[iii] = width;
 			}
-			return borderWidths;
+
+			button->BorderWidth(borderWidths);
 		}
-
-		JSON_LOADER_EXCEPTION("Button control with name '{}': 'BorderWidth' value must either be a number of an array of 4 floats. Invalid Button object: {}", m_name, data.dump(4));
+		else
+		{
+			JSON_LOADER_EXCEPTION("Button control with name '{}': 'BorderWidth' value must either be a number of an array of 4 floats. Invalid Button object: {}", m_name, data.dump(4));
+		}
 	}
-
-	return borderWidths;
 }
 void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {

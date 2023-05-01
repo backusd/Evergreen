@@ -205,22 +205,22 @@ void Pane::CreateTitleBarLayout()
 
 	std::unique_ptr<SolidColorBrush> minimizeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	RoundedButton* minimizeButton = m_titleLayout->CreateControl<RoundedButton>(
+	Button* minimizeButton = m_titleLayout->CreateControl<Button>(
 		minimizeButtonPosition,
 		m_deviceResources,
-		std::move(minimizeBackgroundBrush),
-		nullptr,
-		m_paneCornerRadiusX,
-		m_paneCornerRadiusY
-		);
+		std::move(minimizeBackgroundBrush)
+	);
 
 	minimizeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
 	minimizeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
 
+	minimizeButton->SetCornerRadiusX(m_paneCornerRadiusX);
+	minimizeButton->SetCornerRadiusY(m_paneCornerRadiusY);
+
 	std::unique_ptr<SolidColorBrush> whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
 	std::unique_ptr<TextStyle> minimizeTextStyle = std::make_unique<TextStyle>(
 		m_deviceResources,
-		"Pane Close Button TextStyle",
+		"Pane Minimize Button TextStyle",
 		Evergreen::FontFamily::Segoe_MDL2_Assets,
 		12.0f,
 		DWRITE_FONT_WEIGHT::DWRITE_FONT_WEIGHT_REGULAR,
@@ -235,42 +235,28 @@ void Pane::CreateTitleBarLayout()
 	minimizeButton->GetLayout()->CreateControl<Text>(m_deviceResources, minimizeString, std::move(whiteBrush), std::move(minimizeTextStyle));
 
 	minimizeButton->SetOnMouseEnteredCallback(
-		[](Control* c, Event& e)
+		[](Button* button, MouseMoveEvent&)
 		{
-
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-			button->BackgroundBrush(std::move(brush));
+			button->BackgroundBrush(D2D1::ColorF::Gray);
 		}
 	);
 	minimizeButton->SetOnMouseExitedCallback(
-		[](Control* c, Event& e)
+		[](Button* button, MouseMoveEvent&)
 		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-			button->BackgroundBrush(std::move(brush));
+			button->BackgroundBrush(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 		}
 	);
 	minimizeButton->SetOnMouseLButtonDownCallback(
-		[](Control* c, Event& e)
+		[](Button* button, MouseButtonPressedEvent&)
 		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	minimizeButton->SetOnMouseLButtonUpCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-			button->BackgroundBrush(std::move(brush));
+			button->BackgroundBrush(D2D1::ColorF::DimGray);
 		}
 	);
 	minimizeButton->SetOnClickCallback(
-		[this](Control* c, Event& e)
+		[this](Button* button, MouseButtonReleasedEvent&)
 		{
 			this->SwitchMinimize();
+			button->BackgroundBrush(D2D1::ColorF::Gray);
 		}
 	);
 
@@ -282,17 +268,17 @@ void Pane::CreateTitleBarLayout()
 
 	std::unique_ptr<SolidColorBrush> closeBackgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
-	RoundedButton* closeButton = m_titleLayout->CreateControl<RoundedButton>(
+	Button* closeButton = m_titleLayout->CreateControl<Button>(
 		closeButtonPosition,
 		m_deviceResources,
-		std::move(closeBackgroundBrush),
-		nullptr,
-		m_paneCornerRadiusX,
-		m_paneCornerRadiusY
-		);
+		std::move(closeBackgroundBrush)
+	);
 
 	closeButton->GetLayout()->AddRow({ RowColumnType::STAR, 1.0f });
 	closeButton->GetLayout()->AddColumn({ RowColumnType::STAR, 1.0f });
+
+	closeButton->SetCornerRadiusX(m_paneCornerRadiusX);
+	closeButton->SetCornerRadiusY(m_paneCornerRadiusY);
 
 	whiteBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::White));
 	std::unique_ptr<TextStyle> closeTextStyle = std::make_unique<TextStyle>(
@@ -312,45 +298,33 @@ void Pane::CreateTitleBarLayout()
 	closeButton->GetLayout()->CreateControl<Text>(m_deviceResources, closeString, std::move(whiteBrush), std::move(closeTextStyle));
 
 	closeButton->SetOnMouseEnteredCallback(
-		[](Control* c, Event& e)
+		[](Button* button, MouseMoveEvent&)
 		{
 			// Set cursor here because it may be entering from outside the pane and be a double arrow
 			Window::SetCursor(Cursor::ARROW);
 
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Crimson));
-			button->BackgroundBrush(std::move(brush));
+			button->BackgroundBrush(D2D1::ColorF::Crimson);
 		}
 	);
 	closeButton->SetOnMouseExitedCallback(
-		[](Control* c, Event& e)
+		[](Button* button, MouseMoveEvent&)
 		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
-			button->BackgroundBrush(std::move(brush));
+			button->BackgroundBrush(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
 		}
 	);
 	closeButton->SetOnMouseLButtonDownCallback(
-		[](Control* c, Event& e)
+		[](Button* button, MouseButtonPressedEvent&)
 		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::DimGray));
-			button->BackgroundBrush(std::move(brush));
-		}
-	);
-	closeButton->SetOnMouseLButtonUpCallback(
-		[](Control* c, Event& e)
-		{
-			Button* button = static_cast<Button*>(c);
-			std::unique_ptr<SolidColorBrush> brush = std::make_unique<SolidColorBrush>(button->GetDeviceResources(), D2D1::ColorF(D2D1::ColorF::Gray));
-			button->BackgroundBrush(std::move(brush));
+			button->BackgroundBrush(D2D1::ColorF::DimGray);
 		}
 	);
 	closeButton->SetOnClickCallback(
-		[this](Control* c, Event& e)
+		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
 			this->GetUI()->RemovePane(this);
 			e.ClearHandles(); // Must set handles to nullptr because we don't want the UI to have a dangling pointer to a control that is about to be deleted
+
+			button->BackgroundBrush(D2D1::ColorF::Gray);
 		}
 	);
 }
@@ -678,11 +652,11 @@ void Pane::SetCornerRadius(float xAndY) noexcept
 
 	if (m_titleLayout != nullptr)
 	{
-		RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
-		rb->SetCornerRadius(xAndY);
+		Button* button = static_cast<Button*>(m_titleLayout->GetControl(0));
+		button->SetCornerRadius(xAndY);
 
-		rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
-		rb->SetCornerRadius(xAndY);
+		button = static_cast<Button*>(m_titleLayout->GetControl(1));
+		button->SetCornerRadius(xAndY);
 	}
 }
 void Pane::SetCornerRadius(float x, float y) noexcept 
@@ -692,11 +666,11 @@ void Pane::SetCornerRadius(float x, float y) noexcept
 
 	if (m_titleLayout != nullptr)
 	{
-		RoundedButton* rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(0));
-		rb->SetCornerRadius(x, y);
+		Button* button = static_cast<Button*>(m_titleLayout->GetControl(0));
+		button->SetCornerRadius(x, y);
 
-		rb = static_cast<RoundedButton*>(m_titleLayout->GetControl(1));
-		rb->SetCornerRadius(x, y);
+		button = static_cast<Button*>(m_titleLayout->GetControl(1));
+		button->SetCornerRadius(x, y);
 	}
 }
 void Pane::SetTitleBarHeight(float height) noexcept

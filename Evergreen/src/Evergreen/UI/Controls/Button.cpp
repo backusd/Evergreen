@@ -9,7 +9,6 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 				const D2D1_RECT_F& allowedRegion,
 				std::unique_ptr<ColorBrush> backgroundBrush,
 				std::unique_ptr<ColorBrush> borderBrush,
-				const std::array<float, 4>& borderWidths,
 				const Evergreen::Margin& margin) noexcept :
 	Control(deviceResources, ui, allowedRegion, margin),
 	m_backgroundBrush(std::move(backgroundBrush)),
@@ -17,7 +16,7 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
 	m_mouseIsOver(false), 
 	m_mouseLButtonIsDown(false),
-	m_borderWidths(borderWidths),
+	m_borderWidths{ 0.0f, 0.0f, 0.0f, 0.0f },
 	m_borderTopLeftOffsetX(0.0f),
 	m_borderTopLeftOffsetY(0.0f),
 	m_borderTopRightOffsetX(0.0f),
@@ -46,45 +45,6 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 
 	ButtonChanged();
 }
-Button::Button(std::shared_ptr<DeviceResources> deviceResources,
-	UI* ui,
-	const D2D1_RECT_F& allowedRegion,
-	std::unique_ptr<ColorBrush> backgroundBrush,
-	std::unique_ptr<ColorBrush> borderBrush,
-	float borderWidth,
-	const Evergreen::Margin& margin) noexcept :
-	Control(deviceResources, ui, allowedRegion, margin),
-	m_backgroundBrush(std::move(backgroundBrush)),
-	m_borderBrush(std::move(borderBrush)),
-	m_backgroundRect({ 0.0f, 0.0f, 1000.0f, 1000.0f }), // dummy values that will be written over when allowed region is updated
-	m_mouseIsOver(false),
-	m_mouseLButtonIsDown(false),
-	m_borderWidths{ borderWidth, borderWidth, borderWidth, borderWidth },
-	m_borderTopLeftOffsetX(0.0f),
-	m_borderTopLeftOffsetY(0.0f),
-	m_borderTopRightOffsetX(0.0f),
-	m_borderTopRightOffsetY(0.0f),
-	m_borderBottomLeftOffsetX(0.0f),
-	m_borderBottomLeftOffsetY(0.0f),
-	m_borderBottomRightOffsetX(0.0f),
-	m_borderBottomRightOffsetY(0.0f)
-{
-	if (m_backgroundBrush == nullptr)
-		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
-
-	if (m_borderBrush == nullptr)
-		m_borderBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Black));
-
-	m_layout = std::make_unique<Layout>(
-		m_deviceResources,
-		ui,
-		0.0f, 0.0f, 1000.0f, 1000.0f,
-		nullptr, // Don't pass a brush to the layout - Button should draw the background, not the layout
-		"button layout");
-
-	ButtonChanged();
-}
-
 void Button::OnUpdate(const Timer& timer)
 {
 	m_layout->Update(timer);

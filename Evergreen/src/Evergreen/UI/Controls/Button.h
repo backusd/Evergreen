@@ -20,14 +20,6 @@ public:
 		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
 		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
 		std::unique_ptr<ColorBrush> borderBrush = nullptr,
-		const std::array<float, 4>& borderWidths = {},
-		const Evergreen::Margin& margin = { 0 }) noexcept;
-	Button(std::shared_ptr<DeviceResources> deviceResources,
-		UI* ui,
-		const D2D1_RECT_F& allowedRegion = D2D1::RectF(0.0f, 0.0f, FLT_MAX, FLT_MAX),
-		std::unique_ptr<ColorBrush> backgroundBrush = nullptr,
-		std::unique_ptr<ColorBrush> borderBrush = nullptr,
-		float borderWidth = 0.0f,
 		const Evergreen::Margin& margin = { 0 }) noexcept;
 	Button(const Button& text) noexcept = delete; // Just delete for now until there is a good use case
 	Button& operator=(const Button&) noexcept = delete;

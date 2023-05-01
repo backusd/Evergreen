@@ -34,18 +34,17 @@ private:
 
 	std::unique_ptr<ColorBrush> ParseBackgroundBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
 	std::unique_ptr<ColorBrush> ParseBorderBrush(std::shared_ptr<DeviceResources> deviceResources, json& data);
-	std::array<float, 4> ParseBorderWidth(json& data);
 	void ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data);
 
 	void ParseBorderOffsets(Button* button, json& data);
 	void ParseCornerRadius(Button* button, json& data);
+	void ParseBorderWidth(Button* button, json& data);
 
 	void ParseOnMouseEntered(Button* button, json& data);
 	void ParseOnMouseExited(Button* button, json& data);
 	void ParseOnMouseMoved(Button* button, json& data);
 	void ParseOnMouseLButtonDown(Button* button, json& data);
 	void ParseOnClick(Button* button, json& data);
-
 };
 #pragma warning( pop )
 
