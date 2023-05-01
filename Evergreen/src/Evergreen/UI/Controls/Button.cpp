@@ -92,6 +92,14 @@ void Button::OnUpdate(const Timer& timer)
 
 void Button::Render() const
 {
+	if (m_cornerRadiusX > 0.0f && m_cornerRadiusY > 0.0f)
+		RenderRoundedRect();
+	else
+		RenderRect();
+}
+
+void Button::RenderRect() const
+{
 	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
 	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
 	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
@@ -223,6 +231,24 @@ void Button::Render() const
 			);
 		}
 	}
+}
+void Button::RenderRoundedRect() const
+{
+	EG_CORE_ASSERT(m_deviceResources != nullptr, "No device resources");
+	EG_CORE_ASSERT(m_layout != nullptr, "No layout");
+	EG_CORE_ASSERT(m_backgroundBrush != nullptr, "No background brush");
+	EG_CORE_ASSERT(m_borderBrush != nullptr, "No border brush");
+
+	auto context = m_deviceResources->D2DDeviceContext();
+
+	context->FillRoundedRectangle(m_roundedRect, m_backgroundBrush->Get());
+
+	m_layout->Render();
+
+	// Draw the border last so it appears on top
+	// NOTE: We do NOT support drawing partial borders when drawing a rounded rect, so just use the first border width in the array
+	if (m_borderWidths[0] > 0.0f)
+		context->DrawRoundedRectangle(m_roundedRect, m_borderBrush->Get(), m_borderWidths[0]);
 }
 
 void Button::ButtonChanged()
