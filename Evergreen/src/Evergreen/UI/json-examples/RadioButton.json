@@ -26,7 +26,6 @@
 		"OnMouseExited": "RadioButtonExample_OnMouseExited",
 		"OnMouseMoved": "RadioButtonExample_OnMouseMoved",
 		"OnMouseLButtonDown": "RadioButtonExample_OnMouseLButtonDown",
-		"OnMouseLButtonUp": "RadioButtonExample_OnMouseLButtonUp",
 		"OnIsCheckedChanged": "RadioButtonExample_OnIsCheckedChanged",
 
 		// OnUpdate callback: Every control has access to setting a custom OnUpdate callback that gets called once every frame

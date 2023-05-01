@@ -37,7 +37,6 @@
 		"OnMouseExited": "TextInput_OnMouseExited",
 		"OnMouseMoved": "TextInput_OnMouseMoved",
 		"OnMouseLButtonDown": "TextInput_OnMouseLButtonDown",
-		"OnMouseLButtonUp": "TextInput_OnMouseLButtonUp",
 		"OnClick": "TextInput_OnClick",
 		"OnEnterKey": "TextInput_OnEnterKey",
 		"OnInputTextChanged": "TextInput_OnInputTextChanged",
