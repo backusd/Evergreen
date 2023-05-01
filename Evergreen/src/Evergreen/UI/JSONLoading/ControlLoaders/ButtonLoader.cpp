@@ -53,6 +53,8 @@ Control* ButtonLoader::LoadImpl(std::shared_ptr<DeviceResources> deviceResources
 	ParseContent(deviceResources, button->GetLayout(), data);
 
 	ParseBorderOffsets(button, data);
+	ParseCornerRadius(button, data);
+
 	ParseOnMouseEntered(button, data);
 	ParseOnMouseExited(button, data);
 	ParseOnMouseMoved(button, data);
