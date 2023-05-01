@@ -8,7 +8,7 @@
 #define PANE(name)	class name : public Evergreen::Pane																										\
 					{																																		\
 					public:																																	\
-						TestPane(std::shared_ptr<Evergreen::DeviceResources> deviceResources,																\
+						name(std::shared_ptr<Evergreen::DeviceResources> deviceResources,																\
 							Evergreen::UI* ui,																												\
 							float top,																														\
 							float left,																														\

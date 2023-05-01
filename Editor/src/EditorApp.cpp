@@ -15,6 +15,7 @@
 using namespace Evergreen;
 
 #define BUTTON_LOADER(name) JSONLoaders::AddControlLoader(STRINGIFY(name), [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ButtonLoader::Load<name>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); })
+#define PANE_LOADER(name) JSONLoaders::AddControlLoader(STRINGIFY(name), [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return PaneLoader::Load<name>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });
 
 
 class Editor : public Evergreen::Application
@@ -22,9 +23,19 @@ class Editor : public Evergreen::Application
 public:
 	Editor()
 	{
+		// Menu Bar
 		BUTTON_LOADER(FileDropDownButton);
 		BUTTON_LOADER(EditDropDownButton);
 		BUTTON_LOADER(ViewDropDownButton);
+
+		// File Drop Down
+		PANE_LOADER(FileDropDownPane);
+		BUTTON_LOADER(FileDropDownPaneNewButton); 
+		BUTTON_LOADER(FileDropDownPaneOpenButton); 
+		BUTTON_LOADER(FileDropDownPaneSaveButton); 
+		BUTTON_LOADER(FileDropDownPaneSaveAsButton);
+		BUTTON_LOADER(FileDropDownPaneExitButton); 
+
 		
 
 		//JSONLoaders::AddControlLoader("TestButton", [](std::shared_ptr<DeviceResources> deviceResources, Layout* parentLayout, json& data, const std::string& controlName, std::optional<RowColumnPosition> rowColumnPositionOverride) -> Control* { return ButtonLoader::Load<TestButton>(deviceResources, parentLayout, data, controlName, rowColumnPositionOverride); });

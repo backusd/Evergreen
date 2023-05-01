@@ -35,5 +35,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\json\main.json" />
+    <None Include="src\json\MenuBar\FileDropDownPane.json" />
   </ItemGroup>
 </Project>
