@@ -11,12 +11,12 @@ void FileDropDownOnMouseEnter(Evergreen::Button* button, Evergreen::MouseMoveEve
 	Pane* filePane = button->GetUI()->GetPane("FileDropDownPane");
 	if (filePane->GetVisible())
 	{
-		//button->BackgroundBrush(g_menuBarButtonColorPaneOpen);
+		button->BackgroundBrush(g_menuBarButtonColorPaneOpen);
 		button->BorderWidth({ 1.0f, 1.0f, 1.0f, 0.0f });
 	}
 	else
 	{
-		//button->BackgroundBrush(g_menuBarButtonColorMouseOverPaneClosed);
+		button->BackgroundBrush(g_menuBarButtonColorMouseOverPaneClosed);
 		button->BorderWidth(0.0f);
 	}
 }

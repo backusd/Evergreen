@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Button.h"
+#include "Text.h"
 
 namespace Evergreen
 {
@@ -398,5 +399,47 @@ Control* Button::GetControlByID(unsigned int id) noexcept
 
 	return m_layout->GetControlByID(id);
 }
+
+void Button::BackgroundBrush(const D2D1_COLOR_F& color)
+{
+	m_backgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, color);
+}
+void Button::BackgroundBrush(D2D1::ColorF::Enum color)
+{
+	m_backgroundBrush = std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(color));
+}
+void Button::BackgroundBrushAndTextColor(const D2D1_COLOR_F& buttonColor, const D2D1_COLOR_F& textColor)
+{
+	BackgroundBrush(buttonColor);
+
+	Text* text = static_cast<Text*>(m_layout->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, textColor)));
+}
+void Button::BackgroundBrushAndTextColor(D2D1::ColorF::Enum buttonColor, const D2D1_COLOR_F& textColor)
+{
+	BackgroundBrush(buttonColor);
+
+	Text* text = static_cast<Text*>(m_layout->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, textColor)));
+}
+void Button::BackgroundBrushAndTextColor(const D2D1_COLOR_F& buttonColor, D2D1::ColorF::Enum textColor)
+{
+	BackgroundBrush(buttonColor);
+
+	Text* text = static_cast<Text*>(m_layout->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(textColor))));
+}
+void Button::BackgroundBrushAndTextColor(D2D1::ColorF::Enum buttonColor, D2D1::ColorF::Enum textColor)
+{
+	BackgroundBrush(buttonColor);
+
+	Text* text = static_cast<Text*>(m_layout->GetFirstControlOfType(Control::ControlType::Text));
+	EG_ASSERT(text != nullptr, "Should not be calling this function if the button has no Text child control");
+	text->SetColorBrush(std::move(std::make_unique<SolidColorBrush>(m_deviceResources, D2D1::ColorF(textColor))));
+}
+
 
 }
