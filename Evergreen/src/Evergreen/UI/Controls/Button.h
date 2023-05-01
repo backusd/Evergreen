@@ -92,6 +92,11 @@ public:
 	inline void SetOnMouseLButtonUpCallback(std::function<void(Button*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnMouseLButtonUp = func; }
 	inline void SetOnClickCallback(std::function<void(Button*, MouseButtonReleasedEvent& e)> func) noexcept { m_OnClick = func; }
 
+	void SetCornerRadius(float xAndY) noexcept { m_cornerRadiusX = xAndY; m_cornerRadiusY = xAndY; ButtonChanged(); }
+	void SetCornerRadius(float x, float y) noexcept { m_cornerRadiusX = x; m_cornerRadiusY = y; ButtonChanged(); }
+	void SetCornerRadiusX(float radiusX) noexcept { m_cornerRadiusX = radiusX; ButtonChanged(); }
+	void SetCornerRadiusY(float radiusY) noexcept { m_cornerRadiusY = radiusY; ButtonChanged(); }
+
 	ND inline bool MouseIsOver() const noexcept { return m_mouseIsOver; }
 
 	ND virtual bool ContainsPoint(float x, float y) const noexcept;
