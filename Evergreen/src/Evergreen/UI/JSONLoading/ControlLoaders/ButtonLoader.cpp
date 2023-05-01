@@ -108,8 +108,6 @@ void ButtonLoader::ParseCornerRadius(Button* button, json& data)
 			button->SetCornerRadiusY(radiusY);
 		}
 	}
-
-
 }
 void ButtonLoader::ParseContent(std::shared_ptr<DeviceResources> deviceResources, Layout* layout, json& data)
 {
