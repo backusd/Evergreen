@@ -25,7 +25,11 @@ Button::Button(std::shared_ptr<DeviceResources> deviceResources,
 	m_borderBottomLeftOffsetX(0.0f),
 	m_borderBottomLeftOffsetY(0.0f),
 	m_borderBottomRightOffsetX(0.0f),
-	m_borderBottomRightOffsetY(0.0f)
+	m_borderBottomRightOffsetY(0.0f),
+	m_cornerRadiusX(0.0f),
+	m_cornerRadiusY(0.0f),
+	m_roundedRect{},
+	m_roundedRectGeometry(nullptr)
 {
 	if (m_backgroundBrush == nullptr)
 		m_backgroundBrush = std::make_unique<Evergreen::SolidColorBrush>(m_deviceResources, D2D1::ColorF(D2D1::ColorF::Gray));
