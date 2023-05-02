@@ -269,273 +269,50 @@ void MoleculesApp::SetMenuBarCallbacks()
 	JSONLoaders::AddCallback("ViewDropDownButtonOnClick", &ViewDropDownOnClick);
 
 	// Pane ----------------------------------------------------------------------------------------------
-	JSONLoaders::AddCallback("MenuBarDropDownPaneOnMouseExitedContentRegion",
-		[this](Pane* pane, MouseMoveEvent& e)
-		{
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			Pane* editPane = m_ui->GetPane("EditDropDownPane");
-			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			Button* editButton = m_ui->GetControlByName<Button>("EditDropDownButton");
-			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
+	JSONLoaders::AddCallback("MenuBarDropDownPaneOnMouseExitedContentRegion", &MenuBarDropDownPaneOnMouseExitedContentRegion);
+	JSONLoaders::AddCallback("MenuBarDropDownPaneButtonOnMouseEnter", &MenuBarDropDownPaneButtonOnMouseEnter);
+	JSONLoaders::AddCallback("MenuBarDropDownPaneButtonOnMouseLeave", &MenuBarDropDownPaneButtonOnMouseLeave);
 
-			if (fileButton->ContainsPoint(e.GetX(), e.GetY()))
-			{
-				if (filePane != pane)
-				{
-					pane->SetVisible(false);
-					filePane->SetVisible(true);
-
-					if (pane == editPane)
-					{
-						this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
-						editButton->BorderWidth(0.0f);
-					}
-					else if (pane == viewPane)
-					{
-						this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
-						viewButton->BorderWidth(0.0f);
-					}
-				}
-			}
-			else if (editButton->ContainsPoint(e.GetX(), e.GetY()))
-			{
-				if (editPane != pane)
-				{
-					pane->SetVisible(false);
-					editPane->SetVisible(true);
-
-					if (pane == filePane)
-					{
-						this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-						fileButton->BorderWidth(0.0f);
-					}
-					else if (pane == viewPane)
-					{
-						this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
-						viewButton->BorderWidth(0.0f);
-					}
-				}
-			}
-			else if (viewButton->ContainsPoint(e.GetX(), e.GetY()))
-			{
-				if (viewPane != pane)
-				{
-					pane->SetVisible(false);
-					viewPane->SetVisible(true);
-
-					if (pane == filePane)
-					{
-						this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-						fileButton->BorderWidth(0.0f);
-					}
-					else if (pane == editPane)
-					{
-						this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
-						editButton->BorderWidth(0.0f);
-					}
-				}
-			}
-			else
-			{
-				// Mouse is not over pane or menu bar button, so collapse it
-				pane->SetVisible(false);
-				if (pane == filePane)
-				{
-					this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-					fileButton->BorderWidth(0.0f);
-				}
-				else if (pane == editPane)
-				{
-					this->ChangeButtonBackground(editButton, m_menuBarButtonColorDefault);
-					editButton->BorderWidth(0.0f);
-				}
-				else if (pane == viewPane)
-				{
-					this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
-					viewButton->BorderWidth(0.0f);
-				}
-			}
-		}
-	);
 }
 void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 {
-	// EACH Item
-	JSONLoaders::AddCallback("FileDropDown_Item_OnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			this->ChangeButtonBackground(button, m_menuBarButtonColorMouseOverPaneClosed);
-		}
-	);
-	JSONLoaders::AddCallback("FileDropDown_Item_OnMouseExited",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			this->ChangeButtonBackground(button, m_menuBarButtonColorPaneOpen);
-		}
-	);
-
-	// New
-	JSONLoaders::AddCallback("FileDropDown_NewButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			filePane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-			fileButton->BorderWidth(0.0f);
-		}
-	);
-
-	// Open
-	JSONLoaders::AddCallback("FileDropDown_OpenButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			filePane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-			fileButton->BorderWidth(0.0f);
-		}
-	);
-
-	// Save
-	JSONLoaders::AddCallback("FileDropDown_SaveButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			filePane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-			fileButton->BorderWidth(0.0f);
-		}
-	);
-
-	// Save As
-	JSONLoaders::AddCallback("FileDropDown_SaveAsButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			filePane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-			fileButton->BorderWidth(0.0f);
-		}
-	);
-
-	// Close
-	JSONLoaders::AddCallback("FileDropDown_CloseButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* filePane = m_ui->GetPane("FileDropDownPane");
-			filePane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* fileButton = m_ui->GetControlByName<Button>("FileDropDownButton");
-			this->ChangeButtonBackground(fileButton, m_menuBarButtonColorDefault);
-			fileButton->BorderWidth(0.0f);
-		}
-	);
+	JSONLoaders::AddCallback("FileDropDown_NewButton_OnClick", &FileDropDownNewButtonOnClick);
+	JSONLoaders::AddCallback("FileDropDown_OpenButton_OnClick", &FileDropDownOpenButtonOnClick);
+	JSONLoaders::AddCallback("FileDropDown_SaveButton_OnClick", &FileDropDownSaveButtonOnClick);
+	JSONLoaders::AddCallback("FileDropDown_SaveAsButton_OnClick", &FileDropDownSaveAsButtonOnClick);
+	JSONLoaders::AddCallback("FileDropDown_ExitButton_OnClick", &FileDropDownExitButtonOnClick);
 }
 void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 {
-	// Camera -------------------------------------------------------
+	// NOTE: Need to provide a lambda here because we need access to MoleculesApp::m_rightPanelSelectedTabButton
 	JSONLoaders::AddCallback("EditDropDown_CameraButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			this->RightPanelAddTab(button, e, "RightPanel_CameraButton", "right_panel_camera_tab.json", "right_panel_camera_content.json");
+			::EditDropDownCameraButtonOnClick(button, e, m_rightPanelSelectedTabButton);
 		}
 	);
 
-	// Materials -----------------------------------------------------
+	JSONLoaders::AddCallback("EditDropDown_LightingButton_OnClick", 
+		[this](Button* button, MouseButtonReleasedEvent& e)
+		{
+			::EditDropDownLightingButtonOnClick(button, e, m_rightPanelSelectedTabButton);
+		}
+	);
+
 	JSONLoaders::AddCallback("EditDropDown_MaterialsButton_OnClick",
 		[this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			this->RightPanelAddTab(button, e, "RightPanel_MaterialsButton", "right_panel_materials_tab.json", "right_panel_materials_content.json");
+			//this->RightPanelAddTab(button, e, "RightPanel_MaterialsButton", "right_panel_materials_tab.json", "right_panel_materials_content.json");
+			::EditDropDownMaterialsButtonOnClick(button, e, m_rightPanelSelectedTabButton);
 			this->MaterialEditElementSelectorDropDownItemOnClick(L"Hydrogen", Element::Hydrogen);
-		}
-	);
-
-	// Lighting -----------------------------------------------------
-	JSONLoaders::AddCallback("EditDropDown_LightingButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			this->RightPanelAddTab(button, e, "RightPanel_LightingButton", "right_panel_lighting_tab.json", "right_panel_lighting_content.json");
 		}
 	);
 }
 void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 {
-	// View 1
-	JSONLoaders::AddCallback("ViewDropDown_View1Button_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-			viewPane->SetVisible(false);
+	JSONLoaders::AddCallback("ViewDropDown_View1Button_OnClick", &ViewDropDownView1ButtonOnClick);
+	JSONLoaders::AddCallback("ViewDropDown_View2Button_OnClick", &ViewDropDownView2ButtonOnClick);
 
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
-			this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
-			viewButton->BorderWidth(0.0f);
-		}
-	);
-
-	// View 2
-	JSONLoaders::AddCallback("ViewDropDown_View2Button_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
-		{
-			// Close the pane
-			Pane* viewPane = m_ui->GetPane("ViewDropDownPane");
-			viewPane->SetVisible(false);
-
-			// When the Pane becomes no longer visible, we must invalidate the UI's mouse captured variables
-			// otherwise, it is possible to still click on controls within the Pane after it loses visibility.
-			// To do this, we inform the event that it should ignore the handling control
-			e.IgnoreHandlingControl(true);
-
-			Button* viewButton = m_ui->GetControlByName<Button>("ViewDropDownButton");
-			this->ChangeButtonBackground(viewButton, m_menuBarButtonColorDefault);
-			viewButton->BorderWidth(0.0f);
-		}
-	);
 }
 
 // General Right Panel Callbacks

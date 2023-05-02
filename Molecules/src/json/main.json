@@ -122,8 +122,8 @@
 					"FileDropDown_NewButton": {
 						"Type": "Button",
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "FileDropDown_NewButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -150,8 +150,8 @@
 						"Type": "Button",
 						"Row": 1,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "FileDropDown_OpenButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -178,8 +178,8 @@
 						"Type": "Button",
 						"Row": 2,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "FileDropDown_SaveButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -206,8 +206,8 @@
 						"Type": "Button",
 						"Row": 3,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "FileDropDown_SaveAsButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -234,8 +234,8 @@
 						"Type": "Button",
 						"Row": 4,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "FileDropDown_SaveAsButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -307,8 +307,8 @@
 					"EditDropDown_CameraButton": {
 						"Type": "Button",
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "EditDropDown_CameraButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -331,8 +331,8 @@
 						"Type": "Button",
 						"Row": 1,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "EditDropDown_MaterialsButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -355,8 +355,8 @@
 						"Type": "Button",
 						"Row": 2,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "EditDropDown_LightingButton_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -422,8 +422,8 @@
 					"ViewDropDown_View1Button": {
 						"Type": "Button",
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "ViewDropDown_View1Button_OnClick",
 						"Content": {
 							"Type": "Layout",
@@ -446,8 +446,8 @@
 						"Type": "Button",
 						"Row": 1,
 						"BackgroundBrush": [ 0.25, 0.25, 0.25 ],
-						"OnMouseEnter": "FileDropDown_Item_OnMouseEnter",
-						"OnMouseLeave": "FileDropDown_Item_OnMouseExited",
+						"OnMouseEnter": "MenuBarDropDownPaneButtonOnMouseEnter",
+						"OnMouseLeave": "MenuBarDropDownPaneButtonOnMouseLeave",
 						"OnClick": "ViewDropDown_View2Button_OnClick",
 						"Content": {
 							"Type": "Layout",
