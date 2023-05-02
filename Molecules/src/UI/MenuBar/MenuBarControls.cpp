@@ -1,17 +1,11 @@
 #include "MenuBarControls.h"
-#include "../../Rendering/Scene.h"
+#include "../RightPanel/TabControls.h"
 
 using namespace Evergreen;
 
 const D2D1_COLOR_F g_menuBarButtonColorDefault = D2D1::ColorF(0.16f, 0.16f, 0.16f);
 const D2D1_COLOR_F g_menuBarButtonColorMouseOverPaneClosed = D2D1::ColorF(0.35f, 0.35f, 0.35f);
 const D2D1_COLOR_F g_menuBarButtonColorPaneOpen = D2D1::ColorF(0.25f, 0.25f, 0.25f);
-
-const D2D1_COLOR_F g_rightPanelTabColorSelected = D2D1::ColorF(0.16f, 0.16f, 0.16f);
-const D2D1_COLOR_F g_rightPanelTabColorNotSelected = D2D1::ColorF(0.2f, 0.2f, 0.2f);
-const D2D1_COLOR_F g_rightPanelTabColorMouseOver = D2D1::ColorF(0.25f, 0.25f, 0.25f);
-const D2D1_COLOR_F g_rightPanelTabColorMouseDown = D2D1::ColorF(0.3f, 0.3f, 0.3f);
-
 
 // -----------------------------------------------------------------------------------------------------
 // Menu Bar Buttons - Generic
@@ -398,10 +392,11 @@ void EditDropDownCameraButtonOnClick(Button* button, MouseButtonReleasedEvent& e
 	MenuBarDropDownPaneButtonOnClick(button, e, "EditDropDownPane", "EditDropDownButton");
 	RightPanelAddTab(selectedTab, "RightPanel_CameraButton", "right_panel_camera_tab.json", "right_panel_camera_content.json");
 }
-void EditDropDownMaterialsButtonOnClick(Button* button, MouseButtonReleasedEvent& e, Button*& selectedTab)
+void EditDropDownMaterialsButtonOnClick(Button* button, MouseButtonReleasedEvent& e, Button*& selectedTab, Scene* scene, Element& currentElement)
 {
 	MenuBarDropDownPaneButtonOnClick(button, e, "EditDropDownPane", "EditDropDownButton");
 	RightPanelAddTab(selectedTab, "RightPanel_MaterialsButton", "right_panel_materials_tab.json", "right_panel_materials_content.json");
+	MaterialEditElementSelectorDropDownItemOnClick(button->GetUI(), scene, L"Hydrogen", currentElement, Element::Hydrogen); 
 }
 void EditDropDownLightingButtonOnClick(Button* button, MouseButtonReleasedEvent& e, Button*& selectedTab)
 {

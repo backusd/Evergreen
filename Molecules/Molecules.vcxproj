@@ -159,6 +159,8 @@
     <ClCompile Include="src\Rendering\Scene.cpp" />
     <ClCompile Include="src\Rendering\Shaders.cpp" />
     <ClCompile Include="src\Simulation\Simulation.cpp" />
+    <ClCompile Include="src\UI\RightPanel\SimulationControls.cpp" />
+    <ClCompile Include="src\UI\RightPanel\TabControls.cpp" />
     <ClCompile Include="src\Utils\JSONHelper.cpp" />
     <ClCompile Include="src\Utils\MathHelper.cpp" />
   </ItemGroup>
@@ -187,6 +189,8 @@
     <ClInclude Include="src\Rendering\Shaders.h" />
     <ClInclude Include="src\Rendering\Structs.h" />
     <ClInclude Include="src\Simulation\Simulation.h" />
+    <ClInclude Include="src\UI\RightPanel\SimulationControls.h" />
+    <ClInclude Include="src\UI\RightPanel\TabControls.h" />
     <ClInclude Include="src\Utils\JSONHelper.h" />
     <ClInclude Include="src\Utils\MathHelper.h" />
   </ItemGroup>

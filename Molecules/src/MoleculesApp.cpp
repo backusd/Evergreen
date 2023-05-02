@@ -2,6 +2,8 @@
 #include "Utils/JSONHelper.h"
 
 #include "UI/MenuBar/MenuBarControls.h"
+#include "UI/RightPanel/TabControls.h"
+#include "UI/RightPanel/SimulationControls.h"
 
 using namespace Evergreen;
 
@@ -284,27 +286,20 @@ void MoleculesApp::SetMenuBarFileDropDownCallbacks()
 }
 void MoleculesApp::SetMenuBarEditDropDownCallbacks()
 {
-	// NOTE: Need to provide a lambda here because we need access to MoleculesApp::m_rightPanelSelectedTabButton
-	JSONLoaders::AddCallback("EditDropDown_CameraButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
+	// NOTE: Need to uses lambdas here because we need access to MoleculesApp::m_rightPanelSelectedTabButton
+	JSONLoaders::AddCallback("EditDropDown_CameraButton_OnClick", [this](Button* button, MouseButtonReleasedEvent& e)
 		{
 			::EditDropDownCameraButtonOnClick(button, e, m_rightPanelSelectedTabButton);
 		}
 	);
-
-	JSONLoaders::AddCallback("EditDropDown_LightingButton_OnClick", 
-		[this](Button* button, MouseButtonReleasedEvent& e)
+	JSONLoaders::AddCallback("EditDropDown_MaterialsButton_OnClick", [this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			::EditDropDownLightingButtonOnClick(button, e, m_rightPanelSelectedTabButton);
+			::EditDropDownMaterialsButtonOnClick(button, e, m_rightPanelSelectedTabButton, m_scene.get(), m_elementSelectedForMaterialEditing);
 		}
 	);
-
-	JSONLoaders::AddCallback("EditDropDown_MaterialsButton_OnClick",
-		[this](Button* button, MouseButtonReleasedEvent& e)
+	JSONLoaders::AddCallback("EditDropDown_LightingButton_OnClick", [this](Button* button, MouseButtonReleasedEvent& e)
 		{
-			//this->RightPanelAddTab(button, e, "RightPanel_MaterialsButton", "right_panel_materials_tab.json", "right_panel_materials_content.json");
-			::EditDropDownMaterialsButtonOnClick(button, e, m_rightPanelSelectedTabButton);
-			this->MaterialEditElementSelectorDropDownItemOnClick(L"Hydrogen", Element::Hydrogen);
+			::EditDropDownLightingButtonOnClick(button, e, m_rightPanelSelectedTabButton);
 		}
 	);
 }
@@ -312,75 +307,32 @@ void MoleculesApp::SetMenuBarViewDropDownCallbacks()
 {
 	JSONLoaders::AddCallback("ViewDropDown_View1Button_OnClick", &ViewDropDownView1ButtonOnClick);
 	JSONLoaders::AddCallback("ViewDropDown_View2Button_OnClick", &ViewDropDownView2ButtonOnClick);
-
 }
 
 // General Right Panel Callbacks
 void MoleculesApp::SetGeneralRightPanelCallbacks()
 {
 	// Tab Button
-	JSONLoaders::AddCallback("RightPanelTabOnMouseEnter", 
-		[this](Button* button, MouseMoveEvent& e) 
+	JSONLoaders::AddCallback("RightPanelTabOnMouseEnter", [this](Button* button, MouseMoveEvent& e)
 		{
-			if (button != m_rightPanelSelectedTabButton) 
-			{
-				this->ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorMouseOver, D2D1::ColorF::White);
-				Button* closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button)); 
-				if (closeButton != nullptr)
-				{
-					this->ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorMouseOver, D2D1::ColorF::White);
-				}
-			}
+			::RightPanelTabOnMouseEnter(button, e, m_rightPanelSelectedTabButton);
 		}
 	);
-	JSONLoaders::AddCallback("RightPanelTabOnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
+	JSONLoaders::AddCallback("RightPanelTabOnMouseLeave", [this](Button* button, MouseMoveEvent& e)
 		{
-			if (button != m_rightPanelSelectedTabButton)
-			{
-				this->ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
-				Button* closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
-				if (closeButton != nullptr)
-				{
-					this->ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorNotSelected, D2D1::ColorF::LightGray);
-				}
-			}
+			::RightPanelTabOnMouseLeave(button, e, m_rightPanelSelectedTabButton);
 		}
 	);
-	JSONLoaders::AddCallback("RightPanelTabOnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
+	JSONLoaders::AddCallback("RightPanelTabOnMouseLButtonDown", [this](Button* button, MouseButtonPressedEvent& e)
 		{
-			if (button != m_rightPanelSelectedTabButton)
-			{
-				this->ChangeButtonBackgroundAndTextColor(button, m_rightPanelTabColorMouseDown, D2D1::ColorF::White);
-				Button* closeButton = static_cast<Button*>(button->GetLayout()->GetFirstControlOfType(Control::ControlType::Button));
-				if (closeButton != nullptr)
-				{
-					this->ChangeButtonBackgroundAndTextColor(closeButton, m_rightPanelTabColorMouseDown, D2D1::ColorF::White);
-				}
-			}
+			::RightPanelTabOnMouseLButtonDown(button, e, m_rightPanelSelectedTabButton);
 		}
 	);
 
 	// Close Button
-	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseEnter",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF::White, D2D1::ColorF::Black);
-		}
-	);
-	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseLeave",
-		[this](Button* button, MouseMoveEvent& e)
-		{
-			this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f), D2D1::ColorF::White);
-		}
-	);
-	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseLButtonDown",
-		[this](Button* button, MouseButtonPressedEvent& e)
-		{
-			this->ChangeButtonBackgroundAndTextColor(button, D2D1::ColorF::White, D2D1::ColorF::Gray);
-		}
-	);
+	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseEnter", &RightPanelTabCloseButtonOnMouseEnter);
+	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseLeave", &RightPanelTabCloseButtonOnMouseLeave);
+	JSONLoaders::AddCallback("RightPanel_CloseButton_OnMouseLButtonDown", &RightPanelTabCloseButtonOnMouseLButtonDown);
 }
 
 // Simulation Callbacks

@@ -2,6 +2,7 @@
 #include "pch.h"
 #include <Evergreen.h>
 #include "../../Simulation/Simulation.h"
+#include "../../Rendering/Scene.h"
 
 
 // Menu Bar Buttons - Generic
@@ -32,6 +33,7 @@ void MenuBarDropDownPaneButtonOnMouseLeave(Evergreen::Button* button, Evergreen:
 void MenuBarDropDownPaneButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e, const std::string& paneName, const std::string& buttonName);
 void RightPanelAddTab(Evergreen::Button*& selectedTab, const std::string& tabButtonName, const std::string& tabButtonJSON, const std::string& contentJSON);
 
+
 // FILE Pane
 void FileDropDownNewButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e);
 void FileDropDownOpenButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e);
@@ -41,7 +43,7 @@ void FileDropDownExitButtonOnClick(Evergreen::Button* button, Evergreen::MouseBu
 
 // EDIT
 void EditDropDownCameraButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e, Evergreen::Button*& selectedTab);
-void EditDropDownMaterialsButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e, Evergreen::Button*& selectedTab);
+void EditDropDownMaterialsButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e, Evergreen::Button*& selectedTab, Scene* scene, Element& currentElement);
 void EditDropDownLightingButtonOnClick(Evergreen::Button* button, Evergreen::MouseButtonReleasedEvent& e, Evergreen::Button*& selectedTab);
 
 // VIEW Pane
